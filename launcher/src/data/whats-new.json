@@ -1,0 +1,54 @@
+[
+  {
+    "version": "0.3.46",
+    "items": {
+      "en": [
+        "The module, its discussions and its news are now on the CoA Modding Community Discord: https://discord.gg/Vhg9NktJf",
+        "CoA Bots 2.8: Dungeon Clear (your bot group clears a dungeon on its own, in Normal, Heroic and Mythic; on for the CoA realm), realm cards and names you can set, and the fixes since 2.7.",
+        "No more game data from us: the server is built on your PC from your own Conquest of Azeroth client (about 30 minutes, then the bots' navigation maps in the background). A repack you already have can be updated too.",
+        "Auction house: a Settings button (buyer, pace, price paid, CoA prices, per-seller cap, size, and the gold paid at once), applied live.",
+        "Lighter database: the old achievement rows of the bots are removed once after the update (backup first); again any time from Settings > Backups.",
+        "Also: a « Like Rexxar » card in Bot population, Stop on a single service stops only that one, and a server no longer shows « Starting » when it is stopped."
+      ],
+      "fr": [
+        "Le module, ses discussions et ses nouveautés sont maintenant sur le Discord CoA Modding Community : https://discord.gg/Vhg9NktJf",
+        "CoA Bots 2.8 : Dungeon Clear (votre groupe de bots fait un donjon en autonomie, en Normal, Héroïque et Mythique ; activé sur le royaume CoA), cartes et noms des royaumes réglables, et les correctifs depuis la 2.7.",
+        "Plus aucune donnée du jeu venant de nous : le serveur est construit sur votre PC à partir de votre propre client Conquest of Azeroth (environ 30 minutes, puis les cartes de navigation des bots en arrière-plan). Un repack que vous avez déjà peut aussi être mis à jour.",
+        "Hôtel des ventes : un bouton Réglages (acheteur, rythme, prix payé, prix de CoA, achats par vendeur, taille, et l'or payé tout de suite), appliqué en direct.",
+        "Base allégée : les anciennes lignes de hauts faits des bots sont supprimées une fois après la mise à jour (sauvegarde d'abord) ; à refaire quand vous voulez dans Réglages > Backups.",
+        "Aussi : une carte « Comme Rexxar » dans Population des bots, Stop sur un seul service n'arrête plus que lui, et un serveur arrêté n'affiche plus « Démarrage »."
+      ],
+      "ru": [
+        "Модуль, его обсуждения и новости теперь на Discord-сервере CoA Modding Community: https://discord.gg/Vhg9NktJf",
+        "CoA Bots 2.8: Dungeon Clear (ваша группа ботов сама проходит подземелье: Обычный, Героический и Эпохальный; включено для мира CoA), настраиваемые карточки и названия миров и исправления со времён 2.7.",
+        "Больше никаких игровых данных от нас: сервер собирается на вашем ПК из вашего собственного клиента Conquest of Azeroth (около 30 минут, затем навигационные карты ботов в фоне). Уже имеющийся репак тоже можно обновить.",
+        "Аукцион: кнопка «Настройки» (покупатель, темп, платимая цена, цены CoA, лимит на продавца, размер и мгновенная оплата), применяется на лету.",
+        "Облегчённая база: старые строки достижений ботов удаляются один раз после обновления (сначала копия); повторить можно в Настройки > Резервные копии.",
+        "А также: карточка «Как Rexxar» в Населении ботов, «Стоп» у одной службы останавливает только её, и остановленный сервер больше не показывает «Запуск»."
+      ]
+    }
+  },
+  {
+    "version": "0.3.44",
+    "items": {
+      "en": [
+        "Closing the launcher never stops your server, and it can stay in the notification area. Windows notifications: new version, server ready, world crash.",
+        "Play starts the server first when it is off. Optional: open with Windows, start the server when the launcher opens, restart the world after a crash, one backup a day.",
+        "Fresh world in one click (every random bot made again at level 1), the bots XP multiplier, and the advised number of bots for your PC.",
+        "Console: export or import a character, a safer SQL console. Verification: clean the logs. A Cancel button while an update downloads."
+      ],
+      "fr": [
+        "Fermer le launcher n'arrête jamais votre serveur, et il peut rester dans la zone de notification. Notifications Windows : nouvelle version, serveur prêt, crash du monde.",
+        "Jouer démarre d'abord le serveur s'il est éteint. En option : ouvrir avec Windows, démarrer le serveur à l'ouverture, redémarrer le monde après un crash, une sauvegarde par jour.",
+        "Monde neuf en un clic (tous les bots aléatoires refaits au niveau 1), le multiplicateur d'XP des bots, et le nombre de bots conseillé pour votre PC.",
+        "Console : exporter ou importer un perso, une console SQL plus sûre. Vérification : nettoyer les logs. Un bouton Annuler pendant le téléchargement d'une mise à jour."
+      ],
+      "ru": [
+        "Закрытие лаунчера никогда не останавливает сервер, и он может оставаться в области уведомлений. Уведомления Windows: новая версия, сервер готов, сбой мира.",
+        "«Играть» сначала запускает сервер, если он выключен. Опции: открывать с Windows, запускать сервер при открытии, перезапуск мира после сбоя, одна копия в день.",
+        "Новый мир в один клик (все случайные боты заново с 1 уровня), множитель опыта ботов и рекомендуемое число ботов для вашего ПК.",
+        "Консоль: экспорт или импорт персонажа, более безопасная SQL-консоль. Проверка: очистка логов. Кнопка «Отмена» во время загрузки обновления."
+      ]
+    }
+  }
+]

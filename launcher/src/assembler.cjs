@@ -1,0 +1,125 @@
+'use strict';
+// A server package without game data (2.8 onwards) is "assembled" on the player's PC by Assembler/coa_assemble.py:
+// game tables, terrain and vmaps extracted from the player's own client, the database built from the public SQL,
+// then the bots' navigation maps (mmaps) generated in the background, map by map. Nothing of the game is hosted by us.
+const fs = require('node:fs');
+const path = require('node:path');
+const { spawn } = require('node:child_process');
+
+const SCRIPT = 'Assembler/coa_assemble.py';
+const PYTHON = 'Runtime/python/python.exe';
+const STEPS = ['dbc', 'maps', 'vmaps', 'sql', 'db'];
+// Folders being assembled by this launcher right now (data, then bots, then the start of the mmaps).
+const busy = new Set();
+
+const readJson = file => { try { return JSON.parse(fs.readFileSync(file, 'utf8').replace(/^﻿/, '')); } catch { return null; } };
+
+function pidAlive(pid) {
+  if (!pid) return false;
+  try { process.kill(pid, 0); return true; } catch (error) { return error.code === 'EPERM'; }
+}
+
+function workTiles(folder) {
+  try { return fs.readdirSync(path.join(folder, 'Data', '.work-mmaps', 'mmaps')).filter(name => name.endsWith('.mmtile')).length; } catch { return 0; }
+}
+
+// What is left to do in this folder (read from .state/assemble.json, no process started).
+function state(folder) {
+  if (!folder || !fs.existsSync(path.join(folder, SCRIPT))) return { applies: false };
+  const saved = readJson(path.join(folder, '.state', 'assemble.json')) || {};
+  const steps = saved.steps || {};
+  const database = fs.existsSync(path.join(folder, 'mysql', 'data', 'mysql'));
+  // A repack the player already had (Jealous's, with its Data and its database): nothing to assemble, its files are
+  // kept as they are; only a folder without them is assembled from the client.
+  const existing = !saved.steps && database && fs.existsSync(path.join(folder, 'Data', 'dbc', 'Map.dbc')) && fs.existsSync(path.join(folder, 'Data', 'maps'));
+  const missing = existing ? [] : STEPS.filter(step => !steps[step] && !(step === 'db' && database));
+  const mm = saved.mmaps || {};
+  const total = mm.total || 0;
+  const done = Object.keys(mm.maps || {}).length;
+  return {
+    applies: true,
+    // Still at work (bots being installed after the data): the server is not offered yet.
+    needed: missing.length > 0 || busy.has(path.resolve(folder)),
+    running: busy.has(path.resolve(folder)),
+    missing,
+    client: saved.client?.path || '',
+    skipped: saved.db?.skipped || [],
+    // Progress in tiles while the current map is built (its finished tiles are counted in the work folder).
+    mmaps: { done, total, tiles: (mm.tilesDone || 0) + workTiles(folder), tilesTotal: mm.tilesTotal || 0, running: !!mm.running && pidAlive(mm.pid), paused: !!mm.paused && !(mm.running && pidAlive(mm.pid)), current: mm.current ?? null, complete: (total > 0 && done >= total) || (existing && fs.existsSync(path.join(folder, 'Data', 'mmaps'))) },
+  };
+}
+
+// Runs the assembler with --json; each line it prints is an event ({ event, step, done, total, text, message }).
+function run(folder, args, onEvent = () => {}, { detached = false } = {}) {
+  const exe = path.join(folder, PYTHON);
+  const child = spawn(exe, ['-B', SCRIPT, '--json', ...args], { cwd: folder, windowsHide: true, detached, stdio: detached ? 'ignore' : ['ignore', 'pipe', 'pipe'] });
+  if (detached) { child.unref(); return Promise.resolve({ pid: child.pid }); }
+  return new Promise((resolve, reject) => {
+    let buffer = '';
+    let failure = '';
+    let tail = '';
+    const read = chunk => {
+      buffer += chunk;
+      const lines = buffer.split(/\r?\n/);
+      buffer = lines.pop();
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        let event = null;
+        try { event = JSON.parse(line); } catch { tail = line; continue; }
+        if (event.event === 'error') failure = event.message || 'The assembly failed.';
+        onEvent(event);
+      }
+    };
+    child.stdout.on('data', read);
+    child.stderr.on('data', chunk => { tail = String(chunk).trim().split(/\r?\n/).pop() || tail; });
+    child.once('error', reject);
+    child.once('exit', code => (code === 0 ? resolve() : reject(new Error(failure || tail || `The assembler stopped (code ${code}).`))));
+  });
+}
+
+// The whole first assembly, or only some steps (after a client patch: dbc,maps,vmaps).
+const assemble = (folder, client, onEvent, steps) => run(folder, ['run', '--client', client, ...(steps ? ['--steps', steps.join(',')] : [])], onEvent);
+
+// The navigation maps keep being generated when the launcher closes; the next start reads their progress.
+const mmapsStarted = new Map();
+function startMmaps(folder, threads) {
+  const current = state(folder);
+  // A second click before the tool has written its state would start a second build: one per minute at most.
+  const last = mmapsStarted.get(path.resolve(folder)) || 0;
+  if (current.mmaps.running || Date.now() - last < 60000) return Promise.resolve({ pid: null, already: true });
+  mmapsStarted.set(path.resolve(folder), Date.now());
+  return run(folder, ['mmaps', ...(threads ? ['--threads', String(threads)] : [])], undefined, { detached: true });
+}
+
+// Pause: the build is stopped (its process tree: the tool and mmaps_generator); the maps already finished stay,
+// the map in progress is done again when it goes on (startMmaps).
+function stopMmaps(folder) {
+  const file = path.join(folder, '.state', 'assemble.json');
+  const saved = readJson(file) || {};
+  const pid = saved.mmaps?.pid;
+  if (pid && pidAlive(pid)) {
+    try { require('node:child_process').execFileSync('taskkill.exe', ['/PID', String(pid), '/T', '/F'], { windowsHide: true, stdio: 'ignore' }); } catch {}
+  }
+  if (saved.mmaps) {
+    saved.mmaps.running = false;
+    saved.mmaps.paused = true;
+    fs.writeFileSync(file, JSON.stringify(saved, null, 1));
+  }
+  fs.rmSync(path.join(folder, '.state', 'mmaps.lock'), { force: true });
+  mmapsStarted.delete(path.resolve(folder));
+  return state(folder);
+}
+
+// Has the client changed (a new CoA patch) since its game tables were extracted? Then they are extracted again.
+function clientChanged(folder, client) {
+  let answer = null;
+  return new Promise(resolve => {
+    const child = spawn(path.join(folder, PYTHON), ['-B', SCRIPT, 'client-changed', '--client', client], { cwd: folder, windowsHide: true });
+    let out = '';
+    child.stdout.on('data', chunk => { out += chunk; });
+    child.once('exit', () => { try { answer = JSON.parse(out.trim().split(/\r?\n/).pop()); } catch {} resolve(!!answer?.changed); });
+    child.once('error', () => resolve(false));
+  });
+}
+
+module.exports = { state, assemble, startMmaps, stopMmaps, clientChanged, STEPS, busy };

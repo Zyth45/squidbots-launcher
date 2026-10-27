@@ -1,0 +1,14 @@
+node_modules/
+keys/
+*.private.pem
+server/config.json
+server/data/downloads/
+server/data/*.log
+server/data/news.json
+launcher/dist/
+launcher/public/assets/fonts/
+test-data/
+private/
+editions/private/
+*.pem
+publish/
