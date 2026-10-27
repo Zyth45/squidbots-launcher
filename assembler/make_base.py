@@ -170,6 +170,8 @@ def make_update(update_dir, assembler_dir, out, name):
     spec["rules"] = [r for r in spec["rules"] if not r["path"].startswith("Data/")]
     # Place demandée avant d'appliquer : sauvegarde de la base et des exe (plus de cartes livrées, 6 Go c'était pour elles).
     spec["diskBytes"] = 4 << 30
+    # Seul le launcher 0.3.46 prend les SQL publics (fill-sql) avant coa_update.py : un plus ancien échouerait.
+    spec["minLauncher"] = "0.3.46"
     # Le texte de la carte de mise à jour : plus de cartes livrées, quelle que soit la version de départ.
     spec["notice"] = {
         "en": "A small update (about 60 MB): only our files. The core SQL come from the public CoA repository, checked "
