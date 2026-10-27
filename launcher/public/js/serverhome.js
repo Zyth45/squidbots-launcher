@@ -130,6 +130,7 @@ const CHECK_TEXT = {
     warn: ['Bot settings of an older version', '{count} key(s) of this version are missing ({keys}…): they run at their defaults. The fix adds them with their default values (a copy is kept).'],
   },
   'coa.remote': { info: ['Only this PC can play', 'CoA.AllowRemoteClients = 0: players on other PCs are refused even with the right address.'] },
+  'bots.mmaps': { info: ['Navigation maps of the bots: {done} of {total} maps', 'Built once from your game and kept. Bots walking through walls, stuck or going in straight lines? Rebuild them (about an hour, in the background; the server can keep running).'] },
   'logs.size': {
     ok: ['Logs of a normal size', ''],
     warn: ['Very large logs', '{files}. Stop the server, then delete or move them. Logger.playerbots = {level} in the settings.'],
@@ -153,6 +154,7 @@ const ACTIONS = {
   backup: ['backup-create', '', 'Back up now'],
   'crashes-archive': ['crashes-archive', '', 'Put away'],
   'logs-clean': ['logs-clean', '', 'Clean the logs'],
+  'mmaps-rebuild': ['mmaps-rebuild', '', 'Rebuild'],
 };
 
 function checkText(check) {
@@ -303,7 +305,7 @@ function homeView() {
     + (info.realmsOn || []).map(realm => `<span class="mini-service"><span class="light ${realm.state === 'running' && !App.state.stoppingAll ? 'on' : 'busy'}"></span>${esc(realmShort(realm.key))}</span>`).join('');
   const menu = [['srv-tab', 'services', t('home.menuServices', 'Services one by one')], ['srv-tab', 'backups', t('srv.tab.backups', 'Backups')], ['server-folder', '', t('home.menuFolder', 'Open the server folder')],
     ['instance-new', '', t('home.menuNew', 'Create a new server (clean instance)…')], ['instance-add', '', t('home.menuAdd', 'Add a repack folder I unpacked…')], ['instance-pick', '', t('home.menuSwitch', 'My servers…')]];
-  return `<div class="page classic">${asm?.applies ? mmapsBanner(asm.mmaps) : ''}
+  return `<div class="page classic">${asm?.applies ? clientBanner(asm) + mmapsBanner(asm.mmaps) : ''}${info.mmapsRestart ? `<div class="update-banner"><i class="dot"></i><span>${esc(t('assemble.mmapsRestart', 'The navigation maps of the bots are ready. Restart the server so it uses all of them.'))}</span><button class="button primary small" data-action="server-restart">${icon('refresh')}${esc(t('assemble.restart', 'Restart the server'))}</button></div>` : ''}
     <section class="hero classic-hero server-hero">${homeLinks()}
       <div class="classic-main">
         <h1>SquidBots JS-CoA</h1>
@@ -577,6 +579,11 @@ function assemblyCard(asm) {
     ${App.state.client?.path ? '' : `<div class="button-row"><button class="button ghost" data-action="client-locate">${icon('folder')}${esc(t('assemble.locate', 'Show my game folder (the server data comes from it)'))}</button></div>`}
     <div class="button-row"><button class="split-button update" data-action="assemble-run" ${p ? 'disabled' : ''}><span class="split-main">${icon('download')}<span><strong>${esc(t('assemble.run', 'Prepare the data from my game'))}</strong><small class="muted">${esc(t('assemble.client', 'Game folder: {path}', { path: App.state.client?.path || t('assemble.noClient', 'not chosen yet (Play tab)') }))}</small></span></span></button></div>`;
 }
+// The game was patched since the server's data were taken from it: they are taken again (about 30 minutes).
+function clientBanner(asm) {
+  if (!asm.clientChanged) return '';
+  return `<div class="update-banner"><i class="dot"></i><span>${esc(t('assemble.clientChanged', 'Your game was updated since the server data were taken from it. Take them again (about 30 minutes, server stopped) so the server matches your game.'))}</span><button class="button ghost small" data-action="assemble-refresh">${esc(t('assemble.refresh', 'Update the data'))}</button></div>`;
+}
 function mmapsBanner(mm) {
   if (!mm || mm.complete) return '';
   const pct = mm.tilesTotal ? Math.min(99, Math.floor((100 * mm.tiles) / mm.tilesTotal)) : mm.total ? Math.floor((100 * mm.done) / mm.total) : 0;
@@ -663,6 +670,20 @@ Object.assign(App.actions, {
     toast(t('assemble.ready', 'The server is ready. Start it from the home page.'), 'success');
     App.render();
   }, button),
+  'server-restart': button => guard(async () => {
+    App.state.server = await App.api.restartServer();
+    toast(t('assemble.restarted', 'The server started again with the new navigation maps.'), 'success');
+    App.render();
+  }, button),
+  'assemble-refresh': button => guard(async () => {
+    App.state.assembleError = '';
+    App.state.assembleProgress = { step: 'dbc', text: t('assemble.starting', 'Starting…') };
+    if (App.state.server?.assembly) Object.assign(App.state.server.assembly, { needed: true, running: true, clientChanged: false });
+    App.render();
+    try { App.state.server = await App.api.assembleRefresh(); } finally { if (App.state.server?.assembly?.running) App.state.server = await App.api.serverInfo(); }
+    toast(t('assemble.ready', 'The server is ready. Start it from the home page.'), 'success');
+    App.render();
+  }, button),
   'assemble-mmaps-pause': button => guard(async () => {
     App.state.mmapsAsked = 0;
     const asm = await App.api.assembleMmapsPause();
@@ -691,6 +712,14 @@ Object.assign(App.actions, {
     App.render();
   }, button),
   // Settings > About: look for a new launcher now (the result also shows on the home page banner).
+  'mmaps-rebuild': button => guard(async () => {
+    if (!await confirmDialog({ title: t('verify.mmapsTitle', 'Rebuild the navigation maps?'), body: esc(t('verify.mmapsBody', 'Every map is built again from your game data, in the background (about an hour). The bots keep the current maps until each new one is ready.')), confirm: t('verify.mmapsGo', 'Rebuild') })) return;
+    App.state.mmapsAsked = Date.now();
+    await App.api.assembleMmapsRebuild();
+    App.state.server = await App.api.serverInfo();
+    toast(t('verify.mmapsStarted', 'The navigation maps are being rebuilt in the background: their progress is on the home page.'), 'success');
+    runVerify(false);
+  }, button),
   'logs-clean': button => guard(async () => {
     if (!await confirmDialog({ title: t('verify.logsCleanTitle', 'Clean the logs?'), body: esc(t('verify.logsCleanBody', 'The old logs (.log.1 …) are deleted, and the big current ones too when the server is stopped. They only matter to look back at a past problem: send a support report first if you need them.')), confirm: t('verify.logsClean', 'Clean the logs') })) return;
     const result = await App.api.cleanLogs();

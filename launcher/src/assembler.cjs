@@ -43,6 +43,8 @@ function state(folder) {
     running: busy.has(path.resolve(folder)),
     missing,
     client: saved.client?.path || '',
+    // Game tables extracted by the launcher from this client (a repack brought with its own data has none).
+    extracted: !!steps.dbc?.fingerprint,
     skipped: saved.db?.skipped || [],
     // Progress in tiles while the current map is built (its finished tiles are counted in the work folder).
     mmaps: { done, total, tiles: (mm.tilesDone || 0) + workTiles(folder), tilesTotal: mm.tilesTotal || 0, running: !!mm.running && pidAlive(mm.pid), paused: !!mm.paused && !(mm.running && pidAlive(mm.pid)), current: mm.current ?? null, complete: (total > 0 && done >= total) || (existing && fs.existsSync(path.join(folder, 'Data', 'mmaps'))) },
@@ -110,6 +112,19 @@ function stopMmaps(folder) {
   return state(folder);
 }
 
+// Every map built again from the start (asked from Verification when bots walk oddly). The maps in place stay in use
+// until each one is replaced.
+function rebuildMmaps(folder) {
+  stopMmaps(folder);
+  const file = path.join(folder, '.state', 'assemble.json');
+  const saved = readJson(file) || {};
+  saved.mmaps = { maps: {}, tilesDone: 0 };
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, JSON.stringify(saved, null, 1));
+  mmapsStarted.delete(path.resolve(folder));
+  return startMmaps(folder);
+}
+
 // Has the client changed (a new CoA patch) since its game tables were extracted? Then they are extracted again.
 function clientChanged(folder, client) {
   let answer = null;
@@ -122,4 +137,4 @@ function clientChanged(folder, client) {
   });
 }
 
-module.exports = { state, assemble, startMmaps, stopMmaps, clientChanged, STEPS, busy };
+module.exports = { state, assemble, startMmaps, stopMmaps, rebuildMmaps, clientChanged, STEPS, busy };

@@ -299,11 +299,12 @@ class ServerControl {
     for (const service of [...this.services].reverse()) await this.stop(service.id);
   }
 
-  // Creates a game account through the repack console command, or the worldserver we started.
-  async createAccount(name, password, gm) {
+  // Creates a game account (or gives an existing one a new password) through the repack console command, or the worldserver we started.
+  async createAccount(name, password, gm, { change = false } = {}) {
     if (!ACCOUNT.test(name) || !PASSWORD.test(password)) throw new Error('Account names use 3-17 letters or digits; passwords 6-16 characters without spaces.');
+    const commands = change ? [`account set password ${name} ${password} ${password}`] : [`account create ${name} ${password}`, ...(gm ? [`account set gmlevel ${name} 3 -1`] : [])];
     if (this.commands.console) {
-      const lines = [`account create ${name} ${password}`, ...(gm ? [`account set gmlevel ${name} 3 -1`] : []), 'exit'];
+      const lines = [...commands, 'exit'];
       const output = await this.run(this.commands.console, 'console', lines, [password]);
       // The password went through stdin only; strip it from anything we keep or show.
       // The console echoes its "AC>" prompt around each answer: keep the answers only.
@@ -313,8 +314,7 @@ class ServerControl {
     const world = this.services.find(service => service.console);
     const child = world && this.children.get(world.id);
     if (!child?.stdin?.writable) throw new Error('Start the worldserver from the launcher first.');
-    child.stdin.write(`account create ${name} ${password}\r\n`);
-    if (gm) child.stdin.write(`account set gmlevel ${name} 3 -1\r\n`);
+    for (const command of commands) child.stdin.write(`${command}\r\n`);
   }
 
   async tail(id, lines = 200) {

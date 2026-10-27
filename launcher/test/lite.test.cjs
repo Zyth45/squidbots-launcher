@@ -151,3 +151,32 @@ test('the server edition starts without a bots channel (bots come with the repac
   const bots = new BotsPackage({ bots: { ...config.server.bots, channelUrl: '' }, key: config.keys.bots });
   assert.equal(bots.updater.busy, false);
 });
+
+test('the bot installer is run again when MySQL refuses a connection for a moment', async () => {
+  const root = await tempDir();
+  const marker = path.join(root, 'tries.txt');
+  await write(root, { 'CoA-Bots/Flaky.ps1': `$f = '${marker}'\nif (-not (Test-Path $f)) { Set-Content $f 1; Write-Host "ERROR 2003 (HY000): Can't connect to MySQL server on '127.0.0.1:3306' (10048)"; exit 1 }\nWrite-Host "imported"\nexit 0\n`, 'CoA-Bots/Broken.ps1': 'Write-Host "ERROR 1045: Access denied"\nexit 1\n' });
+  const lines = [];
+  const bots = new BotsPackage({ bots: { folder: 'CoA-Bots', manifestUrl: 'http://127.0.0.1:1/latest.json', requiredExecutable: 'Core/worldserver.exe', install: { script: 'Flaky.ps1', args: [], timeout: 60 } }, key: null, onLine: line => lines.push(line) });
+  bots.retryDelay = 10;
+  assert.ok((await bots.runInstaller(root)).ok);
+  assert.ok(lines.includes('imported'));
+  assert.ok(lines.some(line => /trying again/.test(line)));
+  bots.bots.install.script = 'Broken.ps1';
+  lines.length = 0;
+  await assert.rejects(bots.runInstaller(root), /Access denied/);
+  assert.equal(lines.some(line => /trying again/.test(line)), false);
+});
+
+test('the player config keeps its own values and gets the new keys of the bundled one', () => {
+  const { mergeConfig } = require('../src/config.cjs');
+  const bundled = { appName: 'SquidBots Server', newOption: 5, server: { description: 'new', services: [{ id: 'mysql' }, { id: 'world' }], bots: { name: 'CoA Bots', fresh: true } } };
+  const own = { appName: 'My server', server: { services: [{ id: 'mysql' }], bots: { name: 'Mine' } } };
+  const merged = mergeConfig(bundled, own);
+  assert.equal(merged.appName, 'My server');
+  assert.equal(merged.newOption, 5);
+  assert.equal(merged.server.description, 'new');
+  assert.deepEqual(merged.server.services, [{ id: 'mysql' }]);
+  assert.deepEqual(merged.server.bots, { name: 'Mine', fresh: true });
+  assert.equal(bundled.server.bots.name, 'CoA Bots');
+});

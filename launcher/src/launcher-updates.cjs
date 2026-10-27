@@ -13,7 +13,7 @@ async function sha512(file) {
   return hash.digest('base64');
 }
 
-function createLauncherUpdates(app, { feedUrl, key, fetchImpl, headers = () => ({}) }, notify, canRestart) {
+function createLauncherUpdates(app, { feedUrl, key, fetchImpl }, notify, canRestart) {
   const trustKey = key ? publicKey(key) : null;
   let status;
   if (!app.isPackaged) status = { phase: 'development', message: 'Launcher updates run in the installed version only.' };
@@ -56,8 +56,6 @@ function createLauncherUpdates(app, { feedUrl, key, fetchImpl, headers = () => (
     async check() {
       if (!updater || checking || ['downloading', 'downloaded'].includes(status.phase)) return status;
       checking = true;
-      // A private channel asks for the friend's name and password on every file, the installer included.
-      updater.requestHeaders = headers();
       try {
         const url = new URL('launcher.json', feedUrl.endsWith('/') ? feedUrl : `${feedUrl}/`);
         const result = await fetchSigned(url, { key: trustKey, fetchImpl, signal: AbortSignal.timeout(20000), maxBytes: 64 * 1024, redirect: 'follow' });

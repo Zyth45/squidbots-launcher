@@ -130,20 +130,6 @@ App.smoke = step => {
   App.go(step);
 };
 
-function showChannelLogin() {
-  dialog.open(`${dialog.header(t('channel.title', 'Private access'), App.state.config.appName)}<div class="dialog-content">
-    <p class="muted">${esc(t('channel.hint', 'Type the password you were given. It stays on this PC, encrypted by Windows.'))}</p>
-    <label class="field"><span>${esc(t('channel.password', 'Password'))}</span><input id="channel-password" type="password" maxlength="200" autocomplete="off"></label>
-  </div><footer class="dialog-foot"><button class="button primary" data-action="channel-login">${esc(t('channel.login', 'Connect'))}</button></footer>`, 'form');
-}
-App.actions['channel-login'] = button => guard(async () => {
-  const result = await App.api.channelLogin('squidbots', $('#channel-password').value);
-  App.state.channel = result;
-  dialog.close();
-  toast(t('channel.okShared', 'Connected.'), 'success');
-}, button);
-App.actions['channel-change'] = () => showChannelLogin();
-
 function showWhatsNew(list) {
   const lang = App.state.settings.language;
   const block = entry => `<section class="whats-new"><h3>${esc(t('whatsNew.version', 'Launcher {version}', { version: entry.version }))}</h3><ul>${(entry.items[lang] || entry.items.en || []).map(item => `<li>${esc(item)}</li>`).join('')}</ul></section>`;
@@ -177,11 +163,7 @@ App.actions['whats-new-ok'] = () => dialog.close();
   probeRealm();
   setInterval(probeRealm, 30 * 1000);
   // Once after an update of the launcher: what is new in it (never shown again).
-  if (data.config.private) document.body.classList.add('private');
-  App.state.channel = data.channel;
-  // Private edition: the access first (nothing can be downloaded without it).
-  if (data.channel && !data.channel.user) showChannelLogin();
-  else if (data.whatsNew?.length) showWhatsNew(data.whatsNew);
+  if (data.whatsNew?.length) showWhatsNew(data.whatsNew);
   if (isClassic() && data.config.edition !== 'server') loadNews();
   // Compare the game with its latest release at start (nothing is downloaded without asking).
   if (data.config.edition === 'server') { refreshAddon(true); App.api.updateRefresh().then(state => { if (state) { App.state.update.state = state; if (App.state.tab === 'home') App.render(); } }).catch(() => {}); App.api.componentsRefresh().then(state => { App.state.components = state; if (App.state.tab === 'home') App.render(); }).catch(() => {}); App.api.notes().then(notes => { App.state.notes = notes; if (App.state.tab === 'home') App.render(); }).catch(() => {}); App.api.updateState().then(state => { if (!App.state.update.state) App.state.update.state = state; if (App.state.tab === 'home') App.render(); }).catch(() => {}); loadNews(); App.api.feed().then(feed => { App.state.feed = feed; if (App.state.tab === 'home') App.render(); }).catch(() => {}); }

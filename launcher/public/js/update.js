@@ -144,7 +144,7 @@ function showUpdate() {
   const big = !running && u.state === 'available' && !u.last?.error ? bigUpdate(u) : null;
   if (big) body = big.html + body;
   const foot = running ? '' : u.state === 'available' && !u.last?.error && !big?.blocked
-    ? `<footer class="dialog-foot"><button class="button ghost" data-action="dialog-close">${esc(t('common.later', 'Later'))}</button>${App.state.config.private ? `<button class="button ghost" data-action="update-file">${icon('folder')}${esc(t('update.fromFile', 'I have the file'))}</button>` : ''}<button class="button primary" data-action="update-start">${icon('download')}${esc(t('update.start', 'Update now'))}</button></footer>`
+    ? `<footer class="dialog-foot"><button class="button ghost" data-action="dialog-close">${esc(t('common.later', 'Later'))}</button><button class="button primary" data-action="update-start">${icon('download')}${esc(t('update.start', 'Update now'))}</button></footer>`
     : `<footer class="dialog-foot"><button class="button ghost" data-action="dialog-close">${esc(t('common.close', 'Close'))}</button></footer>`;
   dialog.open(`${head}<div class="dialog-content update">${body}</div>${foot}`, 'wide');
 }
@@ -272,7 +272,6 @@ Object.assign(App.actions, {
   'update-open': () => showUpdate(),
   'update-start': () => runUpdate(() => App.api.updateRun()),
   // A zip received from a friend: checked against the signed list, then the update runs without downloading it.
-  'update-file': button => guard(async () => { const result = await App.api.updateFromFile(); if (!result) return; toast(t('update.fileOk', '{n} of {total} file(s) recognised.', { n: result.matched, total: result.needed }), 'success'); if (result.matched >= result.needed) runUpdate(() => App.api.updateRun()); }, button),
   'update-cancel': async () => { if (await App.api.updateCancel().catch(() => false)) toast(t('update.cancelled', 'Download stopped. Nothing was changed; it goes on from there next time.')); },
   'update-undo': async () => {
     if (!await confirmDialog({ title: t('update.undo', 'Undo the update'), body: esc(t('update.undoConfirm', 'The server is stopped and put back exactly as it was before the update (database and files).')), confirm: t('update.undo', 'Undo the update'), danger: true })) return;

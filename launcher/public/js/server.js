@@ -53,7 +53,7 @@ function servicesView(info) {
       ${summary}<div class="service-list">${list}</div></section>
     <section class="panel"><header><h2>${icon('user')}${esc(t('server.account', 'Game account'))}</h2></header>
       <p class="muted">${esc(t('server.accountHint', 'Create the account you log in with on your own server. The worldserver must be running.'))}</p>
-      <form id="game-account" class="form-grid"><input id="ga-name" maxlength="17" placeholder="${esc(t('server.accountName', 'Account name'))}" autocomplete="off"><input id="ga-password" type="password" maxlength="16" placeholder="${esc(t('server.password', 'Password'))}" autocomplete="new-password"><label class="check"><input type="checkbox" id="ga-gm" class="ga-gm"><span>${esc(t('server.gm', 'Game master'))}</span></label><button class="button primary small" type="submit" ${worldRunning(info) ? '' : 'disabled'}>${esc(t('server.create', 'Create'))}</button></form>
+      <form id="game-account" class="form-grid"><input id="ga-name" maxlength="17" placeholder="${esc(t('server.accountName', 'Account name'))}" autocomplete="off"><input id="ga-password" type="password" maxlength="16" placeholder="${esc(t('server.password', 'Password'))}" autocomplete="new-password"><label class="check"><input type="checkbox" id="ga-gm" class="ga-gm"><span>${esc(t('server.gm', 'Game master'))}</span></label><button class="button primary small" type="submit" ${worldRunning(info) ? '' : 'disabled'}>${esc(t('server.create', 'Create'))}</button><button class="button ghost small" type="button" data-action="account-password" title="${esc(t('server.passwordHint', 'Give this existing account the password typed here'))}" ${worldRunning(info) ? '' : 'disabled'}>${esc(t('server.newPassword', 'New password'))}</button></form>
       ${info.bots?.installed && info.canPurgeBots ? `<div class="line-action">${icon('bot')}<span>${esc(t('server.purgeHint', 'Bots acting strangely after an update? Recreate them: your own characters stay.'))}</span><button class="button ghost small" data-action="purge-bots" ${worldRunning(info) ? 'disabled' : ''}>${esc(t('server.purge', 'Recreate the bots'))}</button>${worldRunning(info) ? `<small class="muted purge-stop">${esc(t('server.purgeStop', 'Stop the server first.'))}</small>` : ''}</div>` : ''}
     </section></div>`;
 }
@@ -526,6 +526,13 @@ document.addEventListener('submit', event => {
 });
 
 Object.assign(App.actions, {
+  // An existing account gets the password typed in the form (the console's account set password).
+  'account-password': button => guard(async () => {
+    const name = $('#ga-name').value.trim();
+    const output = await App.api.setAccountPassword(name, $('#ga-password').value);
+    $('#ga-password').value = '';
+    toast(output || t('server.passwordChanged', 'New password for {name}.', { name: name.toUpperCase() }), 'success');
+  }, button),
 
   'conf-group': button => { App.state.confGroup = button.dataset.id; App.refresh('server'); $('#view')?.scrollTo({ top: 0 }); },
   'srv-tab': button => guard(async () => {

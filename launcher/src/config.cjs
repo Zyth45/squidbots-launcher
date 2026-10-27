@@ -94,8 +94,6 @@ function validate(raw) {
     launcherUpdateUrl: serviceUrl(raw.launcherUpdateUrl, 'launcherUpdateUrl', trusted, { optional: true }),
     // The signed news feed: download links (repack, client), known repack releases, news. Read every 30 min.
     feedUrl: serviceUrl(raw.feedUrl, 'feedUrl', trusted, { optional: true }),
-    // Private edition: the base address of the password-protected channel (nothing public is shown or opened).
-    privateChannel: serviceUrl(raw.privateChannel, 'privateChannel', trusted, { optional: true }),
     launcherUpdateKey: raw.launcherUpdateKey ? (publicKey(raw.launcherUpdateKey), String(raw.launcherUpdateKey)) : '',
     discordUrl: raw.discordUrl && /^https:\/\/(discord\.gg|discord\.com\/invite)\/[A-Za-z0-9-]{2,32}$/.test(raw.discordUrl) ? raw.discordUrl : '',
     trustedLocalHosts: [...trusted],
@@ -118,11 +116,21 @@ function validate(raw) {
   };
 }
 
+// The player's own file keeps every value it has; what a newer launcher adds comes from the bundled file.
+// Objects are merged key by key, lists and values are taken whole from the player's file.
+function mergeConfig(base, own) {
+  if (!own || typeof own !== 'object' || Array.isArray(own) || !base || typeof base !== 'object' || Array.isArray(base)) return own === undefined ? base : own;
+  const out = { ...base };
+  for (const [key, value] of Object.entries(own)) out[key] = mergeConfig(base[key], value);
+  return out;
+}
+
 function loadConfig(bundledFile, userFile) {
   let source = 'bundled';
   let raw = JSON.parse(fs.readFileSync(bundledFile, 'utf8'));
-  const override = process.env.COA_LAUNCHER_CONFIG || userFile;
-  if (override && fs.existsSync(override)) { raw = JSON.parse(fs.readFileSync(override, 'utf8')); source = override; }
+  // COA_LAUNCHER_CONFIG (tests, visits) replaces the whole file.
+  if (process.env.COA_LAUNCHER_CONFIG && fs.existsSync(process.env.COA_LAUNCHER_CONFIG)) { raw = JSON.parse(fs.readFileSync(process.env.COA_LAUNCHER_CONFIG, 'utf8')); source = process.env.COA_LAUNCHER_CONFIG; }
+  else if (userFile && fs.existsSync(userFile)) { raw = mergeConfig(raw, JSON.parse(fs.readFileSync(userFile, 'utf8').replace(/^﻿/, ''))); source = userFile; }
   const config = validate(raw);
   config.source = source;
   // Keys are parsed once so a bad key fails at start, not in the middle of an update.
@@ -134,4 +142,4 @@ function loadConfig(bundledFile, userFile) {
   return config;
 }
 
-module.exports = { loadConfig, validate, serviceUrl };
+module.exports = { loadConfig, mergeConfig, validate, serviceUrl };

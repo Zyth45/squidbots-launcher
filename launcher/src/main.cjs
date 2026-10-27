@@ -2,7 +2,7 @@
 // CoA Launcher Lite, main process: the game (install, update, addons, play) and a local server
 // (repack + bot package: services, updates, backups, upgrades). No account, no store, no web API:
 // every download is a signed static file.
-const { app, BrowserWindow, ipcMain, dialog, shell, protocol, net, session, clipboard, Tray, Menu, Notification, nativeImage, safeStorage } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, shell, protocol, net, session, clipboard, Tray, Menu, Notification, nativeImage } = require('electron');
 const path = require('node:path');
 const os = require('node:os');
 const fs = require('node:fs/promises');
@@ -155,6 +155,33 @@ async function clientInfo() {
   };
 }
 
+// A CoA patch of the game since its tables were extracted for this server: read at most every 10 minutes
+// (names, sizes and dates of the game archives). Only for data the launcher extracted itself.
+let clientDrift = { key: '', at: 0, changed: false };
+async function assemblyInfo(folder) {
+  const asm = assembler.state(folder);
+  // The game the data were taken from (the Game folder of the settings is often empty on a server-only PC).
+  const client = [asm.client, gamePath()].find(item => item && fs_exists(item)) || '';
+  if (!client || !asm.extracted || asm.needed) return { ...asm, clientChanged: false };
+  const key = `${path.resolve(folder)}|${path.resolve(client)}`;
+  if (clientDrift.key !== key || Date.now() - clientDrift.at > 10 * 60 * 1000) clientDrift = { key, at: Date.now(), changed: await assembler.clientChanged(folder, client) };
+  return { ...asm, clientChanged: clientDrift.changed };
+}
+
+// The world reads the navigation maps as bots need them and keeps those it read: maps finished after it started
+// are all in use only after a restart. Started = the process time the repack's supervisor wrote (.state/world.json).
+function mmapsNeedRestart(folder, asm) {
+  if (!asm.applies || !asm.mmaps?.complete || asm.mmaps.running) return false;
+  try {
+    const finished = require('node:fs').statSync(path.join(folder, 'Data', 'mmaps')).mtimeMs;
+    const record = JSON.parse(require('node:fs').readFileSync(path.join(folder, '.state', 'world.json'), 'utf8'));
+    if (!record?.pid || !record.created) return false;
+    process.kill(Number(record.pid), 0);
+    const started = Number(record.created) / 10000 - 11644473600000;
+    return started < finished;
+  } catch { return false; }
+}
+
 async function serverInfo() {
   if (!config.server) return null;
   const folder = serverPath();
@@ -169,7 +196,8 @@ async function serverInfo() {
     ports: folder ? inspectRepack(folder).ports : null,
     details: folder ? inspectRepack(folder) : null,
     // A package without game data: what the assembler still has to do here (data from the client, database, mmaps).
-    assembly: folder ? assembler.state(folder) : { applies: false },
+    assembly: folder ? await assemblyInfo(folder) : { applies: false },
+    mmapsRestart: folder ? mmapsNeedRestart(folder, assembler.state(folder)) : false,
     bots: bots ? { name: config.server.bots.name, description: config.server.bots.description, ...(await bots.info(folder)) } : null,
     canPurgeBots: !!config.server.commands.purgeBots,
     // The extra realms whose world runs or starts: the home page counts the server as running with them alone.
@@ -185,6 +213,17 @@ function assertFolder(folder) {
     .filter(Boolean).map(item => path.resolve(item).toLowerCase());
   if (forbidden.includes(target)) throw new Error('Choose a dedicated folder, for example C:\\Games\\Conquest.');
   if (target === launcherRoot || target.startsWith(launcherRoot + path.sep) || launcherRoot.startsWith(target + path.sep)) throw new Error('The game cannot live inside the launcher folder.');
+}
+
+// MySQL and the worldserver need a disk of this PC: on a network drive (a NAS, \\server\share) they lose or lock their files.
+async function assertLocalDrive(folder) {
+  const target = path.resolve(folder);
+  const network = 'The server needs a disk of this PC: a network drive (NAS, shared folder) breaks MySQL. Choose a folder on C: or another local disk.';
+  if (target.startsWith('\\\\')) throw new Error(network);
+  const letter = /^[A-Za-z]:/.test(target) ? target[0] : '';
+  if (!letter) return;
+  const type = await new Promise(resolve => require('node:child_process').execFile('powershell.exe', ['-NoProfile', '-Command', `[System.IO.DriveInfo]::new('${letter}').DriveType`], { windowsHide: true, timeout: 15000 }, (error, out) => resolve(error ? '' : String(out).trim())));
+  if (type === 'Network') throw new Error(network);
 }
 
 // With the bots comes their in-game addon (SquidBots Lite): installed once per game folder, when both the
@@ -238,7 +277,6 @@ function publicConfig() {
   return {
     appName: config.appName,
     edition: config.edition,
-    private: !!config.privateChannel,
     hasFeed: !!config.feedUrl,
     // The repack updater: core, bots and addon come from one signed update; the old bots channel is not offered.
     hasUpdates: !!config.server?.updatesUrl,
@@ -261,21 +299,7 @@ function handle(channel, action) {
 }
 
 function registerIpc() {
-  handle('bootstrap', async () => ({ config: publicConfig(), settings, client: await clientInfo(), version: app.getVersion(), launcherUpdate: launcherUpdates.status, smoke: !!smokeDir, whatsNew: whatsNew(), channel: config.privateChannel ? { user: channelAuth?.user || '' } : null }));
-  // The access to the private channel: tried on a small file of the channel before it is kept.
-  handle('channel:login', async (user, password) => {
-    if (!config.privateChannel) throw new Error('This launcher has no private channel.');
-    const value = { user: text(user, 32).trim(), password: String(password || '').slice(0, 200) };
-    if (!/^[A-Za-z0-9_.-]{2,32}$/.test(value.user) || !value.password) throw new Error('Type the name and the password you were given.');
-    const response = await net.fetch(`${config.privateChannel}updates/ping.txt`, { headers: { Authorization: `Basic ${Buffer.from(`${value.user}:${value.password}`).toString('base64')}` }, signal: AbortSignal.timeout(20000) }).catch(() => null);
-    if (!response) throw new Error('The private channel cannot be reached: check your internet connection.');
-    if (response.status === 401 || response.status === 403) throw new Error('Wrong name or password, or this access was removed.');
-    if (!response.ok) throw new Error(`The private channel answered ${response.status}.`);
-    await saveChannelAuth(value);
-    setTimeout(() => { refreshRepackUpdate().catch(() => {}); refreshFeed().catch(() => {}); refreshComponents().catch(() => {}); launcherUpdates.check().catch(() => {}); }, 300);
-    return { user: value.user };
-  });
-  handle('channel:logout', async () => { await saveChannelAuth(null); return { user: '' }; });
+  handle('bootstrap', async () => ({ config: publicConfig(), settings, client: await clientInfo(), version: app.getVersion(), launcherUpdate: launcherUpdates.status, smoke: !!smokeDir, whatsNew: whatsNew() }));
   handle('whatsnew:seen', async () => { await persist({ ...settings, lastSeenVersion: app.getVersion() }); return true; });
   handle('window', action => {
     if (action === 'minimize') window.minimize();
@@ -421,6 +445,9 @@ function registerIpc() {
     try {
       const found = serverControl();
       const checks = await runChecks({ root: serverPath(), inspect: inspectRepack, control: found, backup: serverTools().backup, repack: repackUpdater, botsPackage: bots, deep: deep === true });
+      // The bots' navigation maps, built once from the player's game: rebuilt only on demand (bots walking oddly).
+      const asm = assembler.state(serverPath());
+      if (asm.applies && !asm.needed && asm.mmaps.done > 0) checks.push({ group: 'bots', id: 'bots.mmaps', state: 'info', data: { done: asm.mmaps.done, total: asm.mmaps.total || asm.mmaps.done }, action: asm.mmaps.running ? '' : 'mmaps-rebuild' });
       return { checks, summary: summary(checks), at: new Date().toISOString(), deep: deep === true };
     } finally { if (deep === true) busyFiles = false; }
   });
@@ -505,6 +532,7 @@ function registerIpc() {
         : 'This folder is not a complete repack: choose the one with Start_All_Server.bat, Core and mysql inside (or an empty folder).');
     }
     assertFolder(folder);
+    await assertLocalDrive(folder);
     if (gamePath() && path.resolve(gamePath()).toLowerCase() === folder.toLowerCase()) throw new Error('The server and the game need two different folders.');
     // The folder left and the one chosen both stay in the list of instances.
     settings.instances = [...new Set([serverPath(), folder].filter(Boolean).map(item => path.normalize(item)).concat(settings.instances))].slice(0, 12);
@@ -526,6 +554,7 @@ function registerIpc() {
     if (result.canceled || !result.filePaths[0]) return null;
     const folder = path.resolve(result.filePaths[0]);
     assertFolder(folder);
+    await assertLocalDrive(folder);
     if ((await fs.readdir(folder).catch(() => [])).length) throw new Error('Choose an empty folder: the new server is installed there.');
     let ports = null;
     if (options?.otherPorts === true) {
@@ -594,7 +623,7 @@ function registerIpc() {
       return { name: path.basename(file), size, sha256, known, listed, ...content, target: targetFree ? target : '' };
     } finally { busyFiles = false; }
   });
-  // The full repack from the (private) channel: an empty folder chosen first, the zip downloaded (resumed, checked
+  // The full repack from the feed: an empty folder chosen first, the zip downloaded (resumed, checked
   // by its sha256 from the signed feed), unpacked there, then removed. Every update comes after that.
   let installAbort = null;
   handle('repack:downloadInstall', async () => {
@@ -606,6 +635,7 @@ function registerIpc() {
     if (result.canceled || !result.filePaths[0]) return null;
     const target = path.resolve(result.filePaths[0]);
     assertFolder(target);
+    await assertLocalDrive(target);
     if ((await fs.readdir(target).catch(() => [])).length) throw new Error('Choose an empty folder: the new server is installed there.');
     busyFiles = true;
     installAbort = new AbortController();
@@ -634,7 +664,7 @@ function registerIpc() {
   const assembleServer = async steps => {
     const folder = serverPath();
     if (!folder) throw new Error('Install the server first.');
-    const client = gamePath();
+    const client = gamePath() || (fs_exists(assembler.state(folder).client || '#') ? assembler.state(folder).client : '');
     if (!client) throw new Error('Show the launcher your game folder first (Play tab): the data comes from it.');
     if (assembling || busyFiles || upgradeState.running || update.busy) throw new Error('Another operation is running.');
     if (game) throw new Error('Close the game first.');
@@ -658,15 +688,24 @@ function registerIpc() {
         send('assemble:progress', { event: 'step', step: 'bots', text: 'Installing the SquidBots Lite addon' });
         await addonSync.install(folder, client, path.join(app.getPath('userData'), 'addon-backups')).catch(error => send('assemble:progress', { event: 'log', text: `Addon not installed: ${error.message}` }));
       }
-      // The bots' navigation maps: about an hour, in the background (they go on if the launcher closes).
-      await assembler.startMmaps(folder);
+      // The bots' navigation maps: about an hour, in the background (they go on if the launcher closes). Built once:
+      // taking the data again after a game patch never starts them over (Verification has a button for that).
+      if (!steps) await assembler.startMmaps(folder);
     } finally { assembling = false; assembler.busy.delete(path.resolve(folder)); send('assemble:progress', { event: 'idle' }); }
     return serverInfo();
   };
   handle('assemble:run', () => assembleServer());
+  // After a CoA patch of the game: its tables, terrain and vmaps extracted again (the database and the bots stay).
+  handle('assemble:refreshData', async () => {
+    const world = (await requireControl().status()).some(service => /world/i.test(service.id) && service.state !== 'stopped' && service.state !== 'foreign');
+    const realmOn = (await realms.status(serverPath(), { live: false })).realms.some(realm => ['running', 'starting'].includes(realm.state));
+    if (world || realmOn) throw new Error('Stop the server first: its game data are replaced.');
+    try { return await assembleServer(['dbc', 'maps', 'vmaps']); } finally { clientDrift = { key: '', at: 0, changed: false }; }
+  });
   handle('assemble:status', () => assembler.state(serverPath()));
   handle('assemble:mmaps', async () => { await assembler.startMmaps(serverPath()); return assembler.state(serverPath()); });
   handle('assemble:mmapsPause', () => assembler.stopMmaps(serverPath()));
+  handle('assemble:mmapsRebuild', async () => { await assembler.rebuildMmaps(serverPath()); return assembler.state(serverPath()); });
   handle('repack:importRun', async () => {
     requireServer();
     if (!pendingImport) throw new Error('Choose the repack zip first.');
@@ -678,6 +717,7 @@ function registerIpc() {
       if (result.canceled || !result.filePaths[0]) return null;
       target = path.resolve(result.filePaths[0]);
       assertFolder(target);
+      await assertLocalDrive(target);
       if ((await fs.readdir(target).catch(() => [])).length) throw new Error('Choose an empty folder: the new server is installed there.');
     }
     busyFiles = true;
@@ -773,7 +813,8 @@ function registerIpc() {
     try {
       dashboard.stop();
       // The extra realms use the same worldserver and MySQL: stopped before the update, started again after it.
-      await realms.stopAll(serverPath()).catch(() => {});
+      // A realm still saving stops the update before anything is changed (MySQL must stay up for it).
+      await realms.stopAll(serverPath()).catch(error => { throw Object.assign(new Error(error.message), { launcherCode: 'realm' }); });
       const wanted = repackUpdate.forRelease(update.manifest, state.here?.release);
       phase('download', { total: repackUpdate.packageSize(wanted) });
       const controller = new AbortController();
@@ -811,26 +852,6 @@ function registerIpc() {
     return state2;
   });
   // Only while it downloads: once unpacked, the tool's own steps run to their end (or put everything back).
-  handle('update:fromFile', async () => {
-    if (!update.manifest) throw new Error('No update to install: the launcher has not read the update list yet.');
-    const result = await dialog.showOpenDialog(window, { title: 'Choose the update zip you received', properties: ['openFile', 'multiSelections'], filters: [{ name: 'Update (zip)', extensions: ['zip'] }] });
-    if (result.canceled || !result.filePaths.length) return null;
-    const wanted = repackUpdate.forRelease(update.manifest, repackUpdateState().here?.release);
-    const files = [wanted.package, ...(wanted.package.parts || [])].filter(Boolean);
-    const cache = path.join(app.getPath('userData'), 'updates');
-    await fs.mkdir(cache, { recursive: true });
-    const { hashFile } = require('./release-format.cjs');
-    let matched = 0;
-    for (const file of result.filePaths) {
-      const hash = await hashFile(file);
-      const part = files.find(item => item.sha256 === hash);
-      if (!part) continue;
-      await fs.copyFile(file, path.join(cache, `${hash}.zip`));
-      matched++;
-    }
-    if (!matched) throw new Error('This file is not the update the signed list announces (its fingerprint differs): ask for the right file.');
-    return { matched, needed: files.length };
-  });
   handle('update:cancel', () => { if (update.phase === 'download' && updateAbort) updateAbort.abort(); return update.phase === 'download'; });
   // Undo (the latest backup of the update) or the end of a cut update: with the tool already in the repack.
   // The last update that can be undone: the update tool still in the repack and its backup (Backups\<version>-<date>).
@@ -968,8 +989,7 @@ function registerIpc() {
     core: 'https://github.com/jealous-sound/azerothcore-wotlk-coa',
     botsHelp: 'https://zyth45.github.io/mod-playerbots/',
   };
-  // The private edition opens no public page.
-  handle('source:open', async id => { if (config.privateChannel) return; const link = SOURCES[text(id, 20)]; if (link) await shell.openExternal(link); });
+  handle('source:open', async id => { const link = SOURCES[text(id, 20)]; if (link) await shell.openExternal(link); });
   handle('modules:dungeonDifficulties', async list => {
     if (await worldRunning()) throw new Error('Stop the server first: Dungeon Clear is read when it starts.');
     await modules.setDungeonDifficulties(serverPath(), Array.isArray(list) ? list.map(item => text(item, 10)) : []);
@@ -1158,6 +1178,12 @@ function registerIpc() {
     // MySQL runs now: the names of the cards reach the realm list, stopped realms included.
     await applyCardNames(serverPath(), await realmCards.read(serverPath())).catch(() => {});
   };
+  // Stop all, then start all again (the realms marked to start with the server too).
+  handle('repack:restartAll', async () => {
+    await oneServerJob('the restart of the server', async () => { baseByRealm = false; await realms.stopAll(serverPath()); await requireControl().stopAll(); });
+    await startEverything();
+    return serverInfo();
+  });
   handle('repack:start', async id => { assertServerFree(); if (assembler.state(serverPath()).needed) throw new Error('Prepare the game data from your client first (home page).'); if (id === 'all') await startEverything(); else { await prepareStart(); await requireControl().start(text(id, 30)); } return serverInfo(); });
   // The repack's manager only stops everything (stop-all): one service alone is stopped by the launcher itself.
   const stopCoaWorld = async () => {
@@ -1349,6 +1375,7 @@ function registerIpc() {
     } finally { await fs.unlink(copy).catch(() => {}); }
   });
   handle('repack:account', (name, password, gm) => requireControl().createAccount(text(name, 20), text(password, 20), gm === true));
+  handle('repack:accountPassword', (name, password) => requireControl().createAccount(text(name, 20), text(password, 20), false, { change: true }));
   // The server's logs (CoreLogs): the console scrolls too fast, the files keep everything.
   handle('repack:openLogs', async () => {
     if (!serverPath()) throw new Error('Choose the server folder first.');
@@ -1554,6 +1581,7 @@ function registerIpc() {
     assertServerFree();
     const target = path.resolve(text(options?.folder, 400));
     assertFolder(target);
+    await assertLocalDrive(target);
     const old = inspectRepack(oldRoot);
     if (target.toLowerCase() === path.resolve(oldRoot).toLowerCase() || target.toLowerCase().startsWith(path.resolve(oldRoot).toLowerCase() + path.sep)) throw new Error('Install the new version next to the current one, not inside it.');
     const entries = await fs.readdir(target).catch(() => []);
@@ -1740,29 +1768,7 @@ function channelUrl(section) {
 
 // Downloads go through Chromium's network stack: Node's own fetch (undici) can abort the whole process
 // with "assert(!this.paused)" when a server closes a connection while a large download waits for the disk.
-// The private channel: the name and password of the friend, kept encrypted by Windows (DPAPI) in the launcher data.
-let channelAuth = null;
-const channelFile = () => path.join(app.getPath('userData'), 'channel-access.bin');
-function loadChannelAuth() {
-  try {
-    const raw = require('node:fs').readFileSync(channelFile());
-    const value = JSON.parse(safeStorage.isEncryptionAvailable() ? safeStorage.decryptString(raw) : raw.toString());
-    channelAuth = typeof value?.user === 'string' && typeof value?.password === 'string' ? value : null;
-  } catch { channelAuth = null; }
-}
-async function saveChannelAuth(value) {
-  channelAuth = value;
-  if (!value) { await fs.rm(channelFile(), { force: true }); return; }
-  const text = JSON.stringify(value);
-  await fs.writeFile(channelFile(), safeStorage.isEncryptionAvailable() ? safeStorage.encryptString(text) : Buffer.from(text));
-}
-const channelHeader = () => (channelAuth ? { Authorization: `Basic ${Buffer.from(`${channelAuth.user}:${channelAuth.password}`).toString('base64')}` } : {});
-const onChannel = url => !!config?.privateChannel && String(url).startsWith(config.privateChannel);
-const netFetch = async (url, options) => {
-  const response = await net.fetch(String(url), options);
-  if (onChannel(url) && response.status === 401) throw Object.assign(new Error('The private channel refused your access: check your name and password (Settings), or ask for a new access.'), { channelRefused: true });
-  return response;
-};
+const netFetch = (url, options) => net.fetch(String(url), options);
 
 // Built at start and again when the player changes channel (never during a file operation).
 function createUpdaters() {
@@ -1979,8 +1985,9 @@ async function createTray() {
   // The installed exe carries the edition's icon; run from the sources, the edition's own picture stands in for Electron's.
   const own = !app.isPackaged && nativeImage.createFromPath(path.join(__dirname, '..', 'editions', config.edition || 'server', 'icon.png'));
   const image = own && !own.isEmpty() ? own.resize({ width: 16, height: 16 }) : await app.getFileIcon(process.execPath, { size: 'small' }).catch(() => nativeImage.createEmpty());
-  // The octopus in the balloons too (the exe's large icon once installed).
-  balloonIcon = own && !own.isEmpty() ? own.resize({ width: 64, height: 64 }) : await app.getFileIcon(process.execPath, { size: 'large' }).catch(() => null);
+  // The octopus in the balloons, drawn at 32, 48 and 64 px (notify@1.5x, @2x) so Windows never enlarges a small icon.
+  const drawn = nativeImage.createFromPath(path.join(__dirname, 'assets', 'notify.png'));
+  balloonIcon = !drawn.isEmpty() ? drawn : await app.getFileIcon(process.execPath, { size: 'large' }).catch(() => null);
   tray = new Tray(image);
   tray.setToolTip(config.appName);
   tray.on('click', showWindow);
@@ -2039,12 +2046,9 @@ async function main() {
   // Windows shows notifications only for an app with its own id (the installer's appId; the exe itself when run from the sources).
   if (process.platform === 'win32') app.setAppUserModelId(app.isPackaged ? (config.edition === 'server' ? 'org.squidbots.server' : 'org.coa.launcher-lite') : process.execPath);
   createUpdaters();
-  if (config.privateChannel) loadChannelAuth();
-  launcherUpdates = createLauncherUpdates(app, { feedUrl: config.launcherUpdateUrl, key: config.launcherUpdateKey, fetchImpl: netFetch, headers: channelHeader }, status => send('launcher:update', status), async () => {
+  launcherUpdates = createLauncherUpdates(app, { feedUrl: config.launcherUpdateUrl, key: config.launcherUpdateKey, fetchImpl: netFetch }, status => send('launcher:update', status), async () => {
     if (busyFiles || updater?.busy) throw new Error('Wait for the current operation to finish.');
   });
-  // Every request to the private channel (downloads, signed lists, the new launcher) carries the access.
-  if (config.privateChannel) session.defaultSession.webRequest.onBeforeSendHeaders({ urls: [`${config.privateChannel}*`] }, (details, callback) => callback({ requestHeaders: { ...details.requestHeaders, ...channelHeader() } }));
   session.defaultSession.setPermissionRequestHandler((_c, _p, callback) => callback(false));
   session.defaultSession.setPermissionCheckHandler(() => false);
   registerProtocol();
@@ -2088,7 +2092,7 @@ async function main() {
   if (smokeDir) { runSmoke().catch(error => { console.error(error); app.exit(1); }); return; }
   setInterval(async () => {
     const found = serverControl();
-    if (window && !window.isMinimized() && found) send('repack:services', await found.status().catch(() => []));
+    if (window && window.isVisible() && !window.isMinimized() && found) send('repack:services', await found.status().catch(() => []));
   }, 5000).unref();
   app.on('before-quit', () => { closing = true; dashboard.stop(); if (dashboardWindow && !dashboardWindow.isDestroyed()) dashboardWindow.destroy(); });
   setTimeout(() => launcherUpdates.check(), 1500).unref();

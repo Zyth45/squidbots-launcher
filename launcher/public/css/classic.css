@@ -533,4 +533,3 @@ label.switch input:checked + span::after { background: #fff; }
 .lighten small { display: block; margin-top: 3px; color: var(--muted); font-size: 12px; }
 .lighten .button { flex: none; }
 /* Private edition: no public page is offered (Discord, GitHub, sources, help site). */
-body.private [data-action="source-link"], body.private [data-action="discord"], body.private [data-action="link:discord"], body.private [data-kind="discord"], body.private .module-credit button { display: none !important; }

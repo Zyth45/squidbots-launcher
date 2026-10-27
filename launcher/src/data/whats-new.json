@@ -1,5 +1,40 @@
 [
   {
+    "version": "0.3.47",
+    "items": {
+      "en": [
+        "Stop all never cuts a realm that is still saving: it waits for it, and if it is not done after 5 minutes it leaves it and MySQL running and tells you (no more lost saves on Wildcard or Reborn).",
+        "After a CoA patch of your game, the home page offers to take the server data from it again, so the server matches your game.",
+        "The bots' navigation maps are built once and kept: updating the data after a game patch no longer builds them again. Bots walking oddly? Verification > Bots has a Rebuild button, and the home page offers to restart the server once they are ready.",
+        "A network drive (NAS, shared folder) is refused for the server: MySQL cannot run there.",
+        "Installing the bots tries again by itself when MySQL is unreachable for a moment.",
+        "Your own launcher.config.json keeps all its values; new options are only added next to them.",
+        "A sharper octopus in the Windows notifications.",
+        "Settings > Services: give an existing game account a new password."
+      ],
+      "fr": [
+        "Tout arrêter ne coupe plus un royaume qui sauvegarde encore : il l'attend, et s'il n'a pas fini au bout de 5 minutes, il le laisse tourner avec MySQL et vous prévient (plus de sauvegardes perdues sur Wildcard ou Reborn).",
+        "Après un patch CoA de votre jeu, l'accueil propose de reprendre les données du serveur, pour qu'il corresponde à votre jeu.",
+        "Les cartes de navigation des bots sont construites une fois puis gardées : reprendre les données après un patch du jeu ne les refait plus. Des bots qui marchent bizarrement ? Vérification > Bots a un bouton Reconstruire, et l'accueil propose de redémarrer le serveur quand elles sont prêtes.",
+        "Un lecteur réseau (NAS, dossier partagé) est refusé pour le serveur : MySQL ne peut pas y tourner.",
+        "L'installation des bots réessaie toute seule quand MySQL est injoignable un instant.",
+        "Votre propre launcher.config.json garde toutes ses valeurs ; les nouvelles options sont seulement ajoutées à côté.",
+        "Une pieuvre plus nette dans les notifications Windows.",
+        "Réglages > Services : donner un nouveau mot de passe à un compte de jeu existant."
+      ],
+      "ru": [
+        "«Остановить всё» больше не обрывает мир, который ещё сохраняется: ждёт его, а если через 5 минут он не закончил, оставляет его и MySQL работать и предупреждает (больше никаких потерянных сохранений в Wildcard и Reborn).",
+        "После патча CoA вашей игры главная страница предлагает заново взять из неё данные сервера, чтобы сервер соответствовал игре.",
+        "Навигационные карты ботов строятся один раз и сохраняются: обновление данных после патча игры больше их не перестраивает. Боты ходят странно? В Проверка > Боты есть кнопка «Перестроить», а главная страница предложит перезапустить сервер, когда они готовы.",
+        "Сетевой диск (NAS, общая папка) не принимается для сервера: MySQL там не работает.",
+        "Установка ботов сама повторяет попытку, если MySQL на мгновение недоступен.",
+        "Ваш собственный launcher.config.json сохраняет все свои значения; новые параметры лишь добавляются рядом.",
+        "Более чёткий осьминог в уведомлениях Windows.",
+        "Настройки > Службы: новый пароль для существующего игрового аккаунта."
+      ]
+    }
+  },
+  {
     "version": "0.3.46",
     "items": {
       "en": [

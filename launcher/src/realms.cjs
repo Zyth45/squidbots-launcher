@@ -577,15 +577,21 @@ async function stop(root, key) {
 async function stopWorld(root, key, saved, pid) {
   // The repack's RA account (Settings/repack.json) is an account of the shared auth database: valid on every realm.
   await live.raCommand(root, 'server shutdown 1s 0', 20000, saved.raPort).catch(() => {});
-  const deadline = Date.now() + 120 * 1000;
-  while (Date.now() < deadline && (pid ? pidAlive(pid) : await portOpen(saved.worldPort))) await new Promise(resolve => setTimeout(resolve, 1000));
-  if (pid && pidAlive(pid)) await new Promise(resolve => execFile('taskkill.exe', ['/PID', String(pid), '/T', '/F'], { windowsHide: true }, () => resolve()));
+  // A world is never killed: one still saving its players would lose them. MySQL stays up for it (the callers stop).
+  const up = async () => (pid ? pidAlive(pid) : await portOpen(saved.worldPort));
+  const deadline = Date.now() + STOP_WAIT;
+  while (Date.now() < deadline && await up()) await new Promise(resolve => setTimeout(resolve, 1000));
+  if (await up()) throw Object.assign(new Error(`${saved.name} is still saving: it was left running, and MySQL with it. Press Stop again in a few minutes.`), { code: 'REALM_SAVING' });
   await fsp.rm(path.join(dirOf(root, key), '.state.json'), { force: true });
 }
+const STOP_WAIT = 300 * 1000;
 
+// Every realm is asked to stop; one still running after the wait fails the whole stop, so nothing stops MySQL under it.
 async function stopAll(root) {
   if (!root || !fs.existsSync(path.join(root, 'Royaumes'))) return;
-  for (const key of Object.keys(MODES)) await stop(root, key);
+  const results = await Promise.allSettled(Object.keys(MODES).map(key => stop(root, key)));
+  const failed = results.filter(result => result.status === 'rejected').map(result => result.reason);
+  if (failed.length) throw Object.assign(new Error(failed.map(error => error.message).join(' ')), { code: 'REALM_SAVING' });
 }
 
 // ---------------------------------------------------------------- queue, memory, bots in game

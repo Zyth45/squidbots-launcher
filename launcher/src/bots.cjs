@@ -53,8 +53,19 @@ class BotsPackage {
     return this.runInstaller(root);
   }
 
-  // Runs the package's installer without a console: it asks nothing when it cannot (defaults are used).
+  // MySQL refusing a connection for a moment (2003, or Windows out of free ports: 10048) is tried again twice.
   async runInstaller(root) {
+    for (let attempt = 1; ; attempt++) {
+      try { return await this.runInstallerOnce(root); } catch (error) {
+        if (attempt >= 3 || !TRANSIENT_MYSQL.test(error.output || '')) throw error;
+        this.onLine(`MySQL was not reachable for a moment: trying again in 15 seconds (${attempt + 1} of 3).`);
+        await new Promise(resolve => setTimeout(resolve, this.retryDelay ?? 15000));
+      }
+    }
+  }
+
+  // Runs the package's installer without a console: it asks nothing when it cannot (defaults are used).
+  async runInstallerOnce(root) {
     if (this.child) throw new Error('The bot installer is already running.');
     const script = path.join(this.folder(root), ...this.bots.install.script.split('/'));
     if (!script.startsWith(path.resolve(root) + path.sep) || !fs.existsSync(script)) throw new Error('This server folder has no CoA Bots in it (CoA-Bots\\Installer-Bots.ps1 is missing): it is another repack, or the CoA-Bots folder was moved. Choose the folder of the CoA Bots repack, or get it with "Download the server" on the home page.');
@@ -79,9 +90,11 @@ class BotsPackage {
       child.once('error', error => { clearTimeout(timer); this.child = null; reject(error); });
       child.once('exit', exitCode => { clearTimeout(timer); this.child = null; if (partial) { lines.push(partial); this.onLine(partial); } resolve(exitCode); });
     });
-    if (code !== 0) throw new Error(lines.map(line => line.trim()).filter(Boolean).slice(-2).join(' ') || `The bot installer stopped (exit ${code}).`);
+    if (code !== 0) throw Object.assign(new Error(lines.map(line => line.trim()).filter(Boolean).slice(-2).join(' ') || `The bot installer stopped (exit ${code}).`), { output: lines.slice(-60).join('\n') });
     return { ok: true, lines: lines.slice(-40) };
   }
 }
+
+const TRANSIENT_MYSQL = /ERROR 2003|Can't connect to MySQL|\b10048\b/i;
 
 module.exports = { BotsPackage };

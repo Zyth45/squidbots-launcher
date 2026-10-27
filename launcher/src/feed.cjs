@@ -25,7 +25,7 @@ function cleanDiscord(value) {
 function cleanFeed(data) {
   if (!data || typeof data !== 'object') throw new Error('The news feed is malformed.');
   return {
-    // With sha256 and bytes, the launcher downloads the full repack itself (private channel) and installs it.
+    // With sha256 and bytes, the launcher downloads the full repack itself and installs it.
     repack: (() => {
       // A test channel on this PC may serve the server too: it is checked against the signed sha256 below.
       const link = cleanLink(data.repack) || (data.repack && typeof data.repack === 'object' && LOCAL.test(data.repack.url || '') ? { ...cleanLink({ ...data.repack, url: 'https://local/' }), url: data.repack.url } : null);
