@@ -168,6 +168,20 @@ def make_update(update_dir, assembler_dir, out, name):
     spec = json.loads(spec_path.read_text(encoding="utf-8-sig"))
     spec["treesKeptFrom"] = {k: v for k, v in spec.get("treesKeptFrom", {}).items() if not k.startswith("Data/")}
     spec["rules"] = [r for r in spec["rules"] if not r["path"].startswith("Data/")]
+    # Place demandée avant d'appliquer : sauvegarde de la base et des exe (plus de cartes livrées, 6 Go c'était pour elles).
+    spec["diskBytes"] = 4 << 30
+    # Le texte de la carte de mise à jour : plus de cartes livrées, quelle que soit la version de départ.
+    spec["notice"] = {
+        "en": "A small update (about 60 MB): only our files. The core SQL come from the public CoA repository, checked "
+              "one by one. Your maps, database, characters, bots and settings are kept; a backup comes first and Undo "
+              "puts everything back. New: Dungeon Clear, realm cards like Ascension, Manastorm on by default.",
+        "fr": "Petite mise à jour (environ 60 Mo) : seulement nos fichiers. Les SQL du cœur viennent du dépôt public de "
+              "CoA, vérifiés un par un. Vos cartes, votre base, vos personnages, vos bots et vos réglages sont gardés ; "
+              "une sauvegarde est faite d'abord et le retour arrière remet tout. Nouveau : Dungeon Clear, cartes de "
+              "royaume comme sur Ascension, Manastorm actif par défaut.",
+        "ru": "Небольшое обновление (около 60 МБ): только наши файлы. SQL ядра берутся из публичного репозитория CoA и "
+              "проверяются по одному. Карты, база, персонажи, боты и настройки сохраняются; сначала делается копия, "
+              "откат возвращает всё. Новое: Dungeon Clear, карточки миров как на Ascension, Manastorm включён."}
     spec_path.write_text(json.dumps(spec, indent=1, ensure_ascii=False), encoding="utf-8")
     # Marqueur lu par le launcher : remplir Source/sql-tree depuis l'archive publique avant d'appliquer.
     (stage / "update" / "sql-source.json").write_text(json.dumps({"fillSql": "payload/Assembler/coa_assemble.py"}),

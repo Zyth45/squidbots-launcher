@@ -40,8 +40,12 @@ BELOW_NORMAL = getattr(subprocess, "BELOW_NORMAL_PRIORITY_CLASS", 0)
 LOCALES = ("enUS", "enGB", "deDE", "frFR", "esES", "esMX", "ruRU", "koKR", "zhCN", "zhTW")
 STEPS = ("client", "dbc", "maps", "vmaps", "sql", "db")
 JSON_OUT = False
-# Maps the CoA core requires in Map.dbc (the realm refuses other DBC sets).
-COA_MAP = 3690
+# Rows the core checks at start (src/server/game/DataStores/DBCStores.cpp): a full 3.3.5a set, then the CoA set.
+DBC_REQUIRED = [("AreaTable.dbc", 4987, "3.3.5a"), ("CharTitles.dbc", 177, "3.3.5a"), ("GemProperties.dbc", 1629, "3.3.5a"),
+                ("Item.dbc", 56806, "3.3.5a"), ("ItemExtendedCost.dbc", 2997, "3.3.5a"), ("Map.dbc", 724, "3.3.5a"),
+                ("Spell.dbc", 80864, "3.3.5a"), ("CurrencyTypes.dbc", 375250, "CoA"),
+                ("CreatureDisplayInfo.dbc", 236827, "CoA"), ("GameObjectDisplayInfo.dbc", 87226, "CoA"),
+                ("ItemLimitCategory.dbc", 2414, "CoA"), ("Map.dbc", 3690, "CoA")]
 
 
 class Fail(Exception):
@@ -99,6 +103,23 @@ def server_running(m=None):
     return any(m.process(name) for name in ("world", "auth", "supervisor"))
 
 
+def native(path):
+    """Chemin lisible par les extracteurs d'AzerothCore (chemins ANSI) : tel quel s'il est en ASCII, sinon son nom court
+    Windows (8.3). Sans nom court (désactivé sur ce disque), message clair plutôt qu'un échec obscur de l'outil."""
+    value = str(path)
+    if value.isascii():
+        return value
+    try:
+        import ctypes
+        buffer = ctypes.create_unicode_buffer(32768)
+        if ctypes.windll.kernel32.GetShortPathNameW(value, buffer, len(buffer)) and buffer.value.isascii():
+            return buffer.value
+    except (OSError, AttributeError):
+        pass
+    raise Fail(f"{value} has letters the extraction tools cannot read. Move this folder to a plain path "
+               "(for example C:/Games/CoA) and show it to the launcher again.")
+
+
 def run_tool(args, cwd, log_name, on_line=None, priority=0):
     log = ROOT / "Assembler" / "logs" / log_name
     log.parent.mkdir(parents=True, exist_ok=True)
@@ -152,12 +173,14 @@ def check_client(client):
     return locale
 
 
-def dbc_ids(path):
+def dbc_ids(path, column=0):
+    """Valeurs d'une colonne (l'index du cœur : la 1re, sauf CurrencyTypes où c'est l'objet, la 2e)."""
     raw = path.read_bytes()
     if raw[:4] != b"WDBC":
         return set()
     records, fields, size = (int.from_bytes(raw[4 + 4 * i:8 + 4 * i], "little") for i in range(3))
-    return {int.from_bytes(raw[20 + r * size:24 + r * size], "little") for r in range(records)}
+    at = 20 + 4 * column
+    return {int.from_bytes(raw[at + r * size:at + 4 + r * size], "little") for r in range(records)}
 
 
 # ------------------------------------------------------------------------------------------------- extraction
@@ -188,13 +211,16 @@ def step_dbc(client, state):
     def line(text):
         if text.startswith("Extracted") or "dbc" in text.lower():
             count[0] += 1
-    run_tool([BIN / "map_extractor.exe", "-e", "2", "-r", "-i", client, "-o", work], work, "dbc.log", line)
+    run_tool([BIN / "map_extractor.exe", "-e", "2", "-r", "-i", native(client), "-o", native(work)], work, "dbc.log", line)
     dbc = work / "dbc"
     names = list(dbc.glob("*.dbc"))
     if len(names) < 300:
         raise Fail(f"Only {len(names)} game tables were extracted: the client looks incomplete.")
-    if COA_MAP not in dbc_ids(dbc / "Map.dbc"):
-        raise Fail("These game tables are not Conquest of Azeroth ones (map 3690 missing): use the CoA client.")
+    # Les lignes que le cœur exige au démarrage (DBCStores.cpp) : 3.3.5a complet, puis le jeu CoA.
+    for table, row, what in DBC_REQUIRED:
+        if row not in dbc_ids(dbc / table, 1 if table == "CurrencyTypes.dbc" else 0):
+            raise Fail(f"These game tables lack {table} row {row} ({what}): use the up-to-date Conquest of Azeroth "
+                       "client from the official launcher.")
     (dbc / "component.wow-enUS.txt").unlink(missing_ok=True)
     swap_in(dbc, DATA / "dbc")
     shutil.rmtree(work, ignore_errors=True)
@@ -210,7 +236,7 @@ def step_maps(client, state):
         m = re.match(r"Extract .*?\((\d+)/(\d+)\)", text)
         if m:
             emit("progress", step="maps", done=int(m.group(1)), total=int(m.group(2)), text=text[:80])
-    run_tool([BIN / "map_extractor.exe", "-e", "5", "-i", client, "-o", work], work, "maps.log", line)
+    run_tool([BIN / "map_extractor.exe", "-e", "5", "-i", native(client), "-o", native(work)], work, "maps.log", line)
     if len(list((work / "maps").glob("*.map"))) < 5000:
         raise Fail("The terrain extraction is incomplete (see Assembler/logs/maps.log).")
     swap_in(work / "maps", DATA / "maps")
@@ -232,7 +258,7 @@ def step_vmaps(client, state):
     # jusqu'à trois essais, chacun dans un dossier de travail propre.
     for attempt in range(3):
         try:
-            run_tool([BIN / "vmap4_extractor.exe", "-l", "-d", str(Path(client) / "Data")], work, "vmaps-extract.log", line)
+            run_tool([BIN / "vmap4_extractor.exe", "-l", "-d", native(Path(client) / "Data")], work, "vmaps-extract.log", line)
             break
         except Fail as error:
             if attempt == 2:
@@ -344,9 +370,24 @@ def step_mmaps(threads):
             state = load_state()
             state.setdefault("mmaps", {}).update({"current": mid, "running": True, "pid": os.getpid()})
             save_state(state)
-            fresh_dir(out)
-            run_tool([BIN / "mmaps_generator.exe", str(mid), "--config", config, "--threads", str(threads), "--silent"],
-                     work, "mmaps-last.log", priority=BELOW_NORMAL)
+            # Une carte qui fait planter le générateur est réessayée une fois, puis laissée de côté (les bots y
+            # marcheront en ligne droite) : elle ne doit pas arrêter toutes les autres.
+            failed = None
+            for attempt in range(2):
+                fresh_dir(out)
+                try:
+                    run_tool([BIN / "mmaps_generator.exe", str(mid), "--config", native(config), "--threads", str(threads),
+                              "--silent"], work, "mmaps-last.log", priority=BELOW_NORMAL)
+                    failed = None
+                    break
+                except Fail as error:
+                    failed = str(error)
+            if failed:
+                emit("log", step="mmaps", text=f"map {mid} skipped: {failed}")
+                state = load_state()
+                state.setdefault("mmaps", {}).setdefault("failed", {})[str(mid)] = failed[:200]
+                save_state(state)
+                continue
             for p in final.glob(f"{mid:03d}*"):
                 if p.name == f"{mid:03d}.mmap" or (p.suffix == ".mmtile" and p.stem[:-4] == f"{mid:03d}"):
                     p.unlink()
@@ -687,8 +728,10 @@ def export_clean():
 
 # ------------------------------------------------------------------------------------------------- commandes
 def module_confs():
-    """Comme « Fix » de la vérification du launcher : chaque module sans .conf reçoit la copie de son .dist."""
-    for folder in (ROOT / "Core/configs/modules", ROOT / "CoA-Bots/Core/configs/modules"):
+    """Comme « Fix » de la vérification du launcher : chaque module du cœur sans .conf reçoit la copie de son .dist.
+    Pas ceux de CoA-Bots : leur installeur les écrit (playerbots.conf porte la base des bots, et sa présence dit au
+    launcher que les bots sont installés)."""
+    for folder in (ROOT / "Core/configs/modules",):
         for dist in folder.glob("*.conf.dist") if folder.is_dir() else []:
             conf = dist.with_suffix("")
             if not conf.exists():
@@ -703,6 +746,13 @@ def cmd_run(args):
     if server_running(m):
         raise Fail("Stop the server first.")
     locale = check_client(client)
+    # Place pour les données du serveur : ~3 Go de cartes et vmaps, ~4 Go de cartes de navigation, ~3 Go de base, plus
+    # le travail en cours. Dit avant de commencer plutôt qu'au milieu.
+    need = 15 << 30 if any(s in steps for s in ("maps", "vmaps", "db")) else 1 << 30
+    free = shutil.disk_usage(ROOT).free
+    if free < need:
+        raise Fail(f"Not enough free space on the server's drive: {free >> 30} GB free, {need >> 30} GB needed. "
+                   "Free some space or install the server on another drive.")
     state["client"] = {"path": client, "locale": locale, "fingerprint": client_fingerprint(client)}
     save_state(state)
     for step in steps:

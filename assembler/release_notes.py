@@ -20,6 +20,7 @@ def main():
     a.add_argument("out")
     a.add_argument("--core", help="commit du cœur s'il diffère de RELEASE.json (correctif posé après le paquet)")
     a.add_argument("--dc", help="commit de mod-dungeon-clear")
+    a.add_argument("--tools", help="commit du cœur dont sont compilés les extracteurs livrés")
     args = a.parse_args()
     root = Path(args.root)
     rel = read(root / "RELEASE.json")
@@ -42,6 +43,9 @@ def main():
     ]
     if args.dc:
         lines.append(f"- Dungeon Clear: `mod-dungeon-clear` at `{args.dc}`")
+    if args.tools:
+        lines.append(f"- Extraction tools (map_extractor, vmap4_extractor, vmap4_assembler, mmaps_generator): "
+                     f"`Zyth45/azerothcore-wotlk-coa` at `{args.tools}`")
     lines += [
         f"- Public SQL and world package: `{sql['repo']}` at `{sql['commit']}`",
         "",
