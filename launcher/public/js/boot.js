@@ -44,14 +44,26 @@ function subscribe() {
   }, 15000);
   // Assembly of a data-free server (data from the client, database): one event per line of the assembler.
   let assembleDrawn = 0;
+  let speedSamples = [];
   api.onAssemble(event => {
-    if (event.event === 'idle') { App.state.assembleProgress = null; App.api.serverInfo().then(info => { App.state.server = info; App.render(); }).catch(() => {}); return; }
+    // The preparation is over: what was read on the half-made server (checks, the game card) is read again.
+    if (event.event === 'idle') { App.state.assembleProgress = null; App.reloadAll(); return; }
     if (event.event === 'error') { App.state.assembleProgress = null; App.state.assembleError = event.message; App.render(); return; }
     App.state.assembleError = '';
     // The folder was just installed: the home page switches from the install card to the assembly one.
     if (!App.state.assembleProgress && !App.state.server?.assembly?.applies) App.api.serverInfo().then(info => { App.state.server = info; if (App.state.tab === 'home') App.render(); }).catch(() => {});
     const previous = App.state.assembleProgress || {};
-    App.state.assembleProgress = event.event === 'step' ? { step: event.step, text: event.text } : event.event === 'progress' ? { ...previous, step: event.step, done: event.done, total: event.total } : previous;
+    // The time of a step counts from its start (a new step, or the first news of the run).
+    const since = event.step && event.step === previous.step && previous.since ? previous.since : Date.now();
+    App.state.assembleProgress = event.event === 'step' ? { step: event.step, text: event.text, since } : event.event === 'progress' ? { ...previous, step: event.step, done: event.done, total: event.total, warning: event.warning || '', since } : previous;
+    // Bytes of the navigation maps: speed over the last 8 seconds, and the time left at that speed.
+    if (event.event === 'progress' && event.step === 'mmaps' && event.total > 1e6) {
+      const now = Date.now();
+      speedSamples = [...speedSamples.filter(([at]) => now - at < 8000), [now, event.done]];
+      const [firstAt, firstDone] = speedSamples[0];
+      const speed = now - firstAt >= 2000 ? ((event.done - firstDone) * 1000) / (now - firstAt) : 0;
+      Object.assign(App.state.assembleProgress, { speed, left: speed > 0 ? (event.total - event.done) / speed : 0 });
+    } else if (event.event === 'step') speedSamples = [];
     if (Date.now() - assembleDrawn < 400 && event.event === 'progress') return;
     assembleDrawn = Date.now();
     if (App.state.tab === 'home' && !$('#dialog').open) App.render();
@@ -105,9 +117,25 @@ function subscribe() {
   api.onGameExit(async () => { App.state.client = await api.clientInfo(); App.refresh('play'); });
 }
 
+// The server changed under the launcher (prepared, installed, imported, switched, updated): what the pages show is
+// read again, as after a restart of the launcher, so a new player never sees a check taken on a half-made server.
+App.reloadAll = async () => {
+  try { const boot = await App.api.bootstrap(); Object.assign(App.state, { settings: boot.settings, client: boot.client }); } catch {}
+  Object.assign(App.state, { verify: null, serverCheck: null, botsCheck: null, conf: null, backups: null });
+  try { App.state.server = await App.api.serverInfo(); } catch {}
+  App.render();
+  if (App.state.config.edition !== 'server') return;
+  if (typeof refreshAddon === 'function') refreshAddon(true);
+  App.api.notes().then(notes => { App.state.notes = notes; if (App.state.tab === 'home' && !$('#dialog').open) App.render(); }).catch(() => {});
+  App.api.updateRefresh().then(state => { if (state && !App.state.update.run) App.state.update.state = state; if (App.state.tab === 'home' && !$('#dialog').open) App.render(); }).catch(() => {});
+  App.api.componentsRefresh().then(state => { App.state.components = state; if (App.state.tab === 'home' && !$('#dialog').open) App.render(); }).catch(() => {});
+  if (App.state.server?.path && !App.state.server.assembly?.needed && typeof runVerify === 'function') runVerify(false);
+};
+
 // Screenshot tour driven by the main process: tab names, click:<selector>, lang:<code>, dialog:settings, wait.
 App.smoke = step => {
   if (step === 'wait') return;
+  if (step === 'reload') { App.reloadAll(); return; }
   // Screenshot tours: show the launcher-update bar as if a new launcher were downloading / ready.
   if (step.startsWith('launcher:')) { App.state.launcherUpdate = { phase: step.slice(9), version: '9.9.9', percent: 56 }; const bar = $('#launcher-banner'); if (bar) bar.innerHTML = launcherBanner(); return; }
   if (step.startsWith('click:')) { $(step.slice(6))?.click(); return; }
@@ -132,7 +160,10 @@ App.smoke = step => {
 
 function showWhatsNew(list) {
   const lang = App.state.settings.language;
-  const block = entry => `<section class="whats-new"><h3>${esc(t('whatsNew.version', 'Launcher {version}', { version: entry.version }))}</h3><ul>${(entry.items[lang] || entry.items.en || []).map(item => `<li>${esc(item)}</li>`).join('')}</ul></section>`;
+  const pick = value => (value?.[lang] ?? value?.en);
+  const bullets = items => `<ul>${(pick(items) || []).map(item => `<li>${esc(item)}</li>`).join('')}</ul>`;
+  // A version can come with the server release it goes with: a title and one list per part (core, bots, launcher...).
+  const block = entry => `<section class="whats-new"><h3>${esc(pick(entry.title) || t('whatsNew.version', 'Launcher {version}', { version: entry.version }))}</h3>${entry.sections ? entry.sections.map(part => `<h4>${esc(pick(part.title))}</h4>${bullets(part.items)}`).join('') : bullets(entry.items)}</section>`;
   dialog.open(`${dialog.header(t('whatsNew.title', 'What is new'), App.state.config.appName)}<div class="dialog-content">${list.map(block).join('')}</div><footer class="dialog-foot"><button class="button primary" data-action="whats-new-ok">${esc(t('whatsNew.ok', 'Got it'))}</button></footer>`, 'form');
   const element = $('#dialog');
   element.addEventListener('close', () => App.api.whatsNewSeen().catch(() => {}), { once: true });

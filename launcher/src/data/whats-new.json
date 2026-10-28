@@ -1,5 +1,185 @@
 [
   {
+    "version": "0.3.48",
+    "items": {
+      "en": [
+        "A new server downloads the bots' navigation maps (about 1.9 GB, minutes) instead of building them for hours; Verification offers newer ones when they are published.",
+        "\"Solo self-found (1-59)\" preset, \"Bot experience speed\" setting (×1 to ×5), and a \"Self-found bots in dungeons\" card, coming soon.",
+        "Switches show a tick or a cross, not only a colour.",
+        "The installer lets you choose where the launcher goes.",
+        "Preparing the server: a database build that was cut is done again, finished steps are ticked, the world import shows its progress, and a warning shows when the server is on a USB drive.",
+        "The launcher no longer restarts during the server preparation, and reads the signed list again before refusing a new version."
+      ],
+      "fr": [
+        "Un nouveau serveur télécharge les cartes de navigation des bots (environ 1,9 Go, quelques minutes) au lieu de les construire pendant des heures ; Vérification propose les plus récentes quand elles sont publiées.",
+        "Préréglage « Solo self-found (1-59) », réglage « Vitesse d'expérience des bots » (×1 à ×5), et une carte « Bots self-found en donjon », bientôt disponible.",
+        "Les interrupteurs affichent une coche ou une croix, pas seulement une couleur.",
+        "L'installeur vous laisse choisir où mettre le launcher.",
+        "Préparation du serveur : une base coupée en route est refaite, les étapes finies sont cochées, l'import du monde affiche sa progression, et un avertissement s'affiche si le serveur est sur un disque USB.",
+        "Le launcher ne redémarre plus pendant la préparation du serveur, et relit la liste signée avant de refuser une nouvelle version."
+      ],
+      "ru": [
+        "Новый сервер скачивает навигационные карты ботов (около 1,9 ГБ, несколько минут) вместо многочасового построения; «Проверка» предлагает более новые, когда они опубликованы.",
+        "Пресет «Solo self-found (1-59)», настройка «Скорость получения опыта ботами» (×1–×5) и карточка «Боты без готовой экипировки в подземельях» — скоро.",
+        "Переключатели показывают галочку или крестик, а не только цвет.",
+        "Установщик позволяет выбрать папку лаунчера.",
+        "Подготовка сервера: прерванное создание базы выполняется заново, готовые шаги отмечены, импорт мира показывает прогресс, а для сервера на USB-диске выводится предупреждение.",
+        "Лаунчер больше не перезапускается во время подготовки сервера и перечитывает подписанный список, прежде чем отклонить новую версию."
+      ]
+    },
+    "title": {
+      "en": "CoA Bots 2.8.1 and launcher 0.3.48",
+      "fr": "CoA Bots 2.8.1 et launcher 0.3.48",
+      "ru": "CoA Bots 2.8.1 и лаунчер 0.3.48"
+    },
+    "sections": [
+      {
+        "title": {
+          "en": "Solo self-found (1-59), optional",
+          "fr": "Solo self-found (1-59), en option",
+          "ru": "Solo self-found (1-59), по желанию"
+        },
+        "items": {
+          "en": [
+            "A new preset in Settings › Bot population: bots level up from level 1 and only wear what they loot, earn from quests or get from you. At 60 they are geared as usual. Nothing changes unless you pick it."
+          ],
+          "fr": [
+            "Nouveau préréglage dans Réglages › Population de bots : les bots montent depuis le niveau 1 et ne portent que ce qu'ils ramassent, gagnent en quête ou reçoivent de vous. Au niveau 60, ils sont équipés comme d'habitude. Rien ne change si vous ne le choisissez pas."
+          ],
+          "ru": [
+            "Новый пресет в Настройки › Население ботов: боты растут с 1 уровня и носят только добычу, награды за задания или то, что дали вы. На 60-м уровне экипируются как обычно. Ничего не меняется, пока вы его не выберете."
+          ]
+        }
+      },
+      {
+        "title": {
+          "en": "Latest CoA core (284 changes since 2.8)",
+          "fr": "Dernier cœur CoA (284 changements depuis la 2.8)",
+          "ru": "Новое ядро CoA (284 изменения после 2.8)"
+        },
+        "items": {
+          "en": [
+            "Creature magic resistance and new open-world creature damage.",
+            "PvE Power and PvP Power.",
+            "Cross-faction battlegrounds.",
+            "Road to De Other Side (map 937) is back.",
+            "Name filter and account-wide friends (opt-in).",
+            "Gathering nodes at their Ascension positions.",
+            "Large batches of dungeon, item, quest and class fixes."
+          ],
+          "fr": [
+            "Résistance magique des créatures et nouveaux dégâts des créatures en monde ouvert.",
+            "PvE Power et PvP Power.",
+            "Champs de bataille inter-factions.",
+            "Road to De Other Side (carte 937) est de retour.",
+            "Filtre des noms et amis à l'échelle du compte (au choix).",
+            "Points de récolte aux positions d'Ascension.",
+            "Gros lots de correctifs de donjons, objets, quêtes et classes."
+          ],
+          "ru": [
+            "Магическое сопротивление существ и новый урон существ в открытом мире.",
+            "PvE Power и PvP Power.",
+            "Межфракционные поля боя.",
+            "Road to De Other Side (карта 937) вернулась.",
+            "Фильтр имён и друзья на весь аккаунт (по желанию).",
+            "Точки сбора на позициях Ascension.",
+            "Большие наборы исправлений подземелий, предметов, заданий и классов."
+          ]
+        }
+      },
+      {
+        "title": {
+          "en": "Bots",
+          "fr": "Bots",
+          "ru": "Боты"
+        },
+        "items": {
+          "en": [
+            "Boss mechanics in the classic dungeons (thanks to Brytenwally).",
+            "Boss strategy for Road to De Other Side (thanks to steviecraycray).",
+            "Molten Core is back on Heroic, Mythic and Ascended on older databases.",
+            "Safety nets against battleground crashes (thanks to nightlund).",
+            "Bloodmage Eternal tanks play their form properly.",
+            "Gear settings are respected at level up (\"loot only\" bots)."
+          ],
+          "fr": [
+            "Mécaniques de boss dans les donjons classiques (merci à Brytenwally).",
+            "Stratégie de boss pour Road to De Other Side (merci à steviecraycray).",
+            "Cœur du Magma de retour en héroïque, mythique et Ascended sur les anciennes bases.",
+            "Filets de sécurité contre les plantages en champ de bataille (merci à nightlund).",
+            "Les tanks Bloodmage Eternal jouent correctement leur forme.",
+            "Les réglages d'équipement sont respectés à la montée de niveau (bots « butin seulement »)."
+          ],
+          "ru": [
+            "Механики боссов в классических подземельях (спасибо Brytenwally).",
+            "Стратегия боссов для Road to De Other Side (спасибо steviecraycray).",
+            "Огненные Недра снова в героическом, мифическом и Ascended режимах на старых базах.",
+            "Защита от падений на полях боя (спасибо nightlund).",
+            "Танки Bloodmage Eternal правильно используют свою форму.",
+            "Настройки экипировки соблюдаются при повышении уровня (боты «только добыча»)."
+          ]
+        }
+      },
+      {
+        "title": {
+          "en": "Dungeon Clear 2.8.1",
+          "fr": "Dungeon Clear 2.8.1",
+          "ru": "Dungeon Clear 2.8.1"
+        },
+        "items": {
+          "en": [
+            "Heroic and Mythic runs are about 10 minutes faster.",
+            "Fixes in Blackrock Depths, Stratholme and Shadowfang Keep.",
+            "Known limits: Blackfathom Deeps and the Scarlet Cathedral can still get stuck; a Heroic or Mythic run still going at the 04:00 reset gets stuck: type .dc off."
+          ],
+          "fr": [
+            "Les runs héroïques et mythiques sont environ 10 minutes plus rapides.",
+            "Correctifs dans les Profondeurs de Blackrock, Stratholme et le donjon d'Ombrecroc.",
+            "Limites connues : les Profondeurs de Brassenoire et la cathédrale du Monastère écarlate peuvent encore bloquer ; un run héroïque ou mythique encore en cours à la remise à zéro de 04:00 se bloque : tapez .dc off."
+          ],
+          "ru": [
+            "Героические и мифические забеги примерно на 10 минут быстрее.",
+            "Исправления в Глубинах Черной горы, Стратхольме и Крепости Темного Клыка.",
+            "Известные ограничения: Непроглядная Пучина и Собор Монастыря Алого ордена ещё могут застрять; героический или мифический забег, идущий во время сброса в 04:00, застревает: введите .dc off."
+          ]
+        }
+      },
+      {
+        "title": {
+          "en": "Launcher 0.3.48",
+          "fr": "Launcher 0.3.48",
+          "ru": "Лаунчер 0.3.48"
+        },
+        "items": {
+          "en": [
+            "A new server downloads the bots' navigation maps (about 1.9 GB, minutes) instead of building them for hours; Verification offers newer ones when they are published.",
+            "\"Solo self-found (1-59)\" preset, \"Bot experience speed\" setting (×1 to ×5), and a \"Self-found bots in dungeons\" card, coming soon.",
+            "Switches show a tick or a cross, not only a colour.",
+            "The installer lets you choose where the launcher goes.",
+            "Preparing the server: a database build that was cut is done again, finished steps are ticked, the world import shows its progress, and a warning shows when the server is on a USB drive.",
+            "The launcher no longer restarts during the server preparation, and reads the signed list again before refusing a new version."
+          ],
+          "fr": [
+            "Un nouveau serveur télécharge les cartes de navigation des bots (environ 1,9 Go, quelques minutes) au lieu de les construire pendant des heures ; Vérification propose les plus récentes quand elles sont publiées.",
+            "Préréglage « Solo self-found (1-59) », réglage « Vitesse d'expérience des bots » (×1 à ×5), et une carte « Bots self-found en donjon », bientôt disponible.",
+            "Les interrupteurs affichent une coche ou une croix, pas seulement une couleur.",
+            "L'installeur vous laisse choisir où mettre le launcher.",
+            "Préparation du serveur : une base coupée en route est refaite, les étapes finies sont cochées, l'import du monde affiche sa progression, et un avertissement s'affiche si le serveur est sur un disque USB.",
+            "Le launcher ne redémarre plus pendant la préparation du serveur, et relit la liste signée avant de refuser une nouvelle version."
+          ],
+          "ru": [
+            "Новый сервер скачивает навигационные карты ботов (около 1,9 ГБ, несколько минут) вместо многочасового построения; «Проверка» предлагает более новые, когда они опубликованы.",
+            "Пресет «Solo self-found (1-59)», настройка «Скорость получения опыта ботами» (×1–×5) и карточка «Боты без готовой экипировки в подземельях» — скоро.",
+            "Переключатели показывают галочку или крестик, а не только цвет.",
+            "Установщик позволяет выбрать папку лаунчера.",
+            "Подготовка сервера: прерванное создание базы выполняется заново, готовые шаги отмечены, импорт мира показывает прогресс, а для сервера на USB-диске выводится предупреждение.",
+            "Лаунчер больше не перезапускается во время подготовки сервера и перечитывает подписанный список, прежде чем отклонить новую версию."
+          ]
+        }
+      }
+    ]
+  },
+  {
     "version": "0.3.47",
     "items": {
       "en": [

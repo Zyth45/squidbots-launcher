@@ -1003,6 +1003,74 @@
       }
     },
     {
+      "key": "AiPlayerbot.CoaSelfFound",
+      "file": "playerbots.conf",
+      "group": "behaviour",
+      "kind": "bool",
+      "when": "restart",
+      "label": {
+        "en": "Self-found bots",
+        "fr": "Bots self-found",
+        "ru": "Боты без готовой экипировки"
+      },
+      "help": {
+        "en": "Below level 60, no gear is ever generated for bots: they only wear what they loot, earn from quests or get from you, and new bots level up by playing. At 60, bots are geared as usual for endgame. Off by default.",
+        "fr": "Sous le niveau 60, aucun équipement n'est fabriqué pour les bots : ils portent ce qu'ils ramassent, gagnent en quête ou reçoivent de vous, et les nouveaux bots montent en jouant. Au niveau 60, ils sont équipés comme d'habitude pour la fin de jeu. Désactivé par défaut.",
+        "ru": "До 60-го уровня ботам никогда не создаётся экипировка: они носят только то, что добыли, получили за задания или от вас, а новые боты растут, играя. На 60-м уровне боты экипируются как обычно для эндгейма. По умолчанию выключено."
+      }
+    },
+    {
+      "key": "AiPlayerbot.RandomBotXPRate",
+      "file": "playerbots.conf",
+      "group": "behaviour",
+      "kind": "choice",
+      "when": "restart",
+      "label": {
+        "en": "Bot experience speed",
+        "fr": "Vitesse d'expérience des bots",
+        "ru": "Скорость получения опыта ботами"
+      },
+      "help": {
+        "en": "Only for random bots: how fast they level up by playing (on top of the realm XP rate; not while grouped with a real player).",
+        "fr": "Seulement pour les bots aléatoires : vitesse à laquelle ils montent en jouant (en plus du taux d'XP du royaume ; pas quand ils sont groupés avec un vrai joueur).",
+        "ru": "Только для случайных ботов: как быстро они растут, играя (поверх множителя опыта мира; не в группе с живым игроком)."
+      },
+      "choices": [
+        {
+          "value": "1",
+          "label": {
+            "en": "× 1 (default)",
+            "fr": "× 1 (par défaut)",
+            "ru": "× 1 (по умолчанию)"
+          }
+        },
+        {
+          "value": "2",
+          "label": {
+            "en": "× 2",
+            "fr": "× 2",
+            "ru": "× 2"
+          }
+        },
+        {
+          "value": "3",
+          "label": {
+            "en": "× 3",
+            "fr": "× 3",
+            "ru": "× 3"
+          }
+        },
+        {
+          "value": "5",
+          "label": {
+            "en": "× 5",
+            "fr": "× 5",
+            "ru": "× 5"
+          }
+        }
+      ]
+    },
+    {
       "file": "playerbots.conf",
       "key": "AiPlayerbot.RandomBotJoinLfg",
       "group": "behaviour",
@@ -1759,23 +1827,6 @@
       }
     },
     {
-      "key": "AiPlayerbot.RandomBotXPRate",
-      "file": "playerbots.conf",
-      "group": "levels",
-      "kind": "float",
-      "when": "restart",
-      "label": {
-        "en": "Bots XP multiplier",
-        "fr": "Multiplicateur d'expérience des bots",
-        "ru": "Множитель опыта ботов"
-      },
-      "help": {
-        "en": "Applied on top of the realm XP rate (realm rate × this). With bots starting at level 1, raise it to 3 or 5 to see them level up in a few days rather than weeks. 1 = same as players.",
-        "fr": "S'applique par-dessus le taux d'XP du royaume (taux du royaume × celui-ci). Avec des bots qui partent du niveau 1, montez-le à 3 ou 5 pour les voir progresser en quelques jours plutôt qu'en semaines. 1 = comme les joueurs.",
-        "ru": "Применяется поверх множителя опыта мира (множитель мира × этот). Если боты начинают с 1 уровня, поставьте 3 или 5, чтобы они росли за дни, а не недели. 1 — как у игроков."
-      }
-    },
-    {
       "key": "AiPlayerbot.LevelBrackets.FreshStart",
       "file": "playerbots.conf",
       "group": "levels",
@@ -1940,6 +1991,39 @@
         "AiPlayerbot.LevelBrackets.Enabled": "0"
       },
       "fresh": true
+    },
+    {
+      "id": "self-found-world",
+      "title": {
+        "en": "Solo self-found (1-59)",
+        "fr": "Solo self-found (1-59)",
+        "ru": "Solo self-found (1-59)"
+      },
+      "summary": {
+        "en": "Bots level up by playing from level 1 to 59: their gear is never generated, they wear what they loot in the world and in dungeons, earn from quests or get from you. At 60 they are geared as usual for endgame. Random bots are recreated at level 1 (one-time, after a backup). Bot experience speed ×2, adjustable in the settings.",
+        "fr": "Les bots montent en jouant du niveau 1 au niveau 59 : leur équipement n'est jamais fabriqué, ils portent ce qu'ils ramassent dans le monde et en donjon, gagnent en quête ou reçoivent de vous. Au niveau 60, ils sont équipés comme d'habitude pour la fin de jeu. Les bots aléatoires sont recréés au niveau 1 (une seule fois, après une sauvegarde). Vitesse d'expérience des bots ×2, réglable dans les paramètres.",
+        "ru": "Боты растут, играя, с 1 по 59 уровень: экипировка им никогда не создаётся, они носят то, что добыли в мире и в подземельях, получили за задания или от вас. На 60-м уровне они экипируются как обычно для эндгейма. Случайные боты создаются заново с 1 уровня (один раз, после резервной копии). Скорость опыта ботов ×2, меняется в настройках."
+      },
+      "changes": {
+        "AiPlayerbot.CoaSelfFound": "1",
+        "AiPlayerbot.RandomBotXPRate": "2"
+      },
+      "fresh": true
+    },
+    {
+      "id": "self-found-dungeons",
+      "soon": true,
+      "title": {
+        "en": "Self-found bots in dungeons",
+        "fr": "Bots self-found en donjon",
+        "ru": "Боты без готовой экипировки в подземельях"
+      },
+      "summary": {
+        "en": "In Solo self-found, part of the random bots (up to 10%) group up and clear dungeons of their level on their own, and gear up from what they loot.",
+        "fr": "En Solo self-found, une partie des bots aléatoires (jusqu'à 10 %) se groupent et vident seuls des donjons de leur niveau, et s'équipent avec ce qu'ils ramassent.",
+        "ru": "В Solo self-found часть случайных ботов (до 10 %) собирается в группы и сама проходит подземелья своего уровня, экипируясь добычей."
+      },
+      "changes": {}
     },
     {
       "id": "rexxar-like",

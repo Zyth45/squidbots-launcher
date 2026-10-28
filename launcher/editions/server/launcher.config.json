@@ -148,7 +148,8 @@
     },
     "updatesUrl": "https://github.com/Zyth45/squidbots-updates/releases/latest/download/update.json",
     "multirace": false,
-    "componentsUrl": "https://github.com/Zyth45/squidbots-updates/releases/download/components/"
+    "componentsUrl": "https://github.com/Zyth45/squidbots-updates/releases/download/components/",
+    "mmapsUrl": "https://github.com/Zyth45/squidbots-updates/releases/download/mmaps/"
   },
   "edition": "server",
   "feedUrl": "https://github.com/Zyth45/squidbots-updates/releases/download/launcher/feed.json"

@@ -338,6 +338,10 @@ label.switch input + span { background: color-mix(in srgb, var(--bad) 38%, trans
 label.switch input:checked + span { background: color-mix(in srgb, var(--ok) 55%, transparent); border-color: var(--ok); }
 label.switch input + span::after { background: #e9eef0; box-shadow: 0 1px 3px rgba(0, 0, 0, .45); }
 label.switch input:checked + span::after { background: #fff; }
+/* The state also without colours (colour-blind players): a cross OFF, a tick ON, in the knob. */
+label.switch input + span::after, button.switch span::before { content: '\2715'; display: flex; align-items: center; justify-content: center; font: 700 10px/1 system-ui, sans-serif; color: #a33a3a; }
+button.switch span::before { width: 100%; height: 100%; }
+label.switch input:checked + span::after, button.switch.on span::before { content: '\2713'; font-size: 12px; color: #1f7a45; }
 /* The settings bar stays on screen only while changes wait to be saved (saved, it no longer covers the first setting). */
 .conf-bar:not(.dirty) { position: static; }
 
@@ -481,6 +485,10 @@ label.switch input:checked + span::after { background: #fff; }
 .ram-line strong { flex-basis: 100%; font-weight: 600; }
 .recipe-cell { display: grid; gap: 4px; align-content: start; }
 .recipe-cell .recipe { height: 100%; }
+/* A recipe announced for a later version: greyed out, not clickable. */
+.recipe.soon { opacity: .5; cursor: not-allowed; filter: grayscale(.6); }
+.recipe.soon:hover { border-color: var(--line); }
+.recipe .soon-tag { margin-left: 8px; padding: 1px 7px; border-radius: 8px; border: 1px solid var(--line-strong); font-size: 11px; font-weight: 600; color: var(--muted); vertical-align: middle; }
 .fresh-link { justify-self: start; font-size: 12px; padding: 2px 4px; }
 
 /* A launcher option shown on the page it belongs to (Services). */
@@ -502,8 +510,8 @@ label.switch input:checked + span::after { background: #fff; }
 .ah-range output { min-width: 42px; text-align: right; font-weight: 600; }
 .ah-warn { display: flex; gap: 8px; align-items: center; margin: -2px 0 0; font-size: 12.5px; color: var(--warn); }
 
-/* Three quick recipes (recommended, fresh world, like Rexxar) on one row. */
-.conf-group > .recipes { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+/* Four quick recipes (recommended, fresh world, self-found world, like Rexxar): two rows of two. */
+.conf-group > .recipes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 /* The gear of a realm card (its look in the game's realm list). */
 .realm-card header { position: relative; }
 .card-gear { margin-left: auto; margin-right: 8px; display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: var(--muted); cursor: pointer; }
@@ -522,6 +530,8 @@ label.switch input:checked + span::after { background: #fff; }
 .whats-new h3 { margin: 0 0 6px; font: 700 15px var(--display); color: var(--accent); }
 .whats-new ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
 .whats-new li { line-height: 1.45; color: var(--text); }
+.whats-new h4 { margin: 12px 0 4px; font-size: 13px; font-weight: 700; color: var(--text); }
+.whats-new h3 + h4 { margin-top: 2px; }
 .whats-new + .whats-new { margin-top: 10px; padding-top: 12px; border-top: 1px solid var(--line); }
 
 /* Dungeon Clear: the difficulties a run may use. */
@@ -533,3 +543,37 @@ label.switch input:checked + span::after { background: #fff; }
 .lighten small { display: block; margin-top: 3px; color: var(--muted); font-size: 12px; }
 .lighten .button { flex: none; }
 /* Private edition: no public page is offered (Discord, GitHub, sources, help site). */
+/* Steps of the first assembly: done, running (turning), still to do (dimmed). */
+/* The steps of the preparation: icon, name, time or state on the right. */
+.assemble-steps { list-style: none; margin: 14px 0 8px; padding: 0; display: grid; gap: 6px; max-width: 520px; }
+.assemble-steps li { display: grid; grid-template-columns: 18px 1fr auto; gap: 10px; align-items: center; }
+.assemble-steps li .icon { width: 16px; height: 16px; }
+.assemble-steps li.ok .icon { color: var(--ok); }
+.assemble-steps li.busy .icon { color: var(--accent); animation: spin 1.4s linear infinite; }
+.assemble-steps li.todo { opacity: .55; }
+
+/* First start without a server: the game, then the server, as two numbered steps; the other ways folded. */
+.setup-steps { list-style: none; margin: 14px 0 6px; padding: 0; display: grid; gap: 10px; max-width: 640px; }
+.setup-steps li { display: grid; grid-template-columns: 34px 1fr auto; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--row); }
+.setup-steps li.current { border-color: var(--accent); box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent); }
+.setup-steps li.locked { opacity: .55; }
+.setup-steps .step-num { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; border: 2px solid var(--line-strong); color: var(--muted); }
+.setup-steps li.current .step-num { border-color: var(--accent); color: var(--accent); }
+.setup-steps li.done .step-num { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 25%, transparent); color: var(--ok); }
+.setup-steps li.done .step-num .icon { width: 16px; height: 16px; }
+.setup-steps .step-body { display: grid; gap: 4px; min-width: 0; }
+.setup-steps .step-body small { color: var(--muted); overflow-wrap: anywhere; }
+.setup-steps li:nth-child(2) { grid-template-columns: 34px 1fr; }
+.setup-steps .split-button { width: 100%; }
+.other-ways { margin-top: 10px; color: var(--muted); }
+.other-ways summary { cursor: pointer; font-size: 13px; width: max-content; }
+.other-ways summary:hover { color: var(--text); }
+.other-ways .button-row { margin-top: 10px; }
+.fresh-extras { opacity: .75; font-size: 13px; }
+.fresh-extras:hover { opacity: 1; }
+/* The preparation waiting for the game folder. */
+.status-line.warn { color: var(--warn); display: flex; gap: 8px; align-items: center; }
+#assemble-elapsed { opacity: .8; }
+/* Solo self-found: the level settings do not apply, shown greyed under a note. */
+.self-found-note { display: flex; gap: 8px; align-items: flex-start; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); margin: 0 0 12px; }
+.conf-row.self-found-off { opacity: .5; }

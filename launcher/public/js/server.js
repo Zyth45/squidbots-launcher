@@ -216,8 +216,15 @@ function confValue(setting) {
   return pending !== undefined ? pending.value : setting.value;
 }
 
+// Solo self-found: the module turns the level brackets and the random levels off, the bots only level up by playing.
+function selfFoundOn() {
+  const setting = App.state.conf?.settings.find(item => item.key === 'AiPlayerbot.CoaSelfFound');
+  return !!setting && String(confValue(setting)).trim() === '1';
+}
+
 function warnings(key) {
   const conf = App.state.conf;
+  if (selfFoundOn() && conf.settings.find(item => item.key === key)?.group === 'levels') return [];
   return (conf.overrides || []).filter(rule => rule.warn.includes(key) && Object.entries(rule.if).every(([name, value]) => {
     const setting = conf.settings.find(item => item.key === name);
     return setting && String(confValue(setting)).trim() === value;
@@ -228,7 +235,13 @@ function control(setting) {
   const value = confValue(setting);
   const attrs = `data-conf-file="${esc(setting.file)}" data-conf-key="${esc(setting.key)}" data-conf-kind="${esc(setting.kind)}"${setting.origin === 'mode' ? ' disabled' : ''}`;
   if (setting.kind === 'bool') return `<label class="switch"><input type="checkbox" ${attrs} ${String(value).trim() === '1' ? 'checked' : ''}><span></span></label>`;
-  if (setting.kind === 'choice') return `<select ${attrs}>${setting.choices.map(choice => `<option value="${esc(choice.value)}" ${String(choice.value) === String(value).trim() ? 'selected' : ''}>${esc(loc(choice.label))}</option>`).join('')}</select>`;
+  if (setting.kind === 'choice') {
+    // 1.0 in a .conf is the choice 1; a value set by hand that is not in the list stays shown as it is.
+    const current = String(value).trim();
+    const same = choice => String(choice.value) === current || (current !== '' && !Number.isNaN(Number(current)) && Number(choice.value) === Number(current));
+    const extra = current && !setting.choices.some(same) ? `<option value="${esc(current)}" selected>${esc(current)}</option>` : '';
+    return `<select ${attrs}>${setting.choices.map(choice => `<option value="${esc(choice.value)}" ${same(choice) ? 'selected' : ''}>${esc(loc(choice.label))}</option>`).join('')}${extra}</select>`;
+  }
   if (setting.kind === 'int' || setting.kind === 'float') return `<input class="num-input" type="number" ${setting.kind === 'float' ? 'step="any"' : 'step="1"'} value="${esc(value)}" ${attrs}>`;
   return `<input class="text-input" type="text" maxlength="400" value="${esc(value)}" ${attrs}>`;
 }
@@ -345,13 +358,13 @@ function freshWorldRow(conf) {
   return `<button class="link-button fresh-link" data-action="fresh-world" title="${esc(t('fresh.hint', 'Bots keep their level for life: on a world already full, the Fresh world settings change nothing you can see. This does it all: the settings, then every random bot made again at level 1.'))}">${icon('refresh')}${esc(t('fresh.link', 'Also remake the bots already there…'))}</button>`;
 }
 
-function freshWorldDialog(current, title) {
+function freshWorldDialog(current, title, steps) {
   return new Promise(resolve => {
     const rates = [...new Set(['1', '1.5', '2', '3', '5', String(current || '1')])].sort((a, b) => Number(a) - Number(b));
     dialog.open(`${dialog.header(title || t('fresh.title', 'Start from a fresh world'))}<div class="dialog-content">
-      <p>${esc(t('fresh.steps', 'The launcher saves the Fresh world settings (bots start at level 1, no level brackets), stops the server, deletes the random bots and starts the server again: they are made again at level 1. A few minutes.'))}</p>
-      <p class="bad"><strong>${esc(t('fresh.warning', 'Every character of the random bots is deleted, including bots in guilds.'))}</strong> ${esc(t('fresh.kept', 'Your own characters and your alts added as bots are not touched.'))}</p>
-      <label class="field"><span>${esc(t('fresh.xp', 'Bots XP multiplier'))}</span><select id="fresh-xp">${rates.map(rate => `<option value="${esc(rate)}" ${rate === String(current || '1') ? 'selected' : ''}>× ${esc(rate)}${rate === '3' ? ` (${esc(t('fresh.xpAdvised', 'advised'))})` : ''}</option>`).join('')}</select><small>${esc(t('fresh.xpHint', 'At × 1, 500 bots take weeks to leave the starting zones; × 3 or × 5 makes it a few days.'))}</small></label>
+      <p>${esc(steps || t('fresh.steps', 'The launcher saves the Fresh world settings (bots start at level 1, no level brackets), stops the server, deletes the random bots and starts the server again: they are made again at level 1. A few minutes.'))}</p>
+      <p class="bad"><strong>${esc(t('fresh.purgeWarning', 'All random bots will be deleted and recreated at level 1. Your own characters and their alts are kept. This cannot be undone (a backup is made first).'))}</strong></p>
+      <label class="field"><span>${esc(t('fresh.xp', 'Bot experience speed'))}</span><select id="fresh-xp">${rates.map(rate => `<option value="${esc(rate)}" ${rate === String(current || '1') ? 'selected' : ''}>× ${esc(rate)}${rate === '3' ? ` (${esc(t('fresh.xpAdvised', 'advised'))})` : ''}</option>`).join('')}</select><small>${esc(t('fresh.xpHint', 'At × 1, 500 bots take weeks to leave the starting zones; × 3 or × 5 makes it a few days.'))}</small></label>
     </div><footer class="dialog-foot"><button class="button ghost" data-choice="no">${esc(t('common.cancel', 'Cancel'))}</button><button class="button ghost" data-choice="settings">${esc(t('fresh.settingsOnly', 'Settings only'))}</button><button class="button danger" data-choice="yes">${icon('refresh')}${esc(t('fresh.go', 'Remake the world'))}</button></footer>`);
     const element = $('#dialog');
     const done = value => { element.removeEventListener('click', onClick); element.removeEventListener('close', onClose); dialog.close(); resolve(value); };
@@ -381,12 +394,14 @@ function settingsView() {
   if (!tabs.some(tab => tab.id === App.state.confGroup)) App.state.confGroup = tabs[0]?.id;
   const changedIn = id => conf.settings.filter(setting => setting.group === id && App.state.pending[pendingKey(setting.file, setting.key)] !== undefined).length;
   const nav = `<nav class="conf-nav" id="conf-nav">${tabs.map(tab => `<button class="conf-tab${App.state.confGroup === tab.id ? ' active' : ''}" data-action="conf-group" data-id="${esc(tab.id)}">${icon(tab.icon)}<span>${esc(tab.label)}</span>${changedIn(tab.id) ? `<em>${changedIn(tab.id)}</em>` : ''}</button>`).join('')}</nav>`;
-  const quick = conf.recipes.filter(recipe => ['coa-recommended', 'fresh-level-1', 'rexxar-like'].includes(recipe.id));
-  const recipes = quick.length ? `<div class="recipes">${quick.map(recipe => `<div class="recipe-cell"><button class="recipe" data-action="conf-recipe" data-id="${esc(recipe.id)}"><strong>${esc(loc(recipe.title))}</strong><small>${esc(loc(recipe.summary))}</small></button></div>`).join('')}</div>` : '';
-  const body = groups.filter(group => group.id === App.state.confGroup).map(group => `<section class="conf-group"><h3>${icon(group.icon)}${esc(loc(group.label))}</h3>${group.id === 'population' ? ramAdvice(conf) + recipes : ''}${conf.settings.filter(setting => setting.group === group.id).map(setting => {
+  // A card announced for later (soon) shows greyed out, next to the recipe it belongs to, and writes nothing.
+  const quick = conf.recipes.filter(recipe => ['coa-recommended', 'fresh-level-1', 'self-found-world', 'self-found-dungeons', 'rexxar-like'].includes(recipe.id))
+    .filter(recipe => !recipe.soon || conf.recipes.some(item => item.id === 'self-found-world'));
+  const recipes = quick.length ? `<div class="recipes">${quick.map(recipe => `<div class="recipe-cell"><button class="recipe${recipe.soon ? ' soon' : ''}" ${recipe.soon ? 'disabled aria-disabled="true"' : `data-action="conf-recipe" data-id="${esc(recipe.id)}"`}><strong>${esc(loc(recipe.title))}${recipe.soon ? `<span class="soon-tag">${esc(t('conf.soon', 'Coming soon'))}</span>` : ''}</strong><small>${esc(loc(recipe.summary))}</small></button></div>`).join('')}</div>` : '';
+  const body = groups.filter(group => group.id === App.state.confGroup).map(group => `<section class="conf-group"><h3>${icon(group.icon)}${esc(loc(group.label))}</h3>${group.id === 'population' ? ramAdvice(conf) + recipes : ''}${group.id === 'levels' && selfFoundOn() ? `<p class="status-line self-found-note">${icon('info')}${esc(t('conf.selfFoundLevels', 'Solo self-found is on: the bots only level up by playing (up to 59 without generated gear, geared as usual at 60). The level settings below do not apply.'))}</p>` : ''}${conf.settings.filter(setting => setting.group === group.id).map(setting => {
     const warn = warnings(setting.key);
     const changed = App.state.pending[pendingKey(setting.file, setting.key)] !== undefined;
-    return `<div class="conf-row${changed ? ' changed' : ''}${setting.origin ? ` from-${setting.origin}` : ''}"><div class="conf-label"><strong>${esc(loc(setting.label))}</strong>${originTag(setting)}<p>${esc(loc(setting.help))}</p><small class="when">${icon('refresh')}${esc(loc(conf.when?.[setting.when]))}</small><div class="conf-warn" data-warn="${esc(setting.key)}" ${warn.length ? '' : 'hidden'}>${icon('info')}<span>${esc(warn.join(' '))}</span></div></div><div class="conf-control">${control(setting)}</div></div>`;
+    return `<div class="conf-row${changed ? ' changed' : ''}${setting.group === 'levels' && selfFoundOn() ? ' self-found-off' : ''}${setting.origin ? ` from-${setting.origin}` : ''}"><div class="conf-label"><strong>${esc(loc(setting.label))}</strong>${originTag(setting)}<p>${esc(loc(setting.help))}</p><small class="when">${icon('refresh')}${esc(loc(conf.when?.[setting.when]))}</small><div class="conf-warn" data-warn="${esc(setting.key)}" ${warn.length ? '' : 'hidden'}>${icon('info')}<span>${esc(warn.join(' '))}</span></div></div><div class="conf-control">${control(setting)}</div></div>`;
   }).join('')}</section>`).join('');
   const key = realmKey || 'coa';
   const others = createdRealms().length > 1;
@@ -652,7 +667,7 @@ Object.assign(App.actions, {
     try { await App.api.purgeBots(); } finally { release(); }
     toast(t('server.purged', 'Random bots deleted. They come back at the next start.'), 'success');
   }, button),
-  'server-choose': button => guard(async () => { const info = await App.api.chooseServer(); if (info) { Object.assign(App.state, { server: info, serverCheck: null, botsCheck: null, conf: null, backups: null, upgrade: null, verify: null, network: null, botsError: '', pending: {} }); App.refresh('server'); if (info.installed) checkServer(false, true).catch(() => {}); } }, button),
+  'server-choose': button => guard(async () => { const info = await App.api.chooseServer(); if (info) { Object.assign(App.state, { server: info, serverCheck: null, botsCheck: null, conf: null, backups: null, upgrade: null, verify: null, network: null, botsError: '', pending: {} }); App.refresh('server'); if (info.installed) checkServer(false, true).catch(() => {}); App.reloadAll(); } }, button),
   'server-folder': () => guard(() => App.api.openServerFolder()),
   'server-update': button => guard(() => updateServer(false), button),
   'server-check': button => guard(() => checkServer(false), button),
@@ -690,6 +705,7 @@ Object.assign(App.actions, {
       catch (error) { App.state.botsError = translateError(error.message); App.refresh('server'); throw error; }
     }
     App.go('home');
+    App.reloadAll();
     // Moving from an older server: its players can be brought over.
     if (before?.installed && before.path !== info.path) toast(t('import.bringPlayers', 'Your previous server is kept. To bring its players: Management > Installation > Bring players over from another repack.'));
   }, button),
@@ -786,7 +802,8 @@ Object.assign(App.actions, {
     const realm = confRealm();
     const recipe = conf.recipes.find(item => item.id === (button.dataset.id || 'fresh-level-1'));
     const xpSetting = conf.settings.find(item => item.key === 'AiPlayerbot.RandomBotXPRate');
-    const choice = await freshWorldDialog(recipe.changes['AiPlayerbot.RandomBotXPRate'] || xpSetting?.value, loc(recipe.title));
+    const steps = recipe.id === 'fresh-level-1' ? '' : `${loc(recipe.summary)} ${t('fresh.stepsShort', 'The launcher saves these settings, stops the server, makes a backup, deletes the random bots and starts the server again. A few minutes.')}`;
+    const choice = await freshWorldDialog(recipe.changes['AiPlayerbot.RandomBotXPRate'] || xpSetting?.value, loc(recipe.title), steps);
     if (!choice) return;
     // The settings alone: prepared like any recipe, saved with Save (the bots already there keep their level).
     if (choice.settingsOnly) { prepareRecipe({ ...recipe, changes: { ...recipe.changes, ...(xpSetting ? { 'AiPlayerbot.RandomBotXPRate': choice.xp } : {}) } }); return; }
@@ -796,12 +813,13 @@ Object.assign(App.actions, {
       const setting = conf.settings.find(item => item.key === key);
       if (setting) App.state.pending[pendingKey(setting.file, key)] = { file: setting.file, key, value, kind: setting.kind };
     }
-    const release = holdDialog(t('fresh.running', 'Remaking the world'), t('fresh.runningBody', 'Settings saved, server stopped, random bots deleted, server started again: a few minutes. Keep the launcher open.'));
+    const release = holdDialog(t('fresh.running', 'Remaking the world'), t('fresh.runningBody2', 'Settings saved, server stopped, backup made, random bots deleted, server started again: a few minutes. Keep the launcher open.'));
     try {
       await App.api.saveServerSettings(Object.values(App.state.pending), realm);
       App.state.pending = {};
-      if (realm) { await App.api.realmsStop(realm).catch(() => {}); await App.api.realmsPurge(realm); await App.api.realmsStart(realm); }
-      else { App.state.server = await App.api.stopService('all'); await App.api.purgeBots(); App.state.server = await App.api.startService('all'); }
+      // The bots deleted cannot come back: the databases are saved first (the realms' own ones too).
+      if (realm) { await App.api.realmsStop(realm).catch(() => {}); await App.api.createBackup({ label: 'fresh-world' }); await App.api.realmsPurge(realm); await App.api.realmsStart(realm); }
+      else { App.state.server = await App.api.stopService('all'); await App.api.createBackup({ label: 'fresh-world' }); await App.api.purgeBots(); App.state.server = await App.api.startService('all'); }
     } finally { release(); await loadConf(); }
     toast(t('fresh.done', 'Fresh world: the bots are being made again at level 1.'), 'success');
   }, button),

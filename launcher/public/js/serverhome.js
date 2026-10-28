@@ -130,6 +130,7 @@ const CHECK_TEXT = {
     warn: ['Bot settings of an older version', '{count} key(s) of this version are missing ({keys}…): they run at their defaults. The fix adds them with their default values (a copy is kept).'],
   },
   'coa.remote': { info: ['Only this PC can play', 'CoA.AllowRemoteClients = 0: players on other PCs are refused even with the right address.'] },
+  'bots.mmapsUpdate': { info: ['Newer navigation maps are published ({version})', 'Download them (about 1.9 GB, a few minutes) to replace the maps of this server. Only the maps that match your game are taken; the others are built here.'] },
   'bots.mmaps': { info: ['Navigation maps of the bots: {done} of {total} maps', 'Built once from your game and kept. Bots walking through walls, stuck or going in straight lines? Rebuild them (about an hour, in the background; the server can keep running).'] },
   'logs.size': {
     ok: ['Logs of a normal size', ''],
@@ -155,6 +156,7 @@ const ACTIONS = {
   'crashes-archive': ['crashes-archive', '', 'Put away'],
   'logs-clean': ['logs-clean', '', 'Clean the logs'],
   'mmaps-rebuild': ['mmaps-rebuild', '', 'Rebuild'],
+  'mmaps-update': ['mmaps-update', '', 'Download'],
 };
 
 function checkText(check) {
@@ -237,7 +239,7 @@ App.pages.dash = {
 
 App.pages.verify = {
   render: verifyView,
-  mount() { if (!App.state.verify && !App.state.verifying && App.state.server?.path) runVerify(false); },
+  mount() { if (!App.state.verify && !App.state.verifying && App.state.server?.path && !App.state.server.assembly?.needed) runVerify(false); },
 };
 
 // ---------------------------------------------------------------- home
@@ -260,15 +262,19 @@ function homeView() {
     const progress = p ? `<div class="hero-progress"><div class="progress${pct === null ? ' indeterminate' : ''}"><span data-pct="${pct ?? 30}"></span></div><span>${pct === null ? '' : `${pct}%`}</span></div><p class="muted small">${esc(p.phase === 'download' ? t('install.downloading', 'Downloading the server… {done} / {total}', { done: formatBytes(p.done), total: formatBytes(p.total) }) : p.phase === 'hash' ? t('import.hashing', 'Checking the zip…') : t('import.unpacking', 'Unpacking the repack… ({done}/{total} files)', { done: formatNumber(p.done), total: formatNumber(p.total) }))}</p>${p.phase === 'download' ? `<button class="button ghost small" data-action="install-cancel">${esc(t('update.cancel', 'Cancel'))}</button>` : ''}` : '';
     // The signed feed gives the server's sha256 and size: the launcher downloads and installs it itself.
     const direct = repack?.sha256 && repack?.bytes;
+    const gameOk = !!s.client?.path;
+    const packageVersion = (/\d+\.\d+(?:\.\d+)?/.exec(repack?.name || '') || [])[0] || repack?.release || '';
     const first = direct
-      ? `<button class="split-button update" data-action="install-server" ${p ? 'disabled' : ''}><span class="split-main">${icon('download')}<span><strong>${esc(t('install.title', 'Install the server'))}</strong><small>${esc(repack.name || repack.release)} · ${esc(formatBytes(repack.bytes))}</small><small class="muted">${esc(t('install.hint', 'Downloaded and installed by the launcher, in an empty folder you choose.'))}</small></span></span></button>${progress}`
+      ? `<button class="split-button update" data-action="install-server" ${p || !gameOk ? 'disabled' : ''}><span class="split-main">${icon('download')}<span><strong>${esc(t('install.title', 'Install the server'))}</strong><small>${esc(t('install.package', 'SquidBots {version} · {size}', { version: packageVersion, size: formatBytes(repack.bytes) }))}</small><small class="muted">${esc(t('install.hint', 'Downloaded and installed by the launcher, in an empty folder you choose.'))}</small></span></span></button>${progress}`
       : repack
       ? `<button class="split-button update" data-action="feed-open" data-kind="repack"><span class="split-main">${icon('download')}<span><strong>${esc(t('home.download', 'Download the server'))}</strong><small>${esc(repack.name || repack.release)}${repack.size ? ` · ${esc(repack.size)}` : ''}</small><small class="muted">${esc(t('home.downloadThenUpdate', 'Base version: the launcher updates it to the latest one right after.'))}</small></span></span></button>`
       : `<button class="split-button ready" data-tab="server"><span class="split-main">${icon('download')}<span><strong>${esc(t('home.install', 'Install'))}</strong></span></span></button>`;
     return `<div class="page classic"><section class="hero classic-hero"><div class="classic-main"><h1>${esc(t('home.title', 'My server'))}</h1><p class="status-line">${esc(direct ? t('assemble.noServer', 'No server yet: the launcher downloads our server (about 150 MB, without any game data), then takes the game data from your own client.') : repack ? t('home.noServerFeed', 'No server yet: download the full CoA Bots repack (Proton), then import the zip here. The launcher checks it and unpacks it; after that, every update comes from here in one click.') : t('home.noServer', 'No server yet: install the CoA repack with its bots in a few clicks, or show the folder of the one you have.'))}</p>
-      <div class="button-row">${first}</div>
-      ${direct && !s.client?.path ? `<div class="button-row"><button class="button ghost" data-action="client-locate">${icon('folder')}${esc(t('assemble.locate', 'Show my game folder (the server data comes from it)'))}</button></div>` : ''}
-      <div class="button-row"><button class="button ghost" data-action="home-import">${icon('folder')}${esc(t('home.haveZip', 'I have the zip: import it'))}</button><button class="button ghost" data-action="server-choose">${icon('folder')}${esc(t('home.haveServer', 'I already have a server folder'))}</button></div></div></section>${feedNewsRow()}</div>`;
+      ${direct ? `<ol class="setup-steps">
+        <li class="${gameOk ? 'done' : 'current'}"><span class="step-num">${gameOk ? icon('check') : '1'}</span><div class="step-body"><strong>${esc(t('setup.game', 'Your game'))}</strong><small>${esc(gameOk ? s.client.path : t('setup.gameHint', 'The server takes its game data from your own CoA client.'))}</small></div><button class="button ${gameOk ? 'ghost small' : 'primary'}" data-action="client-locate">${icon('folder')}${esc(gameOk ? t('setup.change', 'Change') : t('setup.pickGame', 'Choose the game folder'))}</button></li>
+        <li class="${gameOk ? 'current' : 'locked'}"><span class="step-num">2</span><div class="step-body">${first}${gameOk ? '' : `<small class="muted">${esc(t('setup.gameFirst', 'Choose your game folder first.'))}</small>`}</div></li>
+      </ol>` : `<div class="button-row">${first}</div>`}
+      <details class="other-ways"><summary>${esc(t('setup.otherWays', 'Other ways to install…'))}</summary><div class="button-row"><button class="button ghost" data-action="home-import">${icon('folder')}${esc(t('home.haveZip', 'I have the zip: import it'))}</button><button class="button ghost" data-action="server-choose">${icon('folder')}${esc(t('home.haveServer', 'I already have a server folder'))}</button></div></details></div></section><div class="fresh-extras">${feedNewsRow()}</div></div>`;
   }
   // A server without game data: prepared from the player's own client before anything else.
   const asm = info.assembly;
@@ -281,6 +287,7 @@ function homeView() {
   const running = services.filter(service => service.state === 'running').length;
   const moving = App.state.stoppingAll ? { state: 'stopping' } : App.state.startingAll ? { state: 'starting' } : services.find(service => service.state === 'starting' || service.state === 'stopping');
   const all = (services.length && running === services.length) || realmsOnly;
+  const worldOn = services.some(service => /world/i.test(service.id) && service.state === 'running');
   const foreign = services.find(service => service.state === 'foreign');
   // The world runs but its console does not answer (bots being created at a first start): stopping would only
   // time out, so the button waits.
@@ -290,7 +297,8 @@ function homeView() {
   const button = moving ? ['refresh', moving.state === 'starting' ? t('server.startingAll', 'Starting the server…') : t('server.stoppingAll', 'Stopping the server…'), '', 'busy']
     : stuck ? ['warning', t('home.forceStop', 'Force the world to stop'), 'world-force-stop', 'ready']
     : busy ? ['refresh', t('home.botsCreating', 'Bots on the way…'), '', 'busy']
-    : running ? ['pause', t('home.stop', 'Stop the server'), 'service-stop-all', 'ready'] : ['play', t('home.start', 'Start the server'), 'service-start-all', 'update'];
+    // The big button follows the world: MySQL alone (a crash of the world, a database task) still offers to start.
+    : worldOn || realmsOnly ? ['pause', t('home.stop', 'Stop the server'), 'service-stop-all', 'ready'] : ['play', t('home.start', 'Start the server'), 'service-start-all', 'update'];
   const status = App.state.stoppingAll ? t('server.stoppingAll', 'Stopping the server…') : App.state.startingAll ? t('server.startingAll', 'Starting the server…') : stuck ? t('home.stuckText', 'The world has not answered for {n} minutes: it is stuck. Force it to stop, then start the server again.', { n: Math.round(s.live.busyFor / 60000) })
     : busy ? t('home.botsCreatingText', 'The server is creating its bots (about 10 minutes at a first start). Do not close it: it can be stopped as soon as it answers again.')
     : foreign ? t('home.foreign', '{name}: port {port} is taken by another program.', { name: foreign.name, port: foreign.port })
@@ -303,7 +311,8 @@ function homeView() {
   const lights = services.map(service => `<span class="mini-service"><span class="light ${service.state === 'running' ? 'on' : service.state === 'starting' || service.state === 'stopping' ? 'busy' : 'off'}"></span>${esc(/world/i.test(service.id) && App.state.realms?.available ? realmShort('coa') : service.name)}</span>`).join('')
     // A light for each realm whose world runs or starts.
     + (info.realmsOn || []).map(realm => `<span class="mini-service"><span class="light ${realm.state === 'running' && !App.state.stoppingAll ? 'on' : 'busy'}"></span>${esc(realmShort(realm.key))}</span>`).join('');
-  const menu = [['srv-tab', 'services', t('home.menuServices', 'Services one by one')], ['srv-tab', 'backups', t('srv.tab.backups', 'Backups')], ['server-folder', '', t('home.menuFolder', 'Open the server folder')],
+  // Something runs without the world (MySQL alone...): it can be stopped from here.
+  const menu = [...(running && !worldOn && !realmsOnly ? [['service-stop-all', '', t('home.menuStopRest', 'Stop what is running ({n} of {total})', { n: running, total: services.length })]] : []), ['srv-tab', 'services', t('home.menuServices', 'Services one by one')], ['srv-tab', 'backups', t('srv.tab.backups', 'Backups')], ['server-folder', '', t('home.menuFolder', 'Open the server folder')],
     ['instance-new', '', t('home.menuNew', 'Create a new server (clean instance)…')], ['instance-add', '', t('home.menuAdd', 'Add a repack folder I unpacked…')], ['instance-pick', '', t('home.menuSwitch', 'My servers…')]];
   return `<div class="page classic">${asm?.applies ? clientBanner(asm) + mmapsBanner(asm.mmaps) : ''}${info.mmapsRestart ? `<div class="update-banner"><i class="dot"></i><span>${esc(t('assemble.mmapsRestart', 'The navigation maps of the bots are ready. Restart the server so it uses all of them.'))}</span><button class="button primary small" data-action="server-restart">${icon('refresh')}${esc(t('assemble.restart', 'Restart the server'))}</button></div>` : ''}
     <section class="hero classic-hero server-hero">${homeLinks()}
@@ -563,21 +572,43 @@ function discordPanel() {
 }
 
 // A new launcher downloaded and verified: one click restarts into it.
-const ASSEMBLE_STEPS = { dbc: ['Game tables (DBC)', '~1 min'], maps: ['Terrain and cameras', '~3 min'], vmaps: ['Buildings and objects (vmaps)', '~10 min'], sql: ['Public SQL of the core', '~2 min'], db: ['Database', '~9 min'], bots: ['CoA Bots', '~2 min'] };
+const ASSEMBLE_STEPS = { dbc: ['Game tables (DBC)', '~1 min'], maps: ['Terrain and cameras', '~3 min'], vmaps: ['Buildings and objects (vmaps)', '~10 min'], sql: ['Public SQL of the core', '~2 min'], db: ['Database', '~9 min'], bots: ['CoA Bots', '~2 min'], mmaps: ['Navigation maps of the bots (download)', '~10 min'] };
+// « 1,1 / 1,9 Go · 12 Mo/s · ~1 min left » while the navigation maps download.
+function downloadLine(p) {
+  const parts = [`${formatBytes(p.done)} / ${formatBytes(p.total)}`];
+  if (p.speed > 0) parts.push(`${formatBytes(p.speed)}/s`);
+  if (p.left > 0) parts.push(p.left < 60 ? t('assemble.leftSeconds', '~{n} s left', { n: Math.max(5, Math.round(p.left / 5) * 5) }) : t('assemble.leftMinutes', '~{n} min left', { n: Math.ceil(p.left / 60) }));
+  return parts.join(' · ');
+}
+// « Still working (1 min 05 s) » on the step in progress: a long step does not look frozen.
+function stepElapsed() {
+  const since = App.state.assembleProgress?.since;
+  if (!since) return '';
+  const seconds = Math.floor((Date.now() - since) / 1000);
+  return t('assemble.still', 'Still working ({time})', { time: seconds < 60 ? `${seconds} s` : `${Math.floor(seconds / 60)} min ${String(seconds % 60).padStart(2, '0')} s` });
+}
+setInterval(() => { const line = document.getElementById('assemble-elapsed'); if (line) line.textContent = stepElapsed(); }, 1000);
 function assemblyCard(asm) {
   const p = App.state.assembleProgress;
   const pct = p?.total ? Math.floor((100 * p.done) / p.total) : null;
-  const rows = Object.entries(ASSEMBLE_STEPS).map(([id, [label, time]]) => {
-    const done = id === 'bots' ? !asm.needed : !asm.missing.includes(id);
+  // The steps run in this order: those before the current one are done (the server info is read before the run).
+  const order = Object.keys(ASSEMBLE_STEPS);
+  // Without the game folder nothing can start: the card says so instead of looking at work.
+  const noGame = !(App.state.client?.path || asm.client);
+  // The download of the navigation maps only with a launcher that has their address.
+  const rows = Object.entries(ASSEMBLE_STEPS).filter(([id]) => id !== 'mmaps' || App.state.config.hasMmaps).map(([id, [label, time]]) => {
     const now = p?.step === id;
-    return `<li class="${done ? 'ok' : now ? 'busy' : ''}">${icon(done ? 'check' : 'refresh')}<span>${esc(t(`assemble.${id}`, label))}</span><small class="muted">${esc(done ? t('assemble.done', 'done') : now && pct !== null ? `${pct}%` : time)}</small></li>`;
+    const finished = id === 'bots' ? !asm.needed : id === 'mmaps' ? (asm.mmaps?.done || 0) > 0 : !asm.missing.includes(id);
+    const done = !now && (finished || (p?.step && order.indexOf(id) < order.indexOf(p.step)));
+    return `<li class="${done ? 'ok' : now ? 'busy' : 'todo'}">${icon(done ? 'check' : now ? 'refresh' : 'chevron')}<span>${esc(t(`assemble.${id}`, label))}</span><small class="muted">${esc(done ? t('assemble.done', 'done') : now && pct !== null ? `${pct}%` : !p && noGame ? t('assemble.waiting', 'waiting') : time)}</small></li>`;
   }).join('');
-  const progress = p ? `<div class="hero-progress"><div class="progress${pct === null ? ' indeterminate' : ''}"><span data-pct="${pct ?? 30}"></span></div><span>${pct === null ? '' : `${pct}%`}</span></div><p class="muted small">${esc(p.text || '')}</p>` : '';
+  const progress = p ? `<div class="hero-progress"><div class="progress${pct === null ? ' indeterminate' : ''}"><span data-pct="${pct ?? 30}"></span></div><span>${pct === null ? '' : `${pct}%`}</span></div><p class="muted small" title="${esc(p.text || '')}">${esc(ASSEMBLE_STEPS[p.step] ? t(`assemble.${p.step}`, ASSEMBLE_STEPS[p.step][0]) : t('assemble.starting', 'Starting…'))} · ${p.step === 'mmaps' && p.total > 1e6 ? esc(downloadLine(p)) : `<span id="assemble-elapsed">${esc(stepElapsed())}</span>`}</p>${p.warning ? `<p class="status-line bad">${icon('warning')}${esc(t('assemble.stuck', p.warning))}</p>` : ''}` : '';
   const error = App.state.assembleError ? `<p class="status-line bad">${icon('warning')}${esc(App.state.assembleError)}</p>` : '';
-  return `<p class="status-line">${esc(t('assemble.intro', 'This server comes without any game data: the launcher takes it from your own Conquest of Azeroth client (about 30 minutes), then installs the bots and builds the navigation maps of the bots in the background (about an hour, you can already play).'))}</p>
+  return `<p class="status-line">${esc(App.state.config.hasMmaps ? t('assemble.intro2', 'This server comes without any game data: the launcher takes it from your own Conquest of Azeroth client (about 30 minutes), installs the bots, then downloads their navigation maps (about 1.9 GB).') : t('assemble.intro', 'This server comes without any game data: the launcher takes it from your own Conquest of Azeroth client (about 30 minutes), then installs the bots and builds the navigation maps of the bots in the background (about an hour, you can already play).'))}</p>
+    ${App.state.server?.driveBus === 'USB' ? `<p class="status-line bad">${icon('warning')}${esc(t('assemble.usbDrive', 'This server is on an external (USB) drive: MySQL can freeze there while the database is built. An internal disk is safer.'))}</p>` : ''}
     <ol class="assemble-steps">${rows}</ol>${progress}${error}
-    ${App.state.client?.path ? '' : `<div class="button-row"><button class="button ghost" data-action="client-locate">${icon('folder')}${esc(t('assemble.locate', 'Show my game folder (the server data comes from it)'))}</button></div>`}
-    <div class="button-row"><button class="split-button update" data-action="assemble-run" ${p ? 'disabled' : ''}><span class="split-main">${icon('download')}<span><strong>${esc(t('assemble.run', 'Prepare the data from my game'))}</strong><small class="muted">${esc(t('assemble.client', 'Game folder: {path}', { path: App.state.client?.path || t('assemble.noClient', 'not chosen yet (Play tab)') }))}</small></span></span></button></div>`;
+    ${noGame && !p ? `<p class="status-line warn">${icon('warning')}${esc(t('assemble.waitGame', 'Waiting for your game folder: choose it and the preparation starts.'))}</p><div class="button-row"><button class="button primary" data-action="assemble-locate">${icon('folder')}${esc(t('setup.pickGame', 'Choose the game folder'))}</button></div>` : ''}
+    ${p ? '' : `<div class="button-row"><button class="split-button update" data-action="assemble-run" ${noGame ? 'disabled' : ''}><span class="split-main">${icon('download')}<span><strong>${esc(t('assemble.run', 'Prepare the data from my game'))}</strong><small class="muted">${esc(t('assemble.client', 'Game folder: {path}', { path: App.state.client?.path || asm.client || t('assemble.noClient', 'not chosen yet (Play tab)') }))}</small></span></span></button></div>`}`;
 }
 // The game was patched since the server's data were taken from it: they are taken again (about 30 minutes).
 function clientBanner(asm) {
@@ -589,11 +620,13 @@ function mmapsBanner(mm) {
   const pct = mm.tilesTotal ? Math.min(99, Math.floor((100 * mm.tiles) / mm.tilesTotal)) : mm.total ? Math.floor((100 * mm.done) / mm.total) : 0;
   if (!mm.running && Date.now() - (App.state.mmapsAsked || 0) < 60000) mm = { ...mm, running: true };
   if (mm.paused && !mm.running) return `<div class="update-banner"><i class="dot"></i><span>${esc(t('assemble.mmapsPausedText', 'Navigation maps of the bots: paused at {done} of {total} maps. Resume when you like; the maps already built are kept.', { done: mm.done, total: mm.total || '…' }))}</span><button class="button ghost small" data-action="assemble-mmaps">${esc(t('assemble.mmapsContinue', 'Resume'))}</button></div>`;
-  return `<div class="update-banner"><i class="dot"></i><span>${esc(mm.running ? t('assemble.mmapsRunning', 'Navigation maps of the bots: {done} of {total} maps ({pct}%), being built in the background.', { done: mm.done, total: mm.total || '…', pct }) : t('assemble.mmapsPaused', 'Navigation maps of the bots: {done} of {total} maps. Until they are all built, bots may walk in straight lines.', { done: mm.done, total: mm.total || '…' }))}</span>${mm.running ? `<button class="button ghost small" data-action="assemble-mmaps-pause">${esc(t('assemble.mmapsPause', 'Pause'))}</button>` : `<button class="button ghost small" data-action="assemble-mmaps">${esc(mm.paused ? t('assemble.mmapsContinue', 'Resume') : t('assemble.mmapsResume', 'Build them now'))}</button>`}</div>`;
+  return `<div class="update-banner"><i class="dot"></i><span>${esc(mm.running ? t('assemble.mmapsRunning2', 'Navigation maps of the bots: {pct}% of the work done ({done} of {total} maps, the large continents come last), built in the background.', { done: mm.done, total: mm.total || '…', pct }) : t('assemble.mmapsPaused', 'Navigation maps of the bots: {done} of {total} maps. Until they are all built, bots may walk in straight lines.', { done: mm.done, total: mm.total || '…' }))}</span>${mm.running ? `<button class="button ghost small" data-action="assemble-mmaps-pause">${esc(t('assemble.mmapsPause', 'Pause'))}</button>` : `<button class="button ghost small" data-action="assemble-mmaps">${esc(mm.paused ? t('assemble.mmapsContinue', 'Resume') : t('assemble.mmapsResume', 'Build them now'))}</button>`}</div>`;
 }
 
 function launcherBanner() {
   const update = App.state.launcherUpdate;
+  // Not while the server is prepared: restarting would cut it.
+  if (update?.phase === 'downloaded' && App.state.assembleProgress) return `<div class="update-banner"><i class="dot"></i><span>${esc(t('home.launcherReadyLater', 'A new version of the launcher ({version}) is ready: restart into it once the server is prepared.', { version: update.version || '' }))}</span></div>`;
   if (update?.phase === 'downloaded') return `<div class="update-banner"><i class="dot"></i><span>${esc(t('home.launcherReady', 'A new version of the launcher ({version}) is ready.', { version: update.version || '' }))}</span><button class="button primary small" data-action="launcher-install">${esc(t('home.launcherRestart', 'Restart and update'))}</button></div>`;
   if (update?.phase === 'downloading') return `<div class="update-banner"><i class="dot"></i><span>${esc(t('home.launcherDownloading', 'Downloading the new launcher… {percent}%', { percent: update.percent || 0 }))}</span></div>`;
   // A failed launcher update says so (it used to leave the bar empty) and can be tried again.
@@ -607,7 +640,7 @@ App.pages.home = {
     if (!App.state.server) App.api.serverInfo().then(info => { App.state.server = info; App.refresh('home'); }).catch(() => {});
     if (!App.state.dashboard) refreshDashboard();
     if (!App.state.network && App.state.server?.path) App.api.networkInfo().then(data => { App.state.network = data.network; if (App.state.tab === 'home') App.render(); }).catch(() => {});
-    if (!App.state.verify && !App.state.verifying && App.state.server?.path) runVerify(false);
+    if (!App.state.verify && !App.state.verifying && App.state.server?.path && !App.state.server.assembly?.needed) runVerify(false);
   },
 };
 
@@ -659,9 +692,18 @@ Object.assign(App.actions, {
     if (!info) return;
     App.state.server = info;
     toast(t('install.done', 'The server is installed. Start it from the home page.'), 'success');
-    App.render();
+    await App.reloadAll();
   }, button),
   'install-cancel': () => App.api.downloadCancel(),
+  // The game folder chosen from the preparation card: the preparation starts at once.
+  'assemble-locate': button => guard(async () => {
+    const info = await App.api.locateClient();
+    if (!info) return;
+    App.state.client = info;
+    App.render();
+    refreshAddon(true);
+    App.actions['assemble-run']();
+  }, button),
   'assemble-run': button => guard(async () => {
     App.state.assembleError = '';
     App.state.assembleProgress = { step: 'dbc', text: t('assemble.starting', 'Starting…') };
@@ -712,6 +754,13 @@ Object.assign(App.actions, {
     App.render();
   }, button),
   // Settings > About: look for a new launcher now (the result also shows on the home page banner).
+  'mmaps-update': button => guard(async () => {
+    if (!await confirmDialog({ title: t('verify.mmapsUpdateTitle', 'Download the navigation maps?'), body: esc(t('verify.mmapsUpdateBody', 'About 1.9 GB. The maps of this server are replaced one by one; the server can keep running.')), confirm: t('verify.mmapsUpdateGo', 'Download') })) return;
+    await App.api.assembleMmapsUpdate();
+    App.state.server = await App.api.serverInfo();
+    toast(t('verify.mmapsUpdated', 'The navigation maps are up to date.'), 'success');
+    runVerify(false);
+  }, button),
   'mmaps-rebuild': button => guard(async () => {
     if (!await confirmDialog({ title: t('verify.mmapsTitle', 'Rebuild the navigation maps?'), body: esc(t('verify.mmapsBody', 'Every map is built again from your game data, in the background (about an hour). The bots keep the current maps until each new one is ready.')), confirm: t('verify.mmapsGo', 'Rebuild') })) return;
     App.state.mmapsAsked = Date.now();

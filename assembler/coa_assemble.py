@@ -28,6 +28,7 @@ import sys
 import tarfile
 import time
 import urllib.request
+import zipfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -406,9 +407,126 @@ def step_mmaps(threads):
     shutil.rmtree(out, ignore_errors=True)
 
 
+def map_files(mid):
+    """Les fichiers d'une carte dans Data/mmaps : son .mmap et ses tuiles."""
+    final = DATA / "mmaps"
+    return [p for p in final.glob(f"{mid:03d}*")
+            if p.name == f"{mid:03d}.mmap" or (p.suffix == ".mmtile" and p.stem[:-4] == f"{mid:03d}")]
+
+
+def cmd_mmaps_pack(args):
+    """Nos mmaps à publier : un zip par carte et manifest.json, avec l'empreinte des maps/vmaps dont chaque carte
+    a été construite (map_hash). Seules les cartes construites à partir des données présentes sont prises."""
+    out = Path(args.out)
+    out.mkdir(parents=True, exist_ok=True)
+    state = load_state()
+    done = state.get("mmaps", {}).get("maps", {})
+    ids = sorted(map_ids())
+    maps = {}
+    for i, mid in enumerate(ids):
+        h, n = map_hash(mid)
+        files = map_files(mid)
+        if not n or done.get(str(mid)) != h or not files:
+            continue
+        name = f"mmaps-{mid:03d}-{h[:12]}.zip"
+        with zipfile.ZipFile(out / name, "w", zipfile.ZIP_DEFLATED, compresslevel=6) as z:
+            for p in sorted(files):
+                z.write(p, p.name)
+        digest = hashlib.sha256()
+        with (out / name).open("rb") as stream:
+            while chunk := stream.read(1 << 22):
+                digest.update(chunk)
+        maps[str(mid)] = {"input": h, "file": name, "sha256": digest.hexdigest(), "size": (out / name).stat().st_size,
+                          "files": len(files)}
+        emit("progress", step="mmaps-pack", done=i + 1, total=len(ids), text=f"map {mid}")
+    write_json(out / "manifest.json", {"format": 1, "version": args.version, "built": int(time.time()),
+                                       "client": state.get("client", {}).get("fingerprint", ""), "maps": maps})
+    emit("done", steps=["mmaps-pack"], maps=len(maps), bytes=sum(m["size"] for m in maps.values()))
+
+
+def cmd_mmaps_fetch(args):
+    """Les mmaps publiées, téléchargées au lieu d'être construites : seulement les cartes dont l'empreinte des
+    maps/vmaps de ce serveur est celle de la publication (sinon le générateur les construit, comme avant).
+    Le launcher a vérifié la signature du manifeste avant de le passer ici."""
+    manifest = read_json(Path(args.manifest)) or {}
+    if manifest.get("format") != 1 or not isinstance(manifest.get("maps"), dict):
+        raise Fail("The list of navigation maps is not readable.")
+    base = args.base if args.base.endswith("/") else args.base + "/"
+    lock = ROOT / ".state" / "mmaps.lock"
+    try:
+        other = int(lock.read_text(encoding="utf-8") or 0)
+    except (OSError, ValueError):
+        other = 0
+    if other and other != os.getpid() and pid_alive(other):
+        raise Fail("The navigation maps are being built: pause them first.")
+    lock.parent.mkdir(parents=True, exist_ok=True)
+    lock.write_text(str(os.getpid()), encoding="utf-8")
+    try:
+        state = load_state()
+        mm = state.setdefault("mmaps", {})
+        source = mm.setdefault("source", {})
+        sizes = {mid: map_hash(mid) for mid in map_ids()}
+        want = []
+        for mid, (h, n) in sorted(sizes.items()):
+            entry = manifest["maps"].get(str(mid))
+            if n and entry and entry.get("input") == h and source.get(str(mid)) != entry.get("sha256"):
+                want.append((mid, h, n, entry))
+        total = sum(entry["size"] for _, _, _, entry in want)
+        cache = DATA / ".work-mmaps-download"
+        cache.mkdir(parents=True, exist_ok=True)
+        got, failed, done_bytes = 0, [], 0
+        for mid, h, n, entry in want:
+            name = Path(entry["file"]).name
+            emit("progress", step="mmaps-fetch", done=done_bytes, total=total, text=f"map {mid}")
+            try:
+                download(base + name, cache / name, entry["sha256"], step=None)
+                unpack = cache / f"{mid:03d}"
+                fresh_dir(unpack)
+                with zipfile.ZipFile(cache / name) as z:
+                    for member in z.namelist():
+                        if "/" in member or "\\" in member or ".." in member:
+                            raise Fail(f"Unexpected file in {name}.")
+                    z.extractall(unpack)
+                for p in map_files(mid):
+                    p.unlink()
+                (DATA / "mmaps").mkdir(exist_ok=True)
+                for p in unpack.iterdir():
+                    os.replace(p, DATA / "mmaps" / p.name)
+                shutil.rmtree(unpack, ignore_errors=True)
+                (cache / name).unlink(missing_ok=True)
+            except (Fail, OSError, zipfile.BadZipFile, urllib.error.URLError) as error:
+                failed.append(mid)
+                emit("log", step="mmaps-fetch", text=f"map {mid} not downloaded ({error}): it will be built here.")
+                continue
+            state = load_state()
+            mm = state.setdefault("mmaps", {})
+            mm.setdefault("maps", {})[str(mid)] = h
+            mm.setdefault("source", {})[str(mid)] = entry["sha256"]
+            mm.get("failed", {}).pop(str(mid), None)
+            mm["published"] = manifest.get("version", "")
+            mm["total"] = len([m for m, (hh, nn) in sizes.items() if nn])
+            mm["tilesTotal"] = sum(nn for hh, nn in sizes.values() if nn)
+            mm["tilesDone"] = sum(sizes[int(m)][1] for m in mm["maps"] if m.isdigit() and int(m) in sizes)
+            save_state(state)
+            got += 1
+            done_bytes += entry["size"]
+        shutil.rmtree(cache, ignore_errors=True)
+        # Cette version est vue, même sans carte qui corresponde à ce jeu : Vérification ne la propose plus en boucle.
+        # Seul un échec de téléchargement la laisse proposée, pour réessayer.
+        if not failed:
+            state = load_state()
+            state.setdefault("mmaps", {})["published"] = manifest.get("version", "")
+            save_state(state)
+        emit("progress", step="mmaps-fetch", done=total, total=total, text="all maps")
+        emit("done", steps=["mmaps-fetch"], fetched=got, failed=failed,
+             left=len([m for m, (hh, nn) in sizes.items() if nn]) - len(load_state().get("mmaps", {}).get("maps", {})))
+    finally:
+        lock.unlink(missing_ok=True)
+
+
 # ------------------------------------------------------------------------------------------------- SQL
-def download(url, dest, sha256=None):
-    """Téléchargement reprenable (Range)."""
+def download(url, dest, sha256=None, step="sql", text="downloading the public SQL"):
+    """Téléchargement reprenable (Range). step=None : sans événements de progression."""
     part = dest.with_suffix(dest.suffix + ".part")
     have = part.stat().st_size if part.exists() else 0
     req = urllib.request.Request(url, headers={"User-Agent": "SquidBots-Assembler", **({"Range": f"bytes={have}-"} if have else {})})
@@ -422,8 +540,8 @@ def download(url, dest, sha256=None):
             while chunk := resp.read(1 << 20):
                 out.write(chunk)
                 done += len(chunk)
-                if time.time() - last > 1:
-                    emit("progress", step="sql", done=done, total=total, text="downloading the public SQL")
+                if step and time.time() - last > 1:
+                    emit("progress", step=step, done=done, total=total, text=text)
                     last = time.time()
     if sha256:
         h = hashlib.sha256()
@@ -432,7 +550,7 @@ def download(url, dest, sha256=None):
                 h.update(chunk)
         if h.hexdigest() != sha256:
             part.unlink()
-            raise Fail("The downloaded SQL archive is not the expected one; try again.")
+            raise Fail(f"The downloaded file {dest.name} is not the expected one; try again.")
     os.replace(part, dest)
 
 
@@ -804,11 +922,18 @@ def main():
     sub.add_parser("status")
     cc = sub.add_parser("client-changed")
     cc.add_argument("--client", required=True)
+    mp = sub.add_parser("mmaps-pack")
+    mp.add_argument("--out", required=True)
+    mp.add_argument("--version", required=True)
+    mf = sub.add_parser("mmaps-fetch")
+    mf.add_argument("--manifest", required=True)
+    mf.add_argument("--base", required=True)
     args = parser.parse_args()
     JSON_OUT = args.json
     try:
         {"run": cmd_run, "mmaps": lambda a: (step_mmaps(a.threads), emit("done", steps=["mmaps"])),
-         "status": cmd_status, "client-changed": cmd_client_changed, "fill-sql": cmd_fill_sql}[args.command](args)
+         "status": cmd_status, "client-changed": cmd_client_changed, "fill-sql": cmd_fill_sql,
+         "mmaps-pack": cmd_mmaps_pack, "mmaps-fetch": cmd_mmaps_fetch}[args.command](args)
     except Fail as error:
         emit("error", message=str(error))
         raise SystemExit(2)

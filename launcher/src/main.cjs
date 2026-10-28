@@ -182,6 +182,52 @@ function mmapsNeedRestart(folder, asm) {
   } catch { return false; }
 }
 
+// The bots' navigation maps we publish (manifest.json signed, one zip per map), read at most every 30 minutes.
+let mmapsList = { at: 0, data: null };
+async function publishedMmaps() {
+  if (!config.server?.mmapsUrl) return null;
+  if (mmapsList.data && Date.now() - mmapsList.at < 30 * 60 * 1000) return mmapsList.data;
+  const { data } = await fetchSigned(new URL('manifest.json', config.server.mmapsUrl), { key: config.keys.server, fetchImpl: netFetch, signal: AbortSignal.timeout(20000), maxBytes: 1024 * 1024, redirect: 'follow' });
+  if (data?.format !== 1 || !data.maps || typeof data.maps !== 'object') throw new Error('The list of navigation maps is malformed.');
+  mmapsList = { at: Date.now(), data };
+  return data;
+}
+// Only an assembler that knows the command (packages from 2.8.1 on).
+function canFetchMmaps(folder) {
+  try { return require('node:fs').readFileSync(path.join(folder, 'Assembler', 'coa_assemble.py'), 'utf8').includes('mmaps-fetch'); } catch { return false; }
+}
+// The maps whose maps/vmaps here are those we built them from are downloaded; the others stay to be built here.
+async function downloadMmaps(folder, onEvent) {
+  const data = await publishedMmaps();
+  if (!data) return false;
+  const file = path.join(folder, '.state', 'mmaps-manifest.json');
+  await fs.mkdir(path.dirname(file), { recursive: true });
+  await fs.writeFile(file, JSON.stringify(data));
+  // The assembler says how far it is between two maps only; a large map (150 MB) would show 0 % for a minute, so
+  // the bytes of the map being downloaded (its .part file) are added every second and a half.
+  const known = { done: 0, total: 0, text: '' };
+  const cache = path.join(folder, 'Data', '.work-mmaps-download');
+  const live = setInterval(async () => {
+    if (!known.total) return;
+    const names = await fs.readdir(cache).catch(() => []);
+    const sizes = await Promise.all(names.filter(name => name.endsWith('.part')).map(name => fs.stat(path.join(cache, name)).then(stat => stat.size, () => 0)));
+    // Never backwards: a map just finished is no longer a .part, and not yet counted by the assembler.
+    known.shown = Math.max(known.shown || 0, Math.min(known.total, known.done + sizes.reduce((sum, size) => sum + size, 0)));
+    onEvent({ event: 'progress', step: 'mmaps-fetch', done: known.shown, total: known.total, text: known.text });
+  }, 1500);
+  try {
+    await assembler.fetchMmaps(folder, file, config.server.mmapsUrl, event => {
+      if (event.event === 'progress') {
+        Object.assign(known, { done: event.done || 0, total: event.total || 0, text: event.text || '' });
+        known.shown = Math.max(known.shown || 0, known.done);
+        onEvent({ ...event, done: known.shown });
+      } else if (event.event === 'log') onEvent(event);
+    });
+  } finally { clearInterval(live); await fs.rm(file, { force: true }); }
+  return true;
+}
+let mmapsFetching = false;
+
 async function serverInfo() {
   if (!config.server) return null;
   const folder = serverPath();
@@ -198,6 +244,7 @@ async function serverInfo() {
     // A package without game data: what the assembler still has to do here (data from the client, database, mmaps).
     assembly: folder ? await assemblyInfo(folder) : { applies: false },
     mmapsRestart: folder ? mmapsNeedRestart(folder, assembler.state(folder)) : false,
+    driveBus: folder ? await driveBus(folder) : '',
     bots: bots ? { name: config.server.bots.name, description: config.server.bots.description, ...(await bots.info(folder)) } : null,
     canPurgeBots: !!config.server.commands.purgeBots,
     // The extra realms whose world runs or starts: the home page counts the server as running with them alone.
@@ -224,6 +271,15 @@ async function assertLocalDrive(folder) {
   if (!letter) return;
   const type = await new Promise(resolve => require('node:child_process').execFile('powershell.exe', ['-NoProfile', '-Command', `[System.IO.DriveInfo]::new('${letter}').DriveType`], { windowsHide: true, timeout: 15000 }, (error, out) => resolve(error ? '' : String(out).trim())));
   if (type === 'Network') throw new Error(network);
+}
+
+// The bus of the server's disk (USB for an external drive, where MySQL can freeze): read once per drive letter.
+const driveBuses = new Map();
+async function driveBus(folder) {
+  const letter = /^[A-Za-z]:/.test(path.resolve(folder)) ? path.resolve(folder)[0].toUpperCase() : '';
+  if (!letter) return '';
+  if (!driveBuses.has(letter)) driveBuses.set(letter, new Promise(resolve => require('node:child_process').execFile('powershell.exe', ['-NoProfile', '-Command', `(Get-Partition -DriveLetter ${letter} | Get-Disk).BusType`], { windowsHide: true, timeout: 15000 }, (error, out) => resolve(error ? '' : String(out).trim()))));
+  return driveBuses.get(letter);
 }
 
 // With the bots comes their in-game addon (SquidBots Lite): installed once per game folder, when both the
@@ -278,6 +334,7 @@ function publicConfig() {
     appName: config.appName,
     edition: config.edition,
     hasFeed: !!config.feedUrl,
+    hasMmaps: !!config.server?.mmapsUrl,
     // The repack updater: core, bots and addon come from one signed update; the old bots channel is not offered.
     hasUpdates: !!config.server?.updatesUrl,
     hasBeta: !!config.server?.betaUpdatesUrl,
@@ -289,11 +346,24 @@ function publicConfig() {
   };
 }
 
+// MySQL started only for one operation on a stopped server (a backup, the SQL console, the characters, the network
+// choice, the bots installer, the preparation...) is stopped again when it ends, so the home page never shows
+// « 1 service of 3 running » that the player did not start. Left as it was when it already ran, or when a world,
+// the authserver or a realm runs.
+const mysqlState = async () => (serverControl() ? await serverControl().status().catch(() => []) : []);
+const anyRealmRunning = async () => (serverPath() ? (await realms.status(serverPath(), { live: false })).realms.some(realm => ['running', 'starting'].includes(realm.state)) : false);
+const lendMysql = mysqlLender({ status: mysqlState, start: async id => { await serverControl()?.start(id); }, stopAll: async () => { await serverControl()?.stopAll(); }, realmRunning: anyRealmRunning });
+// The same, for an operation that starts MySQL by itself (the assembler, the repack's scripts).
+const afterMysql = mysqlLender({ status: mysqlState, start: async () => {}, stopAll: async () => { await serverControl()?.stopAll(); }, realmRunning: anyRealmRunning });
+const LENDS_MYSQL = new Set(['chars:list', 'chars:export', 'chars:import', 'sql:run', 'backup:create', 'backup:restore', 'bots:install']);
+const LEAVES_MYSQL = new Set(['network:save']);
+
 function handle(channel, action) {
   ipcMain.handle(channel, async (event, ...args) => {
     // Only the launcher page itself may call in.
     if (!window || event.sender !== window.webContents || event.senderFrame !== window.webContents.mainFrame || event.senderFrame.url !== APP_URL) return { ok: false, error: 'Request refused.' };
-    try { return { ok: true, value: await action(...args) }; }
+    const run = LENDS_MYSQL.has(channel) && serverControl() ? () => lendMysql(() => action(...args)) : LEAVES_MYSQL.has(channel) && serverControl() ? () => afterMysql(() => action(...args)) : () => action(...args);
+    try { return { ok: true, value: await run() }; }
     catch (error) { return { ok: false, error: error.message || 'Something went wrong.', code: error.code, folders: error.folders }; }
   });
 }
@@ -448,6 +518,11 @@ function registerIpc() {
       // The bots' navigation maps, built once from the player's game: rebuilt only on demand (bots walking oddly).
       const asm = assembler.state(serverPath());
       if (asm.applies && !asm.needed && asm.mmaps.done > 0) checks.push({ group: 'bots', id: 'bots.mmaps', state: 'info', data: { done: asm.mmaps.done, total: asm.mmaps.total || asm.mmaps.done }, action: asm.mmaps.running ? '' : 'mmaps-rebuild' });
+      // A newer set of our navigation maps than the one here (or than maps built here): offered, never forced.
+      if (asm.applies && !asm.needed && canFetchMmaps(serverPath())) {
+        const published = await publishedMmaps().catch(() => null);
+        if (published?.version && published.version !== asm.mmaps.published) checks.push({ group: 'bots', id: 'bots.mmapsUpdate', state: 'info', data: { version: published.version }, action: asm.mmaps.running || mmapsFetching ? '' : 'mmaps-update' });
+      }
       return { checks, summary: summary(checks), at: new Date().toISOString(), deep: deep === true };
     } finally { if (deep === true) busyFiles = false; }
   });
@@ -630,6 +705,8 @@ function registerIpc() {
     requireServer();
     const entry = feed?.repack;
     if (!entry?.sha256 || !entry.bytes) throw new Error('The full server is not on the channel yet.');
+    // This server comes without game data: it is prepared from the game, so the game folder comes first.
+    if (!gamePath()) throw new Error('Choose your game folder first: the server takes its game data from it.');
     if (busyFiles || upgradeState.running || update.busy) throw new Error('Another operation is running.');
     const result = smokeDir && process.env.COA_SMOKE_IMPORT_DIR ? { filePaths: [process.env.COA_SMOKE_IMPORT_DIR] } : await dialog.showOpenDialog(window, { title: 'Choose an EMPTY folder for the server', properties: ['openDirectory', 'createDirectory'], defaultPath: 'C:\\' });
     if (result.canceled || !result.filePaths[0]) return null;
@@ -661,7 +738,9 @@ function registerIpc() {
   handle('repack:downloadCancel', () => { installAbort?.abort(); return true; });
   // ---- assembly of a data-free package from the player's client (see assembler.cjs)
   let assembling = false;
-  const assembleServer = async steps => {
+  // The preparation starts MySQL for the database and the bots: it is stopped again at the end if it was not running.
+  const assembleServer = steps => afterMysql(() => assembleServerOnce(steps));
+  const assembleServerOnce = async steps => {
     const folder = serverPath();
     if (!folder) throw new Error('Install the server first.');
     const client = gamePath() || (fs_exists(assembler.state(folder).client || '#') ? assembler.state(folder).client : '');
@@ -673,9 +752,34 @@ function registerIpc() {
     try {
       // Only what is left (a run cut by a closed launcher goes on where it stopped; the extraction is not redone).
       const todo = steps || assembler.state(folder).missing;
-      if (todo.length) await assembler.assemble(folder, client, event => send('assemble:progress', event), todo);
+      if (todo.length) {
+        // The import of the world package: its tables counted every 20 s, and a warning when nothing moved for 15 min.
+        let watch = null;
+        const stopWatch = () => { clearInterval(watch); watch = null; };
+        const onEvent = event => {
+          const world = event.event === 'step' && event.step === 'db' && /world package/i.test(event.text || '');
+          // The assembler of the 2.8 package says « about 2 min »: on most PCs it is longer.
+          send('assemble:progress', world ? { ...event, text: 'Importing the public CoA world package (5 to 20 minutes, depending on the disk)' } : event);
+          if (event.event !== 'step') return;
+          if (world && !watch) {
+            let last = { done: -1, total: 0 };
+            let since = Date.now();
+            watch = setInterval(async () => {
+              const seen = await assembler.worldImport(folder);
+              if (!watch) return;
+              // MySQL not answering counts as not moving.
+              if (seen && seen.done !== last.done) { last = seen; since = Date.now(); }
+              const stuck = Date.now() - since > 15 * 60 * 1000;
+              send('assemble:progress', { event: 'progress', step: 'db', done: Math.max(0, last.done), total: last.total || undefined,
+                warning: stuck ? 'Nothing has moved for 15 minutes. A server folder on an external (USB) drive or an antivirus scanning MySQL can block it: close the launcher, move the server to an internal disk or allow its folder in the antivirus, then prepare again (the database starts over).' : '' });
+            }, 20000);
+          } else stopWatch();
+        };
+        try { await assembler.assemble(folder, client, onEvent, todo); } finally { stopWatch(); }
+      }
       // The bots go in at once, on the new database.
-      if (!steps && bots && !(await bots.info(folder)).installed) {
+      // A new database (first one, or one built again after a cut) needs them again even when their files are there.
+      if (!steps && bots && (todo.includes('db') || !(await bots.info(folder)).installed)) {
         send('assemble:progress', { event: 'step', step: 'bots', text: 'Installing CoA Bots' });
         // Like « Install the bots »: the installer shipped in the package, on the repack's MySQL.
         if (!inspectRepack(folder).started) await requireControl().start('mysql');
@@ -690,7 +794,16 @@ function registerIpc() {
       }
       // The bots' navigation maps: about an hour, in the background (they go on if the launcher closes). Built once:
       // taking the data again after a game patch never starts them over (Verification has a button for that).
-      if (!steps) await assembler.startMmaps(folder);
+      if (!steps) {
+        // A new server downloads our navigation maps (minutes) instead of building them (hours on a small PC). A server
+        // that has its own already keeps them; what does not match this game is built here afterwards, as before.
+        if (config.server.mmapsUrl && assembler.state(folder).mmaps.done === 0 && canFetchMmaps(folder)) {
+          send('assemble:progress', { event: 'step', step: 'mmaps', text: 'Downloading the navigation maps of the bots (about 1.9 GB)' });
+          await downloadMmaps(folder, event => send('assemble:progress', event.event === 'progress' ? { ...event, step: 'mmaps' } : event))
+            .catch(error => send('assemble:progress', { event: 'log', text: `Navigation maps not downloaded (${error.message}): they are built here.` }));
+        }
+        await assembler.startMmaps(folder);
+      }
     } finally { assembling = false; assembler.busy.delete(path.resolve(folder)); send('assemble:progress', { event: 'idle' }); }
     return serverInfo();
   };
@@ -705,6 +818,21 @@ function registerIpc() {
   handle('assemble:status', () => assembler.state(serverPath()));
   handle('assemble:mmaps', async () => { await assembler.startMmaps(serverPath()); return assembler.state(serverPath()); });
   handle('assemble:mmapsPause', () => assembler.stopMmaps(serverPath()));
+  // Our latest navigation maps instead of those here (Verification): the build in progress is paused first, what is
+  // not published for this game is built after.
+  handle('assemble:mmapsUpdate', async () => {
+    const folder = serverPath();
+    if (!folder || !canFetchMmaps(folder)) throw new Error('Update the server first: this one cannot download the navigation maps.');
+    if (assembling || mmapsFetching) throw new Error('Another operation is running.');
+    mmapsFetching = true;
+    try {
+      assembler.stopMmaps(folder);
+      await downloadMmaps(folder, event => send('assemble:mmaps', event));
+      mmapsList.at = 0;
+    } finally { mmapsFetching = false; }
+    if (!assembler.state(folder).mmaps.complete) await assembler.startMmaps(folder);
+    return assembler.state(folder);
+  });
   handle('assemble:mmapsRebuild', async () => { await assembler.rebuildMmaps(serverPath()); return assembler.state(serverPath()); });
   handle('repack:importRun', async () => {
     requireServer();
@@ -794,7 +922,7 @@ function registerIpc() {
       for (const event of events) { send('update:event', event); await wait(1300); }
       const result = process.env.COA_SMOKE_UPDATE_RESULT || 'ok';
       update.last = result === 'ok' ? { code: 0, error: null, details: [], log: [], command: 'apply' }
-        : { code: Number(result), error: { code: Number(result), text: result === '50' ? '[50] The test start failed. Your backup is intact: undo with the command below, or send the lines below to the CoA Bots support.' : '[40] The update failed (disk full); the repack was put back as it was. Nothing was lost.' }, details: ['ERROR: Map file maps/0004331.map is missing', 'backup kept: Backups\\2.4-20261020-2140'], log: [], command: 'apply' };
+        : { code: Number(result), error: { code: Number(result), text: result === '17' ? '[17] Not enough free disk space on the drive of the repack: free 6745 MB, needed 6968 MB. Nothing was changed.' : result === '50' ? '[50] The test start failed. Your backup is intact: undo with the command below, or send the lines below to the CoA Bots support.' : '[40] The update failed (disk full); the repack was put back as it was. Nothing was lost.' }, details: ['ERROR: Map file maps/0004331.map is missing', 'backup kept: Backups\\2.4-20261020-2140'], log: [], command: 'apply' };
       update.busy = false;
       return repackUpdateState();
     }
@@ -950,7 +1078,8 @@ function registerIpc() {
     return null;
   };
   const addonStatus = async () => {
-    const status = addonSync.status(serverPath(), settings.installPaths.addon);
+    // The game folder chosen for the server stands for the addon's game until one is chosen for the addon itself.
+    const status = addonSync.status(serverPath(), settings.installPaths.addon || gamePath());
     const outdated = status.client && feed?.clientRequires?.length ? await clientMissing(status.client).catch(() => '') : '';
     const tooNew = status.client && feed?.clientIncompatible?.length ? await clientTooNew(status.client).catch(() => null) : null;
     return { ...status, realmlist: await clientRealmlist(status.client), clientOutdated: outdated, clientTooNew: tooNew };
@@ -1901,34 +2030,44 @@ function noteSummary(body) {
   if (bold.length) return bold.slice(0, 4).join(' · ');
   return plain(body.split(/\r?\n/).find(line => line.trim() && !line.startsWith('#')) || '').slice(0, 300);
 }
+// The notes of the installed CoA Bots (its CHANGELOG.md), newest first: read each time, so an update shows at once.
+async function installedNotes() {
+  if (!serverPath() || !config.server?.bots?.folder) return [];
+  try {
+    const text = await fs.readFile(path.join(serverPath(), config.server.bots.folder, 'CHANGELOG.md'), 'utf8');
+    return text.split(/^(?=## )/m).filter(part => part.startsWith('## ')).slice(0, 3).map(part => {
+      const head = part.split(/\r?\n/)[0].replace(/^## /, '');
+      const [, version, date] = /^v?([\d.]+)\s*(?:\(([^)]+)\))?/.exec(head) || [];
+      const body = part.split(/\r?\n/).slice(1).join('\n').trim();
+      return { title: version ? `CoA Bots ${version}` : head.slice(0, 80), version: version || '', date: date || '', text: body.slice(0, 60000), summary: noteSummary(body), url: '' };
+    });
+  } catch { return []; }
+}
 async function patchNotes() {
-  if (Date.now() - notesCache.at < 25 * 60 * 1000 && notesCache.list.length) return notesCache.list;
-  let list = [];
-  const repo = /github\.com\/([\w.-]+\/[\w.-]+)\/releases/.exec(config.server?.updatesUrl || '')?.[1];
-  if (repo) {
-    try {
-      const response = await netFetch(`https://api.github.com/repos/${repo}/releases?per_page=10`, { headers: { Accept: 'application/vnd.github+json' }, signal: AbortSignal.timeout(15000) });
-      if (response.ok) {
-        list = (await response.json()).filter(item => !item.draft && !item.prerelease).slice(0, 3).map(item => ({
-          title: String(item.name || item.tag_name || '').slice(0, 80), date: String(item.published_at || '').slice(0, 10),
-          text: String(item.body || '').slice(0, 60000), summary: noteSummary(String(item.body || '')), url: /^https:\/\/github\.com\//.test(item.html_url || '') ? item.html_url : '',
-        }));
-      }
-    } catch {}
+  let list = notesCache.list;
+  if (!(Date.now() - notesCache.at < 25 * 60 * 1000 && list.length)) {
+    list = [];
+    const repo = /github\.com\/([\w.-]+\/[\w.-]+)\/releases/.exec(config.server?.updatesUrl || '')?.[1];
+    if (repo) {
+      try {
+        const response = await netFetch(`https://api.github.com/repos/${repo}/releases?per_page=10`, { headers: { Accept: 'application/vnd.github+json' }, signal: AbortSignal.timeout(15000) });
+        if (response.ok) {
+          list = (await response.json()).filter(item => !item.draft && !item.prerelease).slice(0, 3).map(item => ({
+            title: String(item.name || item.tag_name || '').slice(0, 80), date: String(item.published_at || '').slice(0, 10),
+            text: String(item.body || '').slice(0, 60000), summary: noteSummary(String(item.body || '')), url: /^https:\/\/github\.com\//.test(item.html_url || '') ? item.html_url : '',
+          }));
+        }
+      } catch {}
+    }
+    if (list.length) notesCache = { at: Date.now(), list };
   }
-  if (!list.length && serverPath() && config.server?.bots?.folder) {
-    try {
-      const text = await fs.readFile(path.join(serverPath(), config.server.bots.folder, 'CHANGELOG.md'), 'utf8');
-      list = text.split(/^(?=## )/m).filter(part => part.startsWith('## ')).slice(0, 3).map(part => {
-        const head = part.split(/\r?\n/)[0].replace(/^## /, '');
-        const [, version, date] = /^v?([\d.]+)\s*(?:\(([^)]+)\))?/.exec(head) || [];
-        const body = part.split(/\r?\n/).slice(1).join('\n').trim();
-        return { title: version ? `CoA Bots ${version}` : head.slice(0, 80), date: date || '', text: body.slice(0, 60000), summary: noteSummary(body), url: '' };
-      });
-    } catch {}
-  }
-  if (list.length) notesCache = { at: Date.now(), list };
-  return list.map(note => ({ ...note, ...localNote(note.text) }));
+  // The installed version first when the published notes do not have it yet (a test channel, or just updated).
+  const local = await installedNotes();
+  const own = local[0];
+  const known = own?.version && list.some(note => new RegExp(`(^|[^\\d.])v?${own.version.replace(/\./g, '\\.')}($|[^\\d.])`).test(note.title));
+  if (!list.length) list = local;
+  else if (own?.version && !known && repackUpdate.compareVersions(own.version, (/(\d+(?:\.\d+)+)/.exec(list[0].title) || [])[1] || '0') > 0) list = [own, ...list].slice(0, 3);
+  return list.map(({ version, ...note }) => ({ ...note, ...localNote(note.text) }));
 }
 // The part of a release text in the player's language (after <!-- fr -->), the English part (before any marker) otherwise.
 function localNote(body) {
@@ -1982,9 +2121,10 @@ function notifyUser(kind, values = {}) {
 }
 // The notification area: the launcher can stay there when its window is closed (Settings), and comes back on a click.
 async function createTray() {
-  // The installed exe carries the edition's icon; run from the sources, the edition's own picture stands in for Electron's.
-  const own = !app.isPackaged && nativeImage.createFromPath(path.join(__dirname, '..', 'editions', config.edition || 'server', 'icon.png'));
-  const image = own && !own.isEmpty() ? own.resize({ width: 16, height: 16 }) : await app.getFileIcon(process.execPath, { size: 'small' }).catch(() => nativeImage.createEmpty());
+  // Drawn at 16, 24 and 32 px (tray, @1.5x, @2x) and shipped with the app: the exe's own icon read back by
+  // getFileIcon came out blank in the notification area of the installed launcher.
+  const drawnTray = nativeImage.createFromPath(path.join(__dirname, 'assets', 'tray.png'));
+  const image = !drawnTray.isEmpty() ? drawnTray : await app.getFileIcon(process.execPath, { size: 'small' }).catch(() => nativeImage.createEmpty());
   // The octopus in the balloons, drawn at 32, 48 and 64 px (notify@1.5x, @2x) so Windows never enlarges a small icon.
   const drawn = nativeImage.createFromPath(path.join(__dirname, 'assets', 'notify.png'));
   balloonIcon = !drawn.isEmpty() ? drawn : await app.getFileIcon(process.execPath, { size: 'large' }).catch(() => null);
@@ -2048,6 +2188,8 @@ async function main() {
   createUpdaters();
   launcherUpdates = createLauncherUpdates(app, { feedUrl: config.launcherUpdateUrl, key: config.launcherUpdateKey, fetchImpl: netFetch }, status => send('launcher:update', status), async () => {
     if (busyFiles || updater?.busy) throw new Error('Wait for the current operation to finish.');
+    // Restarting would cut the preparation of the server in the middle (its database would start over).
+    if (assembler.busy.size) throw new Error('The server is being prepared: restart the launcher when it is done.');
   });
   session.defaultSession.setPermissionRequestHandler((_c, _p, callback) => callback(false));
   session.defaultSession.setPermissionCheckHandler(() => false);

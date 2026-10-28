@@ -180,3 +180,13 @@ test('the player config keeps its own values and gets the new keys of the bundle
   assert.deepEqual(merged.server.bots, { name: 'Mine', fresh: true });
   assert.equal(bundled.server.bots.name, 'CoA Bots');
 });
+
+test('a database build that was cut is not taken as done', async () => {
+  const assembler = require('../src/assembler.cjs');
+  const root = await tempDir();
+  const steps = Object.fromEntries(['dbc', 'maps', 'vmaps', 'sql'].map(step => [step, { at: 1 }]));
+  await write(root, { 'Assembler/coa_assemble.py': '', 'mysql/data/mysql/user.ibd': '', '.state/assemble.json': JSON.stringify({ steps }), '.state/assemble-db-started': '1' });
+  assert.deepEqual(assembler.state(root).missing, ['db']);
+  await fsp.rm(path.join(root, '.state', 'assemble-db-started'));
+  assert.deepEqual(assembler.state(root).missing, []);
+});

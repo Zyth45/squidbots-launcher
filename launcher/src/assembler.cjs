@@ -32,7 +32,10 @@ function state(folder) {
   // A repack the player already had (Jealous's, with its Data and its database): nothing to assemble, its files are
   // kept as they are; only a folder without them is assembled from the client.
   const existing = !saved.steps && database && fs.existsSync(path.join(folder, 'Data', 'dbc', 'Map.dbc')) && fs.existsSync(path.join(folder, 'Data', 'maps'));
-  const missing = existing ? [] : STEPS.filter(step => !steps[step] && !(step === 'db' && database));
+  // A database build that was cut (launcher closed, PC off, MySQL stuck) leaves mysql/data and its marker: it is not
+  // a database yet, the next run builds it again from the start.
+  const cut = !steps.db && fs.existsSync(path.join(folder, '.state', 'assemble-db-started'));
+  const missing = existing ? [] : STEPS.filter(step => !steps[step] && !(step === 'db' && database && !cut));
   const mm = saved.mmaps || {};
   const total = mm.total || 0;
   const done = Object.keys(mm.maps || {}).length;
@@ -47,7 +50,7 @@ function state(folder) {
     extracted: !!steps.dbc?.fingerprint,
     skipped: saved.db?.skipped || [],
     // Progress in tiles while the current map is built (its finished tiles are counted in the work folder).
-    mmaps: { done, total, tiles: (mm.tilesDone || 0) + workTiles(folder), tilesTotal: mm.tilesTotal || 0, running: !!mm.running && pidAlive(mm.pid), paused: !!mm.paused && !(mm.running && pidAlive(mm.pid)), current: mm.current ?? null, complete: (total > 0 && done >= total) || (existing && fs.existsSync(path.join(folder, 'Data', 'mmaps'))) },
+    mmaps: { done, total, tiles: (mm.tilesDone || 0) + workTiles(folder), tilesTotal: mm.tilesTotal || 0, running: !!mm.running && pidAlive(mm.pid), paused: !!mm.paused && !(mm.running && pidAlive(mm.pid)), current: mm.current ?? null, published: mm.published || '', complete: (total > 0 && done >= total) || (existing && fs.existsSync(path.join(folder, 'Data', 'mmaps'))) },
   };
 }
 
@@ -125,6 +128,22 @@ function rebuildMmaps(folder) {
   return startMmaps(folder);
 }
 
+// Our navigation maps, downloaded instead of built: the assembler takes only the maps whose maps/vmaps here are those
+// they were built from (the others are built as before). The manifest was checked against its signature first.
+function fetchMmaps(folder, manifestFile, base, onEvent) {
+  return run(folder, ['mmaps-fetch', '--manifest', manifestFile, '--base', base], onEvent);
+}
+
+// The world package is imported by Jealous's tool, which says little: its progress is read in MySQL itself
+// (tables of acore_world so far, of the tables the package lists). null when MySQL does not answer.
+function worldImport(folder) {
+  let total = 0;
+  try { total = Object.keys(readJson(path.join(folder, 'Source', 'sql-tree', 'data', 'coa-world', 'baseline.json'))?.tables || {}).length; } catch {}
+  return new Promise(resolve => require('node:child_process').execFile(path.join(folder, 'mysql', 'bin', 'mysql.exe'),
+    [`--defaults-file=${path.join(folder, 'mysql', 'admin-client.ini')}`, '-N', '-B', '-e', "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='acore_world'"],
+    { windowsHide: true, timeout: 20000 }, (error, out) => resolve(error ? null : { done: Number(String(out).trim()) || 0, total })));
+}
+
 // Has the client changed (a new CoA patch) since its game tables were extracted? Then they are extracted again.
 function clientChanged(folder, client) {
   let answer = null;
@@ -137,4 +156,4 @@ function clientChanged(folder, client) {
   });
 }
 
-module.exports = { state, assemble, startMmaps, stopMmaps, rebuildMmaps, clientChanged, STEPS, busy };
+module.exports = { state, assemble, startMmaps, stopMmaps, rebuildMmaps, clientChanged, worldImport, fetchMmaps, STEPS, busy };

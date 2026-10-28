@@ -77,6 +77,9 @@ function validate(raw) {
     betaUpdatesUrl: serviceUrl(source.betaUpdatesUrl, 'server.betaUpdatesUrl', trusted, { optional: true }),
     // componentsUrl: the folder of the signed lists of the components published on their own (addon, dashboard).
     componentsUrl: serviceUrl(source.componentsUrl, 'server.componentsUrl', trusted, { optional: true }),
+    // mmapsUrl: the folder of the bots' navigation maps we built (manifest.json signed + one zip per map), downloaded
+    // by a new server instead of being built for hours on the player's PC.
+    mmapsUrl: serviceUrl(source.mmapsUrl, 'server.mmapsUrl', trusted, { optional: true }),
     // The Multirace module (added races) is shown only by an edition that ships the races core.
     multirace: source.multirace === true,
     repackSource: label(source.repackSource, 300),

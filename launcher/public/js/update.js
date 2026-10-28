@@ -24,7 +24,11 @@ const UPDATE_ERRORS = {
   11: ['update.err.11', 'This update does not take the version of your repack. Install the full CoA Bots 2.0 repack first.', 'none'],
   12: ['update.err.12', 'A server file of your repack was changed by hand (worldserver.exe). Put back the original file, then try again.', 'none'],
   13: ['update.err.13', 'The server could not be stopped. Stop it on the home page (or close the programs of the repack), then try again.', 'none'],
+  14: ['update.err.14', 'Another program uses a port of the repack (MySQL, auth or world). Close it, then try again.', 'none'],
+  15: ['update.err.15', 'The mysql\\data folder holds a folder that is not of this repack. Move it out, then try again.', 'none'],
   16: ['update.err.16', 'The folder path is too long for Windows. Move the repack to a short folder such as C:\\Games\\CoA-Repack.', 'none'],
+  17: ['update.err.17', 'Not enough free disk space for the update. Free some space (Recycle Bin, Downloads...), then try again.', 'none'],
+  18: ['update.err.18', 'A settings file of the repack is damaged and cannot be read. Send the report to the support.', 'none'],
   20: ['update.err.20', 'The update package is damaged (an antivirus may have removed a file). Try again: it will be downloaded again.', 'none'],
   21: ['update.err.21', 'An update is already running for this server in another window. Let it finish.', 'none'],
   30: ['update.err.30', 'The backup could not be made (often: not enough disk space).', 'none'],
@@ -112,9 +116,13 @@ function updateResultView() {
   }
   const [key, fallback, changed] = UPDATE_ERRORS[last.error.code] || UPDATE_ERRORS[49];
   const [changedKey, changedText] = CHANGED_TEXT[changed];
+  const space = String(last.error.code) === '17' && /free (\d+) MB, needed (\d+) MB/.exec([last.error.text, ...(last.details || [])].join('\n'));
+  const gb = mb => (Math.ceil(Number(mb) / 1024 * 10) / 10).toLocaleString(App.state.settings.language || 'en');
+  const drive = (App.state.server?.path || '').slice(0, 2) || t('update.theDisk', 'the server disk');
+  const title = space ? t('update.err.17space', 'Free at least {more} GB more on {drive} ({free} GB free, {need} GB needed), then try again.', { more: gb(Math.max(102, space[2] - space[1])), drive, free: gb(space[1]), need: gb(space[2]) }) : t(key, fallback);
   const canUndo = ['changed', 'broken', 'unknown'].includes(changed) && last.error.code !== 60;
   return `<div class="update-result bad">${icon('warning')}<div>
-      <strong>${esc(t(key, fallback))}</strong>
+      <strong>${esc(title)}</strong>
       <small>${esc(t(changedKey, changedText))} ${esc(t('update.code', 'Code {code}.', { code: last.error.code }))}</small>
       <details><summary>${esc(t('update.details', 'Details for the support'))}</summary><pre>${esc([last.error.text, ...(last.details || [])].join('\n'))}</pre></details>
       <div class="button-row">
@@ -252,10 +260,8 @@ async function runUpdate(call) {
     App.state.update.run = null;
     App.state.verify = null;
   }
-  refreshAddon(true);
-  // The core and bots versions changed (or came back): read the server again, and its patch notes.
-  try { App.state.server = await App.api.serverInfo(); } catch {}
-  App.api.notes().then(notes => { App.state.notes = notes; if (App.state.tab === 'home' && !$('#dialog').open) App.render(); }).catch(() => {});
+  // The core and bots versions changed (or came back): everything is read again (server, game card, notes, checks).
+  await App.reloadAll();
   showUpdate();
   // Done: the result stays in its window, over the home page (where the new versions show).
   if (App.state.update.state?.last?.error) App.render(); else App.go('home');
@@ -269,7 +275,12 @@ Object.assign(App.actions, {
     else toast(state?.listError ? t('update.listError', 'The update list could not be read: {error}', { error: state.listError }) : t('update.upToDate', 'Your server is up to date.'), state?.listError ? 'error' : 'success');
     App.render();
   }, button),
-  'update-open': () => showUpdate(),
+  'update-open': () => {
+    const u = App.state.update.state;
+    const settled = u?.last?.error && ['none', 'restored'].includes((UPDATE_ERRORS[u.last.error.code] || UPDATE_ERRORS[49])[2]);
+    if (settled) App.state.update.state = { ...u, last: null };
+    showUpdate();
+  },
   'update-start': () => runUpdate(() => App.api.updateRun()),
   // A zip received from a friend: checked against the signed list, then the update runs without downloading it.
   'update-cancel': async () => { if (await App.api.updateCancel().catch(() => false)) toast(t('update.cancelled', 'Download stopped. Nothing was changed; it goes on from there next time.')); },

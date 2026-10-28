@@ -329,6 +329,8 @@ Object.assign(App.actions, {
     App.refresh('play');
     if (App.state.tab === 'home') App.render();
     loadAddons();
+    // The home card « Your game » of the server edition follows the folder just chosen.
+    if (typeof refreshAddon === 'function') refreshAddon(true);
     const result = await checkClient(false, true);
     if (result?.needsUpdate) await updateClient();
     else if (result) toast(t('play.alreadyGood', 'Your game already matches the latest release: nothing to download.'), 'success');

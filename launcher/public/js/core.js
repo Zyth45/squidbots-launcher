@@ -42,6 +42,11 @@ const App = {
     // Server edition: Home, Realms, Modules on the left of the crest; Verification, Management and Console on its right.
     const serverTabs = [['home', 'home', t('tab.home', 'Home')], ...(App.state.realms?.available ? [['realms', 'globe', t('tab.realms', 'Realms')]] : []), ['modules', 'addons', t('tab.modules', 'Modules')]];
     const rightTabs = [['verify', 'shield', t('tab.verify', 'Verification')], ['server', 'settings', t('tab.settings', 'Settings')], ['console', 'terminal', t('tab.console', 'Console')]];
+    // No server installed yet: Home and Settings only, the other tabs have nothing to show.
+    if (App.state.config.edition === 'server' && App.state.server && !App.state.server.path) {
+      serverTabs.splice(1);
+      rightTabs.splice(0, rightTabs.length, ...rightTabs.filter(([id]) => id === 'server'));
+    }
     if (App.state.config.edition === 'server' && ![...serverTabs, ...rightTabs].some(([id]) => id === App.state.tab)) App.state.tab = 'home';
     $('#tabs').innerHTML = (App.state.config.edition === 'server' ? serverTabs : [['play', 'play', t('tab.play', 'Play')], ...(isClassic() && App.state.config.game.hasAddons ? [['addons', 'addons', t('addon.title', 'Addons')]] : []), ...(App.state.config.server ? [['server', 'layers', t('tab.server', 'Local server')]] : [])]
       ).map(([id, iconName, label]) => `<button class="tab${App.state.tab === id ? ' active' : ''}" data-tab="${id}">${icon(iconName)}<span>${esc(label)}</span>${(id === 'server' || id === 'home') && hasUpdates() && !(App.state.config.edition === 'server' && id === 'server') ? `<i class="dot" title="${esc(t('updates.dot', 'A new version is available'))}"></i>` : (id === 'modules' && isNew('modules')) || (id === 'realms' && isNew('realms')) ? newDot() : ''}</button>`).join('');
