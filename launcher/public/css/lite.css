@@ -322,6 +322,7 @@ dialog::backdrop { background: var(--backdrop); backdrop-filter: blur(3px); }
 .realm-coa { --realm: #e8b04a; }
 .realm-wildcard { --realm: #c27bff; }
 .realm-reborn { --realm: #ff8a3d; }
+.realm-dawnrise { --realm: #5cc8ff; }
 .realm-emblem.s16 { --size: 16px; } .realm-emblem.s22 { --size: 22px; } .realm-emblem.s30 { --size: 30px; } .realm-emblem.s56 { --size: 56px; } .realm-emblem.s64 { --size: 64px; }
 .realm-emblem { width: var(--size, 56px); height: var(--size, 56px); flex: 0 0 auto; display: inline-grid; place-items: center; }
 .realm-emblem svg { width: 100%; height: 100%; filter: drop-shadow(0 2px 8px color-mix(in srgb, var(--realm, var(--accent)) 35%, transparent)); }

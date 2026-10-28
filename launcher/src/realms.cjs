@@ -1,5 +1,6 @@
 'use strict';
-// Extra realms of a local server: Wildcard (Darkmoon) and Warcraft Reborn (Bronzebeard) beside the CoA realm (id 1).
+// Extra realms of a local server: Wildcard (Darkmoon), Warcraft Reborn (Bronzebeard) and Free Pick (Dawnrise) beside the
+// CoA realm (id 1).
 // A realm is a folder Royaumes/<key> with its own configs\ (on Windows the worldserver reads the configs of its
 // modules in configs\ of its working folder), the same bot-enabled worldserver, its own databases
 // acore_characters_<key> and acore_playerbots_<key>, and one line of acore_auth.realmlist. The CoA realm keeps
@@ -42,6 +43,21 @@ const MODES = {
       'playerbots.conf': { 'AiPlayerbot.CoaClassesOnly': '0' },
       // The ten classes of the original game only: 0xFFFFFA00 closes class 10 (bit 9) and classes 12 and up.
       'worldserver.conf': { 'CharacterCreating.Disabled.ClassMask': '4294965760' },
+    },
+  },
+  // Season 10 Free Pick, as Ascension's Dawnrise: the Hero of the Wildcard realm without the Wildcard mode, so every
+  // spell and talent is chosen in the Character Advancement window (the core's AscensionFreepick, ClassModel "hero"
+  // without GameModeMask 64). RealmType "live seasonal" picks the seasonal rows of CharacterAdvancement.dbc, as Darkmoon.
+  dawnrise: {
+    id: 4, name: 'Dawnrise (Free Pick)', prefix: 'rndfp', step: 3,
+    keys: {
+      // No challenge mode is imposed on every character (the CoA realm's empty value, written so a change there never leaks in).
+      'mod-coa-challenges.conf': { 'CoAChallenges.GameModes.Realm': '' },
+      // Dungeon Clear stays on the CoA realm only (not made for these modes yet).
+      'mod_dungeon_clear.conf': { 'DungeonClear.Enable': '0' },
+      'coa.conf': { 'CoA.GameModeMask': '0', 'CoA.ClassModel': '"hero"', 'CoA.RealmType': '"live seasonal"', 'CoA.MapClass10ToWarrior': '0', 'CoA.ClientBooleanConfigs': '"CONFIG_LEGACY_CHARACTER_ADVANCEMENT_ENABLED=0"' },
+      // Only the Hero class (10) can be created.
+      'worldserver.conf': { 'PlayerStart.CustomSpells': '1', 'AlwaysMaxSkillForLevel': '1', 'CharacterCreating.Disabled.ClassMask': '4294966783' },
     },
   },
 };
