@@ -22,17 +22,22 @@ const REALM_EMBLEMS = {
     <path d="M32 7c6 9 11 15 8 26-1 6-5 10-8 23-3-13-7-17-8-23-3-11 2-17 8-26Z" fill="url(#re-wr)"/>
     <path d="M32 21c2.5 4 4 7 2.8 11.5-.6 2.4-1.8 4-2.8 7.5-1-3.5-2.2-5.1-2.8-7.5C28 28 29.5 25 32 21Z" fill="#fff3d6"/>
     <path d="M18 58h28" stroke="url(#re-wr)" stroke-width="2.6" stroke-linecap="round" opacity=".6"/></svg>`,
+  dawnrise: `<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="re-fp" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#2e9bd6"/><stop offset="1" stop-color="#ffe38a"/></linearGradient></defs>
+    <path d="M14 42a18 18 0 0 1 36 0Z" fill="url(#re-fp)"/>
+    <path d="M32 10v8M15 17l5 5.5M49 17l-5 5.5M7 31h7M50 31h7" stroke="url(#re-fp)" stroke-width="2.6" stroke-linecap="round"/>
+    <path d="M6 47h52M14 53h36" stroke="url(#re-fp)" stroke-width="2.6" stroke-linecap="round" opacity=".6"/></svg>`,
 };
 
 const REALMS_INFO = {
   coa: { color: '#e8b04a', title: 'Conquest of Azeroth', sub: 'CoA', textKey: 'realms.coaText', text: 'The classic realm: the classes of Conquest of Azeroth, your characters and your bots of today.' },
   wildcard: { color: '#c27bff', title: 'Wildcard', sub: 'Darkmoon', textKey: 'realms.wildcardText', text: 'One class, the Hero: its spells and talents are drawn at random. A new game every time.' },
   reborn: { color: '#ff8a3d', title: 'Warcraft Reborn', sub: 'Bronzebeard', textKey: 'realms.rebornText', text: 'The ten original classes, reworked: classic Warcraft, plus.' },
+  dawnrise: { color: '#5cc8ff', title: 'Free Pick', sub: 'Dawnrise', textKey: 'realms.dawnriseText', text: 'One class, the Hero: choose every spell and talent yourself, from every class.' },
 };
 const realmEmblem = (key, size = 56) => `<span class="realm-emblem realm-${key} s${size}">${REALM_EMBLEMS[key] || ''}</span>`;
 const realmTitle = key => REALMS_INFO[key]?.title || key;
 // Short names, for the lights of the home page.
-const realmShort = key => ({ coa: 'CoA', wildcard: 'Wildcard', reborn: 'Reborn' }[key] || key);
+const realmShort = key => ({ coa: 'CoA', wildcard: 'Wildcard', reborn: 'Reborn', dawnrise: 'Free Pick' }[key] || key);
 
 async function loadRealms() {
   const before = !!App.state.realms?.available;
@@ -326,7 +331,7 @@ async function realmCardDialog(key) {
   App.state.cardsData = data;
   $('#card-image').addEventListener('change', event => { $('#card-title-note').hidden = !titled(event.target.value); });
 }
-const CARD_DEFAULTS = { coa: { mode: 11, image: 'Voljin', description: 13977864, subtitle: '' }, wildcard: { mode: 6, image: 'Darkmoon', description: 13977904, name: 'Darkmoon', subtitle: '' }, reborn: { mode: 12, image: 'Bronzebeard', description: 1397607, name: 'Bronzebeard', subtitle: 'Warcraft Reborn' } };
+const CARD_DEFAULTS = { coa: { mode: 11, image: 'Voljin', description: 13977864, subtitle: '' }, wildcard: { mode: 6, image: 'Darkmoon', description: 13977904, name: 'Darkmoon', subtitle: '' }, reborn: { mode: 12, image: 'Bronzebeard', description: 1397607, name: 'Bronzebeard', subtitle: 'Warcraft Reborn' }, dawnrise: { mode: 9, image: 'Dawnrise', description: 13977920, name: 'Dawnrise', subtitle: 'Free Pick' } };
 Object.assign(App.actions, {
   'realm-card': button => guard(() => realmCardDialog(button.dataset.key), button),
   'realm-card-default': button => {

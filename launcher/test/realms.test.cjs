@@ -13,7 +13,7 @@ function repack({ knowsRealms = true, version = '2.6' } = {}) {
   fs.mkdirSync(path.join(configs, 'modules'), { recursive: true });
   fs.writeFileSync(path.join(root, 'CoA-Bots', 'Core', 'worldserver.exe'), '');
   fs.writeFileSync(path.join(root, 'CoA-Bots', 'release.json'), JSON.stringify({ version }));
-  fs.writeFileSync(path.join(root, 'CoA-Bots', 'coa_common.py'), knowsRealms ? 'MYSQL_DATA_KNOWN = {"acore_characters_wildcard", "acore_characters_reborn"}\n' : 'MYSQL_DATA_KNOWN = {"acore_characters"}\n');
+  fs.writeFileSync(path.join(root, 'CoA-Bots', 'coa_common.py'), knowsRealms ? 'MYSQL_DATA_KNOWN = {"acore_characters_wildcard", "acore_characters_reborn", "acore_characters_dawnrise"}\n' : 'MYSQL_DATA_KNOWN = {"acore_characters"}\n');
   fs.writeFileSync(path.join(configs, 'worldserver.conf'), [
     'RealmID = 1', 'WorldServerPort = 8085', 'Ra.Port = 3443', 'SOAP.Enabled = 1', 'Rate.XP.Kill = 1',
     'CharacterCreating.Disabled.ClassMask = 0', 'LogsDir = "C:/x/Core/Logs"',
@@ -34,7 +34,7 @@ const value = (file, key) => new RegExp(`^${key.replace(/\./g, '\\.')}\\s*=\\s*(
 function realmFolder(root, key, saved) {
   const dir = path.join(root, 'Royaumes', key);
   fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(path.join(dir, 'realm.json'), JSON.stringify({ key, id: key === 'wildcard' ? 2 : 3, name: key, worldPort: 8185, raPort: 3543, autostart: true, ...saved }));
+  fs.writeFileSync(path.join(dir, 'realm.json'), JSON.stringify({ key, id: { wildcard: 2, reborn: 3, dawnrise: 4 }[key], name: key, worldPort: 8185, raPort: 3543, autostart: true, ...saved }));
   return dir;
 }
 
@@ -44,7 +44,7 @@ test('without any realm, the server calls change nothing', async () => {
   await realms.stopAll(root);
   assert.deepStrictEqual(await realms.startMarked(root), []);
   const status = await realms.status(root, { live: false });
-  assert.deepStrictEqual(status.realms.map(realm => realm.state), ['absent', 'absent']);
+  assert.deepStrictEqual(status.realms.map(realm => realm.state), ['absent', 'absent', 'absent']);
   assert.ok(!fs.existsSync(path.join(root, 'Royaumes')));
   assert.strictEqual(snapshot(root), before);
 });
@@ -142,6 +142,27 @@ test('modules of a realm: as CoA, own on/off, back to CoA; what the mode has not
   assert.strictEqual(byId(await realms.modulesOf(root, 'wildcard')).ahbot, 'coa:on');
 });
 
+test('Dawnrise is Free Pick: the Hero of Wildcard without the Wildcard mode, its own prefix and ports', async () => {
+  const root = repack();
+  const dir = realmFolder(root, 'dawnrise', { worldPort: 8385, raPort: 3743 });
+  await realms.writeConfigs(root, 'dawnrise', JSON.parse(fs.readFileSync(path.join(dir, 'realm.json'), 'utf8')));
+  const ws = path.join(dir, 'configs', 'worldserver.conf');
+  const coa = path.join(dir, 'configs', 'modules', 'coa.conf');
+  const pb = path.join(dir, 'configs', 'modules', 'playerbots.conf');
+  assert.strictEqual(value(ws, 'RealmID'), '4');
+  assert.strictEqual(value(ws, 'WorldServerPort'), '8385');
+  assert.strictEqual(value(ws, 'CharacterCreating.Disabled.ClassMask'), '4294966783');
+  assert.strictEqual(value(ws, 'CharacterDatabaseInfo'), '"127.0.0.1;3307;acore;secret;acore_characters_dawnrise"');
+  assert.strictEqual(value(coa, 'CoA.ClassModel'), '"hero"');
+  assert.strictEqual(value(coa, 'CoA.GameModeMask'), '0');
+  assert.strictEqual(value(coa, 'CoA.RealmType'), '"live seasonal"');
+  assert.strictEqual(value(coa, 'CoA.RandomBotAccountPrefix'), '"rndfp"');
+  assert.strictEqual(value(pb, 'AiPlayerbot.RandomBotAccountPrefix'), '"rndfp"');
+  assert.strictEqual(value(pb, 'PlayerbotsDatabaseInfo'), '"127.0.0.1;3307;acore;secret;acore_playerbots_dawnrise"');
+  // The CoA realm's challenge modes never reach Dawnrise: no mode is imposed on its characters.
+  assert.strictEqual((value(path.join(dir, 'configs', 'modules', 'mod-coa-challenges.conf'), 'CoAChallenges.GameModes.Realm') || '').trim(), '');
+});
+
 test('Reborn has no Manastorm: off even without its .conf (the module is on by default)', async () => {
   const root = repack();
   const dir = realmFolder(root, 'reborn');
@@ -188,7 +209,7 @@ test('a switched-off realm never starts, not even with the server', async () => 
 
 test('start with the server: a realm waits its turn, and is left stopped when memory is too low', async () => {
   const root = repack();
-  for (const key of ['wildcard', 'reborn']) {
+  for (const key of ['wildcard', 'reborn', 'dawnrise']) {
     const dir = realmFolder(root, key, { autostart: true });
     fs.mkdirSync(path.join(dir, 'configs'));
     fs.writeFileSync(path.join(dir, 'configs', 'worldserver.conf'), '');
@@ -196,12 +217,12 @@ test('start with the server: a realm waits its turn, and is left stopped when me
   }
   await realms.queueMarked(root);
   let list = (await realms.status(root, { live: false })).realms;
-  assert.deepStrictEqual(list.map(realm => `${realm.state}:${realm.after}`), ['queued:coa', 'queued:coa']);
+  assert.deepStrictEqual(list.map(realm => `${realm.state}:${realm.after}`), ['queued:coa', 'queued:coa', 'queued:coa']);
   assert.strictEqual(list[0].firstStart, true);
   const failed = await realms.startMarked(root, { freeMb: () => 1000 });
-  assert.deepStrictEqual(failed.map(item => item.error), ['memory', 'memory']);
+  assert.deepStrictEqual(failed.map(item => item.error), ['memory', 'memory', 'memory']);
   list = (await realms.status(root, { live: false })).realms;
-  assert.deepStrictEqual(list.map(realm => realm.state), ['stopped', 'stopped']);
+  assert.deepStrictEqual(list.map(realm => realm.state), ['stopped', 'stopped', 'stopped']);
   assert.deepStrictEqual(list[0].skipped, { reason: 'memory', need: realms.neededMb(150), free: 1000 });
   assert.strictEqual(realms.neededMb(300), 6600);
 });

@@ -37,6 +37,7 @@ const DEFAULTS = {
     coa: { mode: 11, image: 'Voljin', description: 13977864, name: '', subtitle: '' },
     wildcard: { mode: 6, image: 'Darkmoon', description: 13977904, name: 'Darkmoon', subtitle: '' },
     reborn: { mode: 12, image: 'Bronzebeard', description: 1397607, name: 'Bronzebeard', subtitle: 'Warcraft Reborn' },
+    dawnrise: { mode: 9, image: 'Dawnrise', description: 13977920, name: 'Dawnrise', subtitle: 'Free Pick' },
   },
 };
 const NAME = /^[\w '().]{0,24}$/;
