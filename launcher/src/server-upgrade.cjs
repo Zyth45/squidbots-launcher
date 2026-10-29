@@ -76,7 +76,7 @@ class ServerUpgrade {
   get busy() { return !!this.child; }
 
   // Copies accounts/characters/bots from `from` into `to`. check=true only reports.
-  async migrate({ from, to, check = false, force = false, noBots = false }) {
+  async migrate({ from, to, check = false, force = false, noBots = false, realms = [] }) {
     if (this.child) throw new Error('A migration is already running.');
     const source = inspect(from);
     const target = inspect(to);
@@ -97,6 +97,8 @@ class ServerUpgrade {
     if (check) args.push('--check');
     if (force) args.push('--force');
     if (noBots) args.push('--no-bots');
+    const keys = realms.filter(key => /^[a-z]+$/.test(key));
+    if (keys.length) args.push('--realms', keys.join(','));
     const lines = [];
     const log = path.join(target.path, 'logs', 'launcher-migration.log');
     await fsp.mkdir(path.dirname(log), { recursive: true });

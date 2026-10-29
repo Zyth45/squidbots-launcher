@@ -95,3 +95,28 @@ test('recorded changes are carried to an upgraded repack', async () => {
   assert.match(fs.readFileSync(path.join(newRoot, 'Settings/worldserver.conf.template'), 'utf8'), /^Rate\.XP\.Kill\s*=\s*3$/m);
   assert.match(fs.readFileSync(path.join(newRoot, 'CoA-Bots/Core/configs/modules/playerbots.conf'), 'utf8'), /^AiPlayerbot\.BroadcastWorldChannelName = "Monde"$/m);
 });
+
+test('a reinstall carries the values changed by hand, never a shipped default nor a path of the old folder', async () => {
+  const oldRoot = await copyRepack();
+  const newRoot = await copyRepack();
+  const bots = 'CoA-Bots/Core/configs/modules/playerbots.conf';
+  const edit = (root, relative, from, to) => { const file = path.join(root, relative); fs.writeFileSync(file, fs.readFileSync(file, 'utf8').replace(from, to)); };
+  edit(oldRoot, bots, /^AiPlayerbot\.RandomBotAutologin = 1$/m, 'AiPlayerbot.RandomBotAutologin = 0');
+  edit(oldRoot, 'Settings/worldserver.conf.template', /^Rate\.XP\.Kill\s*=\s*1$/m, 'Rate.XP.Kill = 5');
+  edit(oldRoot, 'Settings/worldserver.conf.template', /^LogsDir = "@LOGS@"$/m, `LogsDir = "${oldRoot.split(path.sep).join('/')}/Logs"`);
+  // A default the new version changed: the old file still has the old default, the new one keeps its own.
+  edit(newRoot, bots, /^AiPlayerbot\.AddClassAccountPoolSize = 50$/m, 'AiPlayerbot.AddClassAccountPoolSize = 60');
+  edit(newRoot, `${bots}.dist`, /^AiPlayerbot\.AddClassAccountPoolSize = 50$/m, 'AiPlayerbot.AddClassAccountPoolSize = 60');
+  const other = await new ServerConfig(oldRoot).carryEdits(newRoot);
+  assert.ok(other.applied.includes('AiPlayerbot.RandomBotAutologin'));
+  assert.ok(!other.applied.includes('Rate.XP.Kill'), 'templates only between installs of the same release');
+  const same = await new ServerConfig(oldRoot).carryEdits(newRoot, { sameRelease: true });
+  assert.deepEqual(same.applied, ['Rate.XP.Kill']);
+  const ws = fs.readFileSync(path.join(newRoot, 'Settings/worldserver.conf.template'), 'utf8');
+  assert.match(ws, /^Rate\.XP\.Kill\s*=\s*5$/m);
+  assert.match(ws, /^LogsDir = "@LOGS@"$/m);
+  const pb = fs.readFileSync(path.join(newRoot, bots), 'utf8');
+  assert.match(pb, /^AiPlayerbot\.RandomBotAutologin = 0$/m);
+  assert.match(pb, /^AiPlayerbot\.AddClassAccountPoolSize = 60$/m);
+  assert.ok(!fs.existsSync(path.join(newRoot, '.coa-launcher/config-changes.json')), 'hand edits are not recorded as launcher changes');
+});

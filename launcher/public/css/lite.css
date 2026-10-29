@@ -400,3 +400,4 @@ dialog::backdrop { background: var(--backdrop); backdrop-filter: blur(3px); }
 .live-realms { display: inline-flex; gap: 6px; align-items: center; margin-left: auto; font: 500 12.5px var(--body, inherit); letter-spacing: 0; text-transform: none; color: var(--muted); }
 .live-realms .icon { width: 15px; height: 15px; color: var(--accent); }
 .live h3 .live-realms + .live-arriving { margin-left: 14px; }
+.realm-exp { display: inline-block; max-width: none; font-size: 11px; padding: 1px 8px; margin-right: 6px; vertical-align: 1px; }

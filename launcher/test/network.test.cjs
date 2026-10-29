@@ -41,3 +41,17 @@ test('the remote console stays on this PC, and no temporary file is left', async
   assert.match(read(root, 'Settings/worldserver.conf.template'), /Ra\.IP = "127\.0\.0\.1"/);
   assert.deepEqual(fs.readdirSync(path.join(root, 'Settings')).filter(name => name.includes('.tmp-')), []);
 });
+
+test('firewall: only the active inbound Block rules on a program of this server are found', () => {
+  const { parseBlocks } = require('../src/network.cjs');
+  const win = text => text.replace(/\//g, '\\');
+  const out = [
+    win('HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Services/SharedAccess/Parameters/FirewallPolicy/FirewallRules'),
+    win('    {A1}    REG_SZ    v2.33|Action=Block|Active=TRUE|Dir=In|Protocol=6|App=C:/CoA-Server/CoA-Bots/Core/worldserver.exe|Name=worldserver.exe|'),
+    win('    {A2}    REG_SZ    v2.33|Action=Allow|Active=TRUE|Dir=In|App=C:/CoA-Server/Core/authserver.exe|Name=authserver.exe|'),
+    win('    {A3}    REG_SZ    v2.33|Action=Block|Active=FALSE|Dir=In|App=C:/CoA-Server/Core/authserver.exe|Name=authserver.exe|'),
+    win('    {A4}    REG_SZ    v2.33|Action=Block|Active=TRUE|Dir=Out|App=C:/CoA-Server/Core/authserver.exe|Name=authserver.exe|'),
+    win('    {A5}    REG_SZ    v2.33|Action=Block|Active=TRUE|Dir=In|App=C:/CoA-Server-old/Core/authserver.exe|Name=old|'),
+  ].join('\r\n');
+  assert.deepEqual(parseBlocks(out, win('C:/CoA-Server')), [{ name: '{A1}', display: 'worldserver.exe', program: win('C:/CoA-Server/CoA-Bots/Core/worldserver.exe') }]);
+});

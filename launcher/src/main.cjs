@@ -701,6 +701,23 @@ function registerIpc() {
   // The full repack from the feed: an empty folder chosen first, the zip downloaded (resumed, checked
   // by its sha256 from the signed feed), unpacked there, then removed. Every update comes after that.
   let installAbort = null;
+  // The package of the feed downloaded and unpacked into an empty folder; the zip is not kept once unpacked (several GB).
+  const installPackage = async target => {
+    const entry = feed?.repack;
+    if (!entry?.sha256 || !entry.bytes) throw new Error('The full server is not on the channel yet.');
+    installAbort = new AbortController();
+    const file = path.join(app.getPath('userData'), 'updates', `${entry.sha256}.zip`);
+    try {
+      await fs.mkdir(path.dirname(file), { recursive: true });
+      await require('./downloader.cjs').downloadObject({ url: new URL(entry.url), size: entry.bytes, sha256: entry.sha256, destination: file, signal: installAbort.signal, fetchImpl: netFetch, redirect: 'follow', onBytes: have => send('repack:import', { phase: 'download', done: have, total: entry.bytes }) })
+        .catch(error => { throw new Error(installAbort.signal.aborted ? 'Download stopped. It goes on from there next time.' : error.message); });
+      const content = await repackImport.inspectZip(file);
+      if (content.missing.length) throw new Error('This zip is not a full repack.');
+      await repackImport.extractZip(file, target, { top: content.top, total: content.entries, onProgress: (done, total) => send('repack:import', { phase: 'extract', done, total }) });
+      if (!inspectRepack(target).repack) throw new Error('The unpacked folder is not a complete repack.');
+      await fs.rm(file, { force: true });
+    } finally { installAbort = null; send('repack:import', { phase: 'idle' }); }
+  };
   handle('repack:downloadInstall', async () => {
     requireServer();
     const entry = feed?.repack;
@@ -715,22 +732,12 @@ function registerIpc() {
     await assertLocalDrive(target);
     if ((await fs.readdir(target).catch(() => [])).length) throw new Error('Choose an empty folder: the new server is installed there.');
     busyFiles = true;
-    installAbort = new AbortController();
-    const file = path.join(app.getPath('userData'), 'updates', `${entry.sha256}.zip`);
     try {
-      await fs.mkdir(path.dirname(file), { recursive: true });
-      await require('./downloader.cjs').downloadObject({ url: new URL(entry.url), size: entry.bytes, sha256: entry.sha256, destination: file, signal: installAbort.signal, fetchImpl: netFetch, redirect: 'follow', onBytes: have => send('repack:import', { phase: 'download', done: have, total: entry.bytes }) })
-        .catch(error => { throw new Error(installAbort.signal.aborted ? 'Download stopped. It goes on from there next time.' : error.message); });
-      const content = await repackImport.inspectZip(file);
-      if (content.missing.length) throw new Error('This zip is not a full repack.');
-      await repackImport.extractZip(file, target, { top: content.top, total: content.entries, onProgress: (done, total) => send('repack:import', { phase: 'extract', done, total }) });
-      if (!inspectRepack(target).repack) throw new Error('The unpacked folder is not a complete repack.');
+      await installPackage(target);
       await network.applyNetwork(target).catch(() => {});
       settings.instances = [...new Set([serverPath(), target].filter(Boolean).map(item => path.normalize(item)).concat(settings.instances))].slice(0, 12);
       await persist({ ...settings, installPaths: { ...settings.installPaths, server: target } });
-      // The zip is not kept once unpacked (several GB).
-      await fs.rm(file, { force: true });
-    } finally { busyFiles = false; installAbort = null; send('repack:import', { phase: 'idle' }); }
+    } finally { busyFiles = false; }
     // No game data in the package: it is taken from the player's client now (the folder stays installed if this fails).
     if (assembler.state(target).needed && gamePath()) await assembleServer().catch(error => send('assemble:progress', { event: 'error', message: error.message }));
     return serverInfo();
@@ -740,12 +747,13 @@ function registerIpc() {
   let assembling = false;
   // The preparation starts MySQL for the database and the bots: it is stopped again at the end if it was not running.
   const assembleServer = steps => afterMysql(() => assembleServerOnce(steps));
-  const assembleServerOnce = async steps => {
+  // inside: run as one step of a reinstall, which holds the upgrade lock itself.
+  const assembleServerOnce = async (steps, { inside = false } = {}) => {
     const folder = serverPath();
     if (!folder) throw new Error('Install the server first.');
     const client = gamePath() || (fs_exists(assembler.state(folder).client || '#') ? assembler.state(folder).client : '');
     if (!client) throw new Error('Show the launcher your game folder first (Play tab): the data comes from it.');
-    if (assembling || busyFiles || upgradeState.running || update.busy) throw new Error('Another operation is running.');
+    if (assembling || busyFiles || (upgradeState.running && !inside) || update.busy) throw new Error('Another operation is running.');
     if (game) throw new Error('Close the game first.');
     assembling = true;
     assembler.busy.add(path.resolve(folder));
@@ -1410,6 +1418,13 @@ function registerIpc() {
       await realms.start(serverPath(), text(key, 12));
       await requireControl().start('auth');
     } else await withMysql(() => realms.create(serverPath(), text(key, 12), { bots: Number(options?.bots) || undefined, notify: line => send('realms:progress', line) }));
+    // A server open to other PCs: the new realm's world port joins the firewall rules (Windows asks for the
+    // administrator; refused, the realm stays created and Who can join > Open the firewall does it later).
+    if ((await network.readNetwork(serverPath()).catch(() => ({}))).mode === 'open') {
+      const ports = inspectRepack(serverPath()).ports;
+      const extra = (await realms.status(serverPath(), { live: false }).catch(() => ({ realms: [] }))).realms.filter(realm => realm.state !== 'absent').map(realm => realm.worldPort).filter(Boolean);
+      await network.openFirewall(serverPath(), { auth: ports.auth || 3724, world: ports.world || 8085, extra }).catch(error => send('realms:progress', error.message));
+    }
     return realmsStatus();
   });
   // MySQL and the authserver started by a realm's own Start (the server was stopped): stopped again with the last world
@@ -1782,6 +1797,177 @@ function registerIpc() {
       upgradeState.running = false;
       upgradeNotify({});
     }
+  });
+
+  // ---- reinstalling CoA + Bots from scratch (Verification > Troubleshooting) ----
+  // Next to the current server, never over it: a fresh package prepared from the game, the bots, our navigation maps,
+  // then the accounts, characters, bots, realms and settings of the current server copied in. The current folder is
+  // only read: a failure puts the launcher back on it, and it is offered for deletion only once the new one started.
+  const folderBytes = async folder => {
+    let total = 0;
+    const walk = async dir => { for (const entry of await fs.readdir(dir, { withFileTypes: true }).catch(() => [])) { const file = path.join(dir, entry.name); if (entry.isDirectory()) await walk(file); else total += (await fs.stat(file).catch(() => ({ size: 0 }))).size; } };
+    await walk(folder);
+    return total;
+  };
+  const freeBytes = folder => { try { const disk = require('node:fs').statfsSync(folder); return disk.bavail * disk.bsize; } catch { return Infinity; } };
+  const reinstallTarget = current => {
+    const day = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const base = path.join(path.dirname(current), `${path.basename(current).replace(/-reinstall-\d{8}(-\d+)?$/, '')}-reinstall-${day}`);
+    let candidate = base;
+    for (let i = 2; fs_exists(candidate) && i < 100; i++) candidate = `${base}-${i}`;
+    return candidate;
+  };
+  const reinstallNeed = async current => {
+    const entry = feed?.repack;
+    // The zip and its unpacked files, the game data taken from the client (about 4 GB), our navigation maps (1.9 GB
+    // downloaded, about 5 GB unpacked), and the databases copied over.
+    return (entry?.bytes || 0) * 3 + 4e9 + 7e9 + await folderBytes(path.join(current, 'mysql', 'data'));
+  };
+  const previousOf = async current => {
+    try {
+      const previous = JSON.parse(await fs.readFile(path.join(current, '.coa-launcher', 'previous.json'), 'utf8'));
+      return previous?.path && inspectRepack(previous.path).repack && path.resolve(previous.path).toLowerCase() !== path.resolve(current).toLowerCase() ? previous : null;
+    } catch { return null; }
+  };
+  handle('reinstall:prepare', async () => {
+    requireServer();
+    const current = serverPath();
+    if (!current) return null;
+    const target = reinstallTarget(current);
+    const previous = await previousOf(current);
+    return {
+      available: !!feed?.repack?.sha256 && !!config.server?.updatesUrl,
+      folder: target, need: await reinstallNeed(current), free: freeBytes(path.dirname(current)),
+      game: !!gamePath(), realms: (await realms.status(current, { live: false }).catch(() => ({ realms: [] }))).realms.filter(realm => realm.state !== 'absent').map(realm => realm.key),
+      previous: previous?.reinstall ? { path: previous.path, bytes: await folderBytes(previous.path) } : null,
+    };
+  });
+  handle('reinstall:run', async () => {
+    requireServer();
+    const old = serverPath();
+    if (!old || !feed?.repack?.sha256) throw new Error('The full server is not on the channel yet.');
+    if (!gamePath()) throw new Error('Choose your game folder first: the server takes its game data from it.');
+    if (game) throw new Error('Close the game first.');
+    if (upgradeState.running || busyFiles || assembling || update.busy) throw new Error('Another operation is running.');
+    assertServerFree();
+    const need = await reinstallNeed(old);
+    const free = freeBytes(path.dirname(old));
+    if (free < need) throw new Error(`Free at least ${Math.ceil((need - free) / 1e9)} GB more on ${path.parse(old).root.replace(/\\$/, '')}: the new install goes next to the current one.`);
+    const target = reinstallTarget(old);
+    assertFolder(target);
+    await assertLocalDrive(target);
+    const before = inspectRepack(old);
+    const oldRealms = (await realms.status(old, { live: false }).catch(() => ({ realms: [] }))).realms.filter(realm => realm.state !== 'absent').map(realm => realm.key);
+    upgradeState.running = true;
+    upgradeState.log = [];
+    const say = line => upgradeNotify({ line });
+    let switched = false;
+    try {
+      upgradeNotify({ step: 'backup' });
+      say('Backup of the databases (Backups, « before-reinstall »)…');
+      await lendMysql(() => serverTools().backup.create({ label: 'before-reinstall', reason: 'automatic' }));
+
+      upgradeNotify({ step: 'stop' });
+      say('Stopping the server…');
+      await realms.stopAll(old);
+      await requireControl().stopAll();
+
+      upgradeNotify({ step: 'install' });
+      say(`Downloading and unpacking a fresh server in ${target}…`);
+      await fs.mkdir(target, { recursive: true });
+      busyFiles = true;
+      try { await installPackage(target); } finally { busyFiles = false; }
+      // The player's own files of the repack: ports and remote console, who can join, the realm cards, MySQL tuning.
+      for (const name of ['repack.json', 'network.json', 'realm-cards.json', 'my.ini.custom']) {
+        await fs.copyFile(path.join(old, 'Settings', name), path.join(target, 'Settings', name)).catch(() => {});
+      }
+      await network.applyNetwork(target).catch(() => {});
+      await fs.mkdir(path.join(target, '.coa-launcher'), { recursive: true });
+      await fs.writeFile(path.join(target, '.coa-launcher', 'previous.json'), JSON.stringify({ path: old, release: before.release, switchedAt: new Date().toISOString(), reinstall: true }, null, 2));
+      settings.instances = [...new Set([old, target].map(item => path.normalize(item)).concat(settings.instances))].slice(0, 12);
+      await persist({ ...settings, installPaths: { ...settings.installPaths, server: target } });
+      switched = true;
+
+      upgradeNotify({ step: 'prepare' });
+      say('Preparing the server from your game, then the bots and the navigation maps (about 30 minutes)…');
+      await assembleServerOnce(undefined, { inside: true });
+      await requireControl().stopAll();
+
+      upgradeNotify({ step: 'migrate' });
+      if (before.hasData) {
+        // The extra realms first get their (empty) databases and realm list line here, then their data with the rest.
+        if (oldRealms.length) {
+          await requireControl().start('mysql');
+          for (const key of oldRealms) {
+            const saved = JSON.parse(await fs.readFile(path.join(old, 'Royaumes', key, 'realm.json'), 'utf8').catch(() => '{}'));
+            say(`Realm ${saved.name || key}…`);
+            const made = await realms.create(target, key, { notify: say });
+            for (const name of (await fs.readdir(path.join(old, 'Royaumes', key)).catch(() => [])).filter(item => /\.json$/i.test(item) && item !== 'realm.json')) {
+              await fs.copyFile(path.join(old, 'Royaumes', key, name), path.join(target, 'Royaumes', key, name));
+            }
+            await fs.writeFile(path.join(target, 'Royaumes', key, 'realm.json'), JSON.stringify({ ...made, name: saved.name || made.name, autostart: saved.autostart !== false, disabled: saved.disabled === true }, null, 2));
+            if (saved.disabled) await realms.setDisabled(target, key, true).catch(() => {});
+          }
+          await requireControl().stopAll();
+        }
+        const result = await upgrade.migrate({ from: old, to: target, force: true, realms: oldRealms });
+        say(`Accounts: ${result.summary.result?.accounts ?? '?'} · characters: ${result.summary.result?.characters ?? '?'}`);
+      } else say('The current server has no characters yet: nothing to copy.');
+
+      upgradeNotify({ step: 'settings' });
+      const edits = await new ServerConfig(old).carryEdits(target, { sameRelease: !!before.release && before.release === inspectRepack(target).release });
+      const carried = await new ServerConfig(old).carryTo(target);
+      const applied = [...new Set([...edits.applied, ...carried.applied])];
+      say(applied.length ? `Settings carried over: ${applied.join(', ')}` : 'No changed setting to carry over.');
+      const skipped = [...new Set([...edits.skipped, ...carried.skipped])];
+      if (skipped.length) say(`Not carried over (absent from the new version or refused): ${skipped.join(', ')}`);
+
+      upgradeNotify({ step: 'test' });
+      say('Test start of the new server (the first one brings the copied characters up to date: it can take a few minutes)…');
+      await prepareStart();
+      await requireControl().startAll();
+      await requireControl().stopAll();
+
+      upgradeNotify({ step: 'done' });
+      say(`Done: the launcher now uses ${target}. The previous server stays in ${old} until you delete it (Verification).`);
+      return { ok: true, folder: target, previous: old, info: await serverInfo() };
+    } catch (error) {
+      upgradeNotify({ step: 'failed', line: error.message });
+      if (switched) {
+        await Promise.resolve(assembler.stopMmaps(target)).catch(() => {});
+        await requireControl().stopAll().catch(() => {});
+        await persist({ ...settings, installPaths: { ...settings.installPaths, server: old } });
+        say(`The launcher is back on ${old}: nothing was changed there. The unfinished install stays in ${target} for the support.`);
+      }
+      throw error;
+    } finally {
+      upgradeState.running = false;
+      upgradeNotify({});
+    }
+  });
+  // The server left behind by a reinstall, deleted on the player's word once the new one runs. Its backups move to
+  // the new server first.
+  handle('reinstall:removeOld', async () => {
+    requireServer();
+    const current = serverPath();
+    const previous = await previousOf(current);
+    if (!previous?.reinstall) throw new Error('There is no previous server to delete.');
+    if (upgradeState.running || busyFiles || assembling) throw new Error('Another operation is running.');
+    const old = path.resolve(previous.path);
+    if (current.toLowerCase().startsWith(old.toLowerCase() + path.sep) || old.toLowerCase().startsWith(path.resolve(current).toLowerCase() + path.sep)) throw new Error('The two servers are inside each other: delete the folder by hand.');
+    if ((await requireControl().status()).some(service => service.state !== 'stopped' && service.state !== 'foreign')) throw new Error('Stop the server first.');
+    if ((await realms.status(old, { live: false }).catch(() => ({ realms: [] }))).realms.some(realm => ['running', 'starting', 'stopping'].includes(realm.state))) throw new Error('A realm of the previous server still runs.');
+    const backups = path.join(old, 'Backups');
+    if (fs_exists(backups)) {
+      const kept = path.join(current, 'Backups', `previous-${path.basename(old)}`);
+      await fs.mkdir(path.dirname(kept), { recursive: true });
+      await fs.rename(backups, kept).catch(() => fs.cp(backups, kept, { recursive: true }));
+    }
+    await fs.rm(old, { recursive: true, force: true, maxRetries: 3 });
+    await fs.rm(path.join(current, '.coa-launcher', 'previous.json'), { force: true });
+    settings.instances = settings.instances.filter(item => path.resolve(item).toLowerCase() !== old.toLowerCase());
+    await persist({ ...settings });
+    return serverInfo();
   });
 
   // ---- support report ----

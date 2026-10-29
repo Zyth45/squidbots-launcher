@@ -119,6 +119,10 @@ const CHECK_TEXT = {
   'mysql.tablespace': { bad: ['Database files of two installs mixed', '"Multiple files found for the same tablespace ID": a full repack was unpacked over an old one. Install in an empty folder and bring the players over.'] },
   'world.bots': { ok: ['The world runs with the bots', ''], info: ['The world runs without the bots', 'Started from Core\\ instead of CoA-Bots\\Core\\: no bots, .playerbots unknown. Stop and start from the launcher.'] },
   'process.old': { bad: ['{name} from before the update still runs', 'Players reach the old program (black screen, realm list loop). Restart it.'] },
+  'firewall.block': {
+    bad: ['Windows Firewall blocks the server', 'Block rule(s) on {programs}: Windows made them when its "allow access" window was cancelled, and they win over the opened ports, so other PCs cannot join. The fix removes them and allows our programs on their ports only (Windows asks for the administrator).'],
+    warn: ['Windows Firewall blocks the server', 'Block rule(s) on {programs}: harmless while only this PC plays, but other PCs could not join. The fix removes them and allows our programs on their ports only (Windows asks for the administrator).'],
+  },
   ra: { ok: ['Remote console answers', 'Port {port}.'], warn: ['Remote console silent', 'Port {port} is not answering while the world runs: accounts cannot be made from the launcher.'] },
   'realm.flag': {
     ok: ['Realm shown online', ''],
@@ -189,7 +193,22 @@ function verifyView() {
       return `<div class="check ${check.state}"><span class="check-light"></span><div><strong>${esc(title)}</strong>${text ? `<small>${esc(text)}</small>` : ''}</div>${button}</div>`;
     }).join('')}</section>`;
   }).join('');
-  return `<div class="page verify">${head}${running ? `<div class="task-line">${icon('refresh')}<span>${esc(t('verify.running', 'Checking…'))}</span></div>` : ''}<div class="grid-2">${groups}</div></div>`;
+  return `<div class="page verify">${head}${running ? `<div class="task-line">${icon('refresh')}<span>${esc(t('verify.running', 'Checking…'))}</span></div>` : ''}<div class="grid-2">${groups}</div>${troubleshootView()}</div>`;
+}
+
+// Troubleshooting (folded): reinstall CoA + Bots next to the current server, then delete the old one.
+const REINSTALL_STEPS = { backup: 'Backup of the databases', stop: 'Stopping the server', install: 'Downloading a fresh server', prepare: 'Preparing it from your game, bots, navigation maps', migrate: 'Copying accounts, characters, bots and realms', settings: 'Carrying your settings over', test: 'Test start', done: 'Done', failed: 'Stopped' };
+function troubleshootView() {
+  const s = App.state;
+  const r = s.reinstall;
+  const running = s.upgradeRunning && s.reinstallRunning;
+  const step = REINSTALL_STEPS[s.upgradeStep] ? t(`reinstall.step.${s.upgradeStep}`, REINSTALL_STEPS[s.upgradeStep]) : '';
+  const log = s.reinstallRunning || s.reinstallDone ? `<pre class="log" id="upgrade-log">${esc(s.upgradeLog.join(String.fromCharCode(10)))}</pre>` : '';
+  const old = r?.previous ? `<div class="line-action">${icon('folder')}<span>${esc(t('reinstall.previous', 'Previous server kept in {path} ({size})', { path: r.previous.path, size: formatBytes(r.previous.bytes) }))}</span><button class="button ghost small" data-action="upgrade-revert" ${running ? 'disabled' : ''}>${esc(t('reinstall.back', 'Go back to it'))}</button><button class="button ghost small" data-action="reinstall-remove-old" ${running ? 'disabled' : ''}>${icon('trash')}${esc(t('reinstall.removeOld', 'Delete it'))}</button></div>` : '';
+  return `<details class="panel troubleshoot" ${running || s.reinstallDone || r?.previous || s.troubleshootOpen ? 'open' : ''}><summary data-action="troubleshoot-toggle">${icon('shield')}${esc(t('verify.troubleshoot', 'Troubleshooting'))}</summary>
+    <p class="muted">${esc(t('reinstall.what', 'When nothing else fixes the server: everything is installed again from scratch in a new folder next to this one. Your accounts, characters, bots, realms and settings are copied in. The current server stays untouched until the new one has started.'))}</p>
+    <div class="button-row"><button class="button ghost" data-action="reinstall-run" ${running || s.upgradeRunning || r?.available === false ? 'disabled' : ''}>${icon('refresh')}${esc(t('reinstall.run', 'Reinstall CoA + Bots completely'))}</button>${running ? `<span class="pill warn">${esc(step)}</span>` : ''}</div>
+    ${old}${log}</details>`;
 }
 
 async function runVerify(deep = false) {
@@ -239,7 +258,13 @@ App.pages.dash = {
 
 App.pages.verify = {
   render: verifyView,
-  mount() { if (!App.state.verify && !App.state.verifying && App.state.server?.path && !App.state.server.assembly?.needed) runVerify(false); },
+  mount() {
+    if (!App.state.verify && !App.state.verifying && App.state.server?.path && !App.state.server.assembly?.needed) runVerify(false);
+    if (!App.state.reinstall && !App.state.reinstallLoading && App.state.server?.path) {
+      App.state.reinstallLoading = true;
+      App.api.reinstallPrepare().then(info => { App.state.reinstall = info; if (App.state.tab === 'verify') App.render(); }).catch(() => {}).finally(() => { App.state.reinstallLoading = false; });
+    }
+  },
 };
 
 // ---------------------------------------------------------------- home
@@ -754,6 +779,35 @@ Object.assign(App.actions, {
     App.render();
   }, button),
   // Settings > About: look for a new launcher now (the result also shows on the home page banner).
+  // The folded section stays as the player left it when the page is drawn again.
+  'troubleshoot-toggle': (summary, event) => { event.preventDefault(); App.state.troubleshootOpen = !summary.parentElement.open; summary.parentElement.open = App.state.troubleshootOpen; },
+  'reinstall-run': button => guard(async () => {
+    const info = App.state.reinstall || await App.api.reinstallPrepare();
+    if (!info.game) { toast(t('reinstall.noGame', 'Show the launcher your game folder first (Play tab): the new server is prepared from it.'), 'error'); return; }
+    if (info.free < info.need) { toast(t('reinstall.space', 'Free at least {size} more on this disk first.', { size: formatBytes(info.need - info.free) }), 'error'); return; }
+    if (!await confirmDialog({ title: t('reinstall.title', 'Reinstall CoA + Bots completely?'), body: esc(t('reinstall.body', 'Everything is installed again from scratch in a new folder ({folder}). Your accounts, characters, bots, realms and settings are copied into it, and your current server stays untouched as long as the new one has not started. About 40 minutes, {size} of disk space. Close the game; the server is stopped during the reinstall.', { folder: info.folder, size: formatBytes(info.need) })), confirm: t('reinstall.go', 'Reinstall') })) return;
+    Object.assign(App.state, { reinstallRunning: true, reinstallDone: false, upgradeLog: [] });
+    App.render();
+    try {
+      await App.api.reinstallRun();
+      App.state.reinstallDone = true;
+      toast(t('reinstall.done', 'Reinstalled: the launcher now uses the new server. The previous one can be deleted in Troubleshooting.'), 'success');
+    } finally {
+      App.state.reinstallRunning = false;
+      App.state.reinstall = null;
+      await App.reloadAll();
+    }
+  }, button),
+  'reinstall-remove-old': button => guard(async () => {
+    const old = App.state.reinstall?.previous;
+    if (!old) return;
+    if (!await confirmDialog({ title: t('reinstall.removeTitle', 'Delete the previous server?'), body: esc(t('reinstall.removeBody', '{path} is deleted for good ({size} freed). Its backups move to the Backups folder of the current server first.', { path: old.path, size: formatBytes(old.bytes) })), confirm: t('reinstall.removeGo', 'Delete'), danger: true })) return;
+    App.state.server = await App.api.reinstallRemoveOld();
+    App.state.reinstall = null;
+    App.state.reinstallDone = false;
+    toast(t('reinstall.removed', 'The previous server is deleted.'), 'success');
+    App.render();
+  }, button),
   'mmaps-update': button => guard(async () => {
     if (!await confirmDialog({ title: t('verify.mmapsUpdateTitle', 'Download the navigation maps?'), body: esc(t('verify.mmapsUpdateBody', 'About 1.9 GB. The maps of this server are replaced one by one; the server can keep running.')), confirm: t('verify.mmapsUpdateGo', 'Download') })) return;
     await App.api.assembleMmapsUpdate();

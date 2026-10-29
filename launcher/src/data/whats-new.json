@@ -1,5 +1,37 @@
 [
   {
+    "version": "0.3.49",
+    "items": {
+      "en": [
+        "Solo self-found in one preset and its own settings tab: bots level from 1 to 59 without generated gear, and 20 % of them clear the dungeons of their level in parties of five.",
+        "\"Bots online around my level\": among all your bots, those that log in are picked near the level of the players online, and no bot changes level.",
+        "Raids with your bots through Dungeon Clear, experimental: boss health counts a bot as 0.3 of a player (setting in Creature difficulty).",
+        "Verification > Troubleshooting: reinstall CoA + Bots completely in a new folder, with your accounts, characters, bots, realms and settings copied in; the old server stays until you delete it.",
+        "New experimental realm Free Pick (Dawnrise): one class, the Hero, every spell and talent chosen by you. No bots for now: they come in a next version.",
+        "Verification warns when Windows Firewall blocks the server (a \"Block\" rule left by a cancelled Windows window) and fixes it with your consent; a new realm gets its port opened when the server is open to other PCs.",
+        "Backups and Verification know every extra realm database."
+      ],
+      "fr": [
+        "Solo self-found en un seul préréglage et son propre onglet de réglages : les bots montent de 1 à 59 sans équipement fabriqué, et 20 % d'entre eux font les donjons de leur niveau en groupes de cinq.",
+        "« Bots en ligne autour de mon niveau » : parmi tous vos bots, ceux qui se connectent sont choisis près du niveau des joueurs en ligne, et aucun bot ne change de niveau.",
+        "Raids avec vos bots via Dungeon Clear, en expérimental : les PV des boss comptent un bot pour 0,3 joueur (réglage dans Difficulté des créatures).",
+        "Vérification > Dépannage : réinstaller complètement CoA + Bots dans un nouveau dossier, avec vos comptes, persos, bots, royaumes et réglages copiés ; l'ancien serveur reste jusqu'à ce que vous le supprimiez.",
+        "Nouveau royaume expérimental Free Pick (Dawnrise) : une seule classe, le Héros, chaque sort et talent choisi par vous. Sans bots pour l'instant : ils arrivent dans une prochaine version.",
+        "Vérification signale quand le pare-feu Windows bloque le serveur (une règle « Block » laissée par une fenêtre Windows annulée) et le corrige avec votre accord ; un nouveau royaume a son port ouvert quand le serveur est ouvert aux autres PC.",
+        "Les sauvegardes et la Vérification connaissent toutes les bases des royaumes en plus."
+      ],
+      "ru": [
+        "Solo self-found одним пресетом и своей вкладкой настроек: боты растут с 1 по 59 без созданной экипировки, а 20 % из них проходят подземелья своего уровня группами по пять.",
+        "«Онлайн боты около моего уровня»: из всех ваших ботов в игру заходят те, кто близок к уровню игроков онлайн, и ни один бот не меняет уровень.",
+        "Рейды с вашими ботами через Dungeon Clear, экспериментально: здоровье боссов считает бота как 0,3 игрока (настройка в «Сложность существ»).",
+        "Проверка > Устранение неполадок: полная переустановка CoA + Bots в новую папку с копией аккаунтов, персонажей, ботов, миров и настроек; прежний сервер остаётся, пока вы его не удалите.",
+        "Новый экспериментальный мир Free Pick (Dawnrise): один класс — Герой, каждое заклинание и талант выбираете вы. Пока без ботов: они появятся в следующей версии.",
+        "Проверка сообщает, когда брандмауэр Windows блокирует сервер (правило «Block» после отменённого окна Windows), и исправляет это с вашего согласия; новому миру открывается порт, когда сервер открыт для других ПК.",
+        "Резервные копии и Проверка знают базы всех дополнительных миров."
+      ]
+    }
+  },
+  {
     "version": "0.3.48",
     "items": {
       "en": [

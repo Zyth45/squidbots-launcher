@@ -75,17 +75,31 @@ async function saveNetwork(root, value) {
   return { network, changed: await applyNetwork(root, network) };
 }
 
-// Windows Firewall: one inbound rule for the login and world ports (the realms' too), never a whole program:
-// the remote console port stays closed. Needs the
-// administrator: Windows asks the player (UAC); nothing is done without that consent.
-function openFirewall(root, ports) {
+// Our programs: the bots worldserver (the realms run it too), the repack's own worldserver and the authserver.
+const PROGRAMS = { world: ['CoA-Bots/Core/worldserver.exe', 'Core/worldserver.exe'], auth: ['Core/authserver.exe'] };
+const portList = values => [...new Set(values.map(Number).filter(port => port > 0 && port < 65536))];
+
+// Windows Firewall: one inbound rule for the login and world ports (the realms' too), and our programs allowed on
+// those ports only (so Windows never asks again, and the remote console port stays closed). Block rules on our
+// programs are removed only when the player asked for it (blocks, from firewallBlocks): Windows makes them when its
+// "allow access" window is cancelled, and a block rule wins over every allow rule. Needs the administrator: Windows
+// asks the player (UAC); nothing is done without that consent.
+function openFirewall(root, ports, { blocks = [] } = {}) {
   const name = `SquidBots ${path.basename(root)}`.replace(/[^\w .-]/g, '');
-  const list = [...new Set([ports.auth, ports.world, ...(ports.extra || [])].map(Number).filter(port => port > 0 && port < 65536))];
+  const list = portList([ports.auth, ports.world, ...(ports.extra || [])]);
+  const worlds = portList([ports.world, ...(ports.extra || [])]);
+  const program = (id, exe, open) => [
+    `netsh advfirewall firewall delete rule name="${name} ${id}" | Out-Null`,
+    ...(open.length && require('node:fs').existsSync(path.join(root, exe)) ? [`netsh advfirewall firewall add rule name="${name} ${id}" dir=in action=allow program="${path.join(root, exe)}" protocol=TCP localport=${open.join(',')}`] : []),
+  ];
   const lines = [
     `netsh advfirewall firewall delete rule name="${name} ports" | Out-Null`,
     `netsh advfirewall firewall add rule name="${name} ports" dir=in action=allow protocol=TCP localport=${list.join(',')}`,
     // The program rules of older launchers (every port of the worldservers) are removed.
     ...[0, 1, 2].map(index => `netsh advfirewall firewall delete rule name="${name} program ${index}" | Out-Null`),
+    ...PROGRAMS.world.flatMap((exe, index) => program(`world ${index}`, exe, worlds)),
+    ...PROGRAMS.auth.flatMap((exe, index) => program(`auth ${index}`, exe, portList([ports.auth]))),
+    ...blocks.filter(rule => /^[\w{}-]{1,80}$/.test(rule.name)).map(rule => `Remove-NetFirewallRule -Name '${rule.name}' -ErrorAction SilentlyContinue`),
   ];
   // The commands go in a script file run elevated: no quoting through two shells.
   const script = path.join(os.tmpdir(), `squidbots-firewall-${process.pid}.ps1`);
@@ -100,4 +114,21 @@ function openFirewall(root, ports) {
   }));
 }
 
-module.exports = { readNetwork, saveNetwork, applyNetwork, lanAddresses, openFirewall };
+// The enabled inbound Block rules on a program of this server, read from the rules Windows keeps in the registry
+// (no administrator needed, a fraction of a second; Get-NetFirewallRule takes seconds).
+const RULES_KEY = 'HKLM\\SYSTEM\\CurrentControlSet\\Services\\SharedAccess\\Parameters\\FirewallPolicy\\FirewallRules';
+function parseBlocks(text, root) {
+  const folder = `${path.resolve(root).toLowerCase()}\\`;
+  return String(text || '').split(/\r?\n/).map(line => /^\s*(\S+)\s+REG_SZ\s+(.*)$/.exec(line)).filter(Boolean).map(([, name, value]) => {
+    const fields = Object.fromEntries(value.split('|').filter(part => part.includes('=')).map(part => [part.slice(0, part.indexOf('=')).toLowerCase(), part.slice(part.indexOf('=') + 1)]));
+    return { name, display: fields.name || name, program: fields.app || '', block: /^block$/i.test(fields.action || ''), active: /^true$/i.test(fields.active || ''), inbound: /^in$/i.test(fields.dir || '') };
+  }).filter(rule => rule.block && rule.active && rule.inbound && rule.program.toLowerCase().startsWith(folder)).map(({ name, display, program }) => ({ name, display, program }));
+}
+function firewallBlocks(root) {
+  if (process.platform !== 'win32') return Promise.resolve([]);
+  return new Promise(resolve => {
+    require('node:child_process').execFile('reg.exe', ['query', RULES_KEY], { windowsHide: true, timeout: 15000, maxBuffer: 16 * 1024 * 1024 }, (error, out) => resolve(error ? [] : parseBlocks(out, root)));
+  });
+}
+
+module.exports = { readNetwork, saveNetwork, applyNetwork, lanAddresses, openFirewall, firewallBlocks, parseBlocks };

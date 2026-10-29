@@ -50,6 +50,8 @@ const MODES = {
   // without GameModeMask 64). RealmType "live seasonal" picks the seasonal rows of CharacterAdvancement.dbc, as Darkmoon.
   dawnrise: {
     id: 4, name: 'Dawnrise (Free Pick)', prefix: 'rndfp', step: 3,
+    // Experimental: made without bots, they cannot play the Free Pick Hero yet (the player can raise the count later).
+    bots: 0,
     keys: {
       // No challenge mode is imposed on every character (the CoA realm's empty value, written so a change there never leaks in).
       'mod-coa-challenges.conf': { 'CoAChallenges.GameModes.Realm': '' },
@@ -449,7 +451,7 @@ async function create(root, key, { bots = DEFAULT_BOTS, notify = () => {} } = {}
   // A new realm starts with fewer bots than most CoA realms: one more world costs memory.
   const own = await ownSettings(root, key);
   if (!own['playerbots.conf']?.[BOT_COUNT[1]]) {
-    const count = String(Math.max(0, Math.min(2000, Number(bots) || DEFAULT_BOTS)));
+    const count = String(Math.max(0, Math.min(2000, m.bots ?? (Number(bots) || DEFAULT_BOTS))));
     own['playerbots.conf'] = { ...own['playerbots.conf'], [BOT_COUNT[0]]: count, [BOT_COUNT[1]]: count };
     await writeOwn(root, key, own);
   }

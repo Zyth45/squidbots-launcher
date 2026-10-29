@@ -47,6 +47,15 @@
       }
     },
     {
+      "id": "selffound",
+      "icon": "layers",
+      "label": {
+        "en": "Solo self-found",
+        "fr": "Solo self-found",
+        "ru": "Solo self-found"
+      }
+    },
+    {
       "id": "behaviour",
       "icon": "swords",
       "label": {
@@ -892,6 +901,86 @@
       }
     },
     {
+      "key": "AiPlayerbot.EnablePeriodicOnlineOffline",
+      "file": "playerbots.conf",
+      "group": "levels",
+      "kind": "bool",
+      "when": "restart",
+      "selfFoundOk": true,
+      "label": {
+        "en": "Bots log in and out in turns",
+        "fr": "Les bots se connectent à tour de rôle",
+        "ru": "Боты заходят в игру по очереди"
+      },
+      "help": {
+        "en": "The realm keeps more bots than are online (twice as many by default) and swaps who is online from time to time, like real players. More bot accounts are created at the next start.",
+        "fr": "Le royaume garde plus de bots qu'il n'y en a en ligne (deux fois plus par défaut) et change de temps en temps ceux qui sont connectés, comme de vrais joueurs. Des comptes de bots en plus sont créés au prochain démarrage.",
+        "ru": "В мире больше ботов, чем онлайн (по умолчанию вдвое), и время от времени меняется, кто в игре, как у настоящих игроков. Новые аккаунты ботов создаются при следующем запуске."
+      }
+    },
+    {
+      "key": "AiPlayerbot.OnlineSelection.FollowPlayerLevels",
+      "file": "playerbots.conf",
+      "group": "levels",
+      "kind": "bool",
+      "when": "restart",
+      "selfFoundOk": true,
+      "label": {
+        "en": "Bots online around my level",
+        "fr": "Bots en ligne autour de mon niveau",
+        "ru": "Онлайн боты около моего уровня"
+      },
+      "help": {
+        "en": "Among all the bots of the realm, those that log in are picked near the level of the real players online (several players: around each of them; nobody online: any level). No bot ever changes level, unlike level brackets. Works with Solo self-found.",
+        "fr": "Parmi tous les bots du royaume, ceux qui se connectent sont choisis près du niveau des vrais joueurs en ligne (plusieurs joueurs : autour de chacun ; personne en ligne : tous niveaux). Aucun bot ne change de niveau, contrairement aux tranches de niveau. Compatible avec Solo self-found.",
+        "ru": "Из всех ботов мира в игру заходят те, чей уровень близок к уровню живых игроков онлайн (несколько игроков: около каждого; никого нет: любые уровни). Ни один бот не меняет уровень, в отличие от диапазонов уровней. Совместимо с Solo self-found."
+      }
+    },
+    {
+      "key": "AiPlayerbot.OnlineSelection.LevelWindow",
+      "file": "playerbots.conf",
+      "group": "levels",
+      "kind": "choice",
+      "when": "restart",
+      "selfFoundOk": true,
+      "label": {
+        "en": "How close to my level",
+        "fr": "À quel point proche de mon niveau",
+        "ru": "Насколько близко к моему уровню"
+      },
+      "help": {
+        "en": "How many levels above or below the players the bots that log in may be.",
+        "fr": "De combien de niveaux au-dessus ou en dessous des joueurs peuvent être les bots qui se connectent.",
+        "ru": "На сколько уровней выше или ниже игроков могут быть заходящие боты."
+      },
+      "choices": [
+        {
+          "value": "10",
+          "label": {
+            "en": "Wide (± 10 levels)",
+            "fr": "Large (± 10 niveaux)",
+            "ru": "Широко (± 10 уровней)"
+          }
+        },
+        {
+          "value": "5",
+          "label": {
+            "en": "Medium (± 5 levels, default)",
+            "fr": "Moyen (± 5 niveaux, par défaut)",
+            "ru": "Средне (± 5 уровней, по умолчанию)"
+          }
+        },
+        {
+          "value": "2",
+          "label": {
+            "en": "Close (± 2 levels)",
+            "fr": "Serré (± 2 niveaux)",
+            "ru": "Узко (± 2 уровня)"
+          }
+        }
+      ]
+    },
+    {
       "key": "AiPlayerbot.RandomBotTalk",
       "file": "playerbots.conf",
       "group": "behaviour",
@@ -1005,7 +1094,7 @@
     {
       "key": "AiPlayerbot.CoaSelfFound",
       "file": "playerbots.conf",
-      "group": "behaviour",
+      "group": "selffound",
       "kind": "bool",
       "when": "restart",
       "label": {
@@ -1020,9 +1109,111 @@
       }
     },
     {
+      "key": "AiPlayerbot.CoaSelfFoundMaxLevel",
+      "file": "playerbots.conf",
+      "group": "selffound",
+      "kind": "int",
+      "when": "restart",
+      "label": {
+        "en": "Self-found up to level",
+        "fr": "Self-found jusqu'au niveau",
+        "ru": "Self-found до уровня"
+      },
+      "help": {
+        "en": "Highest level self-found applies to: above it, bots are geared as usual for the endgame. 59 by default (geared at 60).",
+        "fr": "Plus haut niveau concerné par le self-found : au-dessus, les bots sont équipés comme d'habitude pour la fin de jeu. 59 par défaut (équipés à 60).",
+        "ru": "Самый высокий уровень self-found: выше боты экипируются как обычно для эндгейма. По умолчанию 59 (экипировка на 60)."
+      }
+    },
+    {
+      "key": "AiPlayerbot.CoaSelfFoundBotsPercent",
+      "file": "playerbots.conf",
+      "group": "selffound",
+      "kind": "int",
+      "when": "restart",
+      "label": {
+        "en": "Bots that clear dungeons (%)",
+        "fr": "Bots qui font les donjons (%)",
+        "ru": "Боты, проходящие подземелья (%)"
+      },
+      "help": {
+        "en": "Share of the random bots (0 to 100 %, always the same ones) that go through the dungeons of their level in parties of five, with Dungeon Clear, and wear what they loot. 0 = no party; -1 = automatic (20 on a self-found realm, 0 otherwise).",
+        "fr": "Part des bots aléatoires (0 à 100 %, toujours les mêmes) qui font les donjons de leur niveau en groupes de cinq, avec Dungeon Clear, et portent ce qu'ils y ramassent. 0 = aucun groupe ; -1 = automatique (20 en self-found, 0 sinon).",
+        "ru": "Доля случайных ботов (0–100 %, всегда одни и те же), которые проходят подземелья своего уровня группами по пять с Dungeon Clear и носят добытое. 0 = без групп; -1 = автоматически (20 в self-found, иначе 0)."
+      }
+    },
+    {
+      "key": "DungeonClear.SelfFound.MaxGroups",
+      "file": "mod_dungeon_clear.conf",
+      "group": "selffound",
+      "kind": "int",
+      "when": "restart",
+      "label": {
+        "en": "Bot parties in dungeons at once",
+        "fr": "Groupes de bots en donjon en même temps",
+        "ru": "Групп ботов в подземельях одновременно"
+      },
+      "help": {
+        "en": "Each party is five bots with one instance. 4 parties start about 8 to 12 runs an hour. 0 = none.",
+        "fr": "Chaque groupe compte cinq bots et une instance. 4 groupes lancent environ 8 à 12 donjons par heure. 0 = aucun.",
+        "ru": "Каждая группа — пять ботов и одно подземелье. 4 группы — примерно 8–12 заходов в час. 0 = нет."
+      }
+    },
+    {
+      "key": "DungeonClear.SelfFound.IntervalS",
+      "file": "mod_dungeon_clear.conf",
+      "group": "selffound",
+      "kind": "int",
+      "when": "restart",
+      "label": {
+        "en": "Seconds between two new parties",
+        "fr": "Secondes entre deux nouveaux groupes",
+        "ru": "Секунд между новыми группами"
+      },
+      "help": {
+        "en": "How often a new party is formed while there is room. 90 by default.",
+        "fr": "Fréquence à laquelle un nouveau groupe est formé tant qu'il reste de la place. 90 par défaut.",
+        "ru": "Как часто собирается новая группа, пока есть место. По умолчанию 90."
+      }
+    },
+    {
+      "key": "DungeonClear.SelfFound.LevelWindow",
+      "file": "mod_dungeon_clear.conf",
+      "group": "selffound",
+      "kind": "int",
+      "when": "restart",
+      "label": {
+        "en": "Levels below a dungeon's range",
+        "fr": "Niveaux sous la tranche d'un donjon",
+        "ru": "Уровней ниже диапазона подземелья"
+      },
+      "help": {
+        "en": "How many levels below a dungeon's usual range a party member may be (Ragefire Chasm is 13-18: with 2, bots of 11 to 18 go).",
+        "fr": "De combien de niveaux un membre du groupe peut être sous la tranche habituelle du donjon (Gouffre de Ragefeu est 13-18 : avec 2, les bots de 11 à 18 y vont).",
+        "ru": "На сколько уровней ниже обычного диапазона подземелья может быть участник (Огненная пропасть 13–18: при 2 идут боты 11–18)."
+      }
+    },
+    {
+      "key": "DungeonClear.SelfFound.RoleFallbackMaxLevel",
+      "file": "mod_dungeon_clear.conf",
+      "group": "selffound",
+      "kind": "int",
+      "when": "restart",
+      "label": {
+        "en": "Healer or tank by class up to level",
+        "fr": "Soigneur ou tank par la classe jusqu'au niveau",
+        "ru": "Лекарь или танк по классу до уровня"
+      },
+      "help": {
+        "en": "Low-level bots seldom have a healer or tank specialization: in dungeons ending at this level or below, a bot whose class can do it takes the role. 0 = always by specialization.",
+        "fr": "Les bots de bas niveau ont rarement une spécialisation de soigneur ou de tank : dans les donjons qui finissent à ce niveau ou en dessous, un bot dont la classe le permet prend le rôle. 0 = toujours par la spécialisation.",
+        "ru": "У ботов низкого уровня редко есть специализация лекаря или танка: в подземельях до этого уровня роль берёт бот, чей класс это умеет. 0 = только по специализации."
+      }
+    },
+    {
       "key": "AiPlayerbot.RandomBotXPRate",
       "file": "playerbots.conf",
-      "group": "behaviour",
+      "group": "selffound",
       "kind": "choice",
       "when": "restart",
       "label": {
@@ -1682,6 +1873,23 @@
       }
     },
     {
+      "key": "CoaRaidDifficulty.BotMemberWeight",
+      "file": "mod_coa_raid_difficulty.conf",
+      "group": "difficulty",
+      "kind": "float",
+      "when": "restart",
+      "label": {
+        "en": "Raid bosses: a bot counts as (experimental)",
+        "fr": "Boss de raid : un bot compte pour (expérimental)",
+        "ru": "Боссы рейдов: бот считается как (экспериментально)"
+      },
+      "help": {
+        "en": "Raid boss health follows the number of players inside (10 to 25). For that health only, a bot counts as this share of a player; real players always count 1. 0.3 by default, 1 = a bot is a full player.",
+        "fr": "Les PV des boss de raid suivent le nombre de joueurs présents (10 à 25). Pour ces PV seulement, un bot compte pour cette part d'un joueur ; les vrais joueurs comptent toujours 1. 0,3 par défaut, 1 = un bot compte comme un joueur.",
+        "ru": "Здоровье боссов рейда зависит от числа игроков внутри (от 10 до 25). Только для этого здоровья бот считается такой долей игрока; живые игроки всегда 1. По умолчанию 0,3; 1 — бот как полный игрок."
+      }
+    },
+    {
       "key": "CoA.UnlockLocalAppearanceCatalog",
       "file": "coa.conf",
       "group": "collections",
@@ -1942,6 +2150,33 @@
         "fr": "« Nouveaux bots pas au-dessus des joueurs » ne fixe le niveau qu'à la création d'un bot : les tranches de niveau déplacent toujours des bots toutes les 5 minutes.",
         "ru": "«Новые боты не выше игроков» задаёт уровень только при создании бота: диапазоны уровней всё равно перемещают ботов каждые 5 минут."
       }
+    },
+    {
+      "if": {
+        "AiPlayerbot.EnablePeriodicOnlineOffline": "0"
+      },
+      "warn": [
+        "AiPlayerbot.OnlineSelection.FollowPlayerLevels",
+        "AiPlayerbot.OnlineSelection.LevelWindow"
+      ],
+      "text": {
+        "en": "No effect while \"Bots log in and out in turns\" is off: the same bots stay online, there is nobody to pick. The \"Bots around my level\" recipe turns both on.",
+        "fr": "Sans effet tant que « Les bots se connectent à tour de rôle » est désactivé : les mêmes bots restent en ligne, il n'y a personne à choisir. La recette « Bots autour de mon niveau » active les deux.",
+        "ru": "Не действует, пока «Боты заходят в игру по очереди» выключено: онлайн всегда одни и те же боты. Рецепт «Боты около моего уровня» включает оба."
+      }
+    },
+    {
+      "if": {
+        "AiPlayerbot.OnlineSelection.FollowPlayerLevels": "0"
+      },
+      "warn": [
+        "AiPlayerbot.OnlineSelection.LevelWindow"
+      ],
+      "text": {
+        "en": "Only used while \"Bots online around my level\" is on.",
+        "fr": "Utilisé seulement quand « Bots en ligne autour de mon niveau » est activé.",
+        "ru": "Действует только с «Онлайн боты около моего уровня»."
+      }
     }
   ],
   "recipes": [
@@ -2000,30 +2235,43 @@
         "ru": "Solo self-found (1-59)"
       },
       "summary": {
-        "en": "Bots level up by playing from level 1 to 59: their gear is never generated, they wear what they loot in the world and in dungeons, earn from quests or get from you. At 60 they are geared as usual for endgame. Random bots are recreated at level 1 (one-time, after a backup). Bot experience speed ×2, adjustable in the settings.",
-        "fr": "Les bots montent en jouant du niveau 1 au niveau 59 : leur équipement n'est jamais fabriqué, ils portent ce qu'ils ramassent dans le monde et en donjon, gagnent en quête ou reçoivent de vous. Au niveau 60, ils sont équipés comme d'habitude pour la fin de jeu. Les bots aléatoires sont recréés au niveau 1 (une seule fois, après une sauvegarde). Vitesse d'expérience des bots ×2, réglable dans les paramètres.",
-        "ru": "Боты растут, играя, с 1 по 59 уровень: экипировка им никогда не создаётся, они носят то, что добыли в мире и в подземельях, получили за задания или от вас. На 60-м уровне они экипируются как обычно для эндгейма. Случайные боты создаются заново с 1 уровня (один раз, после резервной копии). Скорость опыта ботов ×2, меняется в настройках."
+        "en": "Bots level up by playing from level 1 to 59: their gear is never generated, they wear what they loot in the world and in dungeons, earn from quests or get from you. 20 % of them clear the dungeons of their level in parties of five (up to 4 parties at once). At 60 they are geared as usual for endgame. Random bots are recreated at level 1 (one-time, after a backup). Bot experience speed ×2. Every value is in the Solo self-found tab.",
+        "fr": "Les bots montent en jouant du niveau 1 au niveau 59 : leur équipement n'est jamais fabriqué, ils portent ce qu'ils ramassent dans le monde et en donjon, gagnent en quête ou reçoivent de vous. 20 % d'entre eux font les donjons de leur niveau en groupes de cinq (jusqu'à 4 groupes à la fois). Au niveau 60, ils sont équipés comme d'habitude pour la fin de jeu. Les bots aléatoires sont recréés au niveau 1 (une seule fois, après une sauvegarde). Vitesse d'expérience des bots ×2. Chaque valeur est dans l'onglet Solo self-found.",
+        "ru": "Боты растут, играя, с 1 по 59 уровень: экипировка им никогда не создаётся, они носят то, что добыли в мире и в подземельях, получили за задания или от вас. 20 % из них проходят подземелья своего уровня группами по пять (до 4 групп сразу). На 60-м уровне они экипируются как обычно для эндгейма. Случайные боты создаются заново с 1 уровня (один раз, после резервной копии). Скорость опыта ботов ×2. Все значения — во вкладке Solo self-found."
       },
       "changes": {
         "AiPlayerbot.CoaSelfFound": "1",
-        "AiPlayerbot.RandomBotXPRate": "2"
+        "AiPlayerbot.CoaSelfFoundMaxLevel": "59",
+        "AiPlayerbot.CoaSelfFoundBotsPercent": "20",
+        "AiPlayerbot.RandomBotXPRate": "2",
+        "DungeonClear.SelfFound.MaxGroups": "4",
+        "DungeonClear.SelfFound.IntervalS": "90",
+        "DungeonClear.SelfFound.LevelWindow": "2",
+        "DungeonClear.SelfFound.RoleFallbackMaxLevel": "30"
       },
-      "fresh": true
+      "fresh": true,
+      "needs": [
+        "AiPlayerbot.CoaSelfFound",
+        "AiPlayerbot.RandomBotXPRate"
+      ]
     },
     {
-      "id": "self-found-dungeons",
-      "soon": true,
+      "id": "bots-around-my-level",
       "title": {
-        "en": "Self-found bots in dungeons",
-        "fr": "Bots self-found en donjon",
-        "ru": "Боты без готовой экипировки в подземельях"
+        "en": "Bots around my level",
+        "fr": "Bots autour de mon niveau",
+        "ru": "Боты около моего уровня"
       },
       "summary": {
-        "en": "In Solo self-found, part of the random bots (up to 10%) group up and clear dungeons of their level on their own, and gear up from what they loot.",
-        "fr": "En Solo self-found, une partie des bots aléatoires (jusqu'à 10 %) se groupent et vident seuls des donjons de leur niveau, et s'équipent avec ce qu'ils ramassent.",
-        "ru": "В Solo self-found часть случайных ботов (до 10 %) собирается в группы и сама проходит подземелья своего уровня, экипируясь добычей."
+        "en": "The realm keeps twice as many bots as are online and logs in those near your level (± 5). No bot changes level: works with Solo self-found too.",
+        "fr": "Le royaume garde deux fois plus de bots qu'il n'y en a en ligne et connecte ceux qui sont proches de votre niveau (± 5). Aucun bot ne change de niveau : compatible aussi avec Solo self-found.",
+        "ru": "В мире вдвое больше ботов, чем онлайн, и в игру заходят те, кто близок к вашему уровню (± 5). Ни один бот не меняет уровень: совместимо и с Solo self-found."
       },
-      "changes": {}
+      "changes": {
+        "AiPlayerbot.EnablePeriodicOnlineOffline": "1",
+        "AiPlayerbot.OnlineSelection.FollowPlayerLevels": "1",
+        "AiPlayerbot.OnlineSelection.LevelWindow": "5"
+      }
     },
     {
       "id": "rexxar-like",

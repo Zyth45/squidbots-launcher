@@ -577,3 +577,12 @@ label.switch input:checked + span::after, button.switch.on span::before { conten
 /* Solo self-found: the level settings do not apply, shown greyed under a note. */
 .self-found-note { display: flex; gap: 8px; align-items: flex-start; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); margin: 0 0 12px; }
 .conf-row.self-found-off { opacity: .5; }
+.troubleshoot { margin-top: 16px; }
+.troubleshoot > summary { cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600; width: max-content; }
+.troubleshoot > summary svg { width: 16px; height: 16px; }
+.troubleshoot[open] > summary { margin-bottom: 10px; }
+.troubleshoot .line-action { margin-top: 10px; }
+.troubleshoot .log { margin-top: 10px; max-height: 260px; }
+.module-extra { margin: 8px 0 0; font-size: 13px; line-height: 1.5; color: var(--muted); }
+.module-extra > .pill, .module-extra > .soon-tag { display: inline-block; margin-right: 6px; vertical-align: 1px; }
+.module-extra.soon { opacity: .6; }

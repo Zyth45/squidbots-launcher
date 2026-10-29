@@ -27,9 +27,9 @@ async function tailText(file, bytes = 2 * 1024 * 1024) {
     return buffer.toString('utf8');
   } finally { await handle.close(); }
 }
-const EXPECTED_DATA =new Set(['acore_auth', 'acore_characters', 'acore_world', 'acore_playerbots', 'mysql', 'performance_schema', 'sys',
-  // the databases of the launcher's extra realms (Realms tab)
-  'acore_characters_wildcard', 'acore_playerbots_wildcard', 'acore_characters_reborn', 'acore_playerbots_reborn']);
+const EXPECTED_DATA =new Set(['acore_auth', 'acore_characters', 'acore_world', 'acore_playerbots', 'mysql', 'performance_schema', 'sys']);
+// The databases of the launcher's extra realms (Realms tab): Wildcard, Reborn and any later one.
+const REALM_DATA = /^acore_(characters|playerbots)_[a-z]+$/i;
 const OLD_LFG_UPDATE = 'CoA-Bots/Database/world/updates/rev_20260925_50_lfg_wing_final_bosses.sql';
 
 // The worldserver process that runs, and when each of our exes started (Windows).
@@ -145,7 +145,7 @@ async function repackChecks({ root, add, mysqlQuery, services }) {
 
   // ---- MySQL's own files
   const dataEntries = await fsp.readdir(path.join(root, 'mysql/data'), { withFileTypes: true }).catch(() => []);
-  const strangers = dataEntries.filter(entry => entry.isDirectory() && !entry.name.startsWith('#') && !EXPECTED_DATA.has(entry.name.toLowerCase())).map(entry => entry.name);
+  const strangers = dataEntries.filter(entry => entry.isDirectory() && !entry.name.startsWith('#') && !EXPECTED_DATA.has(entry.name.toLowerCase()) && !REALM_DATA.test(entry.name)).map(entry => entry.name);
   add('database', 'mysql.folders', strangers.length ? 'bad' : 'ok', { folders: strangers.slice(0, 5).join(', ') });
   let tablespace = false;
   for (const name of await fsp.readdir(path.join(root, 'mysql/logs')).catch(() => [])) {
@@ -175,6 +175,14 @@ async function repackChecks({ root, add, mysqlQuery, services }) {
   if (worldUp && settings.raPort) {
     const ra = await require('./dashboard.cjs').portOpen(Number(settings.raPort));
     add('services', 'ra', ra ? 'ok' : 'warn', { port: settings.raPort });
+  }
+  // Windows Firewall: a Block rule on one of our programs (Windows makes one when its "allow access" window was
+  // cancelled) wins over every rule the launcher opens: other PCs cannot reach the server. Never removed without the
+  // player: the fix asks Windows for the administrator.
+  const blocks = await require('./network.cjs').firewallBlocks(root);
+  if (blocks.length) {
+    const open = JSON.parse((await read(path.join(root, 'Settings/network.json'))) || '{}').mode === 'open';
+    add('services', 'firewall.block', open ? 'bad' : 'warn', { programs: [...new Set(blocks.map(rule => path.basename(rule.program)))].join(', '), count: blocks.length }, 'fix:firewall');
   }
 
   // ---- the database itself, when MySQL runs
@@ -271,6 +279,14 @@ const FIXES = {
   'bots-leftover': async ({ root }) => fsp.rm(path.join(root, 'CoA-Bots/Database/world/updates'), { recursive: true, force: true }),
   // 15: the realm shows offline.
   'realm-flag': ({ mysqlQuery }) => mysqlQuery('UPDATE acore_auth.realmlist SET flag = 0 WHERE id = 1 AND flag IN (2, 3)'),
+  // The Block rules of Windows Firewall on our programs removed, our programs allowed on their ports (UAC).
+  firewall: async ({ root }) => {
+    const network = require('./network.cjs');
+    const settings = JSON.parse((await fsp.readFile(path.join(root, 'Settings/repack.json'), 'utf8').catch(() => '{}')).replace(/^\uFEFF/, '') || '{}');
+    const realms = await require('./realms.cjs').status(root, { live: false }).catch(() => ({ realms: [] }));
+    const extra = realms.realms.filter(realm => realm.state !== 'absent').map(realm => realm.worldPort).filter(Boolean);
+    await network.openFirewall(root, { auth: Number(settings.authPort) || 3724, world: Number(settings.worldPort) || 8085, extra }, { blocks: await network.firewallBlocks(root) });
+  },
   // 19: the old authserver still runs after an update: stop it and start the new one.
   'restart-auth': async ({ control }) => { await control.stop('auth'); await control.start('auth'); },
 };

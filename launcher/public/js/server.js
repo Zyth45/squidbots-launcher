@@ -224,7 +224,8 @@ function selfFoundOn() {
 
 function warnings(key) {
   const conf = App.state.conf;
-  if (selfFoundOn() && conf.settings.find(item => item.key === key)?.group === 'levels') return [];
+  const levelsOff = conf.settings.find(item => item.key === key);
+  if (selfFoundOn() && levelsOff?.group === 'levels' && !levelsOff.selfFoundOk) return [];
   return (conf.overrides || []).filter(rule => rule.warn.includes(key) && Object.entries(rule.if).every(([name, value]) => {
     const setting = conf.settings.find(item => item.key === name);
     return setting && String(confValue(setting)).trim() === value;
@@ -312,6 +313,8 @@ function modulesView() {
     </section>
     ${m.dungeonclear?.available ? `<section class="panel module-card">${moduleArt('dungeonclear')}<header><h2>${icon('shield')}Dungeon Clear</h2>${moduleSwitch('modules-dungeon', m.dungeonclear.enabled, m.worldRunning)}</header>
       <p class="muted">${esc(t('modules.dungeonText', 'The bots of your group clear the dungeon on their own: start it from the SquidBots Lite addon, they pull, fight and loot room after room.'))}</p>
+      <div class="module-extra"><span class="pill warn">${esc(t('modules.experimental', 'Experimental'))}</span><span>${esc(t('modules.raidWithBots', 'Raids too: start it the same way in a raid with your bots. Boss health counts a bot as 0.3 of a player (Settings > Creature difficulty).'))}</span></div>
+      <div class="module-extra soon"><span class="soon-tag">${esc(t('conf.soon', 'Coming soon'))}</span><span>${esc(t('modules.raidBotsAlone', 'Raids of bots alone, like the self-found dungeon parties.'))}</span></div>
       ${stopFirst}
       <p class="module-credit"><span>${esc(t('modules.by', 'By {author}', { author: 'Jared Wright' }))} · ${esc(t('modules.dungeonLicence', 'Open source module (AGPL)'))}</span></p>
     </section>` : ''}
@@ -395,13 +398,13 @@ function settingsView() {
   const changedIn = id => conf.settings.filter(setting => setting.group === id && App.state.pending[pendingKey(setting.file, setting.key)] !== undefined).length;
   const nav = `<nav class="conf-nav" id="conf-nav">${tabs.map(tab => `<button class="conf-tab${App.state.confGroup === tab.id ? ' active' : ''}" data-action="conf-group" data-id="${esc(tab.id)}">${icon(tab.icon)}<span>${esc(tab.label)}</span>${changedIn(tab.id) ? `<em>${changedIn(tab.id)}</em>` : ''}</button>`).join('')}</nav>`;
   // A card announced for later (soon) shows greyed out, next to the recipe it belongs to, and writes nothing.
-  const quick = conf.recipes.filter(recipe => ['coa-recommended', 'fresh-level-1', 'self-found-world', 'self-found-dungeons', 'rexxar-like'].includes(recipe.id))
+  const quick = conf.recipes.filter(recipe => ['coa-recommended', 'fresh-level-1', 'self-found-world', 'bots-around-my-level', 'rexxar-like'].includes(recipe.id))
     .filter(recipe => !recipe.soon || conf.recipes.some(item => item.id === 'self-found-world'));
   const recipes = quick.length ? `<div class="recipes">${quick.map(recipe => `<div class="recipe-cell"><button class="recipe${recipe.soon ? ' soon' : ''}" ${recipe.soon ? 'disabled aria-disabled="true"' : `data-action="conf-recipe" data-id="${esc(recipe.id)}"`}><strong>${esc(loc(recipe.title))}${recipe.soon ? `<span class="soon-tag">${esc(t('conf.soon', 'Coming soon'))}</span>` : ''}</strong><small>${esc(loc(recipe.summary))}</small></button></div>`).join('')}</div>` : '';
-  const body = groups.filter(group => group.id === App.state.confGroup).map(group => `<section class="conf-group"><h3>${icon(group.icon)}${esc(loc(group.label))}</h3>${group.id === 'population' ? ramAdvice(conf) + recipes : ''}${group.id === 'levels' && selfFoundOn() ? `<p class="status-line self-found-note">${icon('info')}${esc(t('conf.selfFoundLevels', 'Solo self-found is on: the bots only level up by playing (up to 59 without generated gear, geared as usual at 60). The level settings below do not apply.'))}</p>` : ''}${conf.settings.filter(setting => setting.group === group.id).map(setting => {
+  const body = groups.filter(group => group.id === App.state.confGroup).map(group => `<section class="conf-group"><h3>${icon(group.icon)}${esc(loc(group.label))}</h3>${group.id === 'population' ? ramAdvice(conf) + recipes : ''}${group.id === 'levels' && selfFoundOn() ? `<p class="status-line self-found-note">${icon('info')}${esc(t('conf.selfFoundLevels', 'Solo self-found is on: the bots only level up by playing (up to 59 without generated gear, geared as usual at 60). The level settings below do not apply, except the bots online around your level.'))}</p>` : ''}${conf.settings.filter(setting => setting.group === group.id).map(setting => {
     const warn = warnings(setting.key);
     const changed = App.state.pending[pendingKey(setting.file, setting.key)] !== undefined;
-    return `<div class="conf-row${changed ? ' changed' : ''}${setting.group === 'levels' && selfFoundOn() ? ' self-found-off' : ''}${setting.origin ? ` from-${setting.origin}` : ''}"><div class="conf-label"><strong>${esc(loc(setting.label))}</strong>${originTag(setting)}<p>${esc(loc(setting.help))}</p><small class="when">${icon('refresh')}${esc(loc(conf.when?.[setting.when]))}</small><div class="conf-warn" data-warn="${esc(setting.key)}" ${warn.length ? '' : 'hidden'}>${icon('info')}<span>${esc(warn.join(' '))}</span></div></div><div class="conf-control">${control(setting)}</div></div>`;
+    return `<div class="conf-row${changed ? ' changed' : ''}${setting.group === 'levels' && !setting.selfFoundOk && selfFoundOn() ? ' self-found-off' : ''}${setting.origin ? ` from-${setting.origin}` : ''}"><div class="conf-label"><strong>${esc(loc(setting.label))}</strong>${originTag(setting)}<p>${esc(loc(setting.help))}</p><small class="when">${icon('refresh')}${esc(loc(conf.when?.[setting.when]))}</small><div class="conf-warn" data-warn="${esc(setting.key)}" ${warn.length ? '' : 'hidden'}>${icon('info')}<span>${esc(warn.join(' '))}</span></div></div><div class="conf-control">${control(setting)}</div></div>`;
   }).join('')}</section>`).join('');
   const key = realmKey || 'coa';
   const others = createdRealms().length > 1;
@@ -768,6 +771,7 @@ Object.assign(App.actions, {
     if (!await confirmDialog({ title: t('upgrade.revertTitle', 'Go back to the previous version?'), body: esc(t('upgrade.revertBody', 'The launcher uses the previous folder again, with its database as it was before the move. What players did since then stays in the new folder.')), confirm: t('upgrade.revert', 'Go back to it') })) return;
     Object.assign(App.state, { server: await App.api.revertUpgrade(), serverCheck: null, upgrade: null, conf: null, backups: null, verify: null, network: null });
     toast(t('upgrade.reverted', 'Back on the previous version.'), 'success');
+    if (App.state.tab === 'verify') { Object.assign(App.state, { reinstall: null, reinstallDone: false }); await App.reloadAll(); return; }
     refreshUpdates();
     await loadUpgrade();
   }, button),

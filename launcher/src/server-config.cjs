@@ -192,7 +192,9 @@ class ServerConfig {
       groups: CATALOG.groups,
       when: CATALOG.when,
       settings,
-      recipes: CATALOG.recipes.filter(recipe => Object.keys(recipe.changes).every(key => settings.some(setting => setting.key === key))),
+      // A recipe shows when the keys it needs are there (all of them unless it names its own); the others it sets are
+      // left out on an older package.
+      recipes: CATALOG.recipes.filter(recipe => (recipe.needs || Object.keys(recipe.changes)).every(key => settings.some(setting => setting.key === key))),
       overrides: CATALOG.overrides,
       changed: Object.keys(changes).length,
       bots: this.exists('CoA-Bots/coa_bots.py'),
@@ -334,6 +336,44 @@ class ServerConfig {
     for (const change of changes) {
       try { await other.save([{ ...change, value: change.kind === 'quoted' ? change.value.replace(/^"|"$/g, '') : change.value }]); applied.push(change.key); }
       catch { skipped.push(change.key); }
+    }
+    return { applied, skipped };
+  }
+
+  // The values the player changed by hand, for a reinstall: a key of a module .conf that differs from the .dist it was
+  // shipped with and, with the same release on both sides, a key of a Settings template that differs from the fresh
+  // template. Database lines, values holding the old folder and keys the repack rewrites are left to the new install.
+  async carryEdits(target, { sameRelease = false } = {}) {
+    const other = new ServerConfig(target);
+    const theirs = new Map((await other.files()).map(file => [file.id, file]));
+    const folder = this.root.toLowerCase().replace(/\\/g, '/');
+    const applied = [];
+    const skipped = [];
+    for (const file of await this.files()) {
+      const twin = theirs.get(file.id);
+      if (!twin || (file.template ? !sameRelease || !twin.template : !file.dist)) continue;
+      const mine = parseValues(await this.read(file.path));
+      const shipped = parseValues(await (file.template ? other.read(twin.path) : this.read(file.dist)));
+      const present = parseValues(await other.read(twin.path));
+      let list = [];
+      for (const [key, { value }] of mine) {
+        const text = value.trim();
+        const reference = shipped.get(key)?.value.trim();
+        if (reference === undefined || reference === text || !present.has(key) || present.get(key).value.trim() === text) continue;
+        if (SECRET.test(key) || text.toLowerCase().replace(/\\/g, '/').includes(folder) || other.managed(file.id).some(rule => rule.keys.includes(key))) continue;
+        const curated = CATALOG.settings.find(item => item.file === file.id && item.key === key);
+        const kind = curated?.kind || (/^".*"$/.test(text) ? 'quoted' : undefined);
+        list.push({ file: file.id, key, kind, value: kind === 'quoted' ? text.replace(/^"|"$/g, '') : text });
+      }
+      // One save per file (one backup); a refused value is left out and the rest saved.
+      while (list.length) {
+        try { await other.save(list, { record: false }); applied.push(...list.map(change => change.key)); break; }
+        catch (error) {
+          const refused = list.filter(change => !error.fields || error.fields[change.key]);
+          skipped.push(...refused.map(change => change.key));
+          list = list.filter(change => !refused.includes(change));
+        }
+      }
     }
     return { applied, skipped };
   }

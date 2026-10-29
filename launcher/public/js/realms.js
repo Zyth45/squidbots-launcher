@@ -32,7 +32,7 @@ const REALMS_INFO = {
   coa: { color: '#e8b04a', title: 'Conquest of Azeroth', sub: 'CoA', textKey: 'realms.coaText', text: 'The classic realm: the classes of Conquest of Azeroth, your characters and your bots of today.' },
   wildcard: { color: '#c27bff', title: 'Wildcard', sub: 'Darkmoon', textKey: 'realms.wildcardText', text: 'One class, the Hero: its spells and talents are drawn at random. A new game every time.' },
   reborn: { color: '#ff8a3d', title: 'Warcraft Reborn', sub: 'Bronzebeard', textKey: 'realms.rebornText', text: 'The ten original classes, reworked: classic Warcraft, plus.' },
-  dawnrise: { color: '#5cc8ff', title: 'Free Pick', sub: 'Dawnrise', textKey: 'realms.dawnriseText', text: 'One class, the Hero: choose every spell and talent yourself, from every class.' },
+  dawnrise: { color: '#5cc8ff', title: 'Free Pick', sub: 'Dawnrise', textKey: 'realms.dawnriseText', text: 'One class, the Hero: choose every spell and talent yourself, from every class.', experimental: true, noBots: true, since: '2.8.2' },
 };
 const realmEmblem = (key, size = 56) => `<span class="realm-emblem realm-${key} s${size}">${REALM_EMBLEMS[key] || ''}</span>`;
 const realmTitle = key => REALMS_INFO[key]?.title || key;
@@ -96,15 +96,16 @@ function realmCard(realm, busy) {
   const working = busy === realm.key || (App.state.stoppingAll && ['running', 'starting'].includes(realm.state));
   const gear = realm.state === 'absent' ? '' : `<button class="card-gear" data-action="realm-card" data-key="${realm.key}" title="${esc(t('cards.gear', 'How this realm looks in the game\'s realm list'))}">${icon('settings')}</button>`;
   const head = `<header>${realmEmblem(realm.key, 56)}<div class="realm-name"><h2>${esc(info.title)}</h2><small>${esc(info.sub)}</small></div><div class="realm-side">${realmStatePill(realm.state === 'absent' ? 'disabled' : working && (App.state.realmBusyKind === 'stop' || App.state.stoppingAll) ? 'stopping' : working && realm.state === 'stopped' ? 'starting' : realm.state === 'stopped' && realm.skipped ? 'lowmem' : realm.state, realm)}${gear}</div></header>
-    ${realmNote(realm, working) || `<p class="realm-text">${esc(t(info.textKey, info.text))}</p>`}`;
+    ${realmNote(realm, working) || `<p class="realm-text">${esc(t(info.textKey, info.text))}</p>`}${info.experimental || info.noBots ? `<p class="realm-text muted">${info.experimental ? `<span class="pill warn realm-exp">${esc(t('modules.experimental', 'Experimental'))}</span>` : ''}${info.noBots ? esc(t('realms.botsSoon', 'No bots for now: they come in a next version.')) : ''}</p>` : ''}`;
   if (realm.state === 'absent') {
     const r = App.state.realms;
     const creatable = r.supported && realm.ready;
     const why = !r.supported && r.version ? t('realms.needVersion', 'Comes with CoA Bots 2.6 (this server: {version}).', { version: r.version })
+      : r.supported && info.since ? t('realms.needSince', 'Comes with CoA Bots {version}: its update tool must know the databases of this realm.', { version: info.since })
       : r.supported ? t('realms.needNewer', 'Comes with CoA Bots 2.6: its update tool must know the databases of this realm.')
       : t('realms.needBots', 'Needs CoA Bots in this server.');
     return `<article class="realm-card realm-${realm.key} absent">${head}
-      <ul class="realm-promise"><li>${icon('user')}${esc(t('realms.ownChars', 'Its own characters (your CoA characters stay where they are)'))}</li><li>${icon('bot')}${esc(t('realms.ownBots', 'Its own bots, {n} to start with', { n: 150 }))}</li><li>${icon('key')}${esc(t('realms.sameAccount', 'The same game accounts'))}</li></ul>
+      <ul class="realm-promise"><li>${icon('user')}${esc(t('realms.ownChars', 'Its own characters (your CoA characters stay where they are)'))}</li>${info.noBots ? '' : `<li>${icon('bot')}${esc(t('realms.ownBots', 'Its own bots, {n} to start with', { n: 150 }))}</li>`}<li>${icon('key')}${esc(t('realms.sameAccount', 'The same game accounts'))}</li></ul>
       <div class="realm-buttons">${creatable ? `<button class="button primary small wide" data-action="realm-create" data-key="${realm.key}" ${busy ? 'disabled' : ''}>${icon('play')}${esc(working ? t('realms.creating', 'Switching on…') : t('realms.activate', 'Switch on'))}</button>` : `<small class="muted">${esc(why)}</small>`}</div>
       <footer class="realm-more"><small class="muted">${creatable ? esc(working && App.state.realmLine ? App.state.realmLine : t('realms.createTime', 'About a minute.')) : ''}</small></footer>
     </article>`;

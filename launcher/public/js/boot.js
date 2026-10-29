@@ -88,6 +88,8 @@ function subscribe() {
     if (update.line !== undefined) appendLog(update.line);
     if (update.step) s.upgradeStep = update.step;
     if (UPGRADE_STEPS.some(([id]) => id === update.step)) s.upgradeLastStep = update.step;
+    // A reinstall (Verification > Troubleshooting): its step shows there.
+    if (update.step && s.reinstallRunning && s.tab === 'verify' && !$('#dialog').open) App.render();
     if (update.running !== undefined) s.upgradeRunning = update.running;
     if (update.step && s.tab === 'server' && s.srvTab === 'upgrade') {
       const current = $('.stepper');

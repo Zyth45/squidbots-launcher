@@ -20,6 +20,7 @@ import argparse
 import gzip
 import hashlib
 import json
+import re
 import socket
 import subprocess
 import sys
@@ -268,6 +269,9 @@ def main():
     parser.add_argument("--bots-only", action="store_true",
                         help="copy acore_playerbots alone and leave accounts and characters as they are")
     parser.add_argument("--force", action="store_true", help="replace the new install's own characters")
+    parser.add_argument("--realms", default="",
+                        help="extra realms of the launcher (wildcard,reborn...): their characters and bots databases "
+                             "are copied whole too (the new install must have created them already)")
     parser.add_argument("--yes", action="store_true", help="do not ask for confirmation")
     parser.add_argument("--check", action="store_true",
                         help="look at both installs and report, without changing anything")
@@ -367,6 +371,13 @@ def main():
                  new.client("mysql.exe"), "bot data (acore_playerbots)")
         elif old.has_database("acore_playerbots"):
             print("  bot data: skipped (--no-bots). If the bots stop working, run again without it.")
+        # The launcher's extra realms: their own characters and bots, whole (the core brings their schema up to date
+        # at their next start, like the CoA realm's).
+        for key in [k for k in arguments.realms.split(",") if re.fullmatch(r"[a-z]+", k)]:
+            for database in (f"acore_characters_{key}", f"acore_playerbots_{key}"):
+                if old.has_database(database):
+                    pipe(old.client("mysqldump.exe", *DUMP_FLAGS, "--databases", database),
+                         new.client("mysql.exe"), f"realm {key} ({database})")
 
         print("\n  Result")
         print(f"    accounts   : {new.count('SELECT COUNT(*) FROM acore_auth.account')}")
