@@ -23,7 +23,19 @@ function verify(bytes, signature, key) {
 // Fetches `url` and `url.sig`; with a key configured the signature is mandatory.
 // redirect: 'error' by default; 'follow' only for a host that serves its files through a redirect (GitHub
 // releases): the signature, not the address, is what makes a file trusted.
-async function fetchSigned(url, { key, fetchImpl, signal, maxBytes, redirect = 'error' }) {
+// Just after a publication, a cache of the host can still serve the old file with the new signature (or the other
+// way round): a refused pair is read once more, both files asked past the cache, and checked the same way.
+async function fetchSigned(url, options) {
+  try { return await fetchSignedOnce(url, options); }
+  catch (error) {
+    if (!error.badSignature) throw error;
+    const fresh = new URL(url);
+    fresh.searchParams.set('fresh', String(Date.now()));
+    return fetchSignedOnce(fresh, options);
+  }
+}
+
+async function fetchSignedOnce(url, { key, fetchImpl, signal, maxBytes, redirect = 'error' }) {
   const response = await fetchImpl(url, { cache: 'no-store', redirect, signal });
   if (!response.ok) {
     const error = new Error(response.status === 404 ? 'Nothing has been published yet.' : `The update server returned HTTP ${response.status}.`);
@@ -40,8 +52,10 @@ async function fetchSigned(url, { key, fetchImpl, signal, maxBytes, redirect = '
   const bytes = Buffer.concat(chunks);
   let signed = false;
   if (key) {
-    const sig = await fetchImpl(new URL(url.pathname.split('/').pop() + '.sig', url), { cache: 'no-store', redirect, signal });
-    if (!sig.ok || !verify(bytes, await sig.text(), key)) throw new Error('The release signature is invalid. The update was refused for your safety.');
+    const sigUrl = new URL(url.pathname.split('/').pop() + '.sig', url);
+    sigUrl.search = url.search;
+    const sig = await fetchImpl(sigUrl, { cache: 'no-store', redirect, signal });
+    if (!sig.ok || !verify(bytes, await sig.text(), key)) throw Object.assign(new Error('The release signature is invalid. The update was refused for your safety.'), { badSignature: true });
     signed = true;
   }
   return { data: JSON.parse(bytes.toString('utf8')), signed };

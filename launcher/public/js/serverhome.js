@@ -123,6 +123,7 @@ const CHECK_TEXT = {
     bad: ['Windows Firewall blocks the server', 'Block rule(s) on {programs}: Windows made them when its "allow access" window was cancelled, and they win over the opened ports, so other PCs cannot join. The fix removes them and allows our programs on their ports only (Windows asks for the administrator).'],
     warn: ['Windows Firewall blocks the server', 'Block rule(s) on {programs}: harmless while only this PC plays, but other PCs could not join. The fix removes them and allows our programs on their ports only (Windows asks for the administrator).'],
   },
+  'client.kept': { warn: ['Game files modified, server data not refreshed', 'You chose to keep your modified game files: the server data do not match them, and things can go wrong in game. Update the data to match again (about 30 minutes, server stopped).'] },
   ra: { ok: ['Remote console answers', 'Port {port}.'], warn: ['Remote console silent', 'Port {port} is not answering while the world runs: accounts cannot be made from the launcher.'] },
   'realm.flag': {
     ok: ['Realm shown online', ''],
@@ -161,6 +162,7 @@ const ACTIONS = {
   'logs-clean': ['logs-clean', '', 'Clean the logs'],
   'mmaps-rebuild': ['mmaps-rebuild', '', 'Rebuild'],
   'mmaps-update': ['mmaps-update', '', 'Download'],
+  'assemble-refresh': ['assemble-refresh', '', 'Update the data'],
 };
 
 function checkText(check) {
@@ -638,7 +640,7 @@ function assemblyCard(asm) {
 // The game was patched since the server's data were taken from it: they are taken again (about 30 minutes).
 function clientBanner(asm) {
   if (!asm.clientChanged) return '';
-  return `<div class="update-banner"><i class="dot"></i><span>${esc(t('assemble.clientChanged', 'Your game was updated since the server data were taken from it. Take them again (about 30 minutes, server stopped) so the server matches your game.'))}</span><button class="button ghost small" data-action="assemble-refresh">${esc(t('assemble.refresh', 'Update the data'))}</button></div>`;
+  return `<div class="update-banner"><i class="dot"></i><span>${esc(t('assemble.clientChanged', 'Your game was updated since the server data were taken from it. Take them again (about 30 minutes, server stopped) so the server matches your game.'))}</span><button class="button ghost small" data-action="assemble-refresh">${esc(t('assemble.refresh', 'Update the data'))}</button><button class="button ghost small subtle" data-action="assemble-keep-client">${esc(t('assemble.keepClient', 'Keep my modified files'))}</button></div>`;
 }
 function mmapsBanner(mm) {
   if (!mm || mm.complete) return '';
@@ -806,6 +808,13 @@ Object.assign(App.actions, {
     App.state.reinstall = null;
     App.state.reinstallDone = false;
     toast(t('reinstall.removed', 'The previous server is deleted.'), 'success');
+    App.render();
+  }, button),
+  // Not safe, and said so: the server data no longer match the game.
+  'assemble-keep-client': button => guard(async () => {
+    if (!await confirmDialog({ title: t('assemble.keepTitle', 'Keep your modified game files?'), body: esc(t('assemble.keepBody', "The server data won't match your game. Things can go wrong in game (spells, maps, crashes) and we can't support it. Keep anyway?")), confirm: t('assemble.keepGo', 'Keep anyway'), danger: true })) return;
+    App.state.server = await App.api.assembleKeepClient();
+    App.state.verify = null;
     App.render();
   }, button),
   'mmaps-update': button => guard(async () => {

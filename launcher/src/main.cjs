@@ -165,7 +165,11 @@ async function assemblyInfo(folder) {
   if (!client || !asm.extracted || asm.needed) return { ...asm, clientChanged: false };
   const key = `${path.resolve(folder)}|${path.resolve(client)}`;
   if (clientDrift.key !== key || Date.now() - clientDrift.at > 10 * 60 * 1000) clientDrift = { key, at: Date.now(), changed: await assembler.clientChanged(folder, client) };
-  return { ...asm, clientChanged: clientDrift.changed };
+  // Files the player changed and chose to keep: no banner while they stay as kept (a reminder in Verification).
+  // Screenshot tours: the banner of a changed game, without touching the game.
+  if (smokeDir && process.env.COA_SMOKE_CLIENT_CHANGED) clientDrift.changed = true;
+  const kept = clientDrift.changed && assembler.clientKept(folder, client);
+  return { ...asm, clientChanged: clientDrift.changed && !kept, clientKept: kept, client };
 }
 
 // The world reads the navigation maps as bots need them and keeps those it read: maps finished after it started
@@ -523,6 +527,8 @@ function registerIpc() {
         const published = await publishedMmaps().catch(() => null);
         if (published?.version && published.version !== asm.mmaps.published) checks.push({ group: 'bots', id: 'bots.mmapsUpdate', state: 'info', data: { version: published.version }, action: asm.mmaps.running || mmapsFetching ? '' : 'mmaps-update' });
       }
+      // Game files modified and kept by the player: the server data do not match them.
+      if (asm.applies && !asm.needed && (await assemblyInfo(serverPath())).clientKept) checks.push({ group: 'core', id: 'client.kept', state: 'warn', data: {}, action: 'assemble-refresh' });
       return { checks, summary: summary(checks), at: new Date().toISOString(), deep: deep === true };
     } finally { if (deep === true) busyFiles = false; }
   });
@@ -821,9 +827,16 @@ function registerIpc() {
     const world = (await requireControl().status()).some(service => /world/i.test(service.id) && service.state !== 'stopped' && service.state !== 'foreign');
     const realmOn = (await realms.status(serverPath(), { live: false })).realms.some(realm => ['running', 'starting'].includes(realm.state));
     if (world || realmOn) throw new Error('Stop the server first: its game data are replaced.');
-    try { return await assembleServer(['dbc', 'maps', 'vmaps']); } finally { clientDrift = { key: '', at: 0, changed: false }; }
+    try { const done = await assembleServer(['dbc', 'maps', 'vmaps']); assembler.forgetKept(serverPath()); return done; } finally { clientDrift = { key: '', at: 0, changed: false }; }
   });
   handle('assemble:status', () => assembler.state(serverPath()));
+  // "Keep my modified files": the game as it is now is accepted, at the player's own risk.
+  handle('assemble:keepClient', async () => {
+    const info = await assemblyInfo(serverPath());
+    if (!info.client) throw new Error('No game folder is known for this server.');
+    assembler.keepClient(serverPath(), info.client);
+    return serverInfo();
+  });
   handle('assemble:mmaps', async () => { await assembler.startMmaps(serverPath()); return assembler.state(serverPath()); });
   handle('assemble:mmapsPause', () => assembler.stopMmaps(serverPath()));
   // Our latest navigation maps instead of those here (Verification): the build in progress is paused first, what is
@@ -1574,6 +1587,30 @@ function registerIpc() {
     return serverTools().config.save(changes.slice(0, 500).map(change => ({ file: text(change?.file, 80), key: text(change?.key, 100), value: text(change?.value, 400), kind: text(change?.kind, 10) })));
   });
   handle('srvconf:backups', () => serverTools().config.backups());
+  handle('srvconf:index', () => serverTools().config.index());
+  // A profile: the player's own values in a file, to keep, share or put on another server.
+  handle('srvconf:exportProfile', async () => {
+    requireServer();
+    const settingsList = await serverTools().config.profile();
+    const current = await network.readNetwork(serverPath()).catch(() => null);
+    const day = new Date().toISOString().slice(0, 10);
+    const result = await dialog.showSaveDialog(window, { title: 'Save the settings profile', defaultPath: path.join(app.getPath('documents'), `squidbots-profile-${day}.json`), filters: [{ name: 'SquidBots profile', extensions: ['json'] }] });
+    if (result.canceled || !result.filePath) return null;
+    const bots = inspectRepack(serverPath()).bots;
+    await fs.writeFile(result.filePath, JSON.stringify({ format: 'squidbots-profile', version: 1, createdAt: new Date().toISOString(), launcher: app.getVersion(), bots: bots?.version || '', settings: settingsList, network: current?.chosen ? { mode: current.mode, address: current.address, name: current.name } : null }, null, 2));
+    return { file: result.filePath, count: settingsList.length };
+  });
+  handle('srvconf:importProfile', async () => {
+    requireServer();
+    const result = await dialog.showOpenDialog(window, { title: 'Open a settings profile', properties: ['openFile'], filters: [{ name: 'SquidBots profile', extensions: ['json'] }] });
+    if (result.canceled || !result.filePaths[0]) return null;
+    let data = null;
+    try { data = JSON.parse((await fs.readFile(result.filePaths[0], 'utf8')).replace(/^\uFEFF/, '')); } catch {}
+    if (data?.format !== 'squidbots-profile' || !Array.isArray(data.settings)) throw new Error('This file is not a SquidBots settings profile.');
+    const settingsList = data.settings.slice(0, 3000).filter(item => item && typeof item.file === 'string' && typeof item.key === 'string').map(item => ({ file: text(item.file, 80), key: text(item.key, 100), value: text(item.value, 400) }));
+    const net = data.network && typeof data.network === 'object' ? { mode: data.network.mode === 'open' ? 'open' : 'local', address: text(data.network.address, 253), name: text(data.network.name, 32) } : null;
+    return { name: path.basename(result.filePaths[0]), createdAt: text(data.createdAt, 40), bots: text(data.bots, 20), settings: settingsList, network: net };
+  });
   handle('srvconf:restore', id => serverTools().config.restore(text(id, 40)));
 
   // ---- backups ----
@@ -1877,8 +1914,9 @@ function registerIpc() {
       await fs.mkdir(target, { recursive: true });
       busyFiles = true;
       try { await installPackage(target); } finally { busyFiles = false; }
-      // The player's own files of the repack: ports and remote console, who can join, the realm cards, MySQL tuning.
-      for (const name of ['repack.json', 'network.json', 'realm-cards.json', 'my.ini.custom']) {
+      // The player's own files of the repack: ports and remote console, who can join, the realm cards, MySQL tuning,
+      // the settings the admin keeps (own-settings.json, read by coa_bots.py and coa_update.py).
+      for (const name of ['repack.json', 'network.json', 'realm-cards.json', 'my.ini.custom', 'own-settings.json']) {
         await fs.copyFile(path.join(old, 'Settings', name), path.join(target, 'Settings', name)).catch(() => {});
       }
       await network.applyNetwork(target).catch(() => {});

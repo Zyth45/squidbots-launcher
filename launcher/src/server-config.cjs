@@ -190,6 +190,7 @@ class ServerConfig {
     return {
       files: files.map(({ id, name, path: relative, scope, template }) => ({ id, name, path: relative, scope, template })),
       groups: CATALOG.groups,
+      sections: CATALOG.sections || [],
       when: CATALOG.when,
       settings,
       // A recipe shows when the keys it needs are there (all of them unless it names its own); the others it sets are
@@ -199,6 +200,37 @@ class ServerConfig {
       changed: Object.keys(changes).length,
       bots: this.exists('CoA-Bots/coa_bots.py'),
     };
+  }
+
+  // The player's own values (a profile to export): the keys of the module files that differ from their .dist, and the
+  // changes made through the launcher (templates included). Never a database line, a path of this folder or a key the
+  // repack rewrites.
+  async profile() {
+    const folder = this.root.toLowerCase().replace(/\\/g, '/');
+    const out = new Map();
+    const keep = (file, key, value) => {
+      const text = String(value).trim();
+      if (SECRET.test(key) || text.toLowerCase().replace(/\\/g, '/').includes(folder) || this.managed(file).some(rule => rule.keys.includes(key))) return;
+      out.set(`${file}|${key}`, { file, key, value: text });
+    };
+    for (const file of await this.files()) {
+      if (file.template || !file.dist) continue;
+      const mine = parseValues(await this.read(file.path));
+      const shipped = parseValues(await this.read(file.dist));
+      for (const [key, { value }] of mine) if (shipped.has(key) && shipped.get(key).value.trim() !== value.trim()) keep(file.id, key, value);
+    }
+    for (const [id, value] of Object.entries((await readJson(this.resolve(CHANGES))) || {})) { const [file, key] = id.split('|'); keep(file, key, value); }
+    return [...out.values()];
+  }
+
+  // Every key of every settings file (the search of the settings page): its file, value, default and description.
+  async index() {
+    const list = [];
+    for (const file of await this.files()) {
+      const { entries } = await this.details(file.id).catch(() => ({ entries: [] }));
+      for (const entry of entries) list.push({ file: file.id, key: entry.key, value: entry.value, default: entry.default, kind: entry.kind, section: entry.section, description: entry.description.slice(0, 600), locked: entry.locked, curated: entry.curated });
+    }
+    return list;
   }
 
   // Every key of one file, documented from its .dist; secrets are listed but never sent.

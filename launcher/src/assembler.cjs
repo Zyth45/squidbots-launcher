@@ -156,4 +156,31 @@ function clientChanged(folder, client) {
   });
 }
 
-module.exports = { state, assemble, startMmaps, stopMmaps, rebuildMmaps, clientChanged, worldImport, fetchMmaps, STEPS, busy };
+// The game files as the player kept them ("Keep my modified files"): names, sizes and dates of its archives, read by
+// the launcher itself (any package version). The banner comes back only when they change again.
+const KEPT = '.coa-launcher/client-kept.json';
+function clientPrint(client) {
+  const hash = require('node:crypto').createHash('sha256');
+  const walk = dir => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
+      const file = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(file);
+      else if (/\.mpq$/i.test(entry.name)) { const stat = fs.statSync(file); hash.update(`${path.relative(client, file).toLowerCase()}|${stat.size}|${Math.floor(stat.mtimeMs / 1000)}\n`); }
+    }
+  };
+  try { walk(path.join(client, 'Data')); } catch { return ''; }
+  return hash.digest('hex');
+}
+function keepClient(folder, client) {
+  fs.mkdirSync(path.join(folder, '.coa-launcher'), { recursive: true });
+  fs.writeFileSync(path.join(folder, KEPT), JSON.stringify({ client: path.resolve(client), fingerprint: clientPrint(client), at: new Date().toISOString() }, null, 2));
+}
+function clientKept(folder, client) {
+  try {
+    const kept = JSON.parse(fs.readFileSync(path.join(folder, KEPT), 'utf8'));
+    return kept.client.toLowerCase() === path.resolve(client).toLowerCase() && !!kept.fingerprint && kept.fingerprint === clientPrint(client);
+  } catch { return false; }
+}
+function forgetKept(folder) { try { fs.rmSync(path.join(folder, KEPT), { force: true }); } catch {} }
+
+module.exports = { state, assemble, startMmaps, stopMmaps, rebuildMmaps, clientChanged, keepClient, clientKept, forgetKept, clientPrint, worldImport, fetchMmaps, STEPS, busy };

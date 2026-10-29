@@ -57,3 +57,25 @@ test('publish-launcher refuses an installer that does not match latest.yml', asy
   await fsp.writeFile(path.join(dist, 'Setup-1.2.0.exe'), 'changed after the build');
   assert.throws(() => execFileSync(process.execPath, [TOOL, dist, path.join(root, 'out'), '--key', pem], { stdio: 'pipe' }));
 });
+
+test('a signature served stale by a cache is read once more past the cache, never accepted unchecked', async () => {
+  const crypto = require('node:crypto');
+  const { privateKey, publicKey: pub } = crypto.generateKeyPairSync('ed25519');
+  const sign = text => crypto.sign(null, Buffer.from(text), privateKey).toString('base64');
+  const fresh = '{"version":"2.8.2"}';
+  const asked = [];
+  const reply = body => ({ ok: true, status: 200, text: async () => body, body: [Buffer.from(body)] });
+  // The cache gives the new file with the old signature, unless the address asks past it.
+  const fetchImpl = async url => {
+    asked.push(String(url));
+    const past = url.searchParams.has('fresh');
+    return url.pathname.endsWith('.sig') ? reply(past ? sign(fresh) : sign('{"version":"2.8.1"}')) : reply(fresh);
+  };
+  const { data, signed } = await fetchSigned(new URL('https://example.org/r/update.json'), { key: pub, fetchImpl, maxBytes: 65536 });
+  assert.deepEqual([data.version, signed], ['2.8.2', true]);
+  assert.equal(asked.length, 4);
+  assert.ok(asked[2].includes('fresh=') && asked[3].includes('update.json.sig?fresh='));
+  // A signature that stays wrong is still refused.
+  const forged = async url => (url.pathname.endsWith('.sig') ? reply(sign('other')) : reply(fresh));
+  await assert.rejects(fetchSigned(new URL('https://example.org/r/update.json'), { key: pub, fetchImpl: forged, maxBytes: 65536 }), /signature is invalid/);
+});

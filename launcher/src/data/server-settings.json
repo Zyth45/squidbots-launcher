@@ -2,6 +2,15 @@
   "schema": 1,
   "groups": [
     {
+      "id": "presets",
+      "icon": "star",
+      "label": {
+        "en": "Presets and profiles",
+        "fr": "Préréglages et profils",
+        "ru": "Пресеты и профили"
+      }
+    },
+    {
       "id": "population",
       "icon": "bot",
       "label": {
@@ -62,6 +71,24 @@
         "en": "Bot behaviour",
         "fr": "Comportement des bots",
         "ru": "Поведение ботов"
+      }
+    },
+    {
+      "id": "alts",
+      "icon": "user",
+      "label": {
+        "en": "Your alts",
+        "fr": "Vos alts",
+        "ru": "Ваши альты"
+      }
+    },
+    {
+      "id": "pvp",
+      "icon": "swords",
+      "label": {
+        "en": "PvP",
+        "fr": "PvP",
+        "ru": "PvP"
       }
     },
     {
@@ -382,6 +409,57 @@
         "en": "Characters below this level never get resurrection sickness from the spirit healer.",
         "fr": "En dessous de ce niveau, le gardien des âmes ne donne pas de mal de résurrection.",
         "ru": "Ниже этого уровня целитель душ не накладывает слабость."
+      }
+    },
+    {
+      "key": "InstantFlightPaths",
+      "file": "worldserver.conf",
+      "group": "realm",
+      "kind": "bool",
+      "when": "restart",
+      "label": {
+        "en": "Instant flight paths",
+        "fr": "Vols instantanés",
+        "ru": "Мгновенные полёты"
+      },
+      "help": {
+        "en": "A flight master takes you to your destination at once instead of the flight over the world. Off by default.",
+        "fr": "Le maître de vol vous emmène à destination tout de suite, sans le vol au-dessus du monde. Désactivé par défaut.",
+        "ru": "Распорядитель полётов сразу переносит вас к месту назначения, без полёта над миром. По умолчанию выключено."
+      }
+    },
+    {
+      "key": "DurabilityLoss.OnDeath",
+      "file": "worldserver.conf",
+      "group": "realm",
+      "kind": "int",
+      "when": "restart",
+      "label": {
+        "en": "Gear damage on death (%)",
+        "fr": "Usure de l'équipement à la mort (%)",
+        "ru": "Износ экипировки при смерти (%)"
+      },
+      "help": {
+        "en": "Durability lost by the gear at each death. 10 by default, 0 = never.",
+        "fr": "Durabilité perdue par l'équipement à chaque mort. 10 par défaut, 0 = jamais.",
+        "ru": "Потеря прочности экипировки при каждой смерти. По умолчанию 10, 0 — никогда."
+      }
+    },
+    {
+      "key": "DurabilityLoss.OnSpiritResurrect",
+      "file": "worldserver.conf",
+      "group": "realm",
+      "kind": "int",
+      "when": "restart",
+      "label": {
+        "en": "Gear damage at the spirit healer (%)",
+        "fr": "Usure de l'équipement chez le gardien des âmes (%)",
+        "ru": "Износ экипировки у целителя душ (%)"
+      },
+      "help": {
+        "en": "Durability lost when resurrected by the spirit healer. 25 by default, 0 = never.",
+        "fr": "Durabilité perdue en ressuscitant auprès du gardien des âmes. 25 par défaut, 0 = jamais.",
+        "ru": "Потеря прочности при воскрешении у целителя душ. По умолчанию 25, 0 — никогда."
       }
     },
     {
@@ -1077,7 +1155,7 @@
     {
       "file": "playerbots.conf",
       "key": "AiPlayerbot.AutoGearCommandAltBots",
-      "group": "behaviour",
+      "group": "alts",
       "kind": "bool",
       "when": "restart",
       "label": {
@@ -1281,7 +1359,7 @@
     {
       "file": "playerbots.conf",
       "key": "AiPlayerbot.RandomBotJoinBG",
-      "group": "behaviour",
+      "group": "pvp",
       "kind": "bool",
       "when": "restart",
       "label": {
@@ -1310,6 +1388,346 @@
         "en": "Bots below 61 only use the talent rows Classic had, and below 71 the rows The Burning Crusade had.",
         "fr": "Sous le niveau 61, les bots n'utilisent que les rangées de talents de Classic, et sous 71 celles de The Burning Crusade.",
         "ru": "До 61 уровня боты используют только ряды талантов Classic, до 71 — The Burning Crusade."
+      }
+    },
+    {
+      "key": "AiPlayerbot.Missions.Enable",
+      "file": "playerbots.conf",
+      "group": "alts",
+      "kind": "bool",
+      "when": "reload",
+      "label": {
+        "en": "Gathering missions for your alts",
+        "fr": "Missions de récolte pour vos alts",
+        "ru": "Задания по сбору для ваших альтов"
+      },
+      "help": {
+        "en": "Send one of your alts to mine or pick herbs in the world (Missions tab of SquidBots Lite, or whisper \"mission gather\"): it gathers in a zone of its level and mails you the loot. Never random bots.",
+        "fr": "Envoyez un de vos alts miner ou cueillir dans le monde (onglet Missions de SquidBots Lite, ou chuchotez « mission gather ») : il récolte dans une zone de son niveau et vous envoie le butin par courrier. Jamais les bots aléatoires.",
+        "ru": "Отправьте альта добывать руду или травы в мире (вкладка «Missions» в SquidBots Lite или шёпот «mission gather»): он собирает в зоне своего уровня и присылает добычу почтой. Никогда случайные боты."
+      }
+    },
+    {
+      "key": "AiPlayerbot.Missions.MaxPerPlayer",
+      "file": "playerbots.conf",
+      "group": "alts",
+      "kind": "int",
+      "when": "reload",
+      "label": {
+        "en": "Missions at once per player",
+        "fr": "Missions en même temps par joueur",
+        "ru": "Заданий одновременно на игрока"
+      },
+      "help": {
+        "en": "How many of your alts can be on a mission at the same time. 3 by default, 0 = no limit.",
+        "fr": "Combien de vos alts peuvent être en mission en même temps. 3 par défaut, 0 = sans limite.",
+        "ru": "Сколько ваших альтов могут быть на задании одновременно. По умолчанию 3, 0 — без ограничений."
+      }
+    },
+    {
+      "key": "AiPlayerbot.Missions.MaxMinutes",
+      "file": "playerbots.conf",
+      "group": "alts",
+      "kind": "int",
+      "when": "reload",
+      "label": {
+        "en": "Longest mission (minutes)",
+        "fr": "Mission la plus longue (minutes)",
+        "ru": "Самое долгое задание (минуты)"
+      },
+      "help": {
+        "en": "120 by default.",
+        "fr": "120 par défaut.",
+        "ru": "По умолчанию 120."
+      }
+    },
+    {
+      "key": "AiPlayerbot.Missions.TeleportToSpot",
+      "file": "playerbots.conf",
+      "group": "alts",
+      "kind": "bool",
+      "when": "reload",
+      "label": {
+        "en": "Missions start at the gathering spot",
+        "fr": "Les missions commencent sur place",
+        "ru": "Задания начинаются на месте сбора"
+      },
+      "help": {
+        "en": "The alt goes straight to its gathering spot, as when you summon it: the whole mission is spent gathering. Off: it walks there.",
+        "fr": "L'alt va directement à son lieu de récolte, comme quand vous l'invoquez : toute la mission est passée à récolter. Désactivé : il y va à pied.",
+        "ru": "Альт сразу переносится к месту сбора: всё время задания уходит на сбор. Выключено: идёт пешком."
+      }
+    },
+    {
+      "key": "AiPlayerbot.SyncQuestWithPlayer",
+      "file": "playerbots.conf",
+      "group": "alts",
+      "kind": "bool",
+      "when": "reload",
+      "label": {
+        "en": "Alts complete your quests with you",
+        "fr": "Vos alts terminent les quêtes avec vous",
+        "ru": "Альты сдают задания вместе с вами"
+      },
+      "help": {
+        "en": "When you hand in a quest, the bots of your group complete it too, and they no longer loot the quest items you need.",
+        "fr": "Quand vous rendez une quête, les bots de votre groupe la terminent aussi, et ils ne ramassent plus les objets de quête dont vous avez besoin.",
+        "ru": "Когда вы сдаёте задание, боты вашей группы тоже его завершают и больше не забирают нужные вам предметы."
+      }
+    },
+    {
+      "key": "AiPlayerbot.GuildBankDeposit.Enable",
+      "file": "playerbots.conf",
+      "group": "alts",
+      "kind": "bool",
+      "when": "reload",
+      "label": {
+        "en": "Alts fill the guild bank",
+        "fr": "Vos alts remplissent la banque de guilde",
+        "ru": "Альты пополняют банк гильдии"
+      },
+      "help": {
+        "en": "A bot of your guild near a guild vault deposits its trade goods and the gold above 100. Never random bots, never bound or equipped items. Off by default.",
+        "fr": "Un bot de votre guilde près d'un coffre de guilde y dépose ses marchandises et l'or au-delà de 100. Jamais les bots aléatoires, jamais les objets liés ou portés. Désactivé par défaut.",
+        "ru": "Бот вашей гильдии у хранилища кладёт туда товары и золото сверх 100. Никогда случайные боты и привязанные или надетые вещи. По умолчанию выключено."
+      }
+    },
+    {
+      "key": "AiPlayerbot.CoaRulesetForBots",
+      "file": "playerbots.conf",
+      "group": "pvp",
+      "kind": "bool",
+      "when": "reload",
+      "label": {
+        "en": "Bots in High Risk or War Mode",
+        "fr": "Bots en High Risk ou War Mode",
+        "ru": "Боты в High Risk или War Mode"
+      },
+      "help": {
+        "en": "A share of the random bots plays in High Risk or War Mode (always the same bots), the rest in PvE. They keep the PvP flag on, and on their own they only attack High Risk or War Mode characters. Off: every bot in PvE.",
+        "fr": "Une part des bots aléatoires joue en High Risk ou en War Mode (toujours les mêmes bots), le reste en PvE. Ils gardent le drapeau JcJ, et seuls ils n'attaquent que les personnages High Risk ou War Mode. Désactivé : tous les bots en PvE.",
+        "ru": "Часть случайных ботов играет в High Risk или War Mode (всегда одни и те же), остальные в PvE. Они остаются с флагом PvP и сами нападают только на персонажей High Risk или War Mode. Выключено: все боты в PvE."
+      }
+    },
+    {
+      "key": "AiPlayerbot.CoaRulesetHighRiskPct",
+      "file": "playerbots.conf",
+      "group": "pvp",
+      "kind": "int",
+      "when": "reload",
+      "label": {
+        "en": "Bots in High Risk (%)",
+        "fr": "Bots en High Risk (%)",
+        "ru": "Ботов в High Risk (%)"
+      },
+      "help": {
+        "en": "Share of the random bots in High Risk (open world PvP; bots never lose items). 30 by default.",
+        "fr": "Part des bots aléatoires en High Risk (JcJ en monde ouvert ; les bots ne perdent jamais d'objets). 30 par défaut.",
+        "ru": "Доля случайных ботов в High Risk (PvP в открытом мире; боты никогда не теряют предметы). По умолчанию 30."
+      }
+    },
+    {
+      "key": "AiPlayerbot.CoaRulesetWarModePct",
+      "file": "playerbots.conf",
+      "group": "pvp",
+      "kind": "int",
+      "when": "reload",
+      "label": {
+        "en": "Bots in War Mode (%)",
+        "fr": "Bots en War Mode (%)",
+        "ru": "Ботов в War Mode (%)"
+      },
+      "help": {
+        "en": "Share of the random bots in War Mode. 0 by default.",
+        "fr": "Part des bots aléatoires en War Mode. 0 par défaut.",
+        "ru": "Доля случайных ботов в War Mode. По умолчанию 0."
+      }
+    },
+    {
+      "key": "AiPlayerbot.CoaGearHighRiskPvp",
+      "file": "playerbots.conf",
+      "group": "pvp",
+      "kind": "bool",
+      "when": "reload",
+      "label": {
+        "en": "High Risk bots always in PvP gear",
+        "fr": "Bots High Risk toujours en équipement JcJ",
+        "ru": "Боты High Risk всегда в PvP-экипировке"
+      },
+      "help": {
+        "en": "On: High Risk bots wear their PvP gear (resilience) all the time. Off: only in a battleground or an arena, like the other bots.",
+        "fr": "Activé : les bots High Risk portent leur équipement JcJ (résilience) en permanence. Désactivé : seulement en champ de bataille ou en arène, comme les autres.",
+        "ru": "Включено: боты High Risk всегда в PvP-экипировке (устойчивость). Выключено: только на полях боя и аренах, как остальные."
+      }
+    },
+    {
+      "key": "HighRisk.Losses",
+      "file": "coa.conf",
+      "group": "pvp",
+      "kind": "bool",
+      "when": "restart",
+      "label": {
+        "en": "High Risk: players lose items on death",
+        "fr": "High Risk : les joueurs perdent des objets en mourant",
+        "ru": "High Risk: игроки теряют предметы при смерти"
+      },
+      "help": {
+        "en": "A player who dies in the open world in High Risk drops tradeable gear, bag resources and gold into a chest that any High Risk player nearby can loot. Off by default.",
+        "fr": "Un joueur qui meurt en monde ouvert en High Risk laisse son équipement échangeable, ses ressources et son or dans un coffre que tout joueur High Risk proche peut récupérer. Désactivé par défaut.",
+        "ru": "Игрок, погибший в открытом мире в High Risk, оставляет передаваемую экипировку, ресурсы и золото в сундуке, который может забрать любой игрок High Risk рядом. По умолчанию выключено."
+      }
+    },
+    {
+      "key": "HighRisk.GearChance",
+      "file": "coa.conf",
+      "group": "pvp",
+      "kind": "int",
+      "when": "restart",
+      "label": {
+        "en": "High Risk: chance to lose gear (%)",
+        "fr": "High Risk : chance de perdre l'équipement (%)",
+        "ru": "High Risk: шанс потерять экипировку (%)"
+      },
+      "help": {
+        "en": "With the losses on: chance per death that the gear is lost. 50 by default.",
+        "fr": "Avec les pertes activées : chance par mort que l'équipement soit perdu. 50 par défaut.",
+        "ru": "При включённых потерях: шанс потерять экипировку за смерть. По умолчанию 50."
+      }
+    },
+    {
+      "key": "HighRisk.ResourceChance",
+      "file": "coa.conf",
+      "group": "pvp",
+      "kind": "int",
+      "when": "restart",
+      "label": {
+        "en": "High Risk: chance to lose resources (%)",
+        "fr": "High Risk : chance de perdre les ressources (%)",
+        "ru": "High Risk: шанс потерять ресурсы (%)"
+      },
+      "help": {
+        "en": "With the losses on: chance per death that the bag resources are lost. 50 by default.",
+        "fr": "Avec les pertes activées : chance par mort que les ressources des sacs soient perdues. 50 par défaut.",
+        "ru": "При включённых потерях: шанс потерять ресурсы из сумок за смерть. По умолчанию 50."
+      }
+    },
+    {
+      "key": "HighRisk.GoldChance",
+      "file": "coa.conf",
+      "group": "pvp",
+      "kind": "int",
+      "when": "restart",
+      "label": {
+        "en": "High Risk: chance to lose gold (%)",
+        "fr": "High Risk : chance de perdre l'or (%)",
+        "ru": "High Risk: шанс потерять золото (%)"
+      },
+      "help": {
+        "en": "With the losses on: chance per death that gold is lost. 50 by default.",
+        "fr": "Avec les pertes activées : chance par mort que l'or soit perdu. 50 par défaut.",
+        "ru": "При включённых потерях: шанс потерять золото за смерть. По умолчанию 50."
+      }
+    },
+    {
+      "key": "AiPlayerbot.RandomBotAutoJoinBG",
+      "file": "playerbots.conf",
+      "group": "pvp",
+      "kind": "bool",
+      "when": "restart",
+      "label": {
+        "en": "Bots start battlegrounds by themselves",
+        "fr": "Les bots lancent des champs de bataille d'eux-mêmes",
+        "ru": "Боты сами запускают поля боя"
+      },
+      "help": {
+        "en": "Bots keep battlegrounds and rated arenas going on their own at level 60. Off: they only fill the queues of players.",
+        "fr": "Les bots font tourner d'eux-mêmes des champs de bataille et des arènes cotées au niveau 60. Désactivé : ils complètent seulement les files des joueurs.",
+        "ru": "Боты сами поддерживают поля боя и рейтинговые арены на 60-м уровне. Выключено: только заполняют очереди игроков."
+      }
+    },
+    {
+      "key": "AiPlayerbot.CityDuels.Enable",
+      "file": "playerbots.conf",
+      "group": "pvp",
+      "kind": "bool",
+      "when": "reload",
+      "label": {
+        "en": "Duels in front of Orgrimmar and Stormwind",
+        "fr": "Duels devant Orgrimmar et Hurlevent",
+        "ru": "Дуэли у Оргриммара и Штормграда"
+      },
+      "help": {
+        "en": "A few free random bots duel in front of the main gate of the capitals, pairs of close levels.",
+        "fr": "Quelques bots aléatoires libres se battent en duel devant la porte des capitales, par paires de niveaux proches.",
+        "ru": "Несколько свободных случайных ботов устраивают дуэли у ворот столиц, парами близких уровней."
+      }
+    },
+    {
+      "key": "AiPlayerbot.RandomBotAutoJoinBGWSCount",
+      "file": "playerbots.conf",
+      "group": "pvp",
+      "kind": "int",
+      "when": "restart",
+      "label": {
+        "en": "Warsong Gulch games kept going by the bots",
+        "fr": "Parties de Goulet des Chanteguerres lancées par les bots",
+        "ru": "Игр в Ущелье Песни Войны от ботов"
+      },
+      "help": {
+        "en": "With \"bots start battlegrounds\": games they keep going at level 60. 0 = they wait for a player.",
+        "fr": "Avec « les bots lancent des champs de bataille » : parties qu'ils font tourner au niveau 60. 0 = ils attendent un joueur.",
+        "ru": "При «боты сами запускают поля боя»: игры, которые они поддерживают на 60 уровне. 0 — ждут игрока."
+      }
+    },
+    {
+      "key": "AiPlayerbot.RandomBotAutoJoinBGABCount",
+      "file": "playerbots.conf",
+      "group": "pvp",
+      "kind": "int",
+      "when": "restart",
+      "label": {
+        "en": "Arathi Basin games kept going by the bots",
+        "fr": "Parties de Bassin d'Arathi lancées par les bots",
+        "ru": "Игр в Низине Арати от ботов"
+      },
+      "help": {
+        "en": "With \"bots start battlegrounds\": games they keep going at level 60. 0 = they wait for a player.",
+        "fr": "Avec « les bots lancent des champs de bataille » : parties qu'ils font tourner au niveau 60. 0 = ils attendent un joueur.",
+        "ru": "При «боты сами запускают поля боя»: игры, которые они поддерживают на 60 уровне. 0 — ждут игрока."
+      }
+    },
+    {
+      "key": "AiPlayerbot.RandomBotAutoJoinBGRatedArena2v2Count",
+      "file": "playerbots.conf",
+      "group": "pvp",
+      "kind": "int",
+      "when": "restart",
+      "label": {
+        "en": "Rated 2v2 arenas kept going by the bots",
+        "fr": "Arènes cotées 2v2 lancées par les bots",
+        "ru": "Рейтинговых арен 2v2 от ботов"
+      },
+      "help": {
+        "en": "0 = the bots only answer a player's team in the queue.",
+        "fr": "0 = les bots répondent seulement à l'équipe d'un joueur en file.",
+        "ru": "0 — боты только отвечают команде игрока в очереди."
+      }
+    },
+    {
+      "key": "AiPlayerbot.RandomBotAutoJoinBGRatedArena3v3Count",
+      "file": "playerbots.conf",
+      "group": "pvp",
+      "kind": "int",
+      "when": "restart",
+      "label": {
+        "en": "Rated 3v3 arenas kept going by the bots",
+        "fr": "Arènes cotées 3v3 lancées par les bots",
+        "ru": "Рейтинговых арен 3v3 от ботов"
+      },
+      "help": {
+        "en": "0 = the bots only answer a player's team in the queue.",
+        "fr": "0 = les bots répondent seulement à l'équipe d'un joueur en file.",
+        "ru": "0 — боты только отвечают команде игрока в очереди."
       }
     },
     {
@@ -2177,6 +2595,63 @@
         "fr": "Utilisé seulement quand « Bots en ligne autour de mon niveau » est activé.",
         "ru": "Действует только с «Онлайн боты около моего уровня»."
       }
+    },
+    {
+      "if": {
+        "AiPlayerbot.CoaRulesetForBots": "0"
+      },
+      "warn": [
+        "AiPlayerbot.CoaRulesetHighRiskPct",
+        "AiPlayerbot.CoaRulesetWarModePct"
+      ],
+      "text": {
+        "en": "Only used while \"Bots in High Risk or War Mode\" is on.",
+        "fr": "Utilisé seulement quand « Bots en High Risk ou War Mode » est activé.",
+        "ru": "Действует только с «Боты в High Risk или War Mode»."
+      }
+    },
+    {
+      "if": {
+        "HighRisk.Losses": "0"
+      },
+      "warn": [
+        "HighRisk.GearChance",
+        "HighRisk.ResourceChance",
+        "HighRisk.GoldChance"
+      ],
+      "text": {
+        "en": "Only used while the High Risk losses are on.",
+        "fr": "Utilisé seulement quand les pertes High Risk sont activées.",
+        "ru": "Действует только при включённых потерях High Risk."
+      }
+    },
+    {
+      "if": {
+        "AiPlayerbot.RandomBotJoinBG": "0"
+      },
+      "warn": [
+        "AiPlayerbot.RandomBotAutoJoinBG"
+      ],
+      "text": {
+        "en": "Only used while bots join battlegrounds.",
+        "fr": "Utilisé seulement quand les bots rejoignent les champs de bataille.",
+        "ru": "Действует только когда боты участвуют в полях боя."
+      }
+    },
+    {
+      "if": {
+        "AiPlayerbot.Missions.Enable": "0"
+      },
+      "warn": [
+        "AiPlayerbot.Missions.MaxPerPlayer",
+        "AiPlayerbot.Missions.MaxMinutes",
+        "AiPlayerbot.Missions.TeleportToSpot"
+      ],
+      "text": {
+        "en": "Only used while the missions are on.",
+        "fr": "Utilisé seulement quand les missions sont activées.",
+        "ru": "Действует только при включённых заданиях."
+      }
     }
   ],
   "recipes": [
@@ -2374,6 +2849,64 @@
         "Updates.EnableDatabases"
       ],
       "reason": "The repack fills this in at every start."
+    }
+  ],
+  "sections": [
+    {
+      "id": "start",
+      "label": {
+        "en": "Start",
+        "fr": "Démarrage",
+        "ru": "Начало"
+      },
+      "groups": [
+        "presets"
+      ]
+    },
+    {
+      "id": "bots",
+      "label": {
+        "en": "Bots",
+        "fr": "Bots",
+        "ru": "Боты"
+      },
+      "groups": [
+        "population",
+        "levels",
+        "selffound",
+        "behaviour",
+        "alts",
+        "pvp",
+        "collections",
+        "coa",
+        "chat",
+        "llm"
+      ]
+    },
+    {
+      "id": "world",
+      "label": {
+        "en": "World",
+        "fr": "Monde",
+        "ru": "Мир"
+      },
+      "groups": [
+        "realm",
+        "rates",
+        "xp",
+        "difficulty"
+      ]
+    },
+    {
+      "id": "tools",
+      "label": {
+        "en": "Tools",
+        "fr": "Outils",
+        "ru": "Инструменты"
+      },
+      "groups": [
+        "dashboard"
+      ]
     }
   ]
 }

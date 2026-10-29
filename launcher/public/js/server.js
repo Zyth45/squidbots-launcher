@@ -202,6 +202,7 @@ function appendLog(line) {
 
 // ---------------------------------------------------------------- bot settings
 async function loadConf() {
+  App.state.confIndex = null;
   if (!App.state.realms && typeof loadRealms === 'function') loadRealms();
   try { App.state.conf = await App.api.serverSettings(confRealm()); }
   catch (error) { App.state.conf = { error: translateError(error.message) }; }
@@ -384,7 +385,7 @@ function settingsView() {
   if (conf.error) return emptyState('warning', t('conf.error', 'The settings cannot be read'), conf.error);
   const count = Object.keys(App.state.pending).length;
   // The Lite version keeps the bot groups and the realm rates: the settings people actually change.
-  const groups = conf.groups.filter(group => conf.settings.some(setting => setting.group === group.id));
+  const groups = conf.groups.filter(group => group.id === 'presets' || conf.settings.some(setting => setting.group === group.id));
   const info = App.state.server || {};
   const realmKey = conf.realm?.key || '';
   const realmOn = realmKey && realmList().some(realm => realm.key === realmKey && realm.state === 'running');
@@ -396,22 +397,88 @@ function settingsView() {
   const tabs = groups.map(group => ({ id: group.id, icon: group.icon, label: loc(group.label) }));
   if (!tabs.some(tab => tab.id === App.state.confGroup)) App.state.confGroup = tabs[0]?.id;
   const changedIn = id => conf.settings.filter(setting => setting.group === id && App.state.pending[pendingKey(setting.file, setting.key)] !== undefined).length;
-  const nav = `<nav class="conf-nav" id="conf-nav">${tabs.map(tab => `<button class="conf-tab${App.state.confGroup === tab.id ? ' active' : ''}" data-action="conf-group" data-id="${esc(tab.id)}">${icon(tab.icon)}<span>${esc(tab.label)}</span>${changedIn(tab.id) ? `<em>${changedIn(tab.id)}</em>` : ''}</button>`).join('')}</nav>`;
+  const tabButton = tab => `<button class="conf-tab${App.state.confGroup === tab.id && !confSearching() ? ' active' : ''}" data-action="conf-group" data-id="${esc(tab.id)}">${icon(tab.icon)}<span>${esc(tab.label)}</span>${changedIn(tab.id) ? `<em>${changedIn(tab.id)}</em>` : ''}${tab.id === 'presets' && isNew('wizard') ? newDot() : ''}</button>`;
+  // The tabs in sections (Start, Bots, World, Tools); a tab of no section goes at the end of the list.
+  const placed = new Set((conf.sections || []).flatMap(section => section.groups));
+  const sections = [...(conf.sections || []).map(section => ({ label: loc(section.label), tabs: section.groups.map(id => tabs.find(tab => tab.id === id)).filter(Boolean) })), { label: '', tabs: tabs.filter(tab => !placed.has(tab.id)) }].filter(section => section.tabs.length);
+  const nav = `<nav class="conf-nav" id="conf-nav">${sections.map(section => `${section.label ? `<div class="conf-section">${esc(section.label)}</div>` : ''}${section.tabs.map(tabButton).join('')}`).join('')}</nav>`;
   // A card announced for later (soon) shows greyed out, next to the recipe it belongs to, and writes nothing.
   const quick = conf.recipes.filter(recipe => ['coa-recommended', 'fresh-level-1', 'self-found-world', 'bots-around-my-level', 'rexxar-like'].includes(recipe.id))
     .filter(recipe => !recipe.soon || conf.recipes.some(item => item.id === 'self-found-world'));
   const recipes = quick.length ? `<div class="recipes">${quick.map(recipe => `<div class="recipe-cell"><button class="recipe${recipe.soon ? ' soon' : ''}" ${recipe.soon ? 'disabled aria-disabled="true"' : `data-action="conf-recipe" data-id="${esc(recipe.id)}"`}><strong>${esc(loc(recipe.title))}${recipe.soon ? `<span class="soon-tag">${esc(t('conf.soon', 'Coming soon'))}</span>` : ''}</strong><small>${esc(loc(recipe.summary))}</small></button></div>`).join('')}</div>` : '';
-  const body = groups.filter(group => group.id === App.state.confGroup).map(group => `<section class="conf-group"><h3>${icon(group.icon)}${esc(loc(group.label))}</h3>${group.id === 'population' ? ramAdvice(conf) + recipes : ''}${group.id === 'levels' && selfFoundOn() ? `<p class="status-line self-found-note">${icon('info')}${esc(t('conf.selfFoundLevels', 'Solo self-found is on: the bots only level up by playing (up to 59 without generated gear, geared as usual at 60). The level settings below do not apply, except the bots online around your level.'))}</p>` : ''}${conf.settings.filter(setting => setting.group === group.id).map(setting => {
-    const warn = warnings(setting.key);
-    const changed = App.state.pending[pendingKey(setting.file, setting.key)] !== undefined;
-    return `<div class="conf-row${changed ? ' changed' : ''}${setting.group === 'levels' && !setting.selfFoundOk && selfFoundOn() ? ' self-found-off' : ''}${setting.origin ? ` from-${setting.origin}` : ''}"><div class="conf-label"><strong>${esc(loc(setting.label))}</strong>${originTag(setting)}<p>${esc(loc(setting.help))}</p><small class="when">${icon('refresh')}${esc(loc(conf.when?.[setting.when]))}</small><div class="conf-warn" data-warn="${esc(setting.key)}" ${warn.length ? '' : 'hidden'}>${icon('info')}<span>${esc(warn.join(' '))}</span></div></div><div class="conf-control">${control(setting)}</div></div>`;
-  }).join('')}</section>`).join('');
+  const body = groups.filter(group => group.id === App.state.confGroup).map(group => `<section class="conf-group"><h3>${icon(group.icon)}${esc(loc(group.label))}</h3>${group.id === 'presets' ? presetsView(recipes) : group.id === 'population' ? ramAdvice(conf) : ''}${group.id === 'levels' && selfFoundOn() ? `<p class="status-line self-found-note">${icon('info')}${esc(t('conf.selfFoundLevels', 'Solo self-found is on: the bots only level up by playing (up to 59 without generated gear, geared as usual at 60). The level settings below do not apply, except the bots online around your level.'))}</p>` : ''}${conf.settings.filter(setting => setting.group === group.id).map(settingRow).join('')}</section>`).join('');
   const key = realmKey || 'coa';
   const others = createdRealms().length > 1;
   const banner = !others ? '' : realmBanner(key, realmKey
     ? t('realms.confRealm', 'Values marked "as CoA" follow Conquest of Azeroth. Change one and it becomes this realm\'s own; the lock marks the rules of its game mode.')
     : t('realms.confCoa', 'These values are also those of the other realms, except the ones a realm changes for itself.'));
-  return `${banner}${bar}<div class="conf-layout">${nav}<div class="conf-pane">${body}</div></div>`;
+  App.state.confBody = body;
+  const search = `<div class="conf-search">${icon('search')}<input id="conf-search" type="search" spellcheck="false" autocomplete="off" value="${esc(App.state.confSearch || '')}" placeholder="${esc(t('conf.searchHint', 'Search a setting: a word, a name, or a key of the .conf files'))}"></div>`;
+  return `${banner}${bar}${search}<div class="conf-layout">${nav}<div class="conf-pane" id="conf-pane">${confSearching() ? searchView() : body}</div></div>`;
+}
+
+// The first tab: the setup wizard, the recipes, and the profiles (the player's own values, out to a file and back).
+function presetsView(recipes) {
+  return `<div class="preset-cards">
+    <div class="preset-card wizard"><div><strong>${icon('star')}${esc(t('wizard.cardTitle', 'Setup wizard'))}</strong><p>${esc(t('wizard.cardText', 'A few simple questions (type of server, level, bots, PvP...) with a recommendation for each, then a summary before anything changes.'))}</p></div><button class="button primary" data-action="setup-wizard">${icon('play')}${esc(t('wizard.open', 'Open the wizard'))}${isNew('wizard') ? newDot() : ''}</button></div>
+    <div class="preset-card"><div><strong>${icon('download')}${esc(t('profile.title', 'Your settings profile'))}</strong><p>${esc(t('profile.text', 'Every value you changed, in one file: keep it, share it, or put it on another server. Importing shows the differences first.'))}</p></div><div class="button-row"><button class="button ghost" data-action="profile-export">${icon('download')}${esc(t('profile.export', 'Export'))}</button><button class="button ghost" data-action="profile-import">${icon('folder')}${esc(t('profile.import', 'Import'))}</button></div></div>
+  </div><h4 class="preset-head">${esc(t('conf.recipesTitle', 'Ready-made settings'))}</h4>${recipes}`;
+}
+
+function settingRow(setting) {
+  const conf = App.state.conf;
+  const warn = warnings(setting.key);
+  const changed = App.state.pending[pendingKey(setting.file, setting.key)] !== undefined;
+  return `<div class="conf-row${changed ? ' changed' : ''}${setting.group === 'levels' && !setting.selfFoundOk && selfFoundOn() ? ' self-found-off' : ''}${setting.origin ? ` from-${setting.origin}` : ''}"><div class="conf-label"><strong>${esc(loc(setting.label))}</strong>${originTag(setting)}<p>${esc(loc(setting.help))}</p><small class="when">${icon('refresh')}${esc(loc(conf.when?.[setting.when]))}</small><div class="conf-warn" data-warn="${esc(setting.key)}" ${warn.length ? '' : 'hidden'}>${icon('info')}<span>${esc(warn.join(' '))}</span></div></div><div class="conf-control">${control(setting)}</div></div>`;
+}
+
+// ---------------------------------------------------------------- search in the settings
+const confSearching = () => String(App.state.confSearch || '').trim().length >= 2;
+// Lower case, without accents, so « experience » finds « expérience ».
+const fold = text => String(text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+function matches(words, ...texts) {
+  const haystack = fold(texts.join(' '));
+  return words.every(word => haystack.includes(word));
+}
+
+// The explained settings first (their name, help and key in every language), then the other keys of the files.
+function searchView() {
+  const conf = App.state.conf;
+  const words = fold(App.state.confSearch).split(/\s+/).filter(Boolean);
+  const label = setting => [setting.key, ...Object.values(setting.label || {}), ...Object.values(setting.help || {})];
+  const explained = conf.settings.filter(setting => matches(words, ...label(setting)));
+  const groupOf = id => conf.groups.find(group => group.id === id);
+  const head = (text, count) => `<h3 class="search-head">${esc(text)}<em>${count}</em></h3>`;
+  let html = head(t('conf.searchExplained', 'Settings of the launcher'), explained.length);
+  html += explained.length ? explained.map(setting => `<div class="search-where">${icon(groupOf(setting.group)?.icon || 'settings')}${esc(loc(groupOf(setting.group)?.label))}</div>${settingRow(setting)}`).join('')
+    : `<p class="muted">${esc(t('conf.searchNoneExplained', 'No explained setting matches: look at the keys of the files below.'))}</p>`;
+  // A realm's page only changes its own values of the explained settings.
+  if (confRealm()) return html;
+  const index = App.state.confIndex;
+  if (!index) { loadConfIndex(); return `${html}${head(t('conf.searchFiles', 'Every other key of the .conf files'), '…')}${skeleton(2)}`; }
+  const curated = new Set(conf.settings.map(setting => `${setting.file}|${setting.key}`));
+  const raw = index.filter(entry => !curated.has(`${entry.file}|${entry.key}`) && matches(words, entry.key, entry.description, entry.section, entry.file));
+  html += head(t('conf.searchFiles', 'Every other key of the .conf files'), raw.length);
+  html += raw.length ? raw.slice(0, 60).map(rawRow).join('') + (raw.length > 60 ? `<p class="muted">${esc(t('conf.searchMore', '{n} more: add a word to narrow the search.', { n: raw.length - 60 }))}</p>` : '')
+    : `<p class="muted">${esc(t('conf.searchNone', 'Nothing found.'))}</p>`;
+  return html;
+}
+
+// A key of a .conf file without an explanation of ours: its description from the .dist, its default, and the value.
+function rawRow(entry) {
+  const changed = App.state.pending[pendingKey(entry.file, entry.key)] !== undefined;
+  const locked = entry.locked ? `<small class="when">${icon('key')}${esc(entry.locked === 'secret' ? t('conf.lockedSecret', 'Database credentials: managed by the repack.') : t('conf.lockedRepack', 'Rewritten by the repack at every start.'))}</small>` : '';
+  const def = entry.default !== null && entry.default !== undefined && String(entry.default) !== String(entry.value) ? `<small class="when">${esc(t('conf.searchDefault', 'Default: {value}', { value: entry.default }))}</small>` : '';
+  const setting = { ...entry, value: entry.value };
+  const input = entry.locked ? `<code>${esc(entry.locked === 'secret' ? '••••' : entry.value)}</code>` : control(setting);
+  return `<div class="conf-row raw${changed ? ' changed' : ''}"><div class="conf-label"><strong class="raw-key">${esc(entry.key)}</strong><span class="origin coa">${esc(entry.file)}</span>${entry.description ? `<p>${esc(entry.description)}</p>` : ''}${def}${locked}</div><div class="conf-control">${input}</div></div>`;
+}
+
+let confIndexLoading = null;
+function loadConfIndex() {
+  if (confIndexLoading) return;
+  confIndexLoading = App.api.serverSettingsIndex().then(list => { App.state.confIndex = list; }).catch(() => { App.state.confIndex = []; })
+    .finally(() => { confIndexLoading = null; const pane = $('#conf-pane'); if (pane && confSearching()) pane.innerHTML = searchView(); });
 }
 
 // Where a value of a realm comes from: Conquest of Azeroth, the realm itself (back to CoA in one click), or its mode.
@@ -436,12 +503,19 @@ function patchConfBar() {
 
 document.addEventListener('input', event => {
   const target = event.target;
+  if (target.id === 'conf-search') {
+    App.state.confSearch = target.value;
+    const pane = $('#conf-pane');
+    if (pane) pane.innerHTML = confSearching() ? searchView() : App.state.confBody || '';
+    $$('.conf-tab').forEach(tab => tab.classList.toggle('active', !confSearching() && tab.dataset.id === App.state.confGroup));
+    return;
+  }
   if (target.id === 'upgrade-folder') App.state.upgradeFolder = target.value;
   if (target.id === 'with-bots') App.state.withBots = target.checked;
   if (!target.dataset?.confKey) return;
   const { confFile: file, confKey: key, confKind: kind } = target.dataset;
   const value = target.type === 'checkbox' ? (target.checked ? '1' : '0') : target.value;
-  const setting = App.state.conf.settings.find(item => item.file === file && item.key === key);
+  const setting = App.state.conf.settings.find(item => item.file === file && item.key === key) || App.state.confIndex?.find(item => item.file === file && item.key === key) || { value: '' };
   const id = pendingKey(file, key);
   if (String(value).trim() === String(setting.value).trim()) delete App.state.pending[id];
   else App.state.pending[id] = { file, key, value, kind };
@@ -457,7 +531,7 @@ App.pages.server = {
     if (!info) return `<div class="page server">${skeleton(6)}</div>`;
     if (info.error) return `<div class="page server">${emptyState('warning', t('server.error', 'The server panel is unavailable'), info.error)}</div>`;
     if (!info.path && s.srvTab !== 'install') s.srvTab = 'install';
-    const tabs = `<nav class="subtabs">${SRV_TABS.filter(([id]) => id !== 'settings' || info.path).map(([id, iconName, key, fallback]) => `<button class="subtab${s.srvTab === id ? ' active' : ''}" data-action="srv-tab" data-id="${id}" ${!info.path && id !== 'install' ? 'disabled' : ''}>${icon(iconName)}<span>${esc(t(key, fallback))}</span>${id === 'settings' && Object.keys(s.pending).length ? `<em>${Object.keys(s.pending).length}</em>` : ''}${id === 'settings' && isNew('settings') ? newDot() : ''}${(id === 'upgrade' && s.updates.core) || (id === 'install' && s.updates.bots) ? '<i class="dot"></i>' : ''}</button>`).join('')}</nav>`;
+    const tabs = `<nav class="subtabs">${SRV_TABS.filter(([id]) => id !== 'settings' || info.path).map(([id, iconName, key, fallback]) => `<button class="subtab${s.srvTab === id ? ' active' : ''}" data-action="srv-tab" data-id="${id}" ${!info.path && id !== 'install' ? 'disabled' : ''}>${icon(iconName)}<span>${esc(t(key, fallback))}</span>${id === 'settings' && Object.keys(s.pending).length ? `<em>${Object.keys(s.pending).length}</em>` : ''}${id === 'settings' && (isNew('settings') || isNew('wizard')) ? newDot() : ''}${(id === 'upgrade' && s.updates.core) || (id === 'install' && s.updates.bots) ? '<i class="dot"></i>' : ''}</button>`).join('')}</nav>`;
     const view = { services: servicesView, install: installView, backups: backupsView, upgrade: upgradeView, modules: modulesView, settings: settingsView }[s.srvTab];
     return `<div class="page server"><div class="page-head"><div><span class="eyebrow">${esc(t('server.eyebrow', 'On this PC'))}</span><h1>${esc(App.state.srvTab === 'settings' ? t('server.settingsTitle', 'Server settings') : t('server.title', 'Local server'))}</h1></div></div>${updateBanner()}<div class="srv-tabs-row">${tabs}${s.srvTab === 'settings' && info.path && App.state.conf && !App.state.conf.error ? realmPicker(App.state.conf.realm?.key || 'coa', 'conf-realm') : ''}</div><div class="srv-body">${view(info)}</div></div>`;
   },
@@ -552,7 +626,7 @@ Object.assign(App.actions, {
     toast(output || t('server.passwordChanged', 'New password for {name}.', { name: name.toUpperCase() }), 'success');
   }, button),
 
-  'conf-group': button => { App.state.confGroup = button.dataset.id; App.refresh('server'); $('#view')?.scrollTo({ top: 0 }); },
+  'conf-group': button => { App.state.confGroup = button.dataset.id; App.state.confSearch = ''; App.refresh('server'); $('#view')?.scrollTo({ top: 0 }); },
   'srv-tab': button => guard(async () => {
     if (button.dataset.id === 'settings') markSeen('settings');
     const s = App.state;
@@ -827,6 +901,12 @@ Object.assign(App.actions, {
     } finally { release(); await loadConf(); }
     toast(t('fresh.done', 'Fresh world: the bots are being made again at level 1.'), 'success');
   }, button),
+  'profile-export': button => guard(async () => {
+    if (Object.keys(App.state.pending).length) { toast(t('profile.saveFirst', 'Save or discard your changes first: the profile holds the saved values.'), 'error'); return; }
+    const result = await App.api.exportProfile();
+    if (result) toast(t('profile.exported', 'Profile saved: {n} value(s) in {file}.', { n: result.count, file: result.file }), 'success');
+  }, button),
+  'profile-import': button => guard(() => importProfileDialog(), button),
   'conf-recipe': button => {
     const recipe = App.state.conf.recipes.find(item => item.id === button.dataset.id);
     // Fresh world asks at once whether the bots already there are remade too (otherwise nothing shows in game).
@@ -834,6 +914,32 @@ Object.assign(App.actions, {
     prepareRecipe(recipe);
   },
 });
+async function importProfileDialog() {
+  const profile = await App.api.importProfile();
+  if (!profile) return;
+  if (!App.state.confIndex) App.state.confIndex = await App.api.serverSettingsIndex();
+  const index = App.state.confIndex;
+  const conf = App.state.conf;
+  const unquote = text => String(text).replace(/^"(.*)"$/, '$1');
+  const changes = [];
+  const missing = [];
+  for (const item of profile.settings) {
+    const entry = index.find(row => row.file === item.file && row.key === item.key);
+    if (!entry || entry.locked) { missing.push(item.key); continue; }
+    const value = entry.kind === 'quoted' ? unquote(item.value) : item.value;
+    if (String(entry.value).trim() !== String(value).trim()) changes.push({ ...entry, value, from: entry.value });
+  }
+  const label = entry => { const curated = conf.settings.find(setting => setting.file === entry.file && setting.key === entry.key); return curated ? loc(curated.label) : entry.key; };
+  const rows = changes.slice(0, 200).map(entry => `<li><strong>${esc(label(entry))}</strong> <span class="muted">${esc(entry.file)}</span><br><code>${esc(entry.from)}</code> → <code>${esc(entry.value)}</code></li>`).join('');
+  const body = `<p>${esc(t('profile.importIntro', '{name}: {n} value(s) differ from this server. They are prepared, not saved: check them, then Save.', { name: profile.name, n: changes.length }))}</p>${changes.length ? `<ul class="profile-diff">${rows}</ul>` : ''}${missing.length ? `<p class="muted small">${esc(t('profile.importMissing', '{n} setting(s) of the profile do not exist on this server and are left out.', { n: missing.length }))}</p>` : ''}`;
+  if (!changes.length) { toast(t('profile.importSame', 'This profile has the same values as this server: nothing to change.'), 'success'); return; }
+  if (!await confirmDialog({ title: t('profile.importTitle', 'Import this profile?'), body, confirm: t('profile.importGo', 'Prepare these values') })) return;
+  for (const entry of changes) App.state.pending[pendingKey(entry.file, entry.key)] = { file: entry.file, key: entry.key, value: entry.value, kind: entry.kind };
+  if (profile.network) await App.api.saveNetwork(profile.network).catch(() => {});
+  App.refresh('server');
+  toast(t('profile.imported', '{n} value(s) prepared: check them, then Save.', { n: changes.length }));
+}
+
 function prepareRecipe(recipe) {
   {
     let changed = 0;

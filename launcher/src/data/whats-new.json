@@ -1,5 +1,34 @@
 [
   {
+    "version": "0.3.50",
+    "items": {
+      "en": [
+        "Setup wizard (Server settings > Presets and profiles): realms, world style, bots, what the bots do, your alts, experience, collections, server life, PvP and difficulty, with a recommendation for each, a summary, then it applies everything and starts your server. Your characters are never touched.",
+        "Search in the server settings: the launcher's settings first, then every key of the .conf files, editable in place.",
+        "New settings tabs: PvP (High Risk, War Mode, battlegrounds, duels) and Your alts (missions, quests, guild bank); the tabs are sorted in sections.",
+        "Settings profiles: export every value you changed to a file, and import one on another server (the differences are shown first).",
+        "\"Keep my modified files\" on the banner of a changed game, at your own risk; Verification reminds you, and \"Update the data\" goes back.",
+        "Reinstall completely also keeps own-settings.json, and an update list served stale just after a release is read again at once."
+      ],
+      "fr": [
+        "Assistant de configuration (Réglages du serveur > Préréglages et profils) : royaumes, style de monde, bots, activités des bots, vos alts, expérience, collections, vie du serveur, PvP et difficulté, avec une recommandation pour chaque question, un résumé, puis tout est appliqué et votre serveur démarre. Vos personnages ne sont jamais touchés.",
+        "Recherche dans les réglages du serveur : les réglages du launcher en premier, puis toutes les clés des fichiers .conf, modifiables sur place.",
+        "Nouveaux onglets de réglages : PvP (High Risk, War Mode, champs de bataille, duels) et Vos alts (missions, quêtes, banque de guilde) ; les onglets sont rangés en sections.",
+        "Profils de réglages : exportez toutes les valeurs que vous avez changées dans un fichier, et importez-le sur un autre serveur (les différences sont montrées d'abord).",
+        "« Garder mes fichiers modifiés » sur le bandeau du jeu modifié, à vos risques ; la Vérification vous le rappelle, et « Mettre à jour les données » revient en arrière.",
+        "Réinstaller complètement garde aussi own-settings.json, et une liste de mise à jour servie trop ancienne juste après une sortie est relue aussitôt."
+      ],
+      "ru": [
+        "Мастер настройки («Настройки сервера» > «Пресеты и профили»): миры, стиль мира, боты, занятия ботов, ваши альты, опыт, коллекции, жизнь сервера, PvP и сложность, с рекомендацией к каждому вопросу и сводкой, затем всё применяется и сервер запускается. Ваши персонажи не затрагиваются.",
+        "Поиск в настройках сервера: сначала настройки лаунчера, затем все ключи файлов .conf с правкой на месте.",
+        "Новые вкладки настроек: PvP (High Risk, War Mode, поля боя, дуэли) и «Ваши альты» (задания, квесты, банк гильдии); вкладки разбиты на разделы.",
+        "Профили настроек: экспортируйте все изменённые значения в файл и импортируйте на другом сервере (различия показываются заранее).",
+        "«Оставить мои изменённые файлы» на баннере изменённой игры, на ваш риск; Проверка напоминает об этом, а «Обновить данные» возвращает всё назад.",
+        "Полная переустановка сохраняет и own-settings.json, а устаревший сразу после выхода список обновлений перечитывается немедленно."
+      ]
+    }
+  },
+  {
     "version": "0.3.49",
     "items": {
       "en": [
