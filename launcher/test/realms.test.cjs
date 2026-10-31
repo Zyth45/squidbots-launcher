@@ -264,3 +264,16 @@ test('the bot tables shipped by CoA Bots are the ones a realm keeps in step with
   fs.writeFileSync(path.join(dir, 'b.sql'), "DELETE FROM playerbots_custom_strategy WHERE 1;\nINSERT INTO `playerbots_coa_wcr_builds` VALUES (1);\nUPDATE characters SET x=1;");
   assert.deepEqual(realms.shippedTables(root).sort(), ['playerbots_coa_wcr_builds', 'playerbots_coa_wcr_enchants', 'playerbots_custom_strategy']);
 });
+
+test('setKey keeps a CRLF config line by line', () => {
+  const text = '# The database info\r\n#\r\nPlayerbotsDatabaseInfo = "127.0.0.1;3306;a;b;c"\r\nOther = 1\r\n';
+  assert.strictEqual(realms.setKey(text, 'PlayerbotsDatabaseInfo', '"x"'), '# The database info\r\n#\r\nPlayerbotsDatabaseInfo = "x"\r\nOther = 1\r\n');
+  assert.strictEqual(realms.setKey('A = 1\r\n', 'B', '2'), 'A = 1\r\nB = 2\r\n');
+  assert.strictEqual(realms.setKey('A =\r\nB = 2\r\n', 'A', '1'), 'A = 1\r\nB = 2\r\n');
+});
+
+// From Nightlund's PR #2 on squidbots-launcher: a value with $ is written as is.
+test('setKey keeps LF files LF, sets every line of the key and takes a value with $ as is', () => {
+  assert.strictEqual(realms.setKey('A = 1\n', 'B', '2'), 'A = 1\nB = 2\n');
+  assert.strictEqual(realms.setKey('  X.Y = 1\nZ = 0\nX.Y=3\n', 'X.Y', '$1'), 'X.Y = $1\nZ = 0\nX.Y = $1\n');
+});

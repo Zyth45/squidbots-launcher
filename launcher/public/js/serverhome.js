@@ -85,6 +85,10 @@ const CHECK_TEXT = {
     ok: ['Every module has its settings', 'No module runs on missing settings.'],
     bad: ['Module settings missing', '{count} module(s) with only a .conf.dist: {files}. Without coa.conf the client is disconnected. The fix copies each .dist (nothing is overwritten).'],
   },
+  'conf.glued': {
+    ok: ['Every setting on its own line', 'No setting is stuck to the line above it.'],
+    bad: ['Settings stuck to a comment', '{count} file(s) with a setting stuck to the comment above it, so the server ignores it ("Missing property"): {files}. Stop the server, then the fix puts each one back on its own line, keeps your values and a copy of each file.'],
+  },
   'bots.dbupdates': {
     ok: ['Bots database left to the installer', 'Playerbots.Updates.EnableDatabases = 0, as it must be.'],
     bad: ['The server would update the bots database', 'Playerbots.Updates.EnableDatabases = {value}: the server with bots does not start. The fix sets 0.'],
@@ -137,6 +141,10 @@ const CHECK_TEXT = {
   'coa.remote': { info: ['Only this PC can play', 'CoA.AllowRemoteClients = 0: players on other PCs are refused even with the right address.'] },
   'bots.mmapsUpdate': { info: ['Newer navigation maps are published ({version})', 'Download them (about 1.9 GB, a few minutes) to replace the maps of this server. Only the maps that match your game are taken; the others are built here.'] },
   'bots.mmaps': { info: ['Navigation maps of the bots: {done} of {total} maps', 'Built once from your game and kept. Bots walking through walls, stuck or going in straight lines? Rebuild them (about an hour, in the background; the server can keep running).'] },
+  'data.maps': {
+    info: ['Map data of the server', 'Taken from your game at install time. Your game got a patch with a new zone? Update them so the server knows it (about 30 minutes; the server is stopped first).'],
+    warn: ['Your game was updated: update the map data', 'The server still has the map data of your game before its patch: a new zone is missing. Update them (about 30 minutes; the server is stopped first).'],
+  },
   'logs.size': {
     ok: ['Logs of a normal size', ''],
     warn: ['Very large logs', '{files}. Stop the server, then delete or move them. Logger.playerbots = {level} in the settings.'],
@@ -183,10 +191,14 @@ function verifyView() {
   const head = `<div class="verify-head"><div class="verify-score ${v ? (v.summary.bad ? 'bad' : v.summary.warn ? 'warn' : 'ok') : ''}">${v ? (v.summary.bad ? icon('warning') : v.summary.warn ? icon('info') : icon('check')) : icon('shield')}<div><strong>${esc(!v ? t('verify.never', 'Not checked yet') : v.summary.bad ? t('verify.bad', '{n} problem(s) to fix', { n: v.summary.bad }) : v.summary.warn ? t('verify.warn', '{n} point(s) to look at', { n: v.summary.warn }) : t('verify.ok', 'All good'))}</strong><small>${esc(v ? t('verify.when', 'Checked at {time}{deep}', { time: new Date(v.at).toLocaleTimeString(I18N.lang), deep: v.deep ? t('verify.withFiles', ', files included') : '' }) : t('verify.hint', 'A quick check reads the versions, the services and the logs.'))}</small></div></div>
     <div class="button-row"><button class="button ghost" data-action="verify-copy" title="${esc(t('verify.copyHint', 'For the support Discord: the versions of the core and the bots'))}">${icon('book')}${esc(t('verify.copy', 'Copy the versions'))}</button><button class="button ghost" data-action="verify-run" ${running ? 'disabled' : ''}>${icon('refresh')}${esc(t('verify.quick', 'Check again'))}</button><button class="button primary" data-action="verify-deep" ${running ? 'disabled' : ''}>${icon('shield')}${esc(t('verify.deep', 'Check every file'))}</button></div></div>`;
   if (!v) return `<div class="page verify">${head}${running ? `<div class="task-line">${icon('refresh')}<span>${esc(t('verify.running', 'Checking…'))}</span></div>` : ''}</div>`;
-  const groups = GROUPS.map(([id, iconName, label]) => {
+  // Two columns, each group going under the shorter one: no hole under a short group.
+  const cols = [{ html: '', size: 0 }, { html: '', size: 0 }];
+  GROUPS.forEach(([id, iconName, label]) => {
     const list = v.checks.filter(check => check.group === id);
-    if (!list.length) return '';
-    return `<section class="panel verify-group"><header><h2>${icon(iconName)}${esc(t(`verify.group.${id}`, label))}</h2></header>${list.map(check => {
+    if (!list.length) return;
+    const col = cols[0].size <= cols[1].size ? cols[0] : cols[1];
+    col.size += 2 + list.reduce((sum, check) => sum + (check.state === 'ok' ? 1 : 2), 0);
+    col.html += `<section class="panel verify-group"><header><h2>${icon(iconName)}${esc(t(`verify.group.${id}`, label))}</h2></header>${list.map(check => {
       const [title, text] = checkText(check);
       const fix = check.action?.startsWith('fix:') ? check.action.slice(4) : '';
       const action = !fix && check.action && check.state !== 'ok' ? ACTIONS[check.action] : null;
@@ -194,8 +206,9 @@ function verifyView() {
         : action ? `<button class="button ${check.state === 'ok' || check.state === 'info' ? 'ghost' : 'primary'} small" data-action="${action[0]}" ${action[1] ? `data-id="${action[1]}"` : ''}>${esc(check.id === 'bots.installed' ? t('verify.action.bots-new', 'Install the bots') : t(`verify.action.${check.action}`, action[2]))}</button>` : '';
       return `<div class="check ${check.state}"><span class="check-light"></span><div><strong>${esc(title)}</strong>${text ? `<small>${esc(text)}</small>` : ''}</div>${button}</div>`;
     }).join('')}</section>`;
-  }).join('');
-  return `<div class="page verify">${head}${running ? `<div class="task-line">${icon('refresh')}<span>${esc(t('verify.running', 'Checking…'))}</span></div>` : ''}<div class="grid-2">${groups}</div>${troubleshootView()}</div>`;
+  });
+  const groups = cols.map(col => `<div class="verify-col">${col.html}</div>`).join('');
+  return `<div class="page verify">${head}${running ? `<div class="task-line">${icon('refresh')}<span>${esc(t('verify.running', 'Checking…'))}</span></div>` : ''}<div class="verify-cols">${groups}</div>${troubleshootView()}</div>`;
 }
 
 // Troubleshooting (folded): reinstall CoA + Bots next to the current server, then delete the old one.
@@ -427,7 +440,17 @@ function liveView() {
     ${tile('bot', t('live.bots', 'Bots in game'), l.bots ? String(l.bots.count) : '—', l.bots && Number.isFinite(l.bots.inCombat) ? t('live.inCombat', '{n} in combat', { n: l.bots.inCombat }) : '')}
     ${tile('refresh', t('live.tick', 'Tick'), tick === null || tick === undefined ? '—' : `${tick} ms`, arriving && tick > 150 ? t('live.tickLoading', 'bots arriving') : tick > 150 ? t('live.tickSlow', 'slow') : tick !== null && tick !== undefined ? t('live.tickOk', 'smooth') : '')}
     ${tile('database', t('live.memory', 'Memory'), l.memory ? formatBytes(l.memory) : '—')}
+    ${tile('play', t('live.uptime', 'Up for'), uptimeSeconds(l.uptime) ? formatCompactDuration(uptimeSeconds(l.uptime)) : '—')}
+    ${tile('bug', t('live.crashes', 'Crashes (7 days)'), l.crashes ? String(l.crashes.count) : '—', l.crashes?.last ? t('live.lastCrash', 'last: {date}', { date: formatDate(l.crashes.last, true) }) : l.crashes ? t('live.noCrash', 'none') : '')}
   </div>${homeAccount()}</div>${arriving && !App.state.waitClosed ? `<p class="live-wait live-toast">${icon('info')}<span>${esc(t('live.waitLogin', 'Wait a little before logging in: the server is bringing its bots into the world. The game is slower until they are all there.'))}</span><button class="icon-button" data-action="live-wait-close" title="${esc(t('common.close', 'Close'))}">${icon('close')}</button></p>` : ''}</section>`;
+}
+
+// "Server uptime: 1 Day(s) 2 Hour(s) 5 Minute(s) 3 Second(s)" from the world console, in seconds.
+function uptimeSeconds(text) {
+  const units = { day: 86400, hour: 3600, minute: 60, second: 1 };
+  let total = 0;
+  for (const [, n, unit] of String(text || '').matchAll(/(\d+)\s*(day|hour|minute|second)/gi)) total += Number(n) * units[unit.toLowerCase()];
+  return total;
 }
 
 // Read every 10 s while the home page is shown, and at once when it opens.
@@ -630,7 +653,7 @@ function assemblyCard(asm) {
     return `<li class="${done ? 'ok' : now ? 'busy' : 'todo'}">${icon(done ? 'check' : now ? 'refresh' : 'chevron')}<span>${esc(t(`assemble.${id}`, label))}</span><small class="muted">${esc(done ? t('assemble.done', 'done') : now && pct !== null ? `${pct}%` : !p && noGame ? t('assemble.waiting', 'waiting') : time)}</small></li>`;
   }).join('');
   const progress = p ? `<div class="hero-progress"><div class="progress${pct === null ? ' indeterminate' : ''}"><span data-pct="${pct ?? 30}"></span></div><span>${pct === null ? '' : `${pct}%`}</span></div><p class="muted small" title="${esc(p.text || '')}">${esc(ASSEMBLE_STEPS[p.step] ? t(`assemble.${p.step}`, ASSEMBLE_STEPS[p.step][0]) : t('assemble.starting', 'Starting…'))} · ${p.step === 'mmaps' && p.total > 1e6 ? esc(downloadLine(p)) : `<span id="assemble-elapsed">${esc(stepElapsed())}</span>`}</p>${p.warning ? `<p class="status-line bad">${icon('warning')}${esc(t('assemble.stuck', p.warning))}</p>` : ''}` : '';
-  const error = App.state.assembleError ? `<p class="status-line bad">${icon('warning')}${esc(App.state.assembleError)}</p>` : '';
+  const error = App.state.assembleError ? `<p class="status-line bad">${icon('warning')}${esc(translateError(App.state.assembleError))}</p>` : '';
   return `<p class="status-line">${esc(App.state.config.hasMmaps ? t('assemble.intro2', 'This server comes without any game data: the launcher takes it from your own Conquest of Azeroth client (about 30 minutes), installs the bots, then downloads their navigation maps (about 1.9 GB).') : t('assemble.intro', 'This server comes without any game data: the launcher takes it from your own Conquest of Azeroth client (about 30 minutes), then installs the bots and builds the navigation maps of the bots in the background (about an hour, you can already play).'))}</p>
     ${App.state.server?.driveBus === 'USB' ? `<p class="status-line bad">${icon('warning')}${esc(t('assemble.usbDrive', 'This server is on an external (USB) drive: MySQL can freeze there while the database is built. An internal disk is safer.'))}</p>` : ''}
     <ol class="assemble-steps">${rows}</ol>${progress}${error}
@@ -745,11 +768,12 @@ Object.assign(App.actions, {
     App.render();
   }, button),
   'assemble-refresh': button => guard(async () => {
+    if (!await confirmDialog({ title: t('assemble.refreshTitle', 'Update the map data?'), body: esc(t('assemble.refreshBody', 'The game tables, terrain and vmaps are taken again from your game (about 30 minutes). The server is stopped first if it runs; your characters, the bots and the database stay.')), confirm: t('assemble.refresh', 'Update the data') })) return;
     App.state.assembleError = '';
     App.state.assembleProgress = { step: 'dbc', text: t('assemble.starting', 'Starting…') };
     if (App.state.server?.assembly) Object.assign(App.state.server.assembly, { needed: true, running: true, clientChanged: false });
     App.render();
-    try { App.state.server = await App.api.assembleRefresh(); } finally { if (App.state.server?.assembly?.running) App.state.server = await App.api.serverInfo(); }
+    try { App.state.server = await App.api.assembleRefresh({ stop: true }); } finally { if (App.state.server?.assembly?.running) App.state.server = await App.api.serverInfo(); }
     toast(t('assemble.ready', 'The server is ready. Start it from the home page.'), 'success');
     App.render();
   }, button),

@@ -61,7 +61,7 @@ function cleanFeed(data) {
     // Client files too new for this server: present with this size (and sha256) = a warning, with what it breaks.
     clientIncompatible: (Array.isArray(data.clientIncompatible) ? data.clientIncompatible : []).slice(0, 20)
       .filter(item => /^(Data|Interface)\/[\w.\/ -]{1,160}$/i.test(item?.file || '') && !String(item.file).split('/').includes('..') && Number.isSafeInteger(item.bytes) && item.bytes > 0)
-      .map(item => ({ file: item.file, bytes: item.bytes, sha256: /^[0-9a-f]{64}$/i.test(item.sha256 || '') ? item.sha256.toLowerCase() : '', note: { en: text(item.note?.en, 300), fr: text(item.note?.fr, 300), ru: text(item.note?.ru, 300) } })),
+      .map(item => ({ file: item.file, bytes: item.bytes, sha256: /^[0-9a-f]{64}$/i.test(item.sha256 || '') ? item.sha256.toLowerCase() : '', note: { en: text(item.note?.en, 300), fr: text(item.note?.fr, 300), ru: text(item.note?.ru, 300), zh: text(item.note?.zh, 300) } })),
     publishedAt: text(data.publishedAt, 40),
   };
 }

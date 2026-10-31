@@ -253,14 +253,14 @@ function showComponents() {
 // ---------------------------------------------------------------- settings
 function showSettings() {
   const { settings, version, launcherUpdate, config } = App.state;
-  const lang = code => `<option value="${code}" ${settings.language === code ? 'selected' : ''}>${{ fr: 'Français', en: 'English', ru: 'Русский' }[code]}</option>`;
+  const lang = code => `<option value="${code}" ${settings.language === code ? 'selected' : ''}>${{ fr: 'Français', en: 'English', ru: 'Русский', zh: '简体中文' }[code]}</option>`;
   const check = (id, key, label) => `<label class="check"><input type="checkbox" id="${id}" data-setting="${key}" ${settings[key] ? 'checked' : ''}><span>${esc(label)}</span></label>`;
   const game = config.edition !== 'server';
   dialog.open(`${dialog.header(game ? t('settings.title', 'Settings') : t('settings.launcherTitle', 'Launcher settings'))}<div class="dialog-content settings">
     ${game ? realmPicker() : ''}
     <div class="field"><span>${esc(t('settings.theme', 'Look'))}</span><select id="theme" data-setting="theme">${[['abyss', t('settings.themeAbyss', 'Abyss (deep water)')], ['classic', t('settings.themeClassic', 'Amber')]].map(([id, label]) => `<option value="${id}" ${settings.theme === id ? 'selected' : ''}>${esc(label)}</option>`).join('')}</select></div>
     ${config.hasTestChannel ? `<div class="field"><span>${esc(t('settings.channel', 'Versions'))}</span><select id="channel" data-setting="channel">${[['stable', t('settings.channelStable', 'Stable (recommended)')], ['test', t('settings.channelTest', 'Test (newest, may have bugs)')]].map(([id, label]) => `<option value="${id}" ${settings.channel === id ? 'selected' : ''}>${esc(label)}</option>`).join('')}</select><small>${esc(t('settings.channelHint', 'Test gets new server, bot and game versions first. Going back to Stable never installs an older version: you stay on the test one until Stable catches up.'))}</small></div>` : ''}
-    <div class="field"><span>${esc(t('settings.language', 'Language'))}</span><select id="language" data-setting="language">${['fr', 'en', 'ru'].map(lang).join('')}</select></div>
+    <div class="field"><span>${esc(t('settings.language', 'Language'))}</span><select id="language" data-setting="language">${['fr', 'en', 'ru', 'zh'].map(lang).join('')}</select></div>
     ${game ? check('set-min', 'minimizeOnLaunch', t('settings.minimize', 'Minimize the launcher when the game starts')) : ''}
     ${check('set-motion', 'reduceMotion', t('settings.motion', 'Still background (no animation)'))}
     ${game ? check('set-addons', 'autoCheckAddons', t('settings.autoAddons', 'Look for addon updates at start')) : ''}

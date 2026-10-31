@@ -84,12 +84,13 @@ function mode(key) {
   return MODES[key];
 }
 
-const confValue = (text, key) => new RegExp(`^\\s*${key.replace(/\./g, '\\.')}\\s*=\\s*"?([^"\\r\\n#]*)"?`, 'm').exec(text || '')?.[1]?.trim();
+const confValue = (text, key) => new RegExp(`^[ \\t]*${key.replace(/\./g, '\\.')}[ \\t]*=[ \\t]*"?([^"\\r\\n#]*)"?`, 'm').exec(text || '')?.[1]?.trim();
 
 // Sets every line of the key, or adds it at the end.
 function setKey(text, key, value) {
-  const pattern = new RegExp(`^\\s*${key.replace(/\./g, '\\.')}\\s*=.*$`, 'gm');
-  return pattern.test(text) ? text.replace(pattern, `${key} = ${value}`) : `${text.replace(/\s*$/, '')}\n${key} = ${value}\n`;
+  const pattern = new RegExp(`^[ \\t]*${key.replace(/\./g, '\\.')}[ \\t]*=.*$`, 'gm');
+  const eol = text.includes('\r\n') ? '\r\n' : '\n';
+  return pattern.test(text) ? text.replace(pattern, () => `${key} = ${value}`) : `${text.replace(/\s*$/, '')}${eol}${key} = ${value}${eol}`;
 }
 
 async function readJson(file) { try { return JSON.parse((await fsp.readFile(file, 'utf8')).replace(/^﻿/, '')); } catch { return null; } }

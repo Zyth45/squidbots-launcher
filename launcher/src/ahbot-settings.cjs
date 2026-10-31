@@ -2,7 +2,7 @@
 // The auction house bot's simple settings (mod_ahbot.conf): seven choices a player understands, each written as one
 // or a few keys of the module. Only these keys are ever written: the rest of the file (the 3 765 CoA prices of
 // CompleteItemValueOverride.Items among them) stays as it is.
-const confValue = (text, key) => new RegExp(`^\\s*${key.replace(/\./g, '\\.')}\\s*=\\s*"?([^"\\r\\n#]*)"?`, 'm').exec(text || '')?.[1]?.trim();
+const confValue = (text, key) => new RegExp(`^[ \\t]*${key.replace(/\./g, '\\.')}[ \\t]*=[ \\t]*"?([^"\\r\\n#]*)"?`, 'm').exec(text || '')?.[1]?.trim();
 
 const PACES = {
   slow: { 'AuctionHouseBot.MinutesBetweenBuyCycle': '5:15', 'AuctionHouseBot.Buyer.BuyCandidatesPerBuyCycle': '1' },

@@ -276,6 +276,25 @@ function moduleSwitch(action, on, disabled) {
   return `<button class="switch ${on ? 'on' : ''}" data-action="${action}" data-on="${on ? '1' : '0'}" ${disabled ? 'disabled' : ''} role="switch" aria-checked="${on}"><span></span></button>`;
 }
 
+// The Enchanter NPC: working once the server has its module (CoA Bots 2.8.4), a "coming soon" preview before.
+function enchanterCard(e, running, stopFirst) {
+  const live = !!e?.available;
+  const tiers = live ? e.tiers : ['60'];
+  const costs = live ? e.costs : { 60: 1, 70: 5, 80: 10 };
+  const locked = !live || running;
+  const tierBox = tier => `<label class="tier-check"><input type="checkbox" data-enchanter-tier="${tier}" ${tiers.includes(tier) ? 'checked' : ''} ${locked || tier === '60' ? 'disabled' : ''}> ${esc(t('modules.enchanterTier', 'Level {n}', { n: tier }))}</label>`;
+  const price = tier => `<label class="tier-price">${tier}<input type="number" min="0" max="100000" step="1" data-enchanter-cost="${tier}" value="${Number(costs[tier]) || 0}" ${locked ? 'disabled' : ''}><span>${esc(t('modules.enchanterGold', 'gold'))}</span></label>`;
+  return `<section class="panel module-card${live ? '' : ' soon coming'}">${moduleArt('enchanter')}<header><h2>${icon('star')}${esc(t('modules.enchanter', 'Enchanter NPC'))}</h2>${live ? moduleSwitch('modules-enchanter', e.enabled, running) : `<span class="pill info">${esc(t('modules.comingSoon', 'Coming soon'))}</span>`}</header>
+      <p class="muted">${esc(t('modules.enchanterText', 'An NPC that applies enchantments to your gear. By default only enchantments up to level 60.'))}</p>
+      ${live ? '' : `<div class="module-extra tier-row">${moduleSwitch('modules-enchanter', false, true)}<span>${esc(t('modules.enchanterEnable', 'Enable the module'))}</span></div>`}
+      <div class="module-extra"><span>${esc(t('modules.enchanterTiers', 'Highest enchantment level:'))}</span>${['60', '70', '80'].map(tierBox).join('')}</div>
+      <div class="module-extra tier-prices"><span>${esc(t('modules.enchanterPrice', 'Price of one enchantment:'))}</span>${['60', '70', '80'].map(price).join('')}</div>
+      <p class="small muted">${esc(t('modules.enchanterCounts', 'Level 60: 219 enchantments. Level 70: 55 more. Level 80: 81 more.'))}</p>
+      ${live ? `<p class="module-note">${icon('info')}${esc(t('modules.enchanterSpawn', 'Ilyra Spellweave appears in the enchanting shop of each capital after the next server start. Game masters: .npc add 9785001 places her elsewhere.'))}</p>${stopFirst}` : ''}
+      <p class="module-credit long"><span>${esc(t('modules.enchanterCredit', "SquidBots module (AGPL) · idea from AzerothCore's mod-npc-enchanter (StygianTheBest)"))}</span><button class="link-button" data-action="source-link" data-id="enchanter">${icon('external')}${esc(t('modules.enchanterOriginal', 'Original module'))}</button></p>
+    </section>`;
+}
+
 function modulesView() {
   const m = App.state.modules;
   if (!m) return skeleton(4);
@@ -317,13 +336,14 @@ function modulesView() {
       <div class="module-extra"><span class="pill warn">${esc(t('modules.experimental', 'Experimental'))}</span><span>${esc(t('modules.raidWithBots', 'Raids too: start it the same way in a raid with your bots. Boss health counts a bot as 0.3 of a player (Settings > Creature difficulty).'))}</span></div>
       <div class="module-extra soon"><span class="soon-tag">${esc(t('conf.soon', 'Coming soon'))}</span><span>${esc(t('modules.raidBotsAlone', 'Raids of bots alone, like the self-found dungeon parties.'))}</span></div>
       ${stopFirst}
-      <p class="module-credit"><span>${esc(t('modules.by', 'By {author}', { author: 'Jared Wright' }))} · ${esc(t('modules.dungeonLicence', 'Open source module (AGPL)'))}</span></p>
+      <p class="module-credit long"><span>${esc(t('modules.dungeonCredit', 'SquidBots version (AGPL) · original module by Jared Wright'))}</span><span class="credit-links"><button class="link-button" data-action="source-link" data-id="dungeonclear">${icon('external')}${esc(t('modules.source', 'Source code'))}</button><button class="link-button" data-action="source-link" data-id="dungeonclearOriginal">${icon('external')}${esc(t('modules.enchanterOriginal', 'Original module'))}</button></span></p>
     </section>` : ''}
     <section class="panel module-card soon coming">${moduleArt('squidchat')}<header><h2>${icon('chat')}SquidChat</h2><span class="pill info">${esc(t('modules.comingSoon', 'Coming soon'))}</span></header>
       <p class="muted">${esc(t('modules.squidchatText', 'Your server will never be quiet again: bots chat, cheer the good loot, laugh at the wipes and have an opinion on everything. Even on Jealous.'))}</p>
       <ul class="module-facts">${[t('modules.iatalkBank', 'A bank of lines written in advance.'), t('modules.iatalkAi', 'Optional AI for the answers: Ollama on this PC or on your network, or an online service with your own key and a daily cap.')].map(text => `<li class="ok">${icon('check')}<span>${esc(text)}</span></li>`).join('')}</ul>
       <p class="module-credit">${esc(t('modules.by', 'By {author}', { author: 'SquidBots (Zyth45)' }))}</p>
     </section>
+    ${enchanterCard(m.enchanter, m.worldRunning, stopFirst)}
     <section class="panel module-card ${m.rotation?.available ? '' : 'soon'}">${moduleArt('rotation')}<header><h2>${icon('refresh')}${esc(t('modules.rotation', 'Rotation assistant'))}</h2>${moduleSwitch('modules-rotation', !!(m.rotation?.available && m.rotation.enabled), m.worldRunning || !m.rotation?.available)}</header>
       <p class="muted">${esc(t('modules.rotationText', 'One button that casts the next spell of your rotation for you.'))}</p>
       ${m.rotation?.available ? '' : ''}${m.rotation?.available ? stopFirst : ''}
@@ -700,6 +720,11 @@ Object.assign(App.actions, {
     App.state.achSize = await App.api.achievementsSize().catch(() => null);
     App.refresh('server');
   }, button),
+  'modules-enchanter': button => guard(async () => {
+    App.state.modules = await App.api.modulesEnchanter(button.dataset.on !== '1');
+    toast(t('modules.restartNeeded', 'Saved: it applies at the next start of the server.'), 'success');
+    App.render();
+  }, button),
   'modules-dungeon': button => guard(async () => {
     App.state.modules = await App.api.modulesDungeon(button.dataset.on !== '1');
     toast(t('modules.restartNeeded', 'Saved: it applies at the next start of the server.'), 'success');
@@ -1033,6 +1058,18 @@ function manastormClientDialog(switching) {
     element.addEventListener('close', onClose, { once: true });
   });
 }
+
+// The Enchanter NPC: its tiers (60 always in) and its prices, saved as soon as changed.
+document.addEventListener('change', event => {
+  const box = event.target.closest?.('[data-enchanter-tier]');
+  const cost = event.target.closest?.('[data-enchanter-cost]');
+  if (!box && !cost) return;
+  const saved = () => { toast(t('modules.restartNeeded', 'Saved: it applies at the next start of the server.'), 'success'); App.render(); };
+  if (box) {
+    const list = [...document.querySelectorAll('[data-enchanter-tier]')].filter(item => item.checked).map(item => item.dataset.enchanterTier);
+    guard(async () => { App.state.modules = await App.api.modulesEnchanterTiers(list); saved(); });
+  } else guard(async () => { App.state.modules = await App.api.modulesEnchanterCost(cost.dataset.enchanterCost, Number(cost.value)); saved(); });
+});
 
 // Difficulties not open yet (none: the user validated Heroic and Mythic on 24/10).
 const DUNGEON_LOCKED = [];

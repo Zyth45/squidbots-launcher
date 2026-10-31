@@ -13,7 +13,7 @@ const { pipeline } = require('node:stream/promises');
 
 const DB = /^[A-Za-z0-9_]{1,64}$/;
 const BATCH = 50000;
-const confValue = (text, key) => new RegExp(`^\\s*${key.replace(/\./g, '\\.')}\\s*=\\s*"?([^"\\r\\n#]*)"?`, 'm').exec(text || '')?.[1]?.trim();
+const confValue = (text, key) => new RegExp(`^[ \\t]*${key.replace(/\./g, '\\.')}[ \\t]*=[ \\t]*"?([^"\\r\\n#]*)"?`, 'm').exec(text || '')?.[1]?.trim();
 const read = file => fsp.readFile(file, 'utf8').catch(() => '');
 const dbOf = info => String(info || '').split(';')[4] || '';
 

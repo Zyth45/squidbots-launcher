@@ -113,6 +113,16 @@ const MODULE_ART = {
       ${bubble(222, 12, 128, ['you know the strat?', 'really?'], purple, 'right', 10.5)}
       ${bubble(170, 62, 124, ['can i have 5 gold', 'for respec?'], red, 'right', 10.5)}`;
   })(),
+  // A sword on an enchanting table, its runes lit by the enchanter's rod.
+  enchanter: `<defs><linearGradient id="ma-en" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2a1748"/><stop offset="1" stop-color="#0b0718"/></linearGradient><radialGradient id="ma-englow"><stop offset="0" stop-color="#c9a5ff" stop-opacity=".55"/><stop offset="1" stop-color="#c9a5ff" stop-opacity="0"/></radialGradient></defs>
+    <rect width="360" height="110" fill="url(#ma-en)"/>
+    <ellipse cx="180" cy="62" rx="96" ry="40" fill="url(#ma-englow)"/>
+    <path d="M110 92 h140 l-12 -12 h-116 z" fill="#4a2f1a" stroke="#1c1008" stroke-width="2"/><rect x="128" y="92" width="10" height="16" fill="#3a2410"/><rect x="222" y="92" width="10" height="16" fill="#3a2410"/>
+    <path d="M128 74 L226 74 L236 70 L226 66 L128 66 Z" fill="#cfd6de" stroke="#5c666d" stroke-width="1.5"/><rect x="118" y="62" width="8" height="16" rx="2" fill="#f2c46b" stroke="#8a5418"/><rect x="104" y="67" width="14" height="6" rx="2" fill="#7a4f2a"/>
+    ${[[150, 70], [170, 70], [190, 70], [210, 70]].map(([x, y]) => `<path d="M${x - 4} ${y} l4 -3 4 3 -4 3z" fill="#e6d4ff"/>`).join('')}
+    <path d="M262 22 L228 58" stroke="#7a4f2a" stroke-width="5" stroke-linecap="round"/><circle cx="226" cy="60" r="5" fill="#f2c46b"/>
+    <path d="M226 60 C210 50 196 64 180 56" fill="none" stroke="#c9a5ff" stroke-width="2" stroke-dasharray="3 4" opacity=".8"/>
+    ${[[70, 30], [300, 84], [92, 20], [44, 66], [318, 36], [258, 90]].map(([x, y]) => `<path d="M${x} ${y - 5} l1.6 3.4 3.4 1.6 -3.4 1.6 -1.6 3.4 -1.6 -3.4 -3.4 -1.6 3.4 -1.6z" fill="#c9a5ff" opacity=".7"/>`).join('')}`,
 };
 function moduleArt(kind) {
   const art = MODULE_ART[kind];

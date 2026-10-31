@@ -13,11 +13,11 @@ const LINE = 'Logger.entities.player=1,Console Server';
 async function quietPlayerLogger(root) {
   const file = path.join(root, TEMPLATE);
   const text = await fs.readFile(file, 'utf8').catch(() => null);
-  if (text === null || /^\s*Logger\.entities\.player\s*=/m.test(text)) return false;
+  if (text === null || /^[ \t]*Logger\.entities\.player[ \t]*=/m.test(text)) return false;
   const eol = text.includes('\r\n') ? '\r\n' : '\n';
   const lines = text.split(/\r?\n/);
   // Next to the other Logger lines (after Logger.diff, else after the last Logger line).
-  let at = lines.findIndex(line => /^\s*Logger\.diff\s*=/.test(line));
+  let at = lines.findIndex(line => /^[ \t]*Logger\.diff[ \t]*=/.test(line));
   if (at < 0) at = lines.map(line => /^\s*Logger\./.test(line)).lastIndexOf(true);
   if (at < 0) return false;
   lines.splice(at + 1, 0, LINE);

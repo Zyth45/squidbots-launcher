@@ -2,7 +2,7 @@
 // CoA Launcher Lite, main process: the game (install, update, addons, play) and a local server
 // (repack + bot package: services, updates, backups, upgrades). No account, no store, no web API:
 // every download is a signed static file.
-const { app, BrowserWindow, ipcMain, dialog, shell, protocol, net, session, clipboard, Tray, Menu, Notification, nativeImage } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, shell, protocol, net, session, clipboard, Tray, Menu, Notification, nativeImage, screen } = require('electron');
 const path = require('node:path');
 const os = require('node:os');
 const fs = require('node:fs/promises');
@@ -528,7 +528,10 @@ function registerIpc() {
         if (published?.version && published.version !== asm.mmaps.published) checks.push({ group: 'bots', id: 'bots.mmapsUpdate', state: 'info', data: { version: published.version }, action: asm.mmaps.running || mmapsFetching ? '' : 'mmaps-update' });
       }
       // Game files modified and kept by the player: the server data do not match them.
-      if (asm.applies && !asm.needed && (await assemblyInfo(serverPath())).clientKept) checks.push({ group: 'core', id: 'client.kept', state: 'warn', data: {}, action: 'assemble-refresh' });
+      const drift = asm.applies && !asm.needed ? await assemblyInfo(serverPath()) : null;
+      if (drift?.clientKept) checks.push({ group: 'core', id: 'client.kept', state: 'warn', data: {}, action: 'assemble-refresh' });
+      // The map data (tables, terrain, vmaps) taken again from the game: after a game patch with a new zone.
+      else if (drift?.extracted) checks.push({ group: 'bots', id: 'data.maps', state: drift.clientChanged ? 'warn' : 'info', data: {}, action: asm.mmaps.running ? '' : 'assemble-refresh' });
       return { checks, summary: summary(checks), at: new Date().toISOString(), deep: deep === true };
     } finally { if (deep === true) busyFiles = false; }
   });
@@ -823,10 +826,12 @@ function registerIpc() {
   };
   handle('assemble:run', () => assembleServer());
   // After a CoA patch of the game: its tables, terrain and vmaps extracted again (the database and the bots stay).
-  handle('assemble:refreshData', async () => {
-    const world = (await requireControl().status()).some(service => /world/i.test(service.id) && service.state !== 'stopped' && service.state !== 'foreign');
-    const realmOn = (await realms.status(serverPath(), { live: false })).realms.some(realm => ['running', 'starting'].includes(realm.state));
-    if (world || realmOn) throw new Error('Stop the server first: its game data are replaced.');
+  // stop: asked from Verification, the server (and its realms) is stopped first instead of refusing.
+  handle('assemble:refreshData', async ({ stop = false } = {}) => {
+    const running = async () => (await requireControl().status()).some(service => /world/i.test(service.id) && service.state !== 'stopped' && service.state !== 'foreign')
+      || (await realms.status(serverPath(), { live: false })).realms.some(realm => ['running', 'starting'].includes(realm.state));
+    if (stop && await running()) { await realms.stopAll(serverPath()); await requireControl().stopAll(); }
+    if (await running()) throw new Error('Stop the server first: its game data are replaced.');
     try { const done = await assembleServer(['dbc', 'maps', 'vmaps']); assembler.forgetKept(serverPath()); return done; } finally { clientDrift = { key: '', at: 0, changed: false }; }
   });
   handle('assemble:status', () => assembler.state(serverPath()));
@@ -1126,7 +1131,8 @@ function registerIpc() {
   };
   const modulesStatus = async () => ({ ...(await modules.status(serverPath(), { squidbots: settings.modules?.squidbots !== false, client: settings.installPaths.addon || '' })), worldRunning: await worldRunning(),
     // Screenshot tours only (--smoke): a module of a later CoA Bots shown as installed.
-    ...(smokeDir && process.env.COA_SMOKE_DUNGEON ? { dungeonclear: { available: true, enabled: true, difficulties: ['normal', 'heroic', 'mythic'], difficultyKnown: true } } : {}) });
+    ...(smokeDir && process.env.COA_SMOKE_DUNGEON ? { dungeonclear: { available: true, enabled: true, difficulties: ['normal', 'heroic', 'mythic'], difficultyKnown: true } } : {}),
+    ...(smokeDir && process.env.COA_SMOKE_ENCHANTER ? { enchanter: { available: true, enabled: false, tiers: ['60'], costs: { 60: 1, 70: 5, 80: 10 } } } : {}) });
   handle('modules:status', () => { if (!serverPath()) throw new Error('Choose the server folder first.'); return modulesStatus(); });
   // Source code of each module and of the launcher: a fixed list, nothing else is opened.
   const SOURCES = {
@@ -1134,8 +1140,11 @@ function registerIpc() {
     squidbots: 'https://github.com/Zyth45/mod-playerbots',
     multirace: 'https://github.com/ilusixn/azerothcore-wotlk-coa',
     ahbot: 'https://github.com/NathanHandley/mod-ah-bot-plus',
-    // Our AGPL copy of Jared Wright's module, published with CoA Bots 2.8 (address to fill in then).
-    dungeonclear: '',
+    // Our AGPL version for the CoA bots, and Jared Wright's module it is based on.
+    dungeonclear: 'https://github.com/Zyth45/mod-dungeon-clear',
+    dungeonclearOriginal: 'https://github.com/jrad7/mod-dungeon-clear',
+    // The AzerothCore module by StygianTheBest our Enchanter NPC takes its idea from (ours is rewritten).
+    enchanter: 'https://github.com/azerothcore/mod-npc-enchanter',
     core: 'https://github.com/jealous-sound/azerothcore-wotlk-coa',
     botsHelp: 'https://zyth45.github.io/mod-playerbots/',
   };
@@ -1150,6 +1159,10 @@ function registerIpc() {
     await modules.setDungeon(serverPath(), on === true);
     return modulesStatus();
   });
+  const enchanterStopped = async () => { if (await worldRunning()) throw new Error('Stop the server first: the Enchanter NPC is read when it starts.'); };
+  handle('modules:enchanter', async on => { await enchanterStopped(); await modules.setEnchanter(serverPath(), on === true); return modulesStatus(); });
+  handle('modules:enchanterTiers', async list => { await enchanterStopped(); await modules.setEnchanterTiers(serverPath(), Array.isArray(list) ? list.map(item => text(item, 4)) : []); return modulesStatus(); });
+  handle('modules:enchanterCost', async ({ tier, gold } = {}) => { await enchanterStopped(); await modules.setEnchanterCost(serverPath(), text(tier, 4), gold); return modulesStatus(); });
   handle('modules:ahbot', async on => {
     if (await worldRunning()) throw new Error('Stop the server first: the auction house bot is read when it starts.');
     await modules.setAhbot(serverPath(), on === true);
@@ -1259,7 +1272,9 @@ function registerIpc() {
       for (const realm of list) if (realm.state === 'running' && realm.pid) realm.memory = await live.processMemory(realm.pid);
       liveRealms = { at: Date.now(), root: serverPath(), list };
     }
-    return live.withRealms(stats, liveRealms.list);
+    // The crash reports of the last 7 days: does the server crash or not.
+    const crashes = await require('./verify.cjs').crashes(serverPath(), 7).catch(() => []);
+    return { ...live.withRealms(stats, liveRealms.list), crashes: { count: crashes.length, last: crashes[0] || null } };
   });
   handle('console:run', async (command, realm) => {
     if (!serverPath()) throw new Error('Choose the server folder first.');
@@ -1371,7 +1386,7 @@ function registerIpc() {
   const coaRealm = async () => {
     const world = (await requireControl().status()).find(service => /world/i.test(service.id));
     const conf = await fs.readFile(path.join(serverPath(), 'CoA-Bots', 'Core', 'configs', 'modules', 'playerbots.conf'), 'utf8').catch(() => '');
-    const bots = Number(/^\s*AiPlayerbot\.MaxRandomBots\s*=\s*(\d+)/m.exec(conf)?.[1]);
+    const bots = Number(/^[ \t]*AiPlayerbot\.MaxRandomBots[ \t]*=[ \t]*(\d+)/m.exec(conf)?.[1]);
     const info = world?.state === 'running' ? await live.raCommand(serverPath(), 'server info', 6000).then(live.parseInfo).catch(() => null) : null;
     return { id: 1, state: world?.state || 'stopped', worldPort: world?.port, bots: Number.isFinite(bots) ? bots : null, players: info?.players ?? null, autostart: await realms.coaAutostart(serverPath()) };
   };
@@ -2295,7 +2310,7 @@ async function patchNotes() {
 }
 // The part of a release text in the player's language (after <!-- fr -->), the English part (before any marker) otherwise.
 function localNote(body) {
-  const parts = String(body || '').split(/^<!--\s*(en|fr|ru)\s*-->\s*$/m);
+  const parts = String(body || '').split(/^<!--\s*(en|fr|ru|zh)\s*-->\s*$/m);
   if (parts.length < 3) return {};
   const byLang = { en: parts[0].trim() };
   for (let i = 1; i < parts.length; i += 2) byLang[parts[i]] = parts[i + 1].trim();
@@ -2327,6 +2342,7 @@ const NOTE_TEXT = {
   en: { update: ['New version {version}', 'An update of the server is ready to install in the launcher.'], ready: ['Server ready', 'The world is up: you can play.'], crash: ['The world stopped', 'The worldserver crashed. A crash report was written (Verification).'], restarted: ['The world is starting again', 'The worldserver crashed and is being started again.'], open: 'Open the launcher', quit: 'Close the launcher (the server keeps running)' },
   fr: { update: ['Nouvelle version {version}', 'Une mise à jour du serveur est prête à installer dans le launcher.'], ready: ['Serveur prêt', 'Le monde est lancé : vous pouvez jouer.'], crash: ['Le monde s\'est arrêté', 'Le worldserver a planté. Un rapport de crash a été écrit (Vérification).'], restarted: ['Le monde redémarre', 'Le worldserver a planté et redémarre.'], open: 'Ouvrir le launcher', quit: 'Fermer le launcher (le serveur continue)' },
   ru: { update: ['Новая версия {version}', 'Обновление сервера готово к установке в лаунчере.'], ready: ['Сервер готов', 'Мир запущен: можно играть.'], crash: ['Мир остановился', 'Worldserver упал. Записан отчёт о сбое (Проверка).'], restarted: ['Мир перезапускается', 'Worldserver упал и запускается снова.'], open: 'Открыть лаунчер', quit: 'Закрыть лаунчер (сервер продолжает работать)' },
+  zh: { update: ['新版本 {version}', '服务器更新已就绪，可在启动器中安装。'], ready: ['服务器就绪', '世界已启动：可以开始游戏了。'], crash: ['世界已停止', 'worldserver 崩溃了。已写入崩溃报告（检查）。'], restarted: ['世界正在重新启动', 'worldserver 崩溃了，正在重新启动。'], open: '打开启动器', quit: '关闭启动器（服务器继续运行）' },
 };
 const noteWords = () => NOTE_TEXT[settings?.language] || NOTE_TEXT.en;
 function showWindow() { if (!window) return; if (window.isMinimized()) window.restore(); window.show(); window.focus(); }
@@ -2364,6 +2380,7 @@ const CLOSE_TEXT = {
   en: { title: 'The server keeps running', message: 'Warning: this closes only the launcher, the server keeps running.', detail: 'Open the launcher again to stop it (Stop all on the home page).', close: 'Close the launcher', cancel: 'Cancel', again: 'Do not show this again' },
   fr: { title: 'Le serveur continue de tourner', message: 'Attention : ceci ferme seulement le launcher, le serveur continue de tourner.', detail: "Rouvrez le launcher pour l'arrêter (Tout arrêter sur l'accueil).", close: 'Fermer le launcher', cancel: 'Annuler', again: 'Ne plus afficher' },
   ru: { title: 'Сервер продолжает работать', message: 'Внимание: закрывается только лаунчер, сервер продолжает работать.', detail: 'Откройте лаунчер снова, чтобы остановить его (Остановить всё на главной).', close: 'Закрыть лаунчер', cancel: 'Отмена', again: 'Больше не показывать' },
+  zh: { title: '服务器继续运行', message: '注意：这只会关闭启动器，服务器会继续运行。', detail: '重新打开启动器即可停止它（主页上的“全部停止”）。', close: '关闭启动器', cancel: '取消', again: '不再显示' },
 };
 async function closeWithNotice() {
   // Kept in the notification area: the window only hides.
@@ -2404,7 +2421,7 @@ async function main() {
   if (firstRun) settings.lastSeenVersion = app.getVersion();
   if (firstRun) {
     const locale = app.getLocale().toLowerCase();
-    settings.language = locale.startsWith('fr') ? 'fr' : locale.startsWith('ru') ? 'ru' : 'en';
+    settings.language = locale.startsWith('fr') ? 'fr' : locale.startsWith('ru') ? 'ru' : locale.startsWith('zh') ? 'zh' : 'en';
     await writeSettings(settingsFile, settings).catch(() => {});
   }
   // Windows shows notifications only for an app with its own id (the installer's appId; the exe itself when run from the sources).
@@ -2421,8 +2438,9 @@ async function main() {
   registerIpc();
 
   window = new BrowserWindow({
-    // The server edition's home fits in 700 px: no empty band under it.
-    width: 1180, height: config.edition === 'server' ? 700 : 760, minWidth: 980, minHeight: 640, frame: false, show: false, backgroundColor: '#04121c', title: config.appName,
+    // The server edition's home with the server live (its tiles and the game account) shows whole in 820 px, on a
+    // screen tall enough for it.
+    width: 1180, height: config.edition === 'server' ? Math.max(640, Math.min(820, screen.getPrimaryDisplay().workAreaSize.height - 16)) : 760, minWidth: 980, minHeight: 640, frame: false, show: false, backgroundColor: '#04121c', title: config.appName,
     webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, spellcheck: false, devTools: !app.isPackaged, backgroundThrottling: !smokeDir },
   });
   window.removeMenu();

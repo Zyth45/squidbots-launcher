@@ -4,7 +4,7 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const { REALMLIST } = require('./game.cjs');
 
-const LANGUAGES = new Set(['en', 'fr', 'ru']);
+const LANGUAGES = new Set(['en', 'fr', 'ru', 'zh']);
 const PAGES = new Set(['play', 'server']);
 const THEMES = new Set(['classic', 'abyss']);
 const CHANNELS = new Set(['stable', 'test']);

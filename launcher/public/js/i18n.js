@@ -6,13 +6,12 @@ const I18N = { lang: 'en', dict: {} };
 async function loadLocale(lang) {
   I18N.lang = lang;
   I18N.dict = {};
-  document.documentElement.lang = lang;
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : lang;
   if (lang === 'en') return;
   try {
     const response = await fetch(`locales/${lang}.json`);
     if (response.ok) I18N.dict = await response.json();
   } catch {}
-  document.documentElement.lang = lang;
 }
 
 function t(key, fallback, vars) {

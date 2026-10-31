@@ -23,10 +23,12 @@ import os
 import re
 import secrets
 import shutil
+import ssl
 import subprocess
 import sys
 import tarfile
 import time
+import urllib.error
 import urllib.request
 import zipfile
 from pathlib import Path
@@ -525,24 +527,56 @@ def cmd_mmaps_fetch(args):
 
 
 # ------------------------------------------------------------------------------------------------- SQL
+SSL_REFUSED = ("The secure connection to GitHub was refused (certificate not trusted): an antivirus that scans HTTPS "
+               "connections, or missing Windows root certificates. Open github.com once in Edge, or allow the server "
+               "folder in the antivirus, then prepare again.")
+
+
+def ssl_refused(error):
+    """Le certificat du serveur n'est pas reconnu par Python (antivirus qui inspecte le HTTPS, racines absentes)."""
+    reason = getattr(error, "reason", error)
+    return isinstance(reason, ssl.SSLError) or "CERTIFICATE_VERIFY_FAILED" in str(error)
+
+
+def curl_download(url, part, have):
+    """Le curl.exe de Windows (Schannel) : il lit le magasin de certificats de Windows, celui où l'antivirus met sa
+    racine. La vérification reste active ; seule la vérification de révocation est tolérante (best effort)."""
+    curl = Path(os.environ.get("SystemRoot", r"C:\Windows")) / "System32" / "curl.exe"
+    if not curl.exists():
+        raise Fail(SSL_REFUSED)
+    args = [str(curl), "-L", "--fail", "-sS", "--ssl-revoke-best-effort", "-A", "SquidBots-Assembler", "-o", str(part)]
+    if have:
+        args += ["-C", "-"]
+    run = subprocess.run(args + [url], capture_output=True, text=True, creationflags=HIDDEN, timeout=3600)
+    if run.returncode != 0:
+        raise Fail(SSL_REFUSED)
+
+
 def download(url, dest, sha256=None, step="sql", text="downloading the public SQL"):
     """Téléchargement reprenable (Range). step=None : sans événements de progression."""
     part = dest.with_suffix(dest.suffix + ".part")
     have = part.stat().st_size if part.exists() else 0
     req = urllib.request.Request(url, headers={"User-Agent": "SquidBots-Assembler", **({"Range": f"bytes={have}-"} if have else {})})
-    with urllib.request.urlopen(req, timeout=60) as resp:
-        if have and resp.status != 206:
-            have = 0
-        total = int(resp.headers.get("Content-Length") or 0) + have
-        with part.open("ab" if have else "wb") as out:
-            done = have
-            last = 0
-            while chunk := resp.read(1 << 20):
-                out.write(chunk)
-                done += len(chunk)
-                if step and time.time() - last > 1:
-                    emit("progress", step=step, done=done, total=total, text=text)
-                    last = time.time()
+    try:
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            if have and resp.status != 206:
+                have = 0
+            total = int(resp.headers.get("Content-Length") or 0) + have
+            with part.open("ab" if have else "wb") as out:
+                done = have
+                last = 0
+                while chunk := resp.read(1 << 20):
+                    out.write(chunk)
+                    done += len(chunk)
+                    if step and time.time() - last > 1:
+                        emit("progress", step=step, done=done, total=total, text=text)
+                        last = time.time()
+    except (urllib.error.URLError, ssl.SSLError) as error:
+        if not ssl_refused(error):
+            raise
+        if step:
+            emit("log", step=step, text="Python refused the certificate of GitHub: downloading with Windows' curl.exe instead.")
+        curl_download(url, part, part.stat().st_size if part.exists() else 0)
     if sha256:
         h = hashlib.sha256()
         with part.open("rb") as f:

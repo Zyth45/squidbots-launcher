@@ -19,7 +19,7 @@ const RACE_MPQS = ['ZE1', 'ZE2', 'ZE3', 'ZE5', 'ZE6', 'ZE7', 'ZE8', 'ZE9', 'ZEA'
 const CLIENT_FILES = [...RACE_MPQS, 'EsteriaAppearance.dll'];
 const DEFAULT_CONF = '[worldserver]\n\n# Added playable races (DBC data, character creation, appearances). 0 = off, 1 = on.\nCoACustomRaces.Enable = 0\n\n# Random bots may also be of the added races. 0 = off, 1 = on.\nCoACustomRaces.BotsEnable = 0\n';
 
-const confValue = (text, key) => new RegExp(`^\\s*${key.replace(/\./g, '\\.')}\\s*=\\s*"?([^"\\r\\n#]*)"?`, 'm').exec(text || '')?.[1]?.trim();
+const confValue = (text, key) => new RegExp(`^[ \\t]*${key.replace(/\./g, '\\.')}[ \\t]*=[ \\t]*"?([^"\\r\\n#]*)"?`, 'm').exec(text || '')?.[1]?.trim();
 
 // Does this worldserver know the switch? Its own config keys are plain text inside the executable.
 const coreCache = new Map();
@@ -57,6 +57,7 @@ async function status(root, { squidbots = true, client = '' } = {}) {
     squidbots: { installed: fs.existsSync(path.join(root, 'CoA-Bots', 'coa_bots.py')), enabled: squidbots !== false },
     ahbot: await ahbotStatus(root),
     dungeonclear: await dungeonStatus(root),
+    enchanter: await enchanterStatus(root),
     manastorm: await manastormStatus(root),
     rotation: await rotationStatus(root),
     multirace: {
@@ -79,8 +80,9 @@ async function multiraceBlockers(root) {
 }
 
 async function setKey(text, key, value) {
-  const pattern = new RegExp(`^(\\s*${key.replace(/\./g, '\\.')}\\s*=\\s*).*$`, 'm');
-  return pattern.test(text) ? text.replace(pattern, `$1${value}`) : `${text.replace(/\s*$/, '')}\n${key} = ${value}\n`;
+  const pattern = new RegExp(`^([ \\t]*${key.replace(/\./g, '\\.')}[ \\t]*=)([ \\t]*).*$`, 'm');
+  const eol = text.includes('\r\n') ? '\r\n' : '\n';
+  return pattern.test(text) ? text.replace(pattern, (_, head, space) => `${head}${space || ' '}${value}`) : `${text.replace(/\s*$/, '')}${eol}${key} = ${value}${eol}`;
 }
 
 // Writes Enable / BotsEnable. The caller purges the random bots afterwards (both ways).
@@ -156,7 +158,7 @@ async function ahbotStatus(root) {
 async function ahbotInstantKnown(root) {
   for (const dir of MODULE_DIRS) {
     const dist = await fsp.readFile(path.join(root, dir, `${AHBOT}.dist`), 'utf8').catch(() => '');
-    if (/^\s*AuctionHouseBot\.Buyer\.InstantBids\s*=/m.test(dist)) return true;
+    if (/^[ \t]*AuctionHouseBot\.Buyer\.InstantBids[ \t]*=/m.test(dist)) return true;
   }
   return false;
 }
@@ -183,7 +185,7 @@ const DIFFICULTIES = ['normal', 'heroic', 'mythic'];
 async function dungeonDifficultyKnown(root) {
   for (const dir of MODULE_DIRS) {
     const dist = await fsp.readFile(path.join(root, dir, `${DUNGEON}.dist`), 'utf8').catch(() => '');
-    if (/^\s*DungeonClear\.AllowedDifficulties\s*=/m.test(dist)) return true;
+    if (/^[ \t]*DungeonClear\.AllowedDifficulties[ \t]*=/m.test(dist)) return true;
   }
   return false;
 }
@@ -196,6 +198,35 @@ async function setDungeonDifficulties(root, list) {
 async function setDungeon(root, on) {
   await setModuleKeys(root, DUNGEON, { 'DungeonClear.Enable': on ? '1' : '0' }, 'Dungeon Clear comes with CoA Bots 2.8.');
   return dungeonStatus(root);
+}
+
+// The Enchanter NPC (from CoA Bots 2.8.4, off by default): enchantments up to the tiers allowed, each at its price in
+// gold. Shown working only when its .conf.dist is installed; before, a "coming soon" card.
+const ENCHANTER = 'npc_enchanter.conf';
+const TIERS = ['60', '70', '80'];
+const ENCHANTER_MISSING = 'The Enchanter NPC comes with CoA Bots 2.8.4.';
+async function enchanterStatus(root) {
+  const conf = await moduleConf(root, ENCHANTER);
+  const tiers = String(confValue(conf, 'EnchanterNpc.AllowedTiers') || '60').split(',').map(item => item.trim()).filter(item => TIERS.includes(item));
+  const costs = Object.fromEntries(TIERS.map((tier, i) => [tier, (value => (value === undefined || value === '' || !Number.isFinite(Number(value)) ? [1, 5, 10][i] : Number(value)))(confValue(conf, `EnchanterNpc.CostGold${tier}`))]));
+  return { available: conf !== null, enabled: isOn(confValue(conf, 'EnchanterNpc.Enable')), tiers: tiers.length ? tiers : ['60'], costs };
+}
+async function setEnchanter(root, on) {
+  await setModuleKeys(root, ENCHANTER, { 'EnchanterNpc.Enable': on ? '1' : '0' }, ENCHANTER_MISSING);
+  return enchanterStatus(root);
+}
+// Level 60 stays allowed: a higher tier adds to it.
+async function setEnchanterTiers(root, list) {
+  const wanted = TIERS.filter(tier => tier === '60' || (list || []).includes(tier));
+  await setModuleKeys(root, ENCHANTER, { 'EnchanterNpc.AllowedTiers': `"${wanted.join(',')}"` }, ENCHANTER_MISSING);
+  return enchanterStatus(root);
+}
+async function setEnchanterCost(root, tier, gold) {
+  if (!TIERS.includes(tier)) throw new Error('Unknown enchantment level.');
+  const value = Math.round(Number(gold));
+  if (!Number.isFinite(value) || value < 0 || value > 100000) throw new Error('Give a price between 0 and 100000 gold.');
+  await setModuleKeys(root, ENCHANTER, { [`EnchanterNpc.CostGold${tier}`]: String(value) }, ENCHANTER_MISSING);
+  return enchanterStatus(root);
 }
 async function setAhbot(root, on) {
   await setModuleKeys(root, AHBOT, { 'AuctionHouseBot.Enable': on ? 'true' : 'false' }, 'The auction house bot comes with CoA Bots 2.5.');
@@ -266,4 +297,4 @@ function runScript(root, command, apply) {
   }));
 }
 
-module.exports = { dungeonStatus, setDungeon, setDungeonDifficulties, ahbotStatus, setAhbot, ahbotSettings, setAhbotSettings, ahbotInstantKnown, manastormStatus, setManastorm, rotationStatus, setRotation, keepRotationOff, hasScript, runScript, status, setMultirace, setClientPatch, clientPatch, coreSupports, multiraceBlockers, RACES_CONF, RACES_DBC_COUNT };
+module.exports = { dungeonStatus, setDungeon, setDungeonDifficulties, enchanterStatus, setEnchanter, setEnchanterTiers, setEnchanterCost, ahbotStatus, setAhbot, ahbotSettings, setAhbotSettings, ahbotInstantKnown, manastormStatus, setManastorm, rotationStatus, setRotation, keepRotationOff, hasScript, runScript, status, setMultirace, setClientPatch, clientPatch, coreSupports, multiraceBlockers, RACES_CONF, RACES_DBC_COUNT };

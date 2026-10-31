@@ -68,3 +68,22 @@ test('client patch: detected, switched off to .disabled and back', async () => {
   assert.equal((await modules.setClientPatch(client, true)).state, 'yes');
   assert.equal(modules.clientPatch('').state, 'unknown');
 });
+
+test('enchanter writes keep a CRLF config line by line', async () => {
+  const root = await tempDir();
+  const file = path.join(root, 'CoA-Bots', 'Core', 'configs', 'modules', 'npc_enchanter.conf');
+  await write(root, { 'CoA-Bots/Core/configs/modules/npc_enchanter.conf': '# Enable\r\n#\r\nEnchanterNpc.Enable = 0\r\n#\r\nEnchanterNpc.AllowedTiers = "60"\r\nEnchanterNpc.CostGold70 =\r\nEnchanterNpc.CostGold80 = 10\r\n' });
+  await modules.setEnchanter(root, true);
+  await modules.setEnchanterTiers(root, ['70']);
+  await modules.setEnchanterCost(root, '70', 3);
+  assert.equal(fs.readFileSync(file, 'utf8'), '# Enable\r\n#\r\nEnchanterNpc.Enable = 1\r\n#\r\nEnchanterNpc.AllowedTiers = "60,70"\r\nEnchanterNpc.CostGold70 = 3\r\nEnchanterNpc.CostGold80 = 10\r\n');
+});
+
+// From Nightlund's PR #2 on squidbots-launcher: the spacing of the line is kept, a value with $ is written as is.
+test('modules setKey keeps the spacing of the line and takes a value with $ as is', async () => {
+  const root = await tempDir();
+  const file = path.join(root, 'CoA-Bots', 'Core', 'configs', 'modules', 'npc_enchanter.conf');
+  await write(root, { 'CoA-Bots/Core/configs/modules/npc_enchanter.conf': '# c\r\n  EnchanterNpc.Enable  =  0\r\n' });
+  await modules.setEnchanter(root, true);
+  assert.equal(fs.readFileSync(file, 'utf8'), '# c\r\n  EnchanterNpc.Enable  =  1\r\n');
+});

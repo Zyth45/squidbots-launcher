@@ -133,7 +133,7 @@ function withRealms(stats, list) {
 function botsTarget(root) {
   try {
     const conf = fs.readFileSync(path.join(root, 'CoA-Bots', 'Core', 'configs', 'modules', 'playerbots.conf'), 'utf8');
-    return Number(/^\s*AiPlayerbot\.MaxRandomBots\s*=\s*(\d+)/m.exec(conf)?.[1]) || null;
+    return Number(/^[ \t]*AiPlayerbot\.MaxRandomBots[ \t]*=[ \t]*(\d+)/m.exec(conf)?.[1]) || null;
   } catch { return null; }
 }
 

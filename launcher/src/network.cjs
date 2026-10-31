@@ -25,7 +25,7 @@ async function readNetwork(root) {
 
 async function currentNetwork(root) {
   const read = relative => fs.readFile(path.join(root, relative), 'utf8').catch(() => '');
-  const bind = /^\s*BindIP\s*=\s*"([^"]*)"/m.exec(await read('Settings/worldserver.conf.template'))?.[1];
+  const bind = /^[ \t]*BindIP[ \t]*=[ \t]*"([^"]*)"/m.exec(await read('Settings/worldserver.conf.template'))?.[1];
   const row = /UPDATE acore_auth\.realmlist SET name='([^']*)',address='([^']*)'/.exec(await read('Scripts/manage.py'));
   const address = ADDRESS.test(row?.[2] || '') ? row[2] : DEFAULT.address;
   const name = NAME.test(row?.[1] || '') ? row[1] : DEFAULT.name;
@@ -59,10 +59,10 @@ async function applyNetwork(root, wanted) {
   };
   await edit('Scripts/manage.py', text => text.replace(/(UPDATE acore_auth\.realmlist SET name=')[^']*(',address=')[^']*(')/, (_m, a, b, c) => `${a}${network.name.replace(/'/g, '')}${b}${address}${c}`));
   for (const template of ['Settings/authserver.conf.template', 'Settings/worldserver.conf.template']) {
-    await edit(template, text => text.replace(/^(\s*BindIP\s*=\s*)"[^"]*"/m, `$1"${open ? '0.0.0.0' : '127.0.0.1'}"`));
+    await edit(template, text => text.replace(/^([ \t]*BindIP[ \t]*=[ \t]*)"[^"]*"/m, `$1"${open ? '0.0.0.0' : '127.0.0.1'}"`));
   }
   // The remote console (RA, with the repack account) answers this PC only, even on an open server.
-  await edit('Settings/worldserver.conf.template', text => text.replace(/^(\s*Ra\.IP\s*=\s*)"[^"]*"/m, '$1"127.0.0.1"'));
+  await edit('Settings/worldserver.conf.template', text => text.replace(/^([ \t]*Ra\.IP[ \t]*=[ \t]*)"[^"]*"/m, '$1"127.0.0.1"'));
   return changed;
 }
 

@@ -768,3 +768,17 @@ dialog.wizard-dialog .dialog-head p { font-size: 12px; margin-top: 2px; }
 .realm-about .realm-text { margin: 0; }
 .wiz-main { height: 100%; box-sizing: border-box; }
 .wiz-foot { margin-top: auto !important; }
+.module-extra .tier-check { display: inline-flex; align-items: center; gap: 4px; margin-left: 12px; }
+.module-extra.tier-row { display: flex; align-items: center; gap: 10px; }
+.module-card .module-credit.long span { white-space: normal; overflow: visible; }
+.module-card .module-credit.long .link-button { flex-shrink: 0; }
+.module-card .module-credit .credit-links { display: flex; gap: 12px; flex-shrink: 0; overflow: visible; }
+.module-card .module-credit.long { flex-direction: column; align-items: flex-start; gap: 6px; }
+.module-extra.tier-prices { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; }
+.tier-price { display: inline-flex; align-items: center; gap: 6px; }
+.tier-price input { width: 72px; }
+.module-card .tier-price input { width: 58px; min-width: 0; padding: 3px 6px; height: 28px; }
+.module-extra.tier-prices > span:first-child { flex-basis: 100%; }
+.module-extra.tier-prices { gap: 6px 10px; }
+.module-card .tier-price { gap: 4px; }
+.module-card .tier-price input { width: 50px; }

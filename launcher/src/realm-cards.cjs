@@ -100,15 +100,15 @@ function configLines(cards, ids, { perRealm }) {
 // Rewrites the RealmCards lines of a config text: the global keys in place, every per-realm line replaced by ours
 // (written after RealmCards.Image).
 function rewrite(text, lines) {
-  let out = text.replace(/^RealmCards\.Realm\.\d+\.\w+\s*=.*(\r?\n|$)/gm, '');
+  const eol = text.includes('\r\n') ? '\r\n' : '\n';
+  let out = text.replace(/^RealmCards\.Realm\.\d+\.\w+[ \t]*=.*(\r?\n|$)/gm, '');
   const realmLines = [];
   for (const [key, value] of Object.entries(lines)) {
     if (key.startsWith('RealmCards.Realm.')) { realmLines.push(`${key} = ${value}`); continue; }
-    const pattern = new RegExp(`^(${key.replace(/\./g, '\\.')}\\s*=\\s*).*$`, 'm');
-    out = pattern.test(out) ? out.replace(pattern, `$1${value}`) : `${out.replace(/\s*$/, '')}\n${key} = ${value}\n`;
+    const pattern = new RegExp(`^(${key.replace(/\./g, '\\.')}[ \\t]*=[ \\t]*).*$`, 'm');
+    out = pattern.test(out) ? out.replace(pattern, (_, head) => `${head}${value}`) : `${out.replace(/\s*$/, '')}${eol}${key} = ${value}${eol}`;
   }
-  const eol = out.includes('\r\n') ? '\r\n' : '\n';
-  if (realmLines.length) out = out.replace(/^(RealmCards\.Image\s*=.*)$/m, `$1${eol}${realmLines.join(eol)}`);
+  if (realmLines.length) out = out.replace(/^(RealmCards\.Image[ \t]*=.*)$/m, `$1${eol}${realmLines.join(eol)}`);
   return out;
 }
 

@@ -12,9 +12,26 @@ const { promisify } = require('node:util');
 const exec = promisify(execFile);
 const read = file => fsp.readFile(file, 'utf8').catch(() => null);
 const confValue = (text, key) => {
-  const match = text?.match(new RegExp(`^\\s*${key.replace(/\./g, '\\.')}\\s*=\\s*"?([^"\\r\\n]*)"?\\s*$`, 'mi'));
+  const match = text?.match(new RegExp(`^[ \\t]*${key.replace(/\./g, '\\.')}[ \\t]*=[ \\t]*"?([^"\\r\\n]*)"?[ \\t]*$`, 'mi'));
   return match ? match[1].trim() : null;
 };
+// A key glued to the line above by a lone \r (launchers before 0.3.51 on CRLF files): the server no longer sees it.
+const GLUED = /\r(?!\n)(?=[ \t]*[A-Za-z][\w.]*[ \t]*=)/g;
+async function gluedConfs(root) {
+  const folders = ['Core/configs', 'Core/configs/modules', 'CoA-Bots/Core/configs/modules', 'Settings'];
+  for (const realm of await fsp.readdir(path.join(root, 'Royaumes'), { withFileTypes: true }).catch(() => [])) {
+    if (realm.isDirectory()) folders.push(`Royaumes/${realm.name}/configs`, `Royaumes/${realm.name}/configs/modules`);
+  }
+  const found = [];
+  for (const folder of folders) {
+    for (const name of await fsp.readdir(path.join(root, folder)).catch(() => [])) {
+      if (!/\.conf(\.template)?$/.test(name)) continue;
+      const text = await read(path.join(root, folder, name));
+      if (text && new RegExp(GLUED.source).test(text)) found.push(`${folder}/${name}`);
+    }
+  }
+  return found;
+}
 // The last 2 MB of a log (logs can be gigabytes).
 async function tailText(file, bytes = 2 * 1024 * 1024) {
   const stat = await fsp.stat(file).catch(() => null);
@@ -75,6 +92,8 @@ async function repackChecks({ root, add, mysqlQuery, services }) {
     for (const name of entries) if (name.endsWith('.conf.dist') && !entries.includes(name.slice(0, -5))) confDist.push(`${folder}/${name.slice(0, -5)}`);
   }
   add('settings', 'conf.dist', confDist.length ? 'bad' : 'ok', { files: confDist.slice(0, 6).join(', '), count: confDist.length }, confDist.length ? 'fix:conf-dist' : '');
+  const glued = await gluedConfs(root);
+  add('settings', 'conf.glued', glued.length ? 'bad' : 'ok', { files: glued.slice(0, 6).join(', '), count: glued.length }, glued.length ? 'fix:conf-glued' : '');
 
   const botsConf = await read(path.join(root, 'CoA-Bots/Core/configs/modules/playerbots.conf'));
   if (botsConf) {
@@ -98,7 +117,7 @@ async function repackChecks({ root, add, mysqlQuery, services }) {
   // S14: the installer keeps the old playerbots.conf, so the keys of a newer version stay at their defaults.
   const botsDist = await read(path.join(root, 'CoA-Bots/Core/configs/modules/playerbots.conf.dist'));
   if (botsConf && botsDist) {
-    const keys = text => new Set([...text.matchAll(/^\s*([A-Za-z][\w.]*)\s*=/gm)].map(match => match[1]));
+    const keys = text => new Set([...text.matchAll(/^[ \t]*([A-Za-z][\w.]*)[ \t]*=/gm)].map(match => match[1]));
     const have = keys(botsConf);
     const missing = [...keys(botsDist)].filter(key => !have.has(key));
     add('settings', 'bots.missingkeys', missing.length ? 'warn' : 'ok', { count: missing.length, keys: missing.slice(0, 5).join(', ') }, missing.length ? 'fix:bots-keys' : '');
@@ -222,10 +241,10 @@ async function repackChecks({ root, add, mysqlQuery, services }) {
 // Changes one value in place in a text file, keeping a copy of the file first.
 async function setConf(file, key, value) {
   const text = await fsp.readFile(file, 'utf8');
-  const pattern = new RegExp(`^(\\s*${key.replace(/\./g, '\\.')}\\s*=\\s*).*$`, 'm');
+  const pattern = new RegExp(`^([ \\t]*${key.replace(/\./g, '\\.')}[ \\t]*=[ \\t]*).*$`, 'm');
   if (!pattern.test(text)) throw new Error(`${key} is not in ${path.basename(file)}.`);
   await fsp.copyFile(file, `${file}.bak-${new Date().toISOString().replace(/[:.]/g, '-')}`);
-  await fsp.writeFile(file, text.replace(pattern, `$1${value}`));
+  await fsp.writeFile(file, text.replace(pattern, (_, head) => `${head}${value}`));
 }
 
 const FIXES = {
@@ -245,6 +264,18 @@ const FIXES = {
       }
     }
   },
+  // The glued keys put back on their own line (only those lines), a copy of each file kept first.
+  'conf-glued': async ({ root, control }) => {
+    const services = control ? await control.status().catch(() => []) : [];
+    if (services.some(service => /world/i.test(service.id) && ['running', 'starting', 'stopping'].includes(service.state))) throw new Error('Stop the server first: the worldserver reads these files when it starts.');
+    const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+    for (const relative of await gluedConfs(root)) {
+      const file = path.join(root, relative);
+      const text = await fsp.readFile(file, 'utf8');
+      await fsp.copyFile(file, `${file}.bak-${stamp}`);
+      await fsp.writeFile(file, text.replace(GLUED, text.includes('\r\n') ? '\r\n' : '\n'));
+    }
+  },
   // 8: the bots database is updated by the installer, never by the worldserver.
   'bots-updates': ({ root }) => setConf(path.join(root, 'CoA-Bots/Core/configs/modules/playerbots.conf'), 'Playerbots.Updates.EnableDatabases', '0'),
   // 10: bots no longer whisper every quest step.
@@ -254,8 +285,8 @@ const FIXES = {
     const file = path.join(root, 'CoA-Bots/Core/configs/modules/playerbots.conf');
     const conf = await fsp.readFile(file, 'utf8');
     const dist = await fsp.readFile(`${file}.dist`, 'utf8');
-    const have = new Set([...conf.matchAll(/^\s*([A-Za-z][\w.]*)\s*=/gm)].map(match => match[1]));
-    const lines = [...dist.matchAll(/^\s*([A-Za-z][\w.]*)\s*=.*$/gm)].filter(match => !have.has(match[1])).map(match => match[0].trim());
+    const have = new Set([...conf.matchAll(/^[ \t]*([A-Za-z][\w.]*)[ \t]*=/gm)].map(match => match[1]));
+    const lines = [...dist.matchAll(/^[ \t]*([A-Za-z][\w.]*)[ \t]*=.*$/gm)].filter(match => !have.has(match[1])).map(match => match[0].trim());
     if (!lines.length) return;
     await fsp.copyFile(file, `${file}.bak-${new Date().toISOString().replace(/[:.]/g, '-')}`);
     const eol = conf.includes('\r\n') ? '\r\n' : '\n';
@@ -291,4 +322,4 @@ const FIXES = {
   'restart-auth': async ({ control }) => { await control.stop('auth'); await control.start('auth'); },
 };
 
-module.exports = { repackChecks, FIXES, confValue };
+module.exports = { repackChecks, FIXES, confValue, gluedConfs };

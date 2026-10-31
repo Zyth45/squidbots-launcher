@@ -7,7 +7,8 @@
       "label": {
         "en": "Presets and profiles",
         "fr": "Préréglages et profils",
-        "ru": "Пресеты и профили"
+        "ru": "Пресеты и профили",
+        "zh": "预设与配置档"
       }
     },
     {
@@ -16,7 +17,8 @@
       "label": {
         "en": "Bot population",
         "fr": "Population de bots",
-        "ru": "Количество ботов"
+        "ru": "Количество ботов",
+        "zh": "机器人数量"
       }
     },
     {
@@ -25,7 +27,8 @@
       "label": {
         "en": "Realm",
         "fr": "Royaume",
-        "ru": "Игровой мир"
+        "ru": "Игровой мир",
+        "zh": "国度"
       }
     },
     {
@@ -34,7 +37,8 @@
       "label": {
         "en": "Collections and mounts",
         "fr": "Collections et montures",
-        "ru": "Коллекции и маунты"
+        "ru": "Коллекции и маунты",
+        "zh": "收藏与坐骑"
       }
     },
     {
@@ -43,7 +47,8 @@
       "label": {
         "en": "Rates",
         "fr": "Taux",
-        "ru": "Множители"
+        "ru": "Множители",
+        "zh": "倍率"
       }
     },
     {
@@ -52,7 +57,8 @@
       "label": {
         "en": "Bot levels",
         "fr": "Niveaux des bots",
-        "ru": "Уровни ботов"
+        "ru": "Уровни ботов",
+        "zh": "机器人等级"
       }
     },
     {
@@ -61,7 +67,18 @@
       "label": {
         "en": "Solo self-found",
         "fr": "Solo self-found",
-        "ru": "Solo self-found"
+        "ru": "Solo self-found",
+        "zh": "单人自给自足"
+      }
+    },
+    {
+      "id": "dungeonclear",
+      "icon": "shield",
+      "label": {
+        "en": "Dungeon Clear",
+        "fr": "Dungeon Clear",
+        "ru": "Dungeon Clear",
+        "zh": "Dungeon Clear"
       }
     },
     {
@@ -70,7 +87,8 @@
       "label": {
         "en": "Bot behaviour",
         "fr": "Comportement des bots",
-        "ru": "Поведение ботов"
+        "ru": "Поведение ботов",
+        "zh": "机器人行为"
       }
     },
     {
@@ -79,7 +97,8 @@
       "label": {
         "en": "Your alts",
         "fr": "Vos alts",
-        "ru": "Ваши альты"
+        "ru": "Ваши альты",
+        "zh": "你的小号"
       }
     },
     {
@@ -88,7 +107,8 @@
       "label": {
         "en": "PvP",
         "fr": "PvP",
-        "ru": "PvP"
+        "ru": "PvP",
+        "zh": "PvP"
       }
     },
     {
@@ -97,7 +117,8 @@
       "label": {
         "en": "CoA Bots",
         "fr": "CoA Bots",
-        "ru": "CoA Bots"
+        "ru": "CoA Bots",
+        "zh": "CoA Bots"
       }
     },
     {
@@ -106,7 +127,8 @@
       "label": {
         "en": "Creature difficulty",
         "fr": "Difficulté des créatures",
-        "ru": "Сложность существ"
+        "ru": "Сложность существ",
+        "zh": "怪物难度"
       }
     },
     {
@@ -115,7 +137,8 @@
       "label": {
         "en": "Channels and chat",
         "fr": "Canaux et discussion",
-        "ru": "Каналы и чат"
+        "ru": "Каналы и чат",
+        "zh": "频道与聊天"
       }
     },
     {
@@ -124,7 +147,8 @@
       "label": {
         "en": "Dashboard live view",
         "fr": "Vue en direct du dashboard",
-        "ru": "Живой вид панели"
+        "ru": "Живой вид панели",
+        "zh": "仪表盘实时视图"
       }
     },
     {
@@ -133,7 +157,8 @@
       "label": {
         "en": "Experience (Dynamic XP)",
         "fr": "Expérience (Dynamic XP)",
-        "ru": "Опыт (Dynamic XP)"
+        "ru": "Опыт (Dynamic XP)",
+        "zh": "经验（Dynamic XP）"
       }
     },
     {
@@ -142,7 +167,8 @@
       "label": {
         "en": "Bot chat (LLM)",
         "fr": "Discussion des bots (IA)",
-        "ru": "Чат ботов (ИИ)"
+        "ru": "Чат ботов (ИИ)",
+        "zh": "机器人聊天（LLM）"
       }
     }
   ],
@@ -150,17 +176,20 @@
     "restart": {
       "en": "At the next server start",
       "fr": "Au prochain démarrage du serveur",
-      "ru": "При следующем запуске сервера"
+      "ru": "При следующем запуске сервера",
+      "zh": "在服务器下次启动时"
     },
     "new-bots": {
       "en": "For bots created from now on",
       "fr": "Pour les bots créés à partir de maintenant",
-      "ru": "Для вновь созданных ботов"
+      "ru": "Для вновь созданных ботов",
+      "zh": "对此后创建的机器人生效"
     },
     "reload": {
       "en": "At the next start or after .reload config",
       "fr": "Au prochain démarrage ou après .reload config",
-      "ru": "При запуске или после .reload config"
+      "ru": "При запуске или после .reload config",
+      "zh": "在下次启动时或执行 .reload config 后"
     }
   },
   "settings": [
@@ -173,12 +202,14 @@
       "label": {
         "en": "Highest player level",
         "fr": "Niveau maximum des joueurs",
-        "ru": "Максимальный уровень игрока"
+        "ru": "Максимальный уровень игрока",
+        "zh": "玩家最高等级"
       },
       "help": {
         "en": "The level characters stop at. Conquest of Azeroth content is built for its own level cap: only lower it for a special realm.",
         "fr": "Le niveau auquel les personnages s'arrêtent. Le contenu de Conquest of Azeroth est prévu pour son propre plafond : ne le baissez que pour un royaume spécial.",
-        "ru": "Уровень, на котором персонажи перестают расти. Контент Conquest of Azeroth рассчитан на свой предел: снижайте только для особого мира."
+        "ru": "Уровень, на котором персонажи перестают расти. Контент Conquest of Azeroth рассчитан на свой предел: снижайте только для особого мира.",
+        "zh": "角色停止升级的等级。Conquest of Azeroth 的内容是按其自身的等级上限设计的：只有特殊国度才应调低。"
       }
     },
     {
@@ -190,12 +221,14 @@
       "label": {
         "en": "Starting level",
         "fr": "Niveau de départ",
-        "ru": "Начальный уровень"
+        "ru": "Начальный уровень",
+        "zh": "初始等级"
       },
       "help": {
         "en": "The level new characters are created at. 1 is the normal game.",
         "fr": "Le niveau des nouveaux personnages. 1 correspond au jeu normal.",
-        "ru": "Уровень новых персонажей. 1 — обычная игра."
+        "ru": "Уровень новых персонажей. 1 — обычная игра.",
+        "zh": "新角色创建时的等级。1 为正常游戏。"
       }
     },
     {
@@ -207,12 +240,14 @@
       "label": {
         "en": "Starting money (copper)",
         "fr": "Argent de départ (en cuivre)",
-        "ru": "Стартовые деньги (в меди)"
+        "ru": "Стартовые деньги (в меди)",
+        "zh": "初始金钱（铜币）"
       },
       "help": {
         "en": "Money a new character starts with, in copper: 10000 is 1 gold.",
         "fr": "L'argent d'un nouveau personnage, en pièces de cuivre : 10000 = 1 pièce d'or.",
-        "ru": "Деньги нового персонажа в меди: 10000 = 1 золотой."
+        "ru": "Деньги нового персонажа в меди: 10000 = 1 золотой.",
+        "zh": "新角色的初始金钱，单位为铜币：10000 即 1 金币。"
       }
     },
     {
@@ -227,7 +262,8 @@
           "label": {
             "en": "Always play them",
             "fr": "Toujours les jouer",
-            "ru": "Всегда показывать"
+            "ru": "Всегда показывать",
+            "zh": "总是播放"
           }
         },
         {
@@ -235,7 +271,8 @@
           "label": {
             "en": "Only for the first character of a race",
             "fr": "Seulement pour le premier personnage d'une race",
-            "ru": "Только для первого персонажа расы"
+            "ru": "Только для первого персонажа расы",
+            "zh": "仅限该种族的第一个角色"
           }
         },
         {
@@ -243,19 +280,22 @@
           "label": {
             "en": "Never",
             "fr": "Jamais",
-            "ru": "Никогда"
+            "ru": "Никогда",
+            "zh": "从不"
           }
         }
       ],
       "label": {
         "en": "Intro cinematics",
         "fr": "Cinématiques d'introduction",
-        "ru": "Вступительные ролики"
+        "ru": "Вступительные ролики",
+        "zh": "开场动画"
       },
       "help": {
         "en": "Whether the race introduction plays when a new character first logs in.",
         "fr": "Si la cinématique de race se joue à la première connexion d'un personnage.",
-        "ru": "Показывать ли ролик расы при первом входе персонажа."
+        "ru": "Показывать ли ролик расы при первом входе персонажа.",
+        "zh": "新角色首次登录时是否播放种族介绍动画。"
       }
     },
     {
@@ -270,7 +310,8 @@
           "label": {
             "en": "Normal",
             "fr": "Normal",
-            "ru": "Обычный"
+            "ru": "Обычный",
+            "zh": "普通"
           }
         },
         {
@@ -278,7 +319,8 @@
           "label": {
             "en": "PvP",
             "fr": "JcJ (PvP)",
-            "ru": "PvP"
+            "ru": "PvP",
+            "zh": "PvP"
           }
         },
         {
@@ -286,7 +328,8 @@
           "label": {
             "en": "Role-play",
             "fr": "Jeu de rôle",
-            "ru": "Ролевой"
+            "ru": "Ролевой",
+            "zh": "角色扮演"
           }
         },
         {
@@ -294,19 +337,22 @@
           "label": {
             "en": "Role-play PvP",
             "fr": "Jeu de rôle JcJ",
-            "ru": "Ролевой PvP"
+            "ru": "Ролевой PvP",
+            "zh": "角色扮演 PvP"
           }
         }
       ],
       "label": {
         "en": "Realm type",
         "fr": "Type de royaume",
-        "ru": "Тип мира"
+        "ru": "Тип мира",
+        "zh": "国度类型"
       },
       "help": {
         "en": "PvP realms flag players for combat in contested zones.",
         "fr": "Sur un royaume JcJ, les joueurs sont attaquables dans les zones contestées.",
-        "ru": "В PvP-мире игроки уязвимы в спорных зонах."
+        "ru": "В PvP-мире игроки уязвимы в спорных зонах.",
+        "zh": "PvP 国度会在争夺区域将玩家标记为可攻击状态。"
       }
     },
     {
@@ -318,12 +364,14 @@
       "label": {
         "en": "Most players online",
         "fr": "Nombre maximum de joueurs connectés",
-        "ru": "Максимум игроков онлайн"
+        "ru": "Максимум игроков онлайн",
+        "zh": "最多在线玩家数"
       },
       "help": {
         "en": "Real players only: bots do not count. 0 removes the limit.",
         "fr": "Les vrais joueurs uniquement : les bots ne comptent pas. 0 supprime la limite.",
-        "ru": "Только настоящие игроки, боты не считаются. 0 — без ограничения."
+        "ru": "Только настоящие игроки, боты не считаются. 0 — без ограничения.",
+        "zh": "仅计算真实玩家：机器人不计入。0 表示不限制。"
       }
     },
     {
@@ -335,12 +383,14 @@
       "label": {
         "en": "Alliance and Horde group together",
         "fr": "Groupes Alliance et Horde mélangés",
-        "ru": "Совместные группы Альянса и Орды"
+        "ru": "Совместные группы Альянса и Орды",
+        "zh": "联盟与部落可组队"
       },
       "help": {
         "en": "Lets players of both factions join the same group. Handy on a small realm or with bots of the other faction.",
         "fr": "Permet aux deux factions de former un même groupe. Pratique sur un petit royaume ou avec des bots de l'autre faction.",
-        "ru": "Игроки обеих фракций могут быть в одной группе. Удобно на маленьком сервере или с ботами другой фракции."
+        "ru": "Игроки обеих фракций могут быть в одной группе. Удобно на маленьком сервере или с ботами другой фракции.",
+        "zh": "允许两个阵营的玩家加入同一队伍。适合小型国度或搭配另一阵营的机器人。"
       }
     },
     {
@@ -352,12 +402,14 @@
       "label": {
         "en": "Guilds of both factions",
         "fr": "Guildes des deux factions",
-        "ru": "Гильдии обеих фракций"
+        "ru": "Гильдии обеих фракций",
+        "zh": "跨阵营公会"
       },
       "help": {
         "en": "Lets a guild accept members from both factions.",
         "fr": "Une guilde peut accueillir des membres des deux factions.",
-        "ru": "Гильдия может принимать игроков обеих фракций."
+        "ru": "Гильдия может принимать игроков обеих фракций.",
+        "zh": "允许公会接纳两个阵营的成员。"
       }
     },
     {
@@ -369,12 +421,14 @@
       "label": {
         "en": "Chat between factions",
         "fr": "Discussion entre factions",
-        "ru": "Чат между фракциями"
+        "ru": "Чат между фракциями",
+        "zh": "跨阵营聊天"
       },
       "help": {
         "en": "Players can read the other faction in say, yell and channels.",
         "fr": "Les joueurs comprennent l'autre faction en /dire, /crier et dans les canaux.",
-        "ru": "Игроки понимают другую фракцию в /сказать, /крик и каналах."
+        "ru": "Игроки понимают другую фракцию в /сказать, /крик и каналах.",
+        "zh": "玩家可以看懂另一阵营在说话、大喊和频道中的内容。"
       }
     },
     {
@@ -386,12 +440,14 @@
       "label": {
         "en": "Enter dungeons at any level",
         "fr": "Donjons accessibles à tout niveau",
-        "ru": "Подземелья на любом уровне"
+        "ru": "Подземелья на любом уровне",
+        "zh": "任意等级进入副本"
       },
       "help": {
         "en": "Removes the minimum level of dungeons and raids.",
         "fr": "Supprime le niveau minimum des donjons et raids.",
-        "ru": "Убирает минимальный уровень подземелий и рейдов."
+        "ru": "Убирает минимальный уровень подземелий и рейдов.",
+        "zh": "取消副本和团队副本的最低等级要求。"
       }
     },
     {
@@ -403,12 +459,14 @@
       "label": {
         "en": "Resurrection sickness from level",
         "fr": "Mal de résurrection à partir du niveau",
-        "ru": "Слабость после воскрешения с уровня"
+        "ru": "Слабость после воскрешения с уровня",
+        "zh": "复活虚弱起始等级"
       },
       "help": {
         "en": "Characters below this level never get resurrection sickness from the spirit healer.",
         "fr": "En dessous de ce niveau, le gardien des âmes ne donne pas de mal de résurrection.",
-        "ru": "Ниже этого уровня целитель душ не накладывает слабость."
+        "ru": "Ниже этого уровня целитель душ не накладывает слабость.",
+        "zh": "低于此等级的角色在灵魂医者处复活时不会获得复活虚弱。"
       }
     },
     {
@@ -420,12 +478,14 @@
       "label": {
         "en": "Instant flight paths",
         "fr": "Vols instantanés",
-        "ru": "Мгновенные полёты"
+        "ru": "Мгновенные полёты",
+        "zh": "瞬间飞行"
       },
       "help": {
         "en": "A flight master takes you to your destination at once instead of the flight over the world. Off by default.",
         "fr": "Le maître de vol vous emmène à destination tout de suite, sans le vol au-dessus du monde. Désactivé par défaut.",
-        "ru": "Распорядитель полётов сразу переносит вас к месту назначения, без полёта над миром. По умолчанию выключено."
+        "ru": "Распорядитель полётов сразу переносит вас к месту назначения, без полёта над миром. По умолчанию выключено.",
+        "zh": "飞行管理员会立即将你送达目的地，而不是在世界上空飞行。默认关闭。"
       }
     },
     {
@@ -437,12 +497,14 @@
       "label": {
         "en": "Gear damage on death (%)",
         "fr": "Usure de l'équipement à la mort (%)",
-        "ru": "Износ экипировки при смерти (%)"
+        "ru": "Износ экипировки при смерти (%)",
+        "zh": "死亡时装备损耗（%）"
       },
       "help": {
         "en": "Durability lost by the gear at each death. 10 by default, 0 = never.",
         "fr": "Durabilité perdue par l'équipement à chaque mort. 10 par défaut, 0 = jamais.",
-        "ru": "Потеря прочности экипировки при каждой смерти. По умолчанию 10, 0 — никогда."
+        "ru": "Потеря прочности экипировки при каждой смерти. По умолчанию 10, 0 — никогда.",
+        "zh": "每次死亡时装备损失的耐久度。默认 10，0 = 从不损耗。"
       }
     },
     {
@@ -454,12 +516,14 @@
       "label": {
         "en": "Gear damage at the spirit healer (%)",
         "fr": "Usure de l'équipement chez le gardien des âmes (%)",
-        "ru": "Износ экипировки у целителя душ (%)"
+        "ru": "Износ экипировки у целителя душ (%)",
+        "zh": "灵魂医者处装备损耗（%）"
       },
       "help": {
         "en": "Durability lost when resurrected by the spirit healer. 25 by default, 0 = never.",
         "fr": "Durabilité perdue en ressuscitant auprès du gardien des âmes. 25 par défaut, 0 = jamais.",
-        "ru": "Потеря прочности при воскрешении у целителя душ. По умолчанию 25, 0 — никогда."
+        "ru": "Потеря прочности при воскрешении у целителя душ. По умолчанию 25, 0 — никогда.",
+        "zh": "由灵魂医者复活时损失的耐久度。默认 25，0 = 从不损耗。"
       }
     },
     {
@@ -471,12 +535,14 @@
       "label": {
         "en": "XP from kills",
         "fr": "XP des monstres tués",
-        "ru": "Опыт за убийства"
+        "ru": "Опыт за убийства",
+        "zh": "击杀经验"
       },
       "help": {
         "en": "Multiplier: 1 is normal, 2 twice as fast.",
         "fr": "Multiplicateur : 1 = normal, 2 = deux fois plus rapide.",
-        "ru": "Множитель: 1 — обычно, 2 — вдвое быстрее."
+        "ru": "Множитель: 1 — обычно, 2 — вдвое быстрее.",
+        "zh": "倍率：1 为正常，2 为两倍速度。"
       }
     },
     {
@@ -488,12 +554,14 @@
       "label": {
         "en": "XP from quests",
         "fr": "XP des quêtes",
-        "ru": "Опыт за задания"
+        "ru": "Опыт за задания",
+        "zh": "任务经验"
       },
       "help": {
         "en": "Multiplier: 1 is normal.",
         "fr": "Multiplicateur : 1 = normal.",
-        "ru": "Множитель: 1 — обычно."
+        "ru": "Множитель: 1 — обычно.",
+        "zh": "倍率：1 为正常。"
       }
     },
     {
@@ -505,12 +573,14 @@
       "label": {
         "en": "XP from exploration",
         "fr": "XP d'exploration",
-        "ru": "Опыт за исследование"
+        "ru": "Опыт за исследование",
+        "zh": "探索经验"
       },
       "help": {
         "en": "Multiplier for discovering new areas.",
         "fr": "Multiplicateur pour la découverte de nouvelles zones.",
-        "ru": "Множитель за открытие новых областей."
+        "ru": "Множитель за открытие новых областей.",
+        "zh": "发现新区域所获经验的倍率。"
       }
     },
     {
@@ -522,12 +592,14 @@
       "label": {
         "en": "Gold dropped",
         "fr": "Or ramassé",
-        "ru": "Выпадение золота"
+        "ru": "Выпадение золота",
+        "zh": "金币掉落"
       },
       "help": {
         "en": "Multiplier for money looted from creatures.",
         "fr": "Multiplicateur de l'argent sur les monstres.",
-        "ru": "Множитель денег с существ."
+        "ru": "Множитель денег с существ.",
+        "zh": "从怪物身上拾取金钱的倍率。"
       }
     },
     {
@@ -539,12 +611,14 @@
       "label": {
         "en": "Epic item drops",
         "fr": "Butin épique",
-        "ru": "Выпадение эпических предметов"
+        "ru": "Выпадение эпических предметов",
+        "zh": "史诗物品掉落"
       },
       "help": {
         "en": "Multiplier for the chance of epic items.",
         "fr": "Multiplicateur des chances d'objets épiques.",
-        "ru": "Множитель шанса эпических предметов."
+        "ru": "Множитель шанса эпических предметов.",
+        "zh": "史诗物品掉落几率的倍率。"
       }
     },
     {
@@ -556,12 +630,14 @@
       "label": {
         "en": "Reputation gains",
         "fr": "Gains de réputation",
-        "ru": "Получение репутации"
+        "ru": "Получение репутации",
+        "zh": "声望获取"
       },
       "help": {
         "en": "Multiplier: 1 is normal.",
         "fr": "Multiplicateur : 1 = normal.",
-        "ru": "Множитель: 1 — обычно."
+        "ru": "Множитель: 1 — обычно.",
+        "zh": "倍率：1 为正常。"
       }
     },
     {
@@ -573,12 +649,14 @@
       "label": {
         "en": "Honor gains",
         "fr": "Gains d'honneur",
-        "ru": "Получение чести"
+        "ru": "Получение чести",
+        "zh": "荣誉获取"
       },
       "help": {
         "en": "Multiplier for honor points.",
         "fr": "Multiplicateur des points d'honneur.",
-        "ru": "Множитель очков чести."
+        "ru": "Множитель очков чести.",
+        "zh": "荣誉点数的倍率。"
       }
     },
     {
@@ -590,12 +668,14 @@
       "label": {
         "en": "Rested XP gained",
         "fr": "Repos accumulé",
-        "ru": "Накопление отдыха"
+        "ru": "Накопление отдыха",
+        "zh": "休息经验获取"
       },
       "help": {
         "en": "How fast rested experience builds up while logged in at an inn.",
         "fr": "Vitesse d'accumulation de l'expérience reposée à l'auberge.",
-        "ru": "Скорость накопления отдыха в таверне."
+        "ru": "Скорость накопления отдыха в таверне.",
+        "zh": "在旅店下线时休息经验的积累速度。"
       }
     },
     {
@@ -610,7 +690,8 @@
           "label": {
             "en": "The language of each player's game",
             "fr": "La langue du jeu de chaque joueur",
-            "ru": "Язык игры каждого игрока"
+            "ru": "Язык игры каждого игрока",
+            "zh": "每位玩家游戏客户端的语言"
           }
         },
         {
@@ -618,7 +699,8 @@
           "label": {
             "en": "English",
             "fr": "Anglais",
-            "ru": "Английский"
+            "ru": "Английский",
+            "zh": "英语"
           }
         },
         {
@@ -626,7 +708,8 @@
           "label": {
             "en": "French",
             "fr": "Français",
-            "ru": "Французский"
+            "ru": "Французский",
+            "zh": "法语"
           }
         },
         {
@@ -634,7 +717,8 @@
           "label": {
             "en": "German",
             "fr": "Allemand",
-            "ru": "Немецкий"
+            "ru": "Немецкий",
+            "zh": "德语"
           }
         },
         {
@@ -642,7 +726,8 @@
           "label": {
             "en": "Spanish",
             "fr": "Espagnol",
-            "ru": "Испанский"
+            "ru": "Испанский",
+            "zh": "西班牙语"
           }
         },
         {
@@ -650,7 +735,8 @@
           "label": {
             "en": "Russian",
             "fr": "Russe",
-            "ru": "Русский"
+            "ru": "Русский",
+            "zh": "俄语"
           }
         },
         {
@@ -658,7 +744,8 @@
           "label": {
             "en": "Chinese (simplified)",
             "fr": "Chinois (simplifié)",
-            "ru": "Китайский (упрощ.)"
+            "ru": "Китайский (упрощ.)",
+            "zh": "简体中文"
           }
         },
         {
@@ -666,19 +753,22 @@
           "label": {
             "en": "Korean",
             "fr": "Coréen",
-            "ru": "Корейский"
+            "ru": "Корейский",
+            "zh": "韩语"
           }
         }
       ],
       "label": {
         "en": "Language of the bots",
         "fr": "Langue des bots",
-        "ru": "Язык ботов"
+        "ru": "Язык ботов",
+        "zh": "机器人语言"
       },
       "help": {
         "en": "What the bots say in chat. Choose a language when your game is in English but you want the bots in yours.",
         "fr": "Ce que les bots disent dans le chat. Choisissez une langue si votre jeu est en anglais mais que vous voulez les bots dans la vôtre.",
-        "ru": "Что боты пишут в чат. Выберите язык, если игра на английском, а ботов хотите на своём."
+        "ru": "Что боты пишут в чат. Выберите язык, если игра на английском, а ботов хотите на своём.",
+        "zh": "机器人在聊天中使用的语言。如果你的游戏是英文版但希望机器人说你的语言，请在此选择。"
       }
     },
     {
@@ -690,12 +780,14 @@
       "label": {
         "en": "Bots enabled",
         "fr": "Bots activés",
-        "ru": "Боты включены"
+        "ru": "Боты включены",
+        "zh": "启用机器人"
       },
       "help": {
         "en": "Master switch for the bot system. Off means no bots at all, random or otherwise.",
         "fr": "Interrupteur général du système de bots. Désactivé : aucun bot, ni aléatoire ni autre.",
-        "ru": "Главный переключатель ботов. Выключено — ботов нет совсем."
+        "ru": "Главный переключатель ботов. Выключено — ботов нет совсем.",
+        "zh": "机器人系统总开关。关闭后不会有任何机器人，无论是随机机器人还是其他。"
       }
     },
     {
@@ -707,12 +799,14 @@
       "label": {
         "en": "Random bots log in by themselves",
         "fr": "Les bots aléatoires se connectent seuls",
-        "ru": "Случайные боты входят сами"
+        "ru": "Случайные боты входят сами",
+        "zh": "随机机器人自动登录"
       },
       "help": {
         "en": "Random bots log in on their own and live in the world. Off leaves only bots a player adds by hand.",
         "fr": "Les bots aléatoires se connectent et vivent dans le monde. Désactivé : seuls les bots ajoutés à la main par un joueur restent.",
-        "ru": "Случайные боты сами входят и живут в мире. Выключено — только боты, добавленные игроком вручную."
+        "ru": "Случайные боты сами входят и живут в мире. Выключено — только боты, добавленные игроком вручную.",
+        "zh": "随机机器人会自行登录并在世界中活动。关闭后只剩玩家手动添加的机器人。"
       }
     },
     {
@@ -724,12 +818,14 @@
       "label": {
         "en": "Fewest random bots online",
         "fr": "Minimum de bots aléatoires en ligne",
-        "ru": "Минимум случайных ботов онлайн"
+        "ru": "Минимум случайных ботов онлайн",
+        "zh": "随机机器人最少在线数"
       },
       "help": {
         "en": "The server keeps at least this many random bots in the world. About 16 GB of memory holds 200 bots comfortably; 1000 needs about 32 GB.",
         "fr": "Le serveur garde au moins ce nombre de bots dans le monde. 16 Go de mémoire tiennent 200 bots confortablement ; 1000 bots demandent environ 32 Go.",
-        "ru": "Сервер держит в мире не меньше стольких ботов. 16 ГБ памяти хватает на 200 ботов; 1000 требуют около 32 ГБ."
+        "ru": "Сервер держит в мире не меньше стольких ботов. 16 ГБ памяти хватает на 200 ботов; 1000 требуют около 32 ГБ.",
+        "zh": "服务器始终在世界中保留至少这么多随机机器人。约 16 GB 内存可轻松容纳 200 个机器人；1000 个需要约 32 GB。"
       }
     },
     {
@@ -741,12 +837,14 @@
       "label": {
         "en": "Most random bots online",
         "fr": "Maximum de bots aléatoires en ligne",
-        "ru": "Максимум случайных ботов онлайн"
+        "ru": "Максимум случайных ботов онлайн",
+        "zh": "随机机器人最多在线数"
       },
       "help": {
         "en": "The server never runs more random bots than this. More bots means more server load.",
         "fr": "Le serveur ne fait jamais tourner plus de bots que ce nombre. Plus de bots = plus de charge.",
-        "ru": "Сервер никогда не запускает больше ботов. Больше ботов — больше нагрузка."
+        "ru": "Сервер никогда не запускает больше ботов. Больше ботов — больше нагрузка.",
+        "zh": "服务器运行的随机机器人永远不会超过此数。机器人越多，服务器负载越高。"
       }
     },
     {
@@ -760,12 +858,14 @@
       "label": {
         "en": "Bot accounts kept",
         "fr": "Comptes de bots gardés",
-        "ru": "Сохраняемые аккаунты ботов"
+        "ru": "Сохраняемые аккаунты ботов",
+        "zh": "保留的机器人账号数"
       },
       "help": {
         "en": "0 = as many as needed. Lowering the number of bots does not delete the accounts already made: purge the bots for that.",
         "fr": "0 = autant que nécessaire. Baisser le nombre de bots ne supprime pas les comptes déjà créés : pour ça, purgez les bots.",
-        "ru": "0 = сколько нужно. Уменьшение числа ботов не удаляет созданные аккаунты: для этого очистите ботов."
+        "ru": "0 = сколько нужно. Уменьшение числа ботов не удаляет созданные аккаунты: для этого очистите ботов.",
+        "zh": "0 = 按需创建。减少机器人数量不会删除已创建的账号：如需删除请清除机器人。"
       }
     },
     {
@@ -779,12 +879,14 @@
       "label": {
         "en": "Bots awake with no player near (%)",
         "fr": "Bots actifs sans joueur à proximité (%)",
-        "ru": "Активные боты без игроков рядом (%)"
+        "ru": "Активные боты без игроков рядом (%)",
+        "zh": "附近无玩家时保持活跃的机器人（%）"
       },
       "help": {
         "en": "Share of bots that keep playing when no real player is around. 100 keeps them all active, at the cost of server load. 60 is what a 1000-bot realm was measured to need.",
         "fr": "Part des bots qui continuent de jouer sans vrai joueur autour. 100 : tous actifs, au prix de la charge serveur. 60 est la valeur mesurée pour un royaume de 1000 bots.",
-        "ru": "Доля ботов, которые играют без настоящих игроков рядом. 100 — все активны ценой нагрузки. 60 — измеренное значение для мира на 1000 ботов."
+        "ru": "Доля ботов, которые играют без настоящих игроков рядом. 100 — все активны ценой нагрузки. 60 — измеренное значение для мира на 1000 ботов.",
+        "zh": "附近没有真实玩家时仍继续活动的机器人比例。100 让所有机器人都保持活跃，但会增加服务器负载。实测 1000 个机器人的国度需要 60。"
       }
     },
     {
@@ -796,12 +898,14 @@
       "label": {
         "en": "No bots while no player is online",
         "fr": "Pas de bots sans joueur connecté",
-        "ru": "Нет ботов без игроков"
+        "ru": "Нет ботов без игроков",
+        "zh": "无玩家在线时不上线机器人"
       },
       "help": {
         "en": "The bots log in only when a real player is online: less load on an empty server.",
         "fr": "Les bots ne se connectent que si un vrai joueur est en ligne : moins de charge quand le serveur est vide.",
-        "ru": "Боты входят, только когда в сети есть игрок."
+        "ru": "Боты входят, только когда в сети есть игрок.",
+        "zh": "仅当有真实玩家在线时机器人才登录：空服务器负载更低。"
       }
     },
     {
@@ -813,12 +917,14 @@
       "label": {
         "en": "Lowest level a bot is given",
         "fr": "Niveau le plus bas donné à un bot",
-        "ru": "Минимальный уровень бота"
+        "ru": "Минимальный уровень бота",
+        "zh": "机器人最低等级"
       },
       "help": {
         "en": "The bottom of the range new bots are rolled into.",
         "fr": "Le bas de la fourchette dans laquelle les nouveaux bots sont tirés.",
-        "ru": "Нижняя граница диапазона уровней новых ботов."
+        "ru": "Нижняя граница диапазона уровней новых ботов.",
+        "zh": "新机器人随机等级范围的下限。"
       }
     },
     {
@@ -830,12 +936,14 @@
       "label": {
         "en": "Highest level a bot is given",
         "fr": "Niveau le plus haut donné à un bot",
-        "ru": "Максимальный уровень бота"
+        "ru": "Максимальный уровень бота",
+        "zh": "机器人最高等级"
       },
       "help": {
         "en": "The top of the range new bots are rolled into. Keep it at or above your own level, or no bot will ever join you.",
         "fr": "Le haut de la fourchette des nouveaux bots. Gardez-le au moins à votre niveau, sinon aucun bot ne vous rejoindra jamais.",
-        "ru": "Верхняя граница диапазона уровней новых ботов. Не ниже вашего уровня, иначе боты к вам не присоединятся."
+        "ru": "Верхняя граница диапазона уровней новых ботов. Не ниже вашего уровня, иначе боты к вам не присоединятся.",
+        "zh": "新机器人随机等级范围的上限。请保持不低于你自己的等级，否则永远不会有机器人加入你。"
       }
     },
     {
@@ -847,12 +955,14 @@
       "label": {
         "en": "Same starting level for every bot",
         "fr": "Même niveau de départ pour tous les bots",
-        "ru": "Одинаковый начальный уровень"
+        "ru": "Одинаковый начальный уровень",
+        "zh": "所有机器人使用相同初始等级"
       },
       "help": {
         "en": "On: every new bot starts at the starting level below instead of a random one. Bots still level up by playing.",
         "fr": "Activé : chaque nouveau bot commence au niveau ci-dessous au lieu d'un niveau aléatoire. Les bots progressent quand même en jouant.",
-        "ru": "Включено: каждый новый бот начинает с уровня ниже, а не со случайного. Боты всё равно растут, играя."
+        "ru": "Включено: каждый новый бот начинает с уровня ниже, а не со случайного. Боты всё равно растут, играя.",
+        "zh": "开启：每个新机器人都从下方的初始等级开始，而非随机等级。机器人仍会通过游玩升级。"
       }
     },
     {
@@ -864,12 +974,14 @@
       "label": {
         "en": "Starting level",
         "fr": "Niveau de départ",
-        "ru": "Начальный уровень"
+        "ru": "Начальный уровень",
+        "zh": "初始等级"
       },
       "help": {
         "en": "The level every new bot starts at, when the same starting level is on.",
         "fr": "Le niveau de départ de chaque nouveau bot quand le niveau commun est activé.",
-        "ru": "Уровень новых ботов, если включён одинаковый начальный уровень."
+        "ru": "Уровень новых ботов, если включён одинаковый начальный уровень.",
+        "zh": "开启相同初始等级时，每个新机器人的起始等级。"
       }
     },
     {
@@ -883,12 +995,14 @@
       "label": {
         "en": "Odds a new bot starts at the lowest level",
         "fr": "Probabilité qu'un bot commence au plus bas niveau",
-        "ru": "Шанс начать с минимального уровня"
+        "ru": "Шанс начать с минимального уровня",
+        "zh": "新机器人从最低等级开始的几率"
       },
       "help": {
         "en": "0 to 1. With random levels, this share of new bots start at the lowest level (1 means all of them).",
         "fr": "De 0 à 1. Avec les niveaux aléatoires, cette part des nouveaux bots commence au niveau le plus bas (1 = tous).",
-        "ru": "От 0 до 1. Доля новых ботов, начинающих с минимального уровня (1 — все)."
+        "ru": "От 0 до 1. Доля новых ботов, начинающих с минимального уровня (1 — все).",
+        "zh": "0 到 1。使用随机等级时，此比例的新机器人从最低等级开始（1 表示全部）。"
       }
     },
     {
@@ -902,12 +1016,14 @@
       "label": {
         "en": "Odds a new bot starts at the highest level",
         "fr": "Probabilité qu'un bot commence au plus haut niveau",
-        "ru": "Шанс начать с максимального уровня"
+        "ru": "Шанс начать с максимального уровня",
+        "zh": "新机器人从最高等级开始的几率"
       },
       "help": {
         "en": "0 to 1. With random levels, this share of new bots start at the highest level. Checked before the lowest-level odds.",
         "fr": "De 0 à 1. Cette part des nouveaux bots commence au niveau le plus haut. Vérifié avant la probabilité du plus bas niveau.",
-        "ru": "От 0 до 1. Доля новых ботов с максимальным уровнем. Проверяется раньше минимального."
+        "ru": "От 0 до 1. Доля новых ботов с максимальным уровнем. Проверяется раньше минимального.",
+        "zh": "0 到 1。使用随机等级时，此比例的新机器人从最高等级开始。优先于最低等级几率判定。"
       }
     },
     {
@@ -919,12 +1035,14 @@
       "label": {
         "en": "Bots never level up",
         "fr": "Les bots ne montent jamais de niveau",
-        "ru": "Боты не растут в уровне"
+        "ru": "Боты не растут в уровне",
+        "zh": "机器人永不升级"
       },
       "help": {
         "en": "On: bots stay at the level they have. Off: they gain levels by questing and killing like players.",
         "fr": "Activé : les bots restent à leur niveau. Désactivé : ils progressent en faisant des quêtes et en tuant comme les joueurs.",
-        "ru": "Включено: боты остаются на своём уровне. Выключено: растут, как игроки."
+        "ru": "Включено: боты остаются на своём уровне. Выключено: растут, как игроки.",
+        "zh": "开启：机器人保持当前等级。关闭：它们像玩家一样通过做任务和击杀升级。"
       }
     },
     {
@@ -936,12 +1054,14 @@
       "label": {
         "en": "Level brackets (keep bots spread across levels)",
         "fr": "Tranches de niveau (répartir les bots)",
-        "ru": "Диапазоны уровней (распределять ботов)"
+        "ru": "Диапазоны уровней (распределять ботов)",
+        "zh": "等级区间（让机器人分布在各等级）"
       },
       "help": {
         "en": "Every 5 minutes, moves bots between nine level ranges to keep every range populated, re-rolling a moved bot at its new level. While on, it overrides any starting level set here.",
         "fr": "Toutes les 5 minutes, déplace des bots entre neuf tranches de niveau pour peupler chacune, en recréant le bot déplacé à son nouveau niveau. Tant que c'est activé, le niveau de départ réglé ici est ignoré.",
-        "ru": "Каждые 5 минут перемещает ботов между девятью диапазонами уровней, пересоздавая их. Пока включено, начальный уровень отсюда не действует."
+        "ru": "Каждые 5 минут перемещает ботов между девятью диапазонами уровней, пересоздавая их. Пока включено, начальный уровень отсюда не действует.",
+        "zh": "每 5 分钟在九个等级区间之间调动机器人，使每个区间都有人，被调动的机器人会在新等级重新生成。开启时会覆盖此处设置的任何初始等级。"
       }
     },
     {
@@ -953,12 +1073,14 @@
       "label": {
         "en": "Brackets follow real players",
         "fr": "Les tranches suivent les vrais joueurs",
-        "ru": "Диапазоны следуют за игроками"
+        "ru": "Диапазоны следуют за игроками",
+        "zh": "等级区间跟随真实玩家"
       },
       "help": {
         "en": "With level brackets on, put more bots in the level ranges where real players are, instead of an even spread.",
         "fr": "Avec les tranches activées, met plus de bots là où sont les vrais joueurs au lieu d'une répartition égale.",
-        "ru": "С диапазонами — больше ботов там, где настоящие игроки, а не поровну."
+        "ru": "С диапазонами — больше ботов там, где настоящие игроки, а не поровну.",
+        "zh": "开启等级区间时，在有真实玩家的等级区间放置更多机器人，而非平均分布。"
       }
     },
     {
@@ -970,12 +1092,14 @@
       "label": {
         "en": "Weight of real players in the brackets",
         "fr": "Poids des vrais joueurs dans les tranches",
-        "ru": "Вес игроков в диапазонах"
+        "ru": "Вес игроков в диапазонах",
+        "zh": "真实玩家在区间中的权重"
       },
       "help": {
         "en": "With \"brackets follow real players\": 10 to 15 when you play alone, to have bots of your level.",
         "fr": "Avec « les tranches suivent les vrais joueurs » : 10 à 15 en solo, pour avoir des bots de votre niveau.",
-        "ru": "С «диапазоны следуют за игроками»: 10–15 в соло, чтобы были боты вашего уровня."
+        "ru": "С «диапазоны следуют за игроками»: 10–15 в соло, чтобы были боты вашего уровня.",
+        "zh": "配合“等级区间跟随真实玩家”：单人游玩时设为 10 到 15，以便有与你同等级的机器人。"
       }
     },
     {
@@ -988,12 +1112,14 @@
       "label": {
         "en": "Bots log in and out in turns",
         "fr": "Les bots se connectent à tour de rôle",
-        "ru": "Боты заходят в игру по очереди"
+        "ru": "Боты заходят в игру по очереди",
+        "zh": "机器人轮流上下线"
       },
       "help": {
         "en": "The realm keeps more bots than are online (twice as many by default) and swaps who is online from time to time, like real players. More bot accounts are created at the next start.",
         "fr": "Le royaume garde plus de bots qu'il n'y en a en ligne (deux fois plus par défaut) et change de temps en temps ceux qui sont connectés, comme de vrais joueurs. Des comptes de bots en plus sont créés au prochain démarrage.",
-        "ru": "В мире больше ботов, чем онлайн (по умолчанию вдвое), и время от времени меняется, кто в игре, как у настоящих игроков. Новые аккаунты ботов создаются при следующем запуске."
+        "ru": "В мире больше ботов, чем онлайн (по умолчанию вдвое), и время от времени меняется, кто в игре, как у настоящих игроков. Новые аккаунты ботов создаются при следующем запуске.",
+        "zh": "国度保留的机器人多于在线数量（默认两倍），并不时更换在线的机器人，就像真实玩家一样。下次启动时会创建更多机器人账号。"
       }
     },
     {
@@ -1006,12 +1132,14 @@
       "label": {
         "en": "Bots online around my level",
         "fr": "Bots en ligne autour de mon niveau",
-        "ru": "Онлайн боты около моего уровня"
+        "ru": "Онлайн боты около моего уровня",
+        "zh": "在线机器人接近我的等级"
       },
       "help": {
         "en": "Among all the bots of the realm, those that log in are picked near the level of the real players online (several players: around each of them; nobody online: any level). No bot ever changes level, unlike level brackets. Works with Solo self-found.",
         "fr": "Parmi tous les bots du royaume, ceux qui se connectent sont choisis près du niveau des vrais joueurs en ligne (plusieurs joueurs : autour de chacun ; personne en ligne : tous niveaux). Aucun bot ne change de niveau, contrairement aux tranches de niveau. Compatible avec Solo self-found.",
-        "ru": "Из всех ботов мира в игру заходят те, чей уровень близок к уровню живых игроков онлайн (несколько игроков: около каждого; никого нет: любые уровни). Ни один бот не меняет уровень, в отличие от диапазонов уровней. Совместимо с Solo self-found."
+        "ru": "Из всех ботов мира в игру заходят те, чей уровень близок к уровню живых игроков онлайн (несколько игроков: около каждого; никого нет: любые уровни). Ни один бот не меняет уровень, в отличие от диапазонов уровней. Совместимо с Solo self-found.",
+        "zh": "在国度的所有机器人中，挑选与在线真实玩家等级相近的机器人登录（多名玩家：分别围绕每人；无人在线：任意等级）。与等级区间不同，机器人的等级永远不会改变。可与单人自给自足配合使用。"
       }
     },
     {
@@ -1024,12 +1152,14 @@
       "label": {
         "en": "How close to my level",
         "fr": "À quel point proche de mon niveau",
-        "ru": "Насколько близко к моему уровню"
+        "ru": "Насколько близко к моему уровню",
+        "zh": "与我等级的接近程度"
       },
       "help": {
         "en": "How many levels above or below the players the bots that log in may be.",
         "fr": "De combien de niveaux au-dessus ou en dessous des joueurs peuvent être les bots qui se connectent.",
-        "ru": "На сколько уровней выше или ниже игроков могут быть заходящие боты."
+        "ru": "На сколько уровней выше или ниже игроков могут быть заходящие боты.",
+        "zh": "登录的机器人可以比玩家高或低多少级。"
       },
       "choices": [
         {
@@ -1037,7 +1167,8 @@
           "label": {
             "en": "Wide (± 10 levels)",
             "fr": "Large (± 10 niveaux)",
-            "ru": "Широко (± 10 уровней)"
+            "ru": "Широко (± 10 уровней)",
+            "zh": "宽（± 10 级）"
           }
         },
         {
@@ -1045,7 +1176,8 @@
           "label": {
             "en": "Medium (± 5 levels, default)",
             "fr": "Moyen (± 5 niveaux, par défaut)",
-            "ru": "Средне (± 5 уровней, по умолчанию)"
+            "ru": "Средне (± 5 уровней, по умолчанию)",
+            "zh": "中（± 5 级，默认）"
           }
         },
         {
@@ -1053,7 +1185,8 @@
           "label": {
             "en": "Close (± 2 levels)",
             "fr": "Serré (± 2 niveaux)",
-            "ru": "Узко (± 2 уровня)"
+            "ru": "Узко (± 2 уровня)",
+            "zh": "近（± 2 级）"
           }
         }
       ]
@@ -1067,12 +1200,14 @@
       "label": {
         "en": "Canned bot chatter",
         "fr": "Phrases toutes faites des bots",
-        "ru": "Шаблонные реплики ботов"
+        "ru": "Шаблонные реплики ботов",
+        "zh": "机器人预设台词"
       },
       "help": {
         "en": "Playerbots' own built-in lines in say, yell, General and LFG. Kept off when the LLM chat is used.",
         "fr": "Les phrases intégrées de Playerbots en /dire, /crier, Général et Recherche de groupe. Laissé désactivé si la discussion IA est utilisée.",
-        "ru": "Встроенные фразы Playerbots в /сказать, /крик, Общем и Поиске группы. Выключено при чате ИИ."
+        "ru": "Встроенные фразы Playerbots в /сказать, /крик, Общем и Поиске группы. Выключено при чате ИИ.",
+        "zh": "Playerbots 自带的说话、大喊、综合和寻求组队频道台词。使用 LLM 聊天时保持关闭。"
       }
     },
     {
@@ -1084,12 +1219,14 @@
       "label": {
         "en": "Bots announce group invites",
         "fr": "Les bots annoncent leurs invitations",
-        "ru": "Боты объявляют приглашения"
+        "ru": "Боты объявляют приглашения",
+        "zh": "机器人公告组队邀请"
       },
       "help": {
         "en": "Bots say something in say or guild chat when they invite another bot to a group, raid or guild.",
         "fr": "Les bots parlent en /dire ou en guilde quand ils invitent un autre bot en groupe, raid ou guilde.",
-        "ru": "Боты говорят в /сказать или гильдии, приглашая другого бота."
+        "ru": "Боты говорят в /сказать или гильдии, приглашая другого бота.",
+        "zh": "机器人邀请其他机器人加入队伍、团队或公会时，会在说话或公会频道中发言。"
       }
     },
     {
@@ -1101,12 +1238,14 @@
       "label": {
         "en": "Bots spend talent points",
         "fr": "Les bots dépensent leurs talents",
-        "ru": "Боты распределяют таланты"
+        "ru": "Боты распределяют таланты",
+        "zh": "机器人自动分配天赋点"
       },
       "help": {
         "en": "Bots spend their talent points themselves when they level up.",
         "fr": "Les bots dépensent eux-mêmes leurs points de talent en montant de niveau.",
-        "ru": "Боты сами тратят очки талантов при повышении уровня."
+        "ru": "Боты сами тратят очки талантов при повышении уровня.",
+        "zh": "机器人升级时自行分配天赋点。"
       }
     },
     {
@@ -1121,7 +1260,8 @@
           "label": {
             "en": "Green",
             "fr": "Vert",
-            "ru": "Зелёное"
+            "ru": "Зелёное",
+            "zh": "绿色"
           }
         },
         {
@@ -1129,7 +1269,8 @@
           "label": {
             "en": "Blue",
             "fr": "Bleu",
-            "ru": "Синее"
+            "ru": "Синее",
+            "zh": "蓝色"
           }
         },
         {
@@ -1137,19 +1278,22 @@
           "label": {
             "en": "Epic",
             "fr": "Épique",
-            "ru": "Эпическое"
+            "ru": "Эпическое",
+            "zh": "史诗"
           }
         }
       ],
       "label": {
         "en": "Best gear quality of the bots",
         "fr": "Qualité d'équipement maximale des bots",
-        "ru": "Макс. качество экипировки ботов"
+        "ru": "Макс. качество экипировки ботов",
+        "zh": "机器人装备最高品质"
       },
       "help": {
         "en": "The gear the bots give themselves. Blue is the default.",
         "fr": "L'équipement que les bots se donnent eux-mêmes. Bleu par défaut.",
-        "ru": "Экипировка, которую боты выдают себе. По умолчанию синяя."
+        "ru": "Экипировка, которую боты выдают себе. По умолчанию синяя.",
+        "zh": "机器人为自己生成的装备。默认为蓝色。"
       }
     },
     {
@@ -1161,12 +1305,14 @@
       "label": {
         "en": "Your own bots can gear themselves",
         "fr": "Vos propres bots peuvent s'équiper seuls",
-        "ru": "Ваши боты могут экипироваться сами"
+        "ru": "Ваши боты могут экипироваться сами",
+        "zh": "你自己的机器人可自动配装"
       },
       "help": {
         "en": "Off for a \"loot only\" realm: your bots then wear what they find or what you give them.",
         "fr": "Désactivé pour un royaume « butin seulement » : vos bots portent alors ce qu'ils trouvent ou ce que vous leur donnez.",
-        "ru": "Выключите для мира «только добыча»."
+        "ru": "Выключите для мира «только добыча».",
+        "zh": "“仅靠拾取”的国度请关闭：你的机器人将穿戴它们找到的或你给的装备。"
       }
     },
     {
@@ -1178,12 +1324,14 @@
       "label": {
         "en": "Self-found bots",
         "fr": "Bots self-found",
-        "ru": "Боты без готовой экипировки"
+        "ru": "Боты без готовой экипировки",
+        "zh": "自给自足机器人"
       },
       "help": {
         "en": "Below level 60, no gear is ever generated for bots: they only wear what they loot, earn from quests or get from you, and new bots level up by playing. At 60, bots are geared as usual for endgame. Off by default.",
         "fr": "Sous le niveau 60, aucun équipement n'est fabriqué pour les bots : ils portent ce qu'ils ramassent, gagnent en quête ou reçoivent de vous, et les nouveaux bots montent en jouant. Au niveau 60, ils sont équipés comme d'habitude pour la fin de jeu. Désactivé par défaut.",
-        "ru": "До 60-го уровня ботам никогда не создаётся экипировка: они носят только то, что добыли, получили за задания или от вас, а новые боты растут, играя. На 60-м уровне боты экипируются как обычно для эндгейма. По умолчанию выключено."
+        "ru": "До 60-го уровня ботам никогда не создаётся экипировка: они носят только то, что добыли, получили за задания или от вас, а новые боты растут, играя. На 60-м уровне боты экипируются как обычно для эндгейма. По умолчанию выключено.",
+        "zh": "60 级以下永远不为机器人生成装备：它们只穿戴拾取的、任务获得的或你给的装备，新机器人通过游玩升级。到 60 级时，机器人照常配备终局装备。默认关闭。"
       }
     },
     {
@@ -1195,12 +1343,14 @@
       "label": {
         "en": "Self-found up to level",
         "fr": "Self-found jusqu'au niveau",
-        "ru": "Self-found до уровня"
+        "ru": "Self-found до уровня",
+        "zh": "自给自足生效至等级"
       },
       "help": {
         "en": "Highest level self-found applies to: above it, bots are geared as usual for the endgame. 59 by default (geared at 60).",
         "fr": "Plus haut niveau concerné par le self-found : au-dessus, les bots sont équipés comme d'habitude pour la fin de jeu. 59 par défaut (équipés à 60).",
-        "ru": "Самый высокий уровень self-found: выше боты экипируются как обычно для эндгейма. По умолчанию 59 (экипировка на 60)."
+        "ru": "Самый высокий уровень self-found: выше боты экипируются как обычно для эндгейма. По умолчанию 59 (экипировка на 60).",
+        "zh": "自给自足适用的最高等级：高于此等级，机器人照常配备终局装备。默认 59（60 级配装）。"
       }
     },
     {
@@ -1212,12 +1362,14 @@
       "label": {
         "en": "Bots that clear dungeons (%)",
         "fr": "Bots qui font les donjons (%)",
-        "ru": "Боты, проходящие подземелья (%)"
+        "ru": "Боты, проходящие подземелья (%)",
+        "zh": "刷副本的机器人（%）"
       },
       "help": {
         "en": "Share of the random bots (0 to 100 %, always the same ones) that go through the dungeons of their level in parties of five, with Dungeon Clear, and wear what they loot. 0 = no party; -1 = automatic (20 on a self-found realm, 0 otherwise).",
         "fr": "Part des bots aléatoires (0 à 100 %, toujours les mêmes) qui font les donjons de leur niveau en groupes de cinq, avec Dungeon Clear, et portent ce qu'ils y ramassent. 0 = aucun groupe ; -1 = automatique (20 en self-found, 0 sinon).",
-        "ru": "Доля случайных ботов (0–100 %, всегда одни и те же), которые проходят подземелья своего уровня группами по пять с Dungeon Clear и носят добытое. 0 = без групп; -1 = автоматически (20 в self-found, иначе 0)."
+        "ru": "Доля случайных ботов (0–100 %, всегда одни и те же), которые проходят подземелья своего уровня группами по пять с Dungeon Clear и носят добытое. 0 = без групп; -1 = автоматически (20 в self-found, иначе 0).",
+        "zh": "随机机器人中（0 到 100 %，始终是同一批）以五人小队通过 Dungeon Clear 刷对应等级副本、并穿戴拾取装备的比例。0 = 不组队；-1 = 自动（自给自足国度为 20，否则为 0）。"
       }
     },
     {
@@ -1229,12 +1381,14 @@
       "label": {
         "en": "Bot parties in dungeons at once",
         "fr": "Groupes de bots en donjon en même temps",
-        "ru": "Групп ботов в подземельях одновременно"
+        "ru": "Групп ботов в подземельях одновременно",
+        "zh": "同时在副本中的机器人小队"
       },
       "help": {
         "en": "Each party is five bots with one instance. 4 parties start about 8 to 12 runs an hour. 0 = none.",
         "fr": "Chaque groupe compte cinq bots et une instance. 4 groupes lancent environ 8 à 12 donjons par heure. 0 = aucun.",
-        "ru": "Каждая группа — пять ботов и одно подземелье. 4 группы — примерно 8–12 заходов в час. 0 = нет."
+        "ru": "Каждая группа — пять ботов и одно подземелье. 4 группы — примерно 8–12 заходов в час. 0 = нет.",
+        "zh": "每支小队为五个机器人，占用一个副本实例。4 支小队每小时约开始 8 到 12 次副本。0 = 无。"
       }
     },
     {
@@ -1246,12 +1400,14 @@
       "label": {
         "en": "Seconds between two new parties",
         "fr": "Secondes entre deux nouveaux groupes",
-        "ru": "Секунд между новыми группами"
+        "ru": "Секунд между новыми группами",
+        "zh": "两支新小队之间的间隔（秒）"
       },
       "help": {
         "en": "How often a new party is formed while there is room. 90 by default.",
         "fr": "Fréquence à laquelle un nouveau groupe est formé tant qu'il reste de la place. 90 par défaut.",
-        "ru": "Как часто собирается новая группа, пока есть место. По умолчанию 90."
+        "ru": "Как часто собирается новая группа, пока есть место. По умолчанию 90.",
+        "zh": "有空位时组建新小队的频率。默认 90。"
       }
     },
     {
@@ -1263,12 +1419,14 @@
       "label": {
         "en": "Levels below a dungeon's range",
         "fr": "Niveaux sous la tranche d'un donjon",
-        "ru": "Уровней ниже диапазона подземелья"
+        "ru": "Уровней ниже диапазона подземелья",
+        "zh": "低于副本等级范围的级数"
       },
       "help": {
         "en": "How many levels below a dungeon's usual range a party member may be (Ragefire Chasm is 13-18: with 2, bots of 11 to 18 go).",
         "fr": "De combien de niveaux un membre du groupe peut être sous la tranche habituelle du donjon (Gouffre de Ragefeu est 13-18 : avec 2, les bots de 11 à 18 y vont).",
-        "ru": "На сколько уровней ниже обычного диапазона подземелья может быть участник (Огненная пропасть 13–18: при 2 идут боты 11–18)."
+        "ru": "На сколько уровней ниже обычного диапазона подземелья может быть участник (Огненная пропасть 13–18: при 2 идут боты 11–18).",
+        "zh": "小队成员可以比副本通常等级范围低多少级（怒焰裂谷为 13-18：设为 2 时，11 到 18 级的机器人可以进入）。"
       }
     },
     {
@@ -1280,12 +1438,14 @@
       "label": {
         "en": "Healer or tank by class up to level",
         "fr": "Soigneur ou tank par la classe jusqu'au niveau",
-        "ru": "Лекарь или танк по классу до уровня"
+        "ru": "Лекарь или танк по классу до уровня",
+        "zh": "按职业担任治疗或坦克的等级上限"
       },
       "help": {
         "en": "Low-level bots seldom have a healer or tank specialization: in dungeons ending at this level or below, a bot whose class can do it takes the role. 0 = always by specialization.",
         "fr": "Les bots de bas niveau ont rarement une spécialisation de soigneur ou de tank : dans les donjons qui finissent à ce niveau ou en dessous, un bot dont la classe le permet prend le rôle. 0 = toujours par la spécialisation.",
-        "ru": "У ботов низкого уровня редко есть специализация лекаря или танка: в подземельях до этого уровня роль берёт бот, чей класс это умеет. 0 = только по специализации."
+        "ru": "У ботов низкого уровня редко есть специализация лекаря или танка: в подземельях до этого уровня роль берёт бот, чей класс это умеет. 0 = только по специализации.",
+        "zh": "低等级机器人很少有治疗或坦克专精：在结束等级不高于此值的副本中，职业能胜任的机器人会担任该职责。0 = 始终按专精。"
       }
     },
     {
@@ -1297,12 +1457,14 @@
       "label": {
         "en": "Bot experience speed",
         "fr": "Vitesse d'expérience des bots",
-        "ru": "Скорость получения опыта ботами"
+        "ru": "Скорость получения опыта ботами",
+        "zh": "机器人经验速度"
       },
       "help": {
         "en": "Only for random bots: how fast they level up by playing (on top of the realm XP rate; not while grouped with a real player).",
         "fr": "Seulement pour les bots aléatoires : vitesse à laquelle ils montent en jouant (en plus du taux d'XP du royaume ; pas quand ils sont groupés avec un vrai joueur).",
-        "ru": "Только для случайных ботов: как быстро они растут, играя (поверх множителя опыта мира; не в группе с живым игроком)."
+        "ru": "Только для случайных ботов: как быстро они растут, играя (поверх множителя опыта мира; не в группе с живым игроком).",
+        "zh": "仅限随机机器人：它们通过游玩升级的速度（在国度经验倍率之上叠加；与真实玩家组队时不生效）。"
       },
       "choices": [
         {
@@ -1310,7 +1472,8 @@
           "label": {
             "en": "× 1 (default)",
             "fr": "× 1 (par défaut)",
-            "ru": "× 1 (по умолчанию)"
+            "ru": "× 1 (по умолчанию)",
+            "zh": "× 1（默认）"
           }
         },
         {
@@ -1318,7 +1481,8 @@
           "label": {
             "en": "× 2",
             "fr": "× 2",
-            "ru": "× 2"
+            "ru": "× 2",
+            "zh": "× 2"
           }
         },
         {
@@ -1326,7 +1490,8 @@
           "label": {
             "en": "× 3",
             "fr": "× 3",
-            "ru": "× 3"
+            "ru": "× 3",
+            "zh": "× 3"
           }
         },
         {
@@ -1334,10 +1499,382 @@
           "label": {
             "en": "× 5",
             "fr": "× 5",
-            "ru": "× 5"
+            "ru": "× 5",
+            "zh": "× 5"
           }
         }
       ]
+    },
+    {
+      "key": "DungeonClear.SelfFound.RestHealthPct",
+      "file": "mod_dungeon_clear.conf",
+      "group": "selffound",
+      "kind": "int",
+      "when": "restart",
+      "min": 0,
+      "max": 100,
+      "label": {
+        "en": "Self-found parties: rest when a member is under health %",
+        "fr": "Groupes self-found : repos quand un membre est sous % de vie",
+        "ru": "Группы self-found: отдых, когда у участника здоровье ниже %",
+        "zh": "自给小队：成员生命低于 % 时休息"
+      },
+      "help": {
+        "en": "Self-found parties play carefully: a full rest when a member drops under this health %. Lower it so the tank waits less. Default 90.",
+        "fr": "Les groupes self-found jouent prudemment : repos complet quand un membre passe sous ce % de vie. Baissez-le pour que le tank attende moins. Par défaut 90.",
+        "ru": "Группы self-found играют осторожно: полный отдых, когда здоровье участника ниже этого %. Понизьте, чтобы танк ждал меньше. По умолчанию 90.",
+        "zh": "自给小队打法谨慎：成员生命低于此百分比时完整休息。调低可让坦克少等。默认 90。"
+      }
+    },
+    {
+      "key": "DungeonClear.SelfFound.RestManaPct",
+      "file": "mod_dungeon_clear.conf",
+      "group": "selffound",
+      "kind": "int",
+      "when": "restart",
+      "min": 0,
+      "max": 100,
+      "label": {
+        "en": "Self-found parties: rest when a dps or tank is under mana %",
+        "fr": "Groupes self-found : repos quand un dps ou tank est sous % de mana",
+        "ru": "Группы self-found: отдых, когда у бойца или танка мана ниже %",
+        "zh": "自给小队：输出或坦克法力低于 % 时休息"
+      },
+      "help": {
+        "en": "Default 70.",
+        "fr": "Par défaut 70.",
+        "ru": "По умолчанию 70.",
+        "zh": "默认 70。"
+      }
+    },
+    {
+      "key": "DungeonClear.SelfFound.RestHealerManaPct",
+      "file": "mod_dungeon_clear.conf",
+      "group": "selffound",
+      "kind": "int",
+      "when": "restart",
+      "min": 0,
+      "max": 100,
+      "label": {
+        "en": "Self-found parties: rest when the healer is under mana %",
+        "fr": "Groupes self-found : repos quand le soigneur est sous % de mana",
+        "ru": "Группы self-found: отдых, когда у лекаря мана ниже %",
+        "zh": "自给小队：治疗法力低于 % 时休息"
+      },
+      "help": {
+        "en": "Default 90.",
+        "fr": "Par défaut 90.",
+        "ru": "По умолчанию 90.",
+        "zh": "默认 90。"
+      }
+    },
+    {
+      "key": "DungeonClear.Enable",
+      "file": "mod_dungeon_clear.conf",
+      "group": "dungeonclear",
+      "kind": "bool",
+      "when": "restart",
+      "label": {
+        "en": "Dungeon Clear on",
+        "fr": "Dungeon Clear activé",
+        "ru": "Dungeon Clear включён",
+        "zh": "启用 Dungeon Clear"
+      },
+      "help": {
+        "en": "Your group of bots clears a dungeon on its own: the tank leads, pulls and loots (dc on in the party chat).",
+        "fr": "Votre groupe de bots nettoie un donjon tout seul : le tank mène, attire les monstres et ramasse (dc on dans le canal du groupe).",
+        "ru": "Ваша группа ботов сама зачищает подземелье: танк ведёт, пуллит и собирает добычу (dc on в чате группы).",
+        "zh": "你的机器人小队自行清理副本：坦克带路、拉怪并拾取（在小队聊天中输入 dc on）。"
+      }
+    },
+    {
+      "key": "DungeonClear.SmartRest",
+      "file": "mod_dungeon_clear.conf",
+      "group": "dungeonclear",
+      "kind": "bool",
+      "when": "restart",
+      "label": {
+        "en": "Smart rest",
+        "fr": "Repos intelligent",
+        "ru": "Умный отдых",
+        "zh": "智能休息"
+      },
+      "help": {
+        "en": "The party pushes without eating or drinking until someone drops under a trigger below, then everyone rests to full. Fewer, longer rests. Before a boss the party always drinks back to about 90 % mana. On, the two \"rest up to\" values below are ignored.",
+        "fr": "Le groupe avance sans manger ni boire jusqu'à ce qu'un membre passe sous un des seuils ci-dessous, puis tout le monde se repose à fond. Moins de pauses, plus longues. Avant un boss, le groupe remonte toujours à environ 90 % de mana. Activé, les deux valeurs « se reposer jusqu'à » sont ignorées.",
+        "ru": "Группа идёт вперёд без еды и питья, пока кто-то не опустится ниже порога ниже, затем все отдыхают до полного. Реже, но дольше. Перед боссом группа всегда восстанавливает около 90 % маны. Когда включено, два значения «отдыхать до» игнорируются.",
+        "zh": "小队不吃不喝一路推进，直到有成员低于下方某个阈值，然后全员休息至满。休息次数更少、时间更长。打首领前小队总会把法力恢复到约 90%。开启后，下方两个“休息至”数值将被忽略。"
+      }
+    },
+    {
+      "key": "DungeonClear.SmartRestHealthPct",
+      "file": "mod_dungeon_clear.conf",
+      "group": "dungeonclear",
+      "kind": "int",
+      "when": "restart",
+      "min": 0,
+      "max": 100,
+      "label": {
+        "en": "Smart rest: stop under health %",
+        "fr": "Repos intelligent : pause sous % de vie",
+        "ru": "Умный отдых: стоп ниже % здоровья",
+        "zh": "智能休息：生命低于 % 时停下"
+      },
+      "help": {
+        "en": "Any member under this health % stops the party for a full rest. 0 = no health trigger. Default 50.",
+        "fr": "Un membre sous ce % de vie arrête le groupe pour un repos complet. 0 = pas de seuil de vie. Par défaut 50.",
+        "ru": "Любой участник ниже этого % здоровья останавливает группу на полный отдых. 0 = без порога здоровья. По умолчанию 50.",
+        "zh": "任何成员生命低于此百分比时，小队停下完整休息。0 = 不按生命触发。默认 50。"
+      }
+    },
+    {
+      "key": "DungeonClear.SmartRestDpsManaPct",
+      "file": "mod_dungeon_clear.conf",
+      "group": "dungeonclear",
+      "kind": "int",
+      "when": "restart",
+      "min": 0,
+      "max": 100,
+      "label": {
+        "en": "Smart rest: stop when a dps or tank is under mana %",
+        "fr": "Repos intelligent : pause quand un dps ou tank est sous % de mana",
+        "ru": "Умный отдых: стоп, когда у бойца или танка мана ниже %",
+        "zh": "智能休息：输出或坦克法力低于 % 时停下"
+      },
+      "help": {
+        "en": "0 = no trigger. Default 10.",
+        "fr": "0 = pas de seuil. Par défaut 10.",
+        "ru": "0 = без порога. По умолчанию 10.",
+        "zh": "0 = 不触发。默认 10。"
+      }
+    },
+    {
+      "key": "DungeonClear.SmartRestHealerManaPct",
+      "file": "mod_dungeon_clear.conf",
+      "group": "dungeonclear",
+      "kind": "int",
+      "when": "restart",
+      "min": 0,
+      "max": 100,
+      "label": {
+        "en": "Smart rest: stop when the healer is under mana %",
+        "fr": "Repos intelligent : pause quand le soigneur est sous % de mana",
+        "ru": "Умный отдых: стоп, когда у лекаря мана ниже %",
+        "zh": "智能休息：治疗法力低于 % 时停下"
+      },
+      "help": {
+        "en": "The healer's mana is the party's safety margin. 0 = no trigger. Default 40.",
+        "fr": "La mana du soigneur est la marge de sécurité du groupe. 0 = pas de seuil. Par défaut 40.",
+        "ru": "Мана лекаря — запас прочности группы. 0 = без порога. По умолчанию 40.",
+        "zh": "治疗的法力是小队的安全余量。0 = 不触发。默认 40。"
+      }
+    },
+    {
+      "key": "DungeonClear.RestHealthPct",
+      "file": "mod_dungeon_clear.conf",
+      "group": "dungeonclear",
+      "kind": "int",
+      "when": "restart",
+      "min": 0,
+      "max": 100,
+      "label": {
+        "en": "Rest up to health %",
+        "fr": "Se reposer jusqu'à % de vie",
+        "ru": "Отдыхать до % здоровья",
+        "zh": "休息至生命 %"
+      },
+      "help": {
+        "en": "Without smart rest: between pulls, bots eat up to this health % and the tank waits until everyone is there. Lower it so the tank stops less often. 0 = the bots setting (Playerbots.AlmostFullHealth).",
+        "fr": "Sans repos intelligent : entre deux combats, les bots mangent jusqu'à ce % de vie et le tank attend que tout le monde y soit. Baissez-le pour que le tank s'arrête moins souvent. 0 = le réglage des bots (Playerbots.AlmostFullHealth).",
+        "ru": "Без умного отдыха: между боями боты едят до этого % здоровья, а танк ждёт всех. Понизьте, чтобы танк останавливался реже. 0 = настройка ботов (Playerbots.AlmostFullHealth).",
+        "zh": "未开启智能休息时：两次战斗之间，机器人进食至此生命百分比，坦克会等所有人恢复。调低可让坦克少停。0 = 使用机器人设置（Playerbots.AlmostFullHealth）。"
+      }
+    },
+    {
+      "key": "DungeonClear.RestManaPct",
+      "file": "mod_dungeon_clear.conf",
+      "group": "dungeonclear",
+      "kind": "int",
+      "when": "restart",
+      "min": 0,
+      "max": 100,
+      "label": {
+        "en": "Rest up to mana %",
+        "fr": "Se reposer jusqu'à % de mana",
+        "ru": "Отдыхать до % маны",
+        "zh": "休息至法力 %"
+      },
+      "help": {
+        "en": "Without smart rest: bots drink up to this mana % and the tank waits for every mana user. 0 = the bots setting (Playerbots.HighMana).",
+        "fr": "Sans repos intelligent : les bots boivent jusqu'à ce % de mana et le tank attend chaque utilisateur de mana. 0 = le réglage des bots (Playerbots.HighMana).",
+        "ru": "Без умного отдыха: боты пьют до этого % маны, а танк ждёт всех, кто использует ману. 0 = настройка ботов (Playerbots.HighMana).",
+        "zh": "未开启智能休息时：机器人喝水至此法力百分比，坦克会等每个使用法力的成员。0 = 使用机器人设置（Playerbots.HighMana）。"
+      }
+    },
+    {
+      "key": "DungeonClear.PullDynamicMaxLeeroyMobs",
+      "file": "mod_dungeon_clear.conf",
+      "group": "dungeonclear",
+      "kind": "int",
+      "when": "restart",
+      "min": 1,
+      "max": 20,
+      "label": {
+        "en": "Leeroy: most mobs charged at once",
+        "fr": "Leeroy : maximum de monstres chargés à la fois",
+        "ru": "Leeroy: максимум мобов за раз",
+        "zh": "Leeroy：一次最多冲的怪物数"
+      },
+      "help": {
+        "en": "Up to this many mobs, the tank charges straight in; above, it pulls them back to the party. Set it to what your party takes comfortably. Default 5.",
+        "fr": "Jusqu'à ce nombre de monstres, le tank fonce dedans ; au-delà, il les ramène vers le groupe. Mettez ce que votre groupe encaisse sans peine. Par défaut 5.",
+        "ru": "До этого числа мобов танк бросается прямо в бой; больше — оттягивает их к группе. Укажите, сколько ваша группа выдерживает спокойно. По умолчанию 5.",
+        "zh": "怪物数不超过此值时，坦克直接冲进去；超过则把它们拉回小队。设为你的小队能轻松应付的数量。默认 5。"
+      }
+    },
+    {
+      "key": "DungeonClear.PullSafetyHpPct",
+      "file": "mod_dungeon_clear.conf",
+      "group": "dungeonclear",
+      "kind": "float",
+      "when": "restart",
+      "min": 0,
+      "max": 100,
+      "label": {
+        "en": "Careful pull: the party fights back under health %",
+        "fr": "Attirer prudemment : le groupe riposte sous % de vie",
+        "ru": "Осторожный пулл: группа отвечает ниже % здоровья",
+        "zh": "谨慎拉怪：低于生命 % 时小队反击"
+      },
+      "help": {
+        "en": "While the tank pulls a pack back, the party waits passive. A member hit by something else under this health % frees the party to fight. 0 = off. Default 50.",
+        "fr": "Pendant que le tank ramène un pack, le groupe attend sans bouger. Un membre frappé par autre chose sous ce % de vie libère le groupe pour combattre. 0 = désactivé. Par défaut 50.",
+        "ru": "Пока танк тянет пак, группа ждёт пассивно. Если участника бьёт что-то другое и его здоровье ниже этого %, группа вступает в бой. 0 = выкл. По умолчанию 50.",
+        "zh": "坦克拉回一波怪时，小队被动等待。若有成员被其他怪攻击且生命低于此百分比，小队即可反击。0 = 关闭。默认 50。"
+      }
+    },
+    {
+      "key": "DungeonClear.LootMinQuality",
+      "file": "mod_dungeon_clear.conf",
+      "group": "dungeonclear",
+      "kind": "choice",
+      "when": "restart",
+      "choices": [
+        {
+          "value": "0",
+          "label": {
+            "en": "Everything (grey)",
+            "fr": "Tout (gris)",
+            "ru": "Всё (серое)",
+            "zh": "全部（灰色）"
+          }
+        },
+        {
+          "value": "1",
+          "label": {
+            "en": "White",
+            "fr": "Blanc",
+            "ru": "Белое",
+            "zh": "白色"
+          }
+        },
+        {
+          "value": "2",
+          "label": {
+            "en": "Green",
+            "fr": "Vert",
+            "ru": "Зелёное",
+            "zh": "绿色"
+          }
+        },
+        {
+          "value": "3",
+          "label": {
+            "en": "Blue",
+            "fr": "Bleu",
+            "ru": "Синее",
+            "zh": "蓝色"
+          }
+        },
+        {
+          "value": "4",
+          "label": {
+            "en": "Purple",
+            "fr": "Violet",
+            "ru": "Фиолетовое",
+            "zh": "紫色"
+          }
+        }
+      ],
+      "label": {
+        "en": "Loot from quality",
+        "fr": "Ramasser à partir de la qualité",
+        "ru": "Собирать добычу от качества",
+        "zh": "拾取的最低品质"
+      },
+      "help": {
+        "en": "Corpses with only lower items are skipped (quest items always looted). Above grey, gold-only corpses are skipped too: a faster clear.",
+        "fr": "Les corps qui ne portent que des objets plus faibles sont ignorés (les objets de quête sont toujours ramassés). Au-dessus de gris, les corps avec seulement de l'or sont aussi ignorés : un nettoyage plus rapide.",
+        "ru": "Трупы только с худшими предметами пропускаются (квестовые предметы собираются всегда). Выше серого пропускаются и трупы только с золотом: зачистка быстрее.",
+        "zh": "只带更低品质物品的尸体会被跳过（任务物品总会拾取）。高于灰色时，只有金币的尸体也会跳过：清理更快。"
+      }
+    },
+    {
+      "key": "DungeonClear.BetterLootRolling",
+      "file": "mod_dungeon_clear.conf",
+      "group": "dungeonclear",
+      "kind": "bool",
+      "when": "restart",
+      "label": {
+        "en": "Better loot rolls",
+        "fr": "Meilleurs jets de butin",
+        "ru": "Улучшенные броски за добычу",
+        "zh": "更好的拾取掷骰"
+      },
+      "help": {
+        "en": "Bots roll at once, Need on gear they will grow into, and in \"bot self\" mode only you roll for your character.",
+        "fr": "Les bots lancent les dés tout de suite, font Besoin sur l'équipement qu'ils pourront porter plus tard, et en mode « bot self » vous seul lancez pour votre personnage.",
+        "ru": "Боты бросают сразу, берут «Нужно» на экипировку, до которой дорастут, а в режиме «bot self» за вашего персонажа бросаете только вы.",
+        "zh": "机器人立即掷骰，对将来能用的装备选“需求”；在“bot self”模式下只有你为自己的角色掷骰。"
+      }
+    },
+    {
+      "key": "DungeonClear.IgnoreChests",
+      "file": "mod_dungeon_clear.conf",
+      "group": "dungeonclear",
+      "kind": "bool",
+      "when": "restart",
+      "label": {
+        "en": "Skip chests",
+        "fr": "Ignorer les coffres",
+        "ru": "Пропускать сундуки",
+        "zh": "跳过宝箱"
+      },
+      "help": {
+        "en": "The tank stops only for corpses, never for chests on the way (a boss's chest is always looted). Off: it loots the chests it can reach.",
+        "fr": "Le tank ne s'arrête que pour les corps, jamais pour les coffres en chemin (le coffre d'un boss est toujours ramassé). Désactivé : il ramasse les coffres accessibles.",
+        "ru": "Танк останавливается только у трупов, не у сундуков по пути (сундук босса собирается всегда). Выкл.: собирает доступные сундуки.",
+        "zh": "坦克只为尸体停下，不理会路上的宝箱（首领宝箱总会拾取）。关闭：拾取能到达的宝箱。"
+      }
+    },
+    {
+      "key": "DungeonClear.PostCombatRez",
+      "file": "mod_dungeon_clear.conf",
+      "group": "dungeonclear",
+      "kind": "bool",
+      "when": "restart",
+      "label": {
+        "en": "Resurrect after a death",
+        "fr": "Ressusciter après une mort",
+        "ru": "Воскрешать после смерти",
+        "zh": "死亡后复活"
+      },
+      "help": {
+        "en": "A death no longer ends the run: a bot that can resurrect walks to the corpse, casts, and the run goes on.",
+        "fr": "Une mort ne termine plus la course : un bot qui sait ressusciter va au corps, lance le sort, et le donjon continue.",
+        "ru": "Смерть больше не завершает забег: бот, умеющий воскрешать, идёт к телу, воскрешает, и зачистка продолжается.",
+        "zh": "死亡不再结束本次清理：能复活的机器人会走到尸体旁施法，然后继续。"
+      }
     },
     {
       "file": "playerbots.conf",
@@ -1348,12 +1885,14 @@
       "label": {
         "en": "Bots join the dungeon finder",
         "fr": "Les bots rejoignent la recherche de donjon",
-        "ru": "Боты вступают в поиск подземелий"
+        "ru": "Боты вступают в поиск подземелий",
+        "zh": "机器人使用地下城查找器"
       },
       "help": {
         "en": "Random bots queue for dungeons and fill your groups.",
         "fr": "Les bots aléatoires s'inscrivent aux donjons et complètent vos groupes.",
-        "ru": "Случайные боты встают в очередь подземелий."
+        "ru": "Случайные боты встают в очередь подземелий.",
+        "zh": "随机机器人排队进副本，填补你的队伍。"
       }
     },
     {
@@ -1365,12 +1904,14 @@
       "label": {
         "en": "Bots join battlegrounds",
         "fr": "Les bots rejoignent les champs de bataille",
-        "ru": "Боты вступают на поля боя"
+        "ru": "Боты вступают на поля боя",
+        "zh": "机器人参加战场"
       },
       "help": {
         "en": "Random bots queue for battlegrounds, so they can start.",
         "fr": "Les bots aléatoires s'inscrivent aux champs de bataille pour qu'ils puissent démarrer.",
-        "ru": "Случайные боты встают в очередь полей боя."
+        "ru": "Случайные боты встают в очередь полей боя.",
+        "zh": "随机机器人排队进战场，让战场能够开启。"
       }
     },
     {
@@ -1382,12 +1923,14 @@
       "label": {
         "en": "Hold talents to their expansion",
         "fr": "Talents limités à leur extension",
-        "ru": "Таланты по дополнениям"
+        "ru": "Таланты по дополнениям",
+        "zh": "天赋限制在对应资料片"
       },
       "help": {
         "en": "Bots below 61 only use the talent rows Classic had, and below 71 the rows The Burning Crusade had.",
         "fr": "Sous le niveau 61, les bots n'utilisent que les rangées de talents de Classic, et sous 71 celles de The Burning Crusade.",
-        "ru": "До 61 уровня боты используют только ряды талантов Classic, до 71 — The Burning Crusade."
+        "ru": "До 61 уровня боты используют только ряды талантов Classic, до 71 — The Burning Crusade.",
+        "zh": "61 级以下的机器人只使用经典旧世的天赋层，71 级以下只使用燃烧的远征的天赋层。"
       }
     },
     {
@@ -1399,12 +1942,14 @@
       "label": {
         "en": "Gathering missions for your alts",
         "fr": "Missions de récolte pour vos alts",
-        "ru": "Задания по сбору для ваших альтов"
+        "ru": "Задания по сбору для ваших альтов",
+        "zh": "小号采集任务"
       },
       "help": {
         "en": "Send one of your alts to mine or pick herbs in the world (Missions tab of SquidBots Lite, or whisper \"mission gather\"): it gathers in a zone of its level and mails you the loot. Never random bots.",
         "fr": "Envoyez un de vos alts miner ou cueillir dans le monde (onglet Missions de SquidBots Lite, ou chuchotez « mission gather ») : il récolte dans une zone de son niveau et vous envoie le butin par courrier. Jamais les bots aléatoires.",
-        "ru": "Отправьте альта добывать руду или травы в мире (вкладка «Missions» в SquidBots Lite или шёпот «mission gather»): он собирает в зоне своего уровня и присылает добычу почтой. Никогда случайные боты."
+        "ru": "Отправьте альта добывать руду или травы в мире (вкладка «Missions» в SquidBots Lite или шёпот «mission gather»): он собирает в зоне своего уровня и присылает добычу почтой. Никогда случайные боты.",
+        "zh": "派你的一个小号去野外采矿或采药（SquidBots Lite 的 Missions 标签页，或密语 \"mission gather\"）：它会在适合其等级的区域采集，并把战利品邮寄给你。随机机器人永远不会参与。"
       }
     },
     {
@@ -1416,12 +1961,14 @@
       "label": {
         "en": "Missions at once per player",
         "fr": "Missions en même temps par joueur",
-        "ru": "Заданий одновременно на игрока"
+        "ru": "Заданий одновременно на игрока",
+        "zh": "每位玩家同时进行的任务数"
       },
       "help": {
         "en": "How many of your alts can be on a mission at the same time. 3 by default, 0 = no limit.",
         "fr": "Combien de vos alts peuvent être en mission en même temps. 3 par défaut, 0 = sans limite.",
-        "ru": "Сколько ваших альтов могут быть на задании одновременно. По умолчанию 3, 0 — без ограничений."
+        "ru": "Сколько ваших альтов могут быть на задании одновременно. По умолчанию 3, 0 — без ограничений.",
+        "zh": "你的小号中可同时执行任务的数量。默认 3，0 = 不限制。"
       }
     },
     {
@@ -1433,12 +1980,14 @@
       "label": {
         "en": "Longest mission (minutes)",
         "fr": "Mission la plus longue (minutes)",
-        "ru": "Самое долгое задание (минуты)"
+        "ru": "Самое долгое задание (минуты)",
+        "zh": "任务最长时间（分钟）"
       },
       "help": {
         "en": "120 by default.",
         "fr": "120 par défaut.",
-        "ru": "По умолчанию 120."
+        "ru": "По умолчанию 120.",
+        "zh": "默认 120。"
       }
     },
     {
@@ -1450,12 +1999,14 @@
       "label": {
         "en": "Missions start at the gathering spot",
         "fr": "Les missions commencent sur place",
-        "ru": "Задания начинаются на месте сбора"
+        "ru": "Задания начинаются на месте сбора",
+        "zh": "任务从采集点开始"
       },
       "help": {
         "en": "The alt goes straight to its gathering spot, as when you summon it: the whole mission is spent gathering. Off: it walks there.",
         "fr": "L'alt va directement à son lieu de récolte, comme quand vous l'invoquez : toute la mission est passée à récolter. Désactivé : il y va à pied.",
-        "ru": "Альт сразу переносится к месту сбора: всё время задания уходит на сбор. Выключено: идёт пешком."
+        "ru": "Альт сразу переносится к месту сбора: всё время задания уходит на сбор. Выключено: идёт пешком.",
+        "zh": "小号直接前往采集点，就像你召唤它一样：整个任务时间都用于采集。关闭：它会走过去。"
       }
     },
     {
@@ -1467,12 +2018,14 @@
       "label": {
         "en": "Alts complete your quests with you",
         "fr": "Vos alts terminent les quêtes avec vous",
-        "ru": "Альты сдают задания вместе с вами"
+        "ru": "Альты сдают задания вместе с вами",
+        "zh": "小号与你一起完成任务"
       },
       "help": {
         "en": "When you hand in a quest, the bots of your group complete it too, and they no longer loot the quest items you need.",
         "fr": "Quand vous rendez une quête, les bots de votre groupe la terminent aussi, et ils ne ramassent plus les objets de quête dont vous avez besoin.",
-        "ru": "Когда вы сдаёте задание, боты вашей группы тоже его завершают и больше не забирают нужные вам предметы."
+        "ru": "Когда вы сдаёте задание, боты вашей группы тоже его завершают и больше не забирают нужные вам предметы.",
+        "zh": "你交任务时，队伍中的机器人也会一并完成，并且不再拾取你需要的任务物品。"
       }
     },
     {
@@ -1484,12 +2037,56 @@
       "label": {
         "en": "Alts fill the guild bank",
         "fr": "Vos alts remplissent la banque de guilde",
-        "ru": "Альты пополняют банк гильдии"
+        "ru": "Альты пополняют банк гильдии",
+        "zh": "小号存入公会银行"
       },
       "help": {
-        "en": "A bot of your guild near a guild vault deposits its trade goods and the gold above 100. Never random bots, never bound or equipped items. Off by default.",
-        "fr": "Un bot de votre guilde près d'un coffre de guilde y dépose ses marchandises et l'or au-delà de 100. Jamais les bots aléatoires, jamais les objets liés ou portés. Désactivé par défaut.",
-        "ru": "Бот вашей гильдии у хранилища кладёт туда товары и золото сверх 100. Никогда случайные боты и привязанные или надетые вещи. По умолчанию выключено."
+        "en": "A bot of your guild (your alts, the bots you invited) near a guild vault deposits its ore, herbs, leather and cloth, the green or better gear it can never wear, and its gold above 100. Never random bots, never bound, quest or equipped items. On by default since CoA Bots 2.8.3.",
+        "fr": "Un bot de votre guilde (vos alts, les bots que vous avez invités) près d'un coffre de guilde y dépose son minerai, ses herbes, son cuir et son tissu, l'équipement vert ou mieux qu'il ne pourra jamais porter, et son or au-delà de 100. Jamais les bots aléatoires, jamais les objets liés, de quête ou portés. Activé par défaut depuis CoA Bots 2.8.3.",
+        "ru": "Бот вашей гильдии (ваши альты, приглашённые боты) у хранилища гильдии кладёт туда руду, травы, кожу и ткань, зелёную и лучше экипировку, которую он никогда не сможет надеть, и золото сверх 100. Никогда случайные боты и привязанные, квестовые или надетые вещи. Включено по умолчанию с CoA Bots 2.8.3.",
+        "zh": "你公会中的机器人（你的小号、你邀请的机器人）在公会银行附近时，会存入矿石、草药、皮革和布料、永远无法穿戴的绿色及以上装备，以及超过 100 的金币。随机机器人永远不会这样做，也绝不存入绑定物品、任务物品或已装备物品。自 CoA Bots 2.8.3 起默认开启。"
+      }
+    },
+    {
+      "key": "AiPlayerbot.UseGroundMountAtMinLevel",
+      "file": "playerbots.conf",
+      "group": "alts",
+      "kind": "int",
+      "when": "restart",
+      "min": 1,
+      "max": 80,
+      "label": {
+        "en": "Bots ride from level",
+        "fr": "Les bots montent à cheval dès le niveau",
+        "ru": "Боты ездят верхом с уровня",
+        "zh": "机器人使用坐骑的最低等级"
+      },
+      "help": {
+        "en": "From this level a bot uses its ground mount: in your group, it mounts up with you and gets off when you do. Lower it (for example to 1) so your low-level alts ride along with you. Default 20.",
+        "fr": "À partir de ce niveau, un bot utilise sa monture terrestre : dans votre groupe, il monte avec vous et descend quand vous descendez. Baissez-le (par exemple à 1) pour que vos alts de bas niveau vous suivent à cheval. Par défaut 20.",
+        "ru": "С этого уровня бот пользуется наземным ездовым животным: в вашей группе он садится верхом вместе с вами и спешивается, когда спешиваетесь вы. Понизьте (например, до 1), чтобы ваши альты низкого уровня ездили с вами. По умолчанию 20.",
+        "zh": "从此等级起，机器人会使用地面坐骑：在你的队伍中，它会和你一起上坐骑，你下坐骑时它也下。调低（例如 1）可让你的低等级小号随你一起骑乘。默认 20。"
+      }
+    },
+    {
+      "key": "AiPlayerbot.UseFastGroundMountAtMinLevel",
+      "file": "playerbots.conf",
+      "group": "alts",
+      "kind": "int",
+      "when": "restart",
+      "min": 1,
+      "max": 80,
+      "label": {
+        "en": "Bots ride a fast mount from level",
+        "fr": "Les bots prennent une monture rapide dès le niveau",
+        "ru": "Боты берут быстрое ездовое животное с уровня",
+        "zh": "机器人使用快速坐骑的最低等级"
+      },
+      "help": {
+        "en": "From this level a bot uses its fast ground mount, if it has one. Default 40.",
+        "fr": "À partir de ce niveau, un bot utilise sa monture terrestre rapide, s'il en a une. Par défaut 40.",
+        "ru": "С этого уровня бот пользуется быстрым наземным ездовым животным, если оно у него есть. По умолчанию 40.",
+        "zh": "从此等级起，机器人会使用快速地面坐骑（如果有）。默认 40。"
       }
     },
     {
@@ -1501,12 +2098,14 @@
       "label": {
         "en": "Bots in High Risk or War Mode",
         "fr": "Bots en High Risk ou War Mode",
-        "ru": "Боты в High Risk или War Mode"
+        "ru": "Боты в High Risk или War Mode",
+        "zh": "机器人处于 High Risk 或 War Mode"
       },
       "help": {
         "en": "A share of the random bots plays in High Risk or War Mode (always the same bots), the rest in PvE. They keep the PvP flag on, and on their own they only attack High Risk or War Mode characters. Off: every bot in PvE.",
         "fr": "Une part des bots aléatoires joue en High Risk ou en War Mode (toujours les mêmes bots), le reste en PvE. Ils gardent le drapeau JcJ, et seuls ils n'attaquent que les personnages High Risk ou War Mode. Désactivé : tous les bots en PvE.",
-        "ru": "Часть случайных ботов играет в High Risk или War Mode (всегда одни и те же), остальные в PvE. Они остаются с флагом PvP и сами нападают только на персонажей High Risk или War Mode. Выключено: все боты в PvE."
+        "ru": "Часть случайных ботов играет в High Risk или War Mode (всегда одни и те же), остальные в PvE. Они остаются с флагом PvP и сами нападают только на персонажей High Risk или War Mode. Выключено: все боты в PvE.",
+        "zh": "一部分随机机器人在 High Risk 或 War Mode 中游戏（始终是同一批），其余处于 PvE。它们保持 PvP 标记开启，主动攻击时只针对 High Risk 或 War Mode 的角色。关闭：所有机器人都处于 PvE。"
       }
     },
     {
@@ -1518,12 +2117,14 @@
       "label": {
         "en": "Bots in High Risk (%)",
         "fr": "Bots en High Risk (%)",
-        "ru": "Ботов в High Risk (%)"
+        "ru": "Ботов в High Risk (%)",
+        "zh": "High Risk 机器人（%）"
       },
       "help": {
         "en": "Share of the random bots in High Risk (open world PvP; bots never lose items). 30 by default.",
         "fr": "Part des bots aléatoires en High Risk (JcJ en monde ouvert ; les bots ne perdent jamais d'objets). 30 par défaut.",
-        "ru": "Доля случайных ботов в High Risk (PvP в открытом мире; боты никогда не теряют предметы). По умолчанию 30."
+        "ru": "Доля случайных ботов в High Risk (PvP в открытом мире; боты никогда не теряют предметы). По умолчанию 30.",
+        "zh": "处于 High Risk（野外 PvP；机器人永远不会丢失物品）的随机机器人比例。默认 30。"
       }
     },
     {
@@ -1535,12 +2136,14 @@
       "label": {
         "en": "Bots in War Mode (%)",
         "fr": "Bots en War Mode (%)",
-        "ru": "Ботов в War Mode (%)"
+        "ru": "Ботов в War Mode (%)",
+        "zh": "War Mode 机器人（%）"
       },
       "help": {
         "en": "Share of the random bots in War Mode. 0 by default.",
         "fr": "Part des bots aléatoires en War Mode. 0 par défaut.",
-        "ru": "Доля случайных ботов в War Mode. По умолчанию 0."
+        "ru": "Доля случайных ботов в War Mode. По умолчанию 0.",
+        "zh": "处于 War Mode 的随机机器人比例。默认 0。"
       }
     },
     {
@@ -1552,12 +2155,14 @@
       "label": {
         "en": "High Risk bots always in PvP gear",
         "fr": "Bots High Risk toujours en équipement JcJ",
-        "ru": "Боты High Risk всегда в PvP-экипировке"
+        "ru": "Боты High Risk всегда в PvP-экипировке",
+        "zh": "High Risk 机器人始终穿 PvP 装备"
       },
       "help": {
         "en": "On: High Risk bots wear their PvP gear (resilience) all the time. Off: only in a battleground or an arena, like the other bots.",
         "fr": "Activé : les bots High Risk portent leur équipement JcJ (résilience) en permanence. Désactivé : seulement en champ de bataille ou en arène, comme les autres.",
-        "ru": "Включено: боты High Risk всегда в PvP-экипировке (устойчивость). Выключено: только на полях боя и аренах, как остальные."
+        "ru": "Включено: боты High Risk всегда в PvP-экипировке (устойчивость). Выключено: только на полях боя и аренах, как остальные.",
+        "zh": "开启：High Risk 机器人始终穿着 PvP 装备（韧性）。关闭：只在战场或竞技场中穿，与其他机器人相同。"
       }
     },
     {
@@ -1569,12 +2174,14 @@
       "label": {
         "en": "High Risk: players lose items on death",
         "fr": "High Risk : les joueurs perdent des objets en mourant",
-        "ru": "High Risk: игроки теряют предметы при смерти"
+        "ru": "High Risk: игроки теряют предметы при смерти",
+        "zh": "High Risk：玩家死亡时掉落物品"
       },
       "help": {
         "en": "A player who dies in the open world in High Risk drops tradeable gear, bag resources and gold into a chest that any High Risk player nearby can loot. Off by default.",
         "fr": "Un joueur qui meurt en monde ouvert en High Risk laisse son équipement échangeable, ses ressources et son or dans un coffre que tout joueur High Risk proche peut récupérer. Désactivé par défaut.",
-        "ru": "Игрок, погибший в открытом мире в High Risk, оставляет передаваемую экипировку, ресурсы и золото в сундуке, который может забрать любой игрок High Risk рядом. По умолчанию выключено."
+        "ru": "Игрок, погибший в открытом мире в High Risk, оставляет передаваемую экипировку, ресурсы и золото в сундуке, который может забрать любой игрок High Risk рядом. По умолчанию выключено.",
+        "zh": "在 High Risk 中于野外死亡的玩家，会将可交易装备、背包资源和金币掉入一个宝箱，附近任何 High Risk 玩家都可以拾取。默认关闭。"
       }
     },
     {
@@ -1586,12 +2193,14 @@
       "label": {
         "en": "High Risk: chance to lose gear (%)",
         "fr": "High Risk : chance de perdre l'équipement (%)",
-        "ru": "High Risk: шанс потерять экипировку (%)"
+        "ru": "High Risk: шанс потерять экипировку (%)",
+        "zh": "High Risk：丢失装备几率（%）"
       },
       "help": {
         "en": "With the losses on: chance per death that the gear is lost. 50 by default.",
         "fr": "Avec les pertes activées : chance par mort que l'équipement soit perdu. 50 par défaut.",
-        "ru": "При включённых потерях: шанс потерять экипировку за смерть. По умолчанию 50."
+        "ru": "При включённых потерях: шанс потерять экипировку за смерть. По умолчанию 50.",
+        "zh": "开启掉落时：每次死亡丢失装备的几率。默认 50。"
       }
     },
     {
@@ -1603,12 +2212,14 @@
       "label": {
         "en": "High Risk: chance to lose resources (%)",
         "fr": "High Risk : chance de perdre les ressources (%)",
-        "ru": "High Risk: шанс потерять ресурсы (%)"
+        "ru": "High Risk: шанс потерять ресурсы (%)",
+        "zh": "High Risk：丢失资源几率（%）"
       },
       "help": {
         "en": "With the losses on: chance per death that the bag resources are lost. 50 by default.",
         "fr": "Avec les pertes activées : chance par mort que les ressources des sacs soient perdues. 50 par défaut.",
-        "ru": "При включённых потерях: шанс потерять ресурсы из сумок за смерть. По умолчанию 50."
+        "ru": "При включённых потерях: шанс потерять ресурсы из сумок за смерть. По умолчанию 50.",
+        "zh": "开启掉落时：每次死亡丢失背包资源的几率。默认 50。"
       }
     },
     {
@@ -1620,12 +2231,14 @@
       "label": {
         "en": "High Risk: chance to lose gold (%)",
         "fr": "High Risk : chance de perdre l'or (%)",
-        "ru": "High Risk: шанс потерять золото (%)"
+        "ru": "High Risk: шанс потерять золото (%)",
+        "zh": "High Risk：丢失金币几率（%）"
       },
       "help": {
         "en": "With the losses on: chance per death that gold is lost. 50 by default.",
         "fr": "Avec les pertes activées : chance par mort que l'or soit perdu. 50 par défaut.",
-        "ru": "При включённых потерях: шанс потерять золото за смерть. По умолчанию 50."
+        "ru": "При включённых потерях: шанс потерять золото за смерть. По умолчанию 50.",
+        "zh": "开启掉落时：每次死亡丢失金币的几率。默认 50。"
       }
     },
     {
@@ -1637,12 +2250,14 @@
       "label": {
         "en": "Bots start battlegrounds by themselves",
         "fr": "Les bots lancent des champs de bataille d'eux-mêmes",
-        "ru": "Боты сами запускают поля боя"
+        "ru": "Боты сами запускают поля боя",
+        "zh": "机器人自行开启战场"
       },
       "help": {
         "en": "Bots keep battlegrounds and rated arenas going on their own at level 60. Off: they only fill the queues of players.",
         "fr": "Les bots font tourner d'eux-mêmes des champs de bataille et des arènes cotées au niveau 60. Désactivé : ils complètent seulement les files des joueurs.",
-        "ru": "Боты сами поддерживают поля боя и рейтинговые арены на 60-м уровне. Выключено: только заполняют очереди игроков."
+        "ru": "Боты сами поддерживают поля боя и рейтинговые арены на 60-м уровне. Выключено: только заполняют очереди игроков.",
+        "zh": "机器人在 60 级时自行维持战场和竞技场评级赛的进行。关闭：它们只填补玩家的排队。"
       }
     },
     {
@@ -1654,12 +2269,14 @@
       "label": {
         "en": "Duels in front of Orgrimmar and Stormwind",
         "fr": "Duels devant Orgrimmar et Hurlevent",
-        "ru": "Дуэли у Оргриммара и Штормграда"
+        "ru": "Дуэли у Оргриммара и Штормграда",
+        "zh": "奥格瑞玛和暴风城门前决斗"
       },
       "help": {
         "en": "A few free random bots duel in front of the main gate of the capitals, pairs of close levels.",
         "fr": "Quelques bots aléatoires libres se battent en duel devant la porte des capitales, par paires de niveaux proches.",
-        "ru": "Несколько свободных случайных ботов устраивают дуэли у ворот столиц, парами близких уровней."
+        "ru": "Несколько свободных случайных ботов устраивают дуэли у ворот столиц, парами близких уровней.",
+        "zh": "一些空闲的随机机器人会在主城正门前两两决斗，双方等级相近。"
       }
     },
     {
@@ -1671,12 +2288,14 @@
       "label": {
         "en": "Warsong Gulch games kept going by the bots",
         "fr": "Parties de Goulet des Chanteguerres lancées par les bots",
-        "ru": "Игр в Ущелье Песни Войны от ботов"
+        "ru": "Игр в Ущелье Песни Войны от ботов",
+        "zh": "机器人维持的战歌峡谷场次"
       },
       "help": {
         "en": "With \"bots start battlegrounds\": games they keep going at level 60. 0 = they wait for a player.",
         "fr": "Avec « les bots lancent des champs de bataille » : parties qu'ils font tourner au niveau 60. 0 = ils attendent un joueur.",
-        "ru": "При «боты сами запускают поля боя»: игры, которые они поддерживают на 60 уровне. 0 — ждут игрока."
+        "ru": "При «боты сами запускают поля боя»: игры, которые они поддерживают на 60 уровне. 0 — ждут игрока.",
+        "zh": "配合“机器人自行开启战场”：它们在 60 级维持的场次。0 = 等待玩家。"
       }
     },
     {
@@ -1688,12 +2307,14 @@
       "label": {
         "en": "Arathi Basin games kept going by the bots",
         "fr": "Parties de Bassin d'Arathi lancées par les bots",
-        "ru": "Игр в Низине Арати от ботов"
+        "ru": "Игр в Низине Арати от ботов",
+        "zh": "机器人维持的阿拉希盆地场次"
       },
       "help": {
         "en": "With \"bots start battlegrounds\": games they keep going at level 60. 0 = they wait for a player.",
         "fr": "Avec « les bots lancent des champs de bataille » : parties qu'ils font tourner au niveau 60. 0 = ils attendent un joueur.",
-        "ru": "При «боты сами запускают поля боя»: игры, которые они поддерживают на 60 уровне. 0 — ждут игрока."
+        "ru": "При «боты сами запускают поля боя»: игры, которые они поддерживают на 60 уровне. 0 — ждут игрока.",
+        "zh": "配合“机器人自行开启战场”：它们在 60 级维持的场次。0 = 等待玩家。"
       }
     },
     {
@@ -1705,12 +2326,14 @@
       "label": {
         "en": "Rated 2v2 arenas kept going by the bots",
         "fr": "Arènes cotées 2v2 lancées par les bots",
-        "ru": "Рейтинговых арен 2v2 от ботов"
+        "ru": "Рейтинговых арен 2v2 от ботов",
+        "zh": "机器人维持的 2v2 竞技场评级赛"
       },
       "help": {
         "en": "0 = the bots only answer a player's team in the queue.",
         "fr": "0 = les bots répondent seulement à l'équipe d'un joueur en file.",
-        "ru": "0 — боты только отвечают команде игрока в очереди."
+        "ru": "0 — боты только отвечают команде игрока в очереди.",
+        "zh": "0 = 机器人只应对排队中的玩家队伍。"
       }
     },
     {
@@ -1722,12 +2345,14 @@
       "label": {
         "en": "Rated 3v3 arenas kept going by the bots",
         "fr": "Arènes cotées 3v3 lancées par les bots",
-        "ru": "Рейтинговых арен 3v3 от ботов"
+        "ru": "Рейтинговых арен 3v3 от ботов",
+        "zh": "机器人维持的 3v3 竞技场评级赛"
       },
       "help": {
         "en": "0 = the bots only answer a player's team in the queue.",
         "fr": "0 = les bots répondent seulement à l'équipe d'un joueur en file.",
-        "ru": "0 — боты только отвечают команде игрока в очереди."
+        "ru": "0 — боты только отвечают команде игрока в очереди.",
+        "zh": "0 = 机器人只应对排队中的玩家队伍。"
       }
     },
     {
@@ -1739,12 +2364,14 @@
       "label": {
         "en": "Written rotations for CoA specializations",
         "fr": "Rotations écrites des spécialisations CoA",
-        "ru": "Ротации для специализаций CoA"
+        "ru": "Ротации для специализаций CoA",
+        "zh": "CoA 专精的专属输出循环"
       },
       "help": {
         "en": "Bots play each Conquest of Azeroth specialization with its own written rotation. Off: they fall back to generic behaviour.",
         "fr": "Les bots jouent chaque spécialisation de Conquest of Azeroth avec sa rotation écrite. Désactivé : comportement générique.",
-        "ru": "Боты играют каждую специализацию Conquest of Azeroth по своей ротации. Выключено — общее поведение."
+        "ru": "Боты играют каждую специализацию Conquest of Azeroth по своей ротации. Выключено — общее поведение.",
+        "zh": "机器人使用为每个 Conquest of Azeroth 专精编写的专属循环。关闭：退回通用行为。"
       }
     },
     {
@@ -1756,12 +2383,14 @@
       "label": {
         "en": "Random bots use CoA classes only",
         "fr": "Bots aléatoires en classes CoA uniquement",
-        "ru": "Случайные боты только классов CoA"
+        "ru": "Случайные боты только классов CoA",
+        "zh": "随机机器人仅使用 CoA 职业"
       },
       "help": {
         "en": "New random bots are created in the Conquest of Azeroth classes only.",
         "fr": "Les nouveaux bots aléatoires sont créés uniquement dans les classes de Conquest of Azeroth.",
-        "ru": "Новые случайные боты создаются только в классах Conquest of Azeroth."
+        "ru": "Новые случайные боты создаются только в классах Conquest of Azeroth.",
+        "zh": "新的随机机器人只会创建为 Conquest of Azeroth 职业。"
       }
     },
     {
@@ -1773,12 +2402,14 @@
       "label": {
         "en": "Smarter healers",
         "fr": "Soigneurs plus malins",
-        "ru": "Умные лекари"
+        "ru": "Умные лекари",
+        "zh": "更聪明的治疗"
       },
       "help": {
         "en": "CoA healers keep their mana for healing and pick who to heal by need.",
         "fr": "Les soigneurs CoA gardent leur mana pour soigner et choisissent qui soigner selon le besoin.",
-        "ru": "Лекари CoA берегут ману и лечат тех, кому нужнее."
+        "ru": "Лекари CoA берегут ману и лечат тех, кому нужнее.",
+        "zh": "CoA 治疗会保留法力用于治疗，并按需要选择治疗对象。"
       }
     },
     {
@@ -1790,12 +2421,14 @@
       "label": {
         "en": "Damage dealers let the tank open",
         "fr": "Les DPS laissent le tank engager",
-        "ru": "Бойцы ждут танка"
+        "ru": "Бойцы ждут танка",
+        "zh": "输出等坦克先开怪"
       },
       "help": {
         "en": "In a group with a tank, CoA damage dealers wait for the tank to take the target first.",
         "fr": "Dans un groupe avec un tank, les DPS CoA attendent que le tank prenne la cible.",
-        "ru": "В группе с танком бойцы CoA ждут, пока танк возьмёт цель."
+        "ru": "В группе с танком бойцы CoA ждут, пока танк возьмёт цель.",
+        "zh": "在有坦克的队伍中，CoA 输出职业会等坦克先拉住目标。"
       }
     },
     {
@@ -1807,12 +2440,14 @@
       "label": {
         "en": "Longest wait for the tank (seconds)",
         "fr": "Attente maximum du tank (secondes)",
-        "ru": "Макс. ожидание танка (сек)"
+        "ru": "Макс. ожидание танка (сек)",
+        "zh": "等待坦克的最长时间（秒）"
       },
       "help": {
         "en": "How long a damage dealer waits on a target no tank has touched, then goes all out. 0: no wait.",
         "fr": "Durée pendant laquelle un DPS attend sur une cible que le tank n'a pas touchée, avant de tout donner. 0 : aucune attente.",
-        "ru": "Сколько боец ждёт на цели без танка, прежде чем атаковать. 0 — без ожидания."
+        "ru": "Сколько боец ждёт на цели без танка, прежде чем атаковать. 0 — без ожидания.",
+        "zh": "输出对坦克尚未接触的目标等待多久后全力输出。0：不等待。"
       }
     },
     {
@@ -1824,12 +2459,14 @@
       "label": {
         "en": "Specializations bots never use",
         "fr": "Spécialisations jamais utilisées par les bots",
-        "ru": "Специализации, которые боты не берут"
+        "ru": "Специализации, которые боты не берут",
+        "zh": "机器人从不使用的专精"
       },
       "help": {
         "en": "Specialization numbers separated by commas. 99 (Bloodmage Eternal) is left out by default.",
         "fr": "Numéros de spécialisation séparés par des virgules. 99 (Bloodmage Eternal) est exclu par défaut.",
-        "ru": "Номера специализаций через запятую. 99 (Bloodmage Eternal) исключена по умолчанию."
+        "ru": "Номера специализаций через запятую. 99 (Bloodmage Eternal) исключена по умолчанию.",
+        "zh": "专精编号，用逗号分隔。默认排除 99（Bloodmage Eternal）。"
       }
     },
     {
@@ -1841,12 +2478,14 @@
       "label": {
         "en": "Group fight report in CoaBots.log",
         "fr": "Rapport de combat de groupe dans CoaBots.log",
-        "ru": "Отчёт о групповых боях в CoaBots.log"
+        "ru": "Отчёт о групповых боях в CoaBots.log",
+        "zh": "在 CoaBots.log 中记录队伍战斗报告"
       },
       "help": {
         "en": "Writes a report at the end of every fight of a group with a real player in it. For measuring; off on a normal realm.",
         "fr": "Écrit un rapport à la fin de chaque combat d'un groupe avec un vrai joueur. Pour mesurer ; désactivé sur un royaume normal.",
-        "ru": "Пишет отчёт после каждого боя группы с игроком. Для измерений; на обычном сервере выключено."
+        "ru": "Пишет отчёт после каждого боя группы с игроком. Для измерений; на обычном сервере выключено.",
+        "zh": "每场有真实玩家参与的队伍战斗结束时写入一份报告。用于测量；普通国度请关闭。"
       }
     },
     {
@@ -1858,12 +2497,14 @@
       "label": {
         "en": "Bots answer \"lfg bot\" in chat",
         "fr": "Les bots répondent à « lfg bot »",
-        "ru": "Боты отвечают на «lfg bot»"
+        "ru": "Боты отвечают на «lfg bot»",
+        "zh": "机器人回应聊天中的 \"lfg bot\""
       },
       "help": {
         "en": "A player who says \"lfg bot heal\", \"lfg bot tank\" or \"lfg bot\" in a listened channel is whispered by free bots able to play those roles.",
         "fr": "Un joueur qui écrit « lfg bot heal », « lfg bot tank » ou « lfg bot » dans un canal écouté reçoit un message des bots libres capables de tenir ce rôle.",
-        "ru": "Игроку, написавшему «lfg bot heal», «lfg bot tank» или «lfg bot», шепчут свободные боты с такой ролью."
+        "ru": "Игроку, написавшему «lfg bot heal», «lfg bot tank» или «lfg bot», шепчут свободные боты с такой ролью.",
+        "zh": "玩家在被监听的频道中说 \"lfg bot heal\"、\"lfg bot tank\" 或 \"lfg bot\" 时，能胜任这些职责的空闲机器人会密语他。"
       }
     },
     {
@@ -1875,12 +2516,14 @@
       "label": {
         "en": "Zone channel number",
         "fr": "Numéro du canal de zone",
-        "ru": "Номер канала зоны"
+        "ru": "Номер канала зоны",
+        "zh": "区域频道编号"
       },
       "help": {
         "en": "The number of the Zone channel. Conquest of Azeroth uses 3, not the stock 1.",
         "fr": "Le numéro du canal Zone. Conquest of Azeroth utilise 3, pas le 1 d'origine.",
-        "ru": "Номер канала зоны. В Conquest of Azeroth это 3, а не 1."
+        "ru": "Номер канала зоны. В Conquest of Azeroth это 3, а не 1.",
+        "zh": "区域频道的编号。Conquest of Azeroth 使用 3，而不是默认的 1。"
       }
     },
     {
@@ -1892,12 +2535,14 @@
       "label": {
         "en": "Realm-wide channel name",
         "fr": "Nom du canal global",
-        "ru": "Название общего канала"
+        "ru": "Название общего канала",
+        "zh": "全国度频道名称"
       },
       "help": {
         "en": "Conquest of Azeroth calls it Ascension. Until this matches, every broadcast meant for it is dropped.",
         "fr": "Conquest of Azeroth l'appelle Ascension. Tant que ce nom ne correspond pas, les annonces destinées à ce canal sont perdues.",
-        "ru": "В Conquest of Azeroth он называется Ascension. Пока имя не совпадает, сообщения теряются."
+        "ru": "В Conquest of Azeroth он называется Ascension. Пока имя не совпадает, сообщения теряются.",
+        "zh": "Conquest of Azeroth 称其为 Ascension。在名称一致之前，所有发往该频道的广播都会被丢弃。"
       }
     },
     {
@@ -1911,12 +2556,14 @@
       "label": {
         "en": "Bot chatter in the realm-wide channel",
         "fr": "Bavardage des bots dans le canal global",
-        "ru": "Болтовня ботов в общем канале"
+        "ru": "Болтовня ботов в общем канале",
+        "zh": "机器人在全国度频道中发言"
       },
       "help": {
         "en": "0 to 30000; 0 keeps bots out of the realm-wide channel, which everybody reads.",
         "fr": "De 0 à 30000 ; 0 garde les bots hors du canal global, que tout le monde lit.",
-        "ru": "От 0 до 30000; 0 — боты не пишут в общий канал."
+        "ru": "От 0 до 30000; 0 — боты не пишут в общий канал.",
+        "zh": "0 到 30000；0 让机器人不在所有人都能看到的全国度频道中发言。"
       }
     },
     {
@@ -1928,12 +2575,14 @@
       "label": {
         "en": "Bots whisper unasked",
         "fr": "Les bots chuchotent sans qu'on leur demande",
-        "ru": "Боты шепчут без спроса"
+        "ru": "Боты шепчут без спроса",
+        "zh": "机器人主动密语"
       },
       "help": {
         "en": "On: bots whisper a player who writes in a channel, and tell their master every potion and buff. Off: no wall of whispers.",
         "fr": "Activé : les bots chuchotent au joueur qui écrit dans un canal et signalent chaque potion et amélioration. Désactivé : plus d'avalanche de messages.",
-        "ru": "Включено: боты шепчут игроку, пишущему в канал, и сообщают о каждом зелье. Выключено — без потока сообщений."
+        "ru": "Включено: боты шепчут игроку, пишущему в канал, и сообщают о каждом зелье. Выключено — без потока сообщений.",
+        "zh": "开启：机器人会密语在频道中发言的玩家，并向主人报告每一瓶药水和每一个增益。关闭：不会刷屏密语。"
       }
     },
     {
@@ -1947,12 +2596,14 @@
       "label": {
         "en": "Bots answering a channel message (%)",
         "fr": "Bots répondant à un message de canal (%)",
-        "ru": "Боты, отвечающие в канале (%)"
+        "ru": "Боты, отвечающие в канале (%)",
+        "zh": "回复频道消息的机器人（%）"
       },
       "help": {
         "en": "How many of the bots that read a player's channel message may answer. A bot called by name always answers.",
         "fr": "Part des bots lisant un message de canal qui peuvent répondre. Un bot appelé par son nom répond toujours.",
-        "ru": "Доля ботов, которые могут ответить. Бот, названный по имени, отвечает всегда."
+        "ru": "Доля ботов, которые могут ответить. Бот, названный по имени, отвечает всегда.",
+        "zh": "读到玩家频道消息的机器人中可以回复的比例。被点名的机器人总是会回复。"
       }
     },
     {
@@ -1964,12 +2615,14 @@
       "label": {
         "en": "Live status file",
         "fr": "Fichier d'état en direct",
-        "ru": "Файл живого состояния"
+        "ru": "Файл живого состояния",
+        "zh": "实时状态文件"
       },
       "help": {
         "en": "Where the server writes each bot's health, power and action for the SquidBots dashboard map. Empty: not written.",
         "fr": "Où le serveur écrit la vie, l'énergie et l'action de chaque bot pour la carte du dashboard SquidBots. Vide : rien n'est écrit.",
-        "ru": "Куда сервер пишет здоровье, ресурс и действие ботов для карты панели SquidBots. Пусто — не пишется."
+        "ru": "Куда сервер пишет здоровье, ресурс и действие ботов для карты панели SquidBots. Пусто — не пишется.",
+        "zh": "服务器为 SquidBots 仪表盘地图写入每个机器人生命值、能量和动作的位置。留空：不写入。"
       }
     },
     {
@@ -1981,12 +2634,14 @@
       "label": {
         "en": "Refresh every (seconds)",
         "fr": "Rafraîchir toutes les (secondes)",
-        "ru": "Обновлять каждые (сек)"
+        "ru": "Обновлять каждые (сек)",
+        "zh": "刷新间隔（秒）"
       },
       "help": {
         "en": "How often the live status file is rewritten. Under a millisecond of server time per snapshot with 1000 bots.",
         "fr": "Fréquence de réécriture du fichier d'état. Moins d'une milliseconde de temps serveur par écriture avec 1000 bots.",
-        "ru": "Как часто переписывается файл. Меньше миллисекунды на снимок при 1000 ботов."
+        "ru": "Как часто переписывается файл. Меньше миллисекунды на снимок при 1000 ботов.",
+        "zh": "实时状态文件重写的频率。1000 个机器人时，每次快照占用服务器时间不到一毫秒。"
       }
     },
     {
@@ -1998,12 +2653,14 @@
       "label": {
         "en": "Keep the battleground results",
         "fr": "Garder les résultats des champs de bataille",
-        "ru": "Сохранять результаты полей боя"
+        "ru": "Сохранять результаты полей боя",
+        "zh": "保存战场结果"
       },
       "help": {
         "en": "Each battleground is recorded (scores, winners): the PvP page of the dashboard shows them. Off, the PvP page stays empty.",
         "fr": "Chaque champ de bataille est enregistré (scores, vainqueurs) : la page JcJ du dashboard les affiche. Désactivé, la page JcJ reste vide.",
-        "ru": "Каждое поле боя записывается (счёт, победители): их показывает страница PvP дашборда. Выключено — страница PvP пустая."
+        "ru": "Каждое поле боя записывается (счёт, победители): их показывает страница PvP дашборда. Выключено — страница PvP пустая.",
+        "zh": "记录每场战场（比分、胜方）：仪表盘的 PvP 页面会显示。关闭后 PvP 页面为空。"
       }
     },
     {
@@ -2018,7 +2675,8 @@
           "label": {
             "en": "Per-level curve",
             "fr": "Courbe par niveau",
-            "ru": "Кривая по уровням"
+            "ru": "Кривая по уровням",
+            "zh": "按等级曲线"
           }
         },
         {
@@ -2026,7 +2684,8 @@
           "label": {
             "en": "Normal (x1)",
             "fr": "Normal (x1)",
-            "ru": "Обычный (x1)"
+            "ru": "Обычный (x1)",
+            "zh": "正常（x1）"
           }
         },
         {
@@ -2034,7 +2693,8 @@
           "label": {
             "en": "x3",
             "fr": "x3",
-            "ru": "x3"
+            "ru": "x3",
+            "zh": "x3"
           }
         },
         {
@@ -2042,7 +2702,8 @@
           "label": {
             "en": "x5",
             "fr": "x5",
-            "ru": "x5"
+            "ru": "x5",
+            "zh": "x5"
           }
         },
         {
@@ -2050,19 +2711,22 @@
           "label": {
             "en": "x7",
             "fr": "x7",
-            "ru": "x7"
+            "ru": "x7",
+            "zh": "x7"
           }
         }
       ],
       "label": {
         "en": "Realm XP rate",
         "fr": "Taux d'XP du royaume",
-        "ru": "Множитель опыта мира"
+        "ru": "Множитель опыта мира",
+        "zh": "国度经验倍率"
       },
       "help": {
         "en": "XP multiplier for every character that has not picked its own.",
         "fr": "Multiplicateur d'XP pour chaque personnage qui n'a pas choisi le sien.",
-        "ru": "Множитель опыта для персонажей, не выбравших свой."
+        "ru": "Множитель опыта для персонажей, не выбравших свой.",
+        "zh": "未自行选择倍率的所有角色的经验倍率。"
       }
     },
     {
@@ -2074,12 +2738,14 @@
       "label": {
         "en": "Players may pick their own rate",
         "fr": "Les joueurs choisissent leur taux",
-        "ru": "Игроки выбирают свой множитель"
+        "ru": "Игроки выбирают свой множитель",
+        "zh": "玩家可自选倍率"
       },
       "help": {
         "en": "Lets any player change their own rate with .xp 1, 3, 5, 7 or dynamic. Off: game masters only.",
         "fr": "Tout joueur peut changer son taux avec .xp 1, 3, 5, 7 ou dynamic. Désactivé : maîtres du jeu seulement.",
-        "ru": "Любой игрок может менять множитель командой .xp 1, 3, 5, 7 или dynamic. Выключено — только ГМ."
+        "ru": "Любой игрок может менять множитель командой .xp 1, 3, 5, 7 или dynamic. Выключено — только ГМ.",
+        "zh": "允许任何玩家用 .xp 1、3、5、7 或 dynamic 更改自己的倍率。关闭：仅限 GM。"
       }
     },
     {
@@ -2091,12 +2757,14 @@
       "label": {
         "en": "Per-level XP curve available",
         "fr": "Courbe d'XP par niveau disponible",
-        "ru": "Кривая опыта по уровням"
+        "ru": "Кривая опыта по уровням",
+        "zh": "启用按等级经验曲线"
       },
       "help": {
         "en": "Turns on the per-level XP curve (faster at higher levels) that rate 0 and .xp dynamic use.",
         "fr": "Active la courbe d'XP par niveau (plus rapide à haut niveau) utilisée par le taux 0 et .xp dynamic.",
-        "ru": "Включает кривую опыта (быстрее на высоких уровнях) для множителя 0 и .xp dynamic."
+        "ru": "Включает кривую опыта (быстрее на высоких уровнях) для множителя 0 и .xp dynamic.",
+        "zh": "开启按等级经验曲线（等级越高越快），供倍率 0 和 .xp dynamic 使用。"
       }
     },
     {
@@ -2108,12 +2776,14 @@
       "label": {
         "en": "LLM chat on",
         "fr": "Discussion IA activée",
-        "ru": "Чат ИИ включён"
+        "ru": "Чат ИИ включён",
+        "zh": "开启 LLM 聊天"
       },
       "help": {
         "en": "Bots write their own lines with the local language model.",
         "fr": "Les bots écrivent leurs propres phrases avec le modèle de langage local.",
-        "ru": "Боты пишут свои фразы с помощью локальной языковой модели."
+        "ru": "Боты пишут свои фразы с помощью локальной языковой модели.",
+        "zh": "机器人用本地语言模型自行撰写台词。"
       }
     },
     {
@@ -2125,12 +2795,14 @@
       "label": {
         "en": "Language model",
         "fr": "Modèle de langage",
-        "ru": "Языковая модель"
+        "ru": "Языковая модель",
+        "zh": "语言模型"
       },
       "help": {
         "en": "The Ollama model that writes bot lines. It must support tool calls.",
         "fr": "Le modèle Ollama qui écrit les phrases. Il doit gérer les appels d'outils.",
-        "ru": "Модель Ollama для реплик ботов. Должна поддерживать вызов инструментов."
+        "ru": "Модель Ollama для реплик ботов. Должна поддерживать вызов инструментов.",
+        "zh": "撰写机器人台词的 Ollama 模型。必须支持工具调用。"
       }
     },
     {
@@ -2144,12 +2816,14 @@
       "label": {
         "en": "Chance to answer you nearby (%)",
         "fr": "Chance de répondre à proximité (%)",
-        "ru": "Шанс ответа рядом (%)"
+        "ru": "Шанс ответа рядом (%)",
+        "zh": "回应附近发言的几率（%）"
       },
       "help": {
         "en": "Out of 100: how often a bot answers something said near it.",
         "fr": "Sur 100 : à quelle fréquence un bot répond à ce qui est dit près de lui.",
-        "ru": "Из 100: как часто бот отвечает на сказанное рядом."
+        "ru": "Из 100: как часто бот отвечает на сказанное рядом.",
+        "zh": "百分比：机器人回应其附近发言的频率。"
       }
     },
     {
@@ -2163,12 +2837,14 @@
       "label": {
         "en": "Idle chatter (%)",
         "fr": "Bavardage spontané (%)",
-        "ru": "Спонтанная болтовня (%)"
+        "ru": "Спонтанная болтовня (%)",
+        "zh": "闲聊（%）"
       },
       "help": {
         "en": "Out of 100: how often a bot near a real player says something unprompted.",
         "fr": "Sur 100 : à quelle fréquence un bot près d'un joueur parle de lui-même.",
-        "ru": "Из 100: как часто бот рядом с игроком говорит сам."
+        "ru": "Из 100: как часто бот рядом с игроком говорит сам.",
+        "zh": "百分比：真实玩家附近的机器人主动发言的频率。"
       }
     },
     {
@@ -2180,12 +2856,14 @@
       "label": {
         "en": "Stronger creatures (CoA scaling)",
         "fr": "Créatures renforcées (réglage CoA)",
-        "ru": "Усиленные существа (настройка CoA)"
+        "ru": "Усиленные существа (настройка CoA)",
+        "zh": "更强的怪物（CoA 缩放）"
       },
       "help": {
         "en": "Multiplies the health and damage of creatures as on the CoA live realm. Off in CoA Bots (normal difficulty kept). Values below apply only when it is on. Regular difficulty only: heroic, mythic, battlegrounds, arenas, pets, summons and training dummies are never changed.",
         "fr": "Multiplie la vie et les dégâts des créatures comme sur le royaume CoA officiel. Désactivé dans CoA Bots (difficulté normale gardée). Les valeurs ci-dessous ne comptent que s'il est activé. Difficulté normale seulement : héroïque, mythique, champs de bataille, arènes, familiers, invocations et mannequins ne changent jamais.",
-        "ru": "Умножает здоровье и урон существ, как на официальном мире CoA. В CoA Bots выключено (обычная сложность). Значения ниже действуют только при включении. Только обычная сложность: героик, мифик, поля боя, арены, питомцы, призванные существа и манекены не меняются."
+        "ru": "Умножает здоровье и урон существ, как на официальном мире CoA. В CoA Bots выключено (обычная сложность). Значения ниже действуют только при включении. Только обычная сложность: героик, мифик, поля боя, арены, питомцы, призванные существа и манекены не меняются.",
+        "zh": "按 CoA 正式国度的方式提高怪物的生命值和伤害。CoA Bots 中默认关闭（保持普通难度）。下列数值仅在开启时生效。仅限普通难度：英雄、史诗、战场、竞技场、宠物、召唤物和训练假人永远不会改变。"
       }
     },
     {
@@ -2197,12 +2875,14 @@
       "label": {
         "en": "Health in the open world",
         "fr": "Vie dans le monde",
-        "ru": "Здоровье в открытом мире"
+        "ru": "Здоровье в открытом мире",
+        "zh": "野外生命值"
       },
       "help": {
         "en": "Multiplier (2.5 = two and a half times the health). Regular difficulty only: heroic, mythic, battlegrounds, arenas, pets, summons and training dummies are never changed.",
         "fr": "Multiplicateur (2,5 = deux fois et demie la vie). Difficulté normale seulement : héroïque, mythique, champs de bataille, arènes, familiers, invocations et mannequins ne changent jamais.",
-        "ru": "Множитель (2,5 = в два с половиной раза больше здоровья). Только обычная сложность: героик, мифик, поля боя, арены, питомцы, призванные существа и манекены не меняются."
+        "ru": "Множитель (2,5 = в два с половиной раза больше здоровья). Только обычная сложность: героик, мифик, поля боя, арены, питомцы, призванные существа и манекены не меняются.",
+        "zh": "倍率（2.5 = 两倍半生命值）。仅限普通难度：英雄、史诗、战场、竞技场、宠物、召唤物和训练假人永远不会改变。"
       }
     },
     {
@@ -2214,12 +2894,14 @@
       "label": {
         "en": "Health in dungeons",
         "fr": "Vie en donjon",
-        "ru": "Здоровье в подземельях"
+        "ru": "Здоровье в подземельях",
+        "zh": "副本生命值"
       },
       "help": {
         "en": "Multiplier (default 2.5). Regular difficulty only: heroic, mythic, battlegrounds, arenas, pets, summons and training dummies are never changed.",
         "fr": "Multiplicateur (2,5 par défaut). Difficulté normale seulement : héroïque, mythique, champs de bataille, arènes, familiers, invocations et mannequins ne changent jamais.",
-        "ru": "Множитель (по умолчанию 2,5). Только обычная сложность: героик, мифик, поля боя, арены, питомцы, призванные существа и манекены не меняются."
+        "ru": "Множитель (по умолчанию 2,5). Только обычная сложность: героик, мифик, поля боя, арены, питомцы, призванные существа и манекены не меняются.",
+        "zh": "倍率（默认 2.5）。仅限普通难度：英雄、史诗、战场、竞技场、宠物、召唤物和训练假人永远不会改变。"
       }
     },
     {
@@ -2231,12 +2913,14 @@
       "label": {
         "en": "Health in raids",
         "fr": "Vie en raid",
-        "ru": "Здоровье в рейдах"
+        "ru": "Здоровье в рейдах",
+        "zh": "团队副本生命值"
       },
       "help": {
         "en": "Multiplier (default 2.2). Raid bosses with a measured flex health keep it. Regular difficulty only: heroic, mythic, battlegrounds, arenas, pets, summons and training dummies are never changed.",
         "fr": "Multiplicateur (2,2 par défaut). Les boss de raid qui ont une vie « flex » mesurée la gardent. Difficulté normale seulement : héroïque, mythique, champs de bataille, arènes, familiers, invocations et mannequins ne changent jamais.",
-        "ru": "Множитель (по умолчанию 2,2). Рейдовые боссы с измеренным «flex»-здоровьем его сохраняют. Только обычная сложность: героик, мифик, поля боя, арены, питомцы, призванные существа и манекены не меняются."
+        "ru": "Множитель (по умолчанию 2,2). Рейдовые боссы с измеренным «flex»-здоровьем его сохраняют. Только обычная сложность: героик, мифик, поля боя, арены, питомцы, призванные существа и манекены не меняются.",
+        "zh": "倍率（默认 2.2）。已有实测弹性生命值的团队副本首领保持原值。仅限普通难度：英雄、史诗、战场、竞技场、宠物、召唤物和训练假人永远不会改变。"
       }
     },
     {
@@ -2248,12 +2932,14 @@
       "label": {
         "en": "Damage in the open world",
         "fr": "Dégâts dans le monde",
-        "ru": "Урон в открытом мире"
+        "ru": "Урон в открытом мире",
+        "zh": "野外伤害"
       },
       "help": {
         "en": "Multiplier of the hits on players and their pets (default 2). Regular difficulty only: heroic, mythic, battlegrounds, arenas, pets, summons and training dummies are never changed.",
         "fr": "Multiplicateur des coups reçus par les joueurs et leurs familiers (2 par défaut). Difficulté normale seulement : héroïque, mythique, champs de bataille, arènes, familiers, invocations et mannequins ne changent jamais.",
-        "ru": "Множитель ударов по игрокам и их питомцам (по умолчанию 2). Только обычная сложность: героик, мифик, поля боя, арены, питомцы, призванные существа и манекены не меняются."
+        "ru": "Множитель ударов по игрокам и их питомцам (по умолчанию 2). Только обычная сложность: героик, мифик, поля боя, арены, питомцы, призванные существа и манекены не меняются.",
+        "zh": "对玩家及其宠物伤害的倍率（默认 2）。仅限普通难度：英雄、史诗、战场、竞技场、宠物、召唤物和训练假人永远不会改变。"
       }
     },
     {
@@ -2265,12 +2951,14 @@
       "label": {
         "en": "Damage in dungeons",
         "fr": "Dégâts en donjon",
-        "ru": "Урон в подземельях"
+        "ru": "Урон в подземельях",
+        "zh": "副本伤害"
       },
       "help": {
         "en": "Multiplier (default 1.5). Regular difficulty only: heroic, mythic, battlegrounds, arenas, pets, summons and training dummies are never changed.",
         "fr": "Multiplicateur (1,5 par défaut). Difficulté normale seulement : héroïque, mythique, champs de bataille, arènes, familiers, invocations et mannequins ne changent jamais.",
-        "ru": "Множитель (по умолчанию 1,5). Только обычная сложность: героик, мифик, поля боя, арены, питомцы, призванные существа и манекены не меняются."
+        "ru": "Множитель (по умолчанию 1,5). Только обычная сложность: героик, мифик, поля боя, арены, питомцы, призванные существа и манекены не меняются.",
+        "zh": "倍率（默认 1.5）。仅限普通难度：英雄、史诗、战场、竞技场、宠物、召唤物和训练假人永远不会改变。"
       }
     },
     {
@@ -2282,12 +2970,14 @@
       "label": {
         "en": "Damage in raids",
         "fr": "Dégâts en raid",
-        "ru": "Урон в рейдах"
+        "ru": "Урон в рейдах",
+        "zh": "团队副本伤害"
       },
       "help": {
         "en": "Multiplier (default 1, unchanged). Regular difficulty only: heroic, mythic, battlegrounds, arenas, pets, summons and training dummies are never changed.",
         "fr": "Multiplicateur (1 par défaut, inchangé). Difficulté normale seulement : héroïque, mythique, champs de bataille, arènes, familiers, invocations et mannequins ne changent jamais.",
-        "ru": "Множитель (по умолчанию 1, без изменений). Только обычная сложность: героик, мифик, поля боя, арены, питомцы, призванные существа и манекены не меняются."
+        "ru": "Множитель (по умолчанию 1, без изменений). Только обычная сложность: героик, мифик, поля боя, арены, питомцы, призванные существа и манекены не меняются.",
+        "zh": "倍率（默认 1，不变）。仅限普通难度：英雄、史诗、战场、竞技场、宠物、召唤物和训练假人永远不会改变。"
       }
     },
     {
@@ -2299,12 +2989,14 @@
       "label": {
         "en": "Raid bosses: a bot counts as (experimental)",
         "fr": "Boss de raid : un bot compte pour (expérimental)",
-        "ru": "Боссы рейдов: бот считается как (экспериментально)"
+        "ru": "Боссы рейдов: бот считается как (экспериментально)",
+        "zh": "团队副本首领：机器人折算为（实验性）"
       },
       "help": {
         "en": "Raid boss health follows the number of players inside (10 to 25). For that health only, a bot counts as this share of a player; real players always count 1. 0.3 by default, 1 = a bot is a full player.",
         "fr": "Les PV des boss de raid suivent le nombre de joueurs présents (10 à 25). Pour ces PV seulement, un bot compte pour cette part d'un joueur ; les vrais joueurs comptent toujours 1. 0,3 par défaut, 1 = un bot compte comme un joueur.",
-        "ru": "Здоровье боссов рейда зависит от числа игроков внутри (от 10 до 25). Только для этого здоровья бот считается такой долей игрока; живые игроки всегда 1. По умолчанию 0,3; 1 — бот как полный игрок."
+        "ru": "Здоровье боссов рейда зависит от числа игроков внутри (от 10 до 25). Только для этого здоровья бот считается такой долей игрока; живые игроки всегда 1. По умолчанию 0,3; 1 — бот как полный игрок.",
+        "zh": "团队副本首领的生命值随内部人数（10 到 25）变化。仅就该生命值而言，一个机器人按此比例折算为玩家；真实玩家始终计为 1。默认 0.3，1 = 机器人算作完整玩家。"
       }
     },
     {
@@ -2316,12 +3008,14 @@
       "label": {
         "en": "Every appearance unlocked from the start",
         "fr": "Toutes les apparences débloquées d'office",
-        "ru": "Все облики открыты сразу"
+        "ru": "Все облики открыты сразу",
+        "zh": "开局解锁全部外观"
       },
       "help": {
         "en": "On: the wardrobe has every appearance at once. Off: your players collect appearances as they play (keep \"Collect appearances of looted items\" on). Turned on, the collection tables stay empty: what was picked up before is not caught up if you turn it off later.",
         "fr": "Activé : la garde-robe a toutes les apparences dès le départ. Désactivé : vos joueurs collectionnent les apparences au fil du jeu (gardez « Collecter les apparences des objets obtenus » activé). Activé, les tables de collection restent vides : ce qui a été ramassé avant n'est pas rattrapé si vous le désactivez plus tard.",
-        "ru": "Включено: в гардеробе сразу все облики. Выключено: игроки собирают облики по ходу игры (оставьте «Собирать облики полученных предметов» включённым). Включено — таблицы коллекции остаются пустыми: собранное раньше не восстановится, если позже выключить."
+        "ru": "Включено: в гардеробе сразу все облики. Выключено: игроки собирают облики по ходу игры (оставьте «Собирать облики полученных предметов» включённым). Включено — таблицы коллекции остаются пустыми: собранное раньше не восстановится, если позже выключить.",
+        "zh": "开启：衣柜立即拥有所有外观。关闭：玩家在游戏中逐步收集外观（请保持“收集拾取物品的外观”开启）。开启期间收藏表保持为空：之后关闭时，此前拾取的物品不会补录。"
       }
     },
     {
@@ -2333,12 +3027,14 @@
       "label": {
         "en": "Whole vanity collection owned from the start",
         "fr": "Toute la collection vanity possédée d'office",
-        "ru": "Вся коллекция vanity сразу"
+        "ru": "Вся коллекция vanity сразу",
+        "zh": "开局拥有全部 vanity 收藏"
       },
       "help": {
         "en": "On: every item of the vanity collection is owned at once. Off: your players earn them in game. Turned on, the collection tables stay empty: what was picked up before is not caught up if you turn it off later.",
         "fr": "Activé : tous les objets de la collection vanity sont possédés d'office. Désactivé : vos joueurs les gagnent en jeu. Activé, les tables de collection restent vides : ce qui a été ramassé avant n'est pas rattrapé si vous le désactivez plus tard.",
-        "ru": "Включено: все предметы коллекции vanity сразу ваши. Выключено: игроки получают их в игре. Включено — таблицы коллекции остаются пустыми: собранное раньше не восстановится, если позже выключить."
+        "ru": "Включено: все предметы коллекции vanity сразу ваши. Выключено: игроки получают их в игре. Включено — таблицы коллекции остаются пустыми: собранное раньше не восстановится, если позже выключить.",
+        "zh": "开启：立即拥有 vanity 收藏中的所有物品。关闭：玩家需在游戏中获得。开启期间收藏表保持为空：之后关闭时，此前拾取的物品不会补录。"
       }
     },
     {
@@ -2350,12 +3046,14 @@
       "label": {
         "en": "Collect appearances of looted items",
         "fr": "Collecter les apparences des objets obtenus",
-        "ru": "Собирать облики полученных предметов"
+        "ru": "Собирать облики полученных предметов",
+        "zh": "收集拾取物品的外观"
       },
       "help": {
         "en": "An appearance joins the wardrobe when a character gets the item. Keep it on: it is what makes collecting as you play work.",
         "fr": "Une apparence entre dans la garde-robe quand le personnage obtient l'objet. À garder activé : c'est lui qui rend la collecte au fil du jeu possible.",
-        "ru": "Облик попадает в гардероб, когда персонаж получает предмет. Оставьте включённым: без этого сбор по ходу игры не работает."
+        "ru": "Облик попадает в гардероб, когда персонаж получает предмет. Оставьте включённым: без этого сбор по ходу игры не работает.",
+        "zh": "角色获得物品时，其外观加入衣柜。请保持开启：边玩边收集靠的就是它。"
       }
     },
     {
@@ -2367,12 +3065,14 @@
       "label": {
         "en": "Mounts and pets owned are learned for good",
         "fr": "Montures et mascottes possédées apprises pour de bon",
-        "ru": "Имеющиеся маунты и питомцы изучаются навсегда"
+        "ru": "Имеющиеся маунты и питомцы изучаются навсегда",
+        "zh": "拥有的坐骑和宠物永久学会"
       },
       "help": {
         "en": "A mount or pet a character owns is learned for good, as in the CoA collection. Off: it stays an item in the bags.",
         "fr": "Une monture ou une mascotte possédée est apprise définitivement, comme dans la collection CoA. Désactivé : elle reste un objet dans les sacs.",
-        "ru": "Имеющийся маунт или питомец изучается навсегда, как в коллекции CoA. Выключено — остаётся предметом в сумке."
+        "ru": "Имеющийся маунт или питомец изучается навсегда, как в коллекции CoA. Выключено — остаётся предметом в сумке.",
+        "zh": "角色拥有的坐骑或宠物会被永久学会，与 CoA 收藏相同。关闭：它仍是背包中的物品。"
       }
     },
     {
@@ -2384,12 +3084,14 @@
       "label": {
         "en": "Riding 300 from level 1",
         "fr": "Équitation 300 dès le niveau 1",
-        "ru": "Верховая езда 300 с 1 уровня"
+        "ru": "Верховая езда 300 с 1 уровня",
+        "zh": "1 级起即拥有 300 骑术"
       },
       "help": {
         "en": "On: every character rides at full speed from level 1. Off: riding is learned at the trainer, as in the original game.",
         "fr": "Activé : chaque personnage monte à pleine vitesse dès le niveau 1. Désactivé : l'équitation s'apprend chez le maître, comme dans le jeu d'origine.",
-        "ru": "Включено: каждый персонаж ездит на полной скорости с 1 уровня. Выключено: езда изучается у учителя, как в оригинале."
+        "ru": "Включено: каждый персонаж ездит на полной скорости с 1 уровня. Выключено: езда изучается у учителя, как в оригинале.",
+        "zh": "开启：所有角色从 1 级起即可全速骑乘。关闭：需在训练师处学习骑术，与原版游戏相同。"
       }
     },
     {
@@ -2404,7 +3106,8 @@
           "label": {
             "en": "Never",
             "fr": "Jamais",
-            "ru": "Никогда"
+            "ru": "Никогда",
+            "zh": "从不"
           }
         },
         {
@@ -2412,7 +3115,8 @@
           "label": {
             "en": "Your characters added as bots",
             "fr": "Vos personnages ajoutés comme bots",
-            "ru": "Ваши персонажи, добавленные как боты"
+            "ru": "Ваши персонажи, добавленные как боты",
+            "zh": "作为机器人添加的你的角色"
           }
         },
         {
@@ -2420,19 +3124,22 @@
           "label": {
             "en": "Every bot",
             "fr": "Tous les bots",
-            "ru": "Все боты"
+            "ru": "Все боты",
+            "zh": "所有机器人"
           }
         }
       ],
       "label": {
         "en": "Collections for bots",
         "fr": "Collections pour les bots",
-        "ru": "Коллекции для ботов"
+        "ru": "Коллекции для ботов",
+        "zh": "机器人的收藏"
       },
       "help": {
         "en": "Bots wear transmog and use the collections of their account. Keep CoA.RandomBotAccountPrefix (coa.conf) equal to AiPlayerbot.RandomBotAccountPrefix (playerbots.conf).",
         "fr": "Les bots portent leur transmog et utilisent les collections de leur compte. Gardez CoA.RandomBotAccountPrefix (coa.conf) égal à AiPlayerbot.RandomBotAccountPrefix (playerbots.conf).",
-        "ru": "Боты носят трансмог и используют коллекции своего аккаунта. CoA.RandomBotAccountPrefix (coa.conf) должен совпадать с AiPlayerbot.RandomBotAccountPrefix (playerbots.conf)."
+        "ru": "Боты носят трансмог и используют коллекции своего аккаунта. CoA.RandomBotAccountPrefix (coa.conf) должен совпадать с AiPlayerbot.RandomBotAccountPrefix (playerbots.conf).",
+        "zh": "机器人使用幻化及其账号的收藏。请保持 CoA.RandomBotAccountPrefix（coa.conf）与 AiPlayerbot.RandomBotAccountPrefix（playerbots.conf）一致。"
       }
     },
     {
@@ -2444,12 +3151,14 @@
       "label": {
         "en": "New bots not above the players",
         "fr": "Nouveaux bots pas au-dessus des joueurs",
-        "ru": "Новые боты не выше игроков"
+        "ru": "Новые боты не выше игроков",
+        "zh": "新机器人不高于玩家等级"
       },
       "help": {
         "en": "Only when a bot is created: its level stays at most the highest player's + 3. It does not cap bots afterwards: with level brackets on, bots keep moving between level ranges.",
         "fr": "Seulement à la création d'un bot : son niveau reste au plus celui du joueur le plus haut + 3. Il ne bride pas les bots ensuite : avec les tranches de niveau, les bots continuent de changer de tranche.",
-        "ru": "Только при создании бота: его уровень не выше самого высокого игрока + 3. Потом ботов не ограничивает: с диапазонами уровней боты продолжают переходить между ними."
+        "ru": "Только при создании бота: его уровень не выше самого высокого игрока + 3. Потом ботов не ограничивает: с диапазонами уровней боты продолжают переходить между ними.",
+        "zh": "仅在创建机器人时生效：其等级最多为最高玩家等级 + 3。之后不会限制机器人：开启等级区间时，机器人仍会在各等级区间之间调动。"
       }
     },
     {
@@ -2461,12 +3170,14 @@
       "label": {
         "en": "Bots of the lowest bracket start fresh",
         "fr": "Les bots de la tranche la plus basse repartent de zéro",
-        "ru": "Боты нижнего диапазона начинают заново"
+        "ru": "Боты нижнего диапазона начинают заново",
+        "zh": "最低区间的机器人从头开始"
       },
       "help": {
         "en": "A bot moved into the lowest level range starts again at the first level, at the starting zone of its race: this is what fills the starting zones.",
         "fr": "Un bot qui entre dans la tranche la plus basse repart au premier niveau, dans la zone de départ de sa race : c'est ce qui repeuple les zones de début.",
-        "ru": "Бот, попавший в нижний диапазон, начинает с первого уровня в стартовой зоне своей расы: так заполняются стартовые зоны."
+        "ru": "Бот, попавший в нижний диапазон, начинает с первого уровня в стартовой зоне своей расы: так заполняются стартовые зоны.",
+        "zh": "被调入最低等级区间的机器人会从 1 级、在其种族的新手区域重新开始：新手区域就是这样填满的。"
       }
     }
   ],
@@ -2484,7 +3195,8 @@
       "text": {
         "en": "Level brackets are on: every 5 minutes they move bots between level ranges, so starting levels do not last.",
         "fr": "Les tranches de niveau sont activées : toutes les 5 minutes elles déplacent des bots, les niveaux de départ ne durent pas.",
-        "ru": "Диапазоны уровней включены: каждые 5 минут боты перемещаются, начальные уровни не сохраняются."
+        "ru": "Диапазоны уровней включены: каждые 5 минут боты перемещаются, начальные уровни не сохраняются.",
+        "zh": "等级区间已开启：它每 5 分钟在各等级区间之间调动机器人，因此初始等级不会持续。"
       }
     },
     {
@@ -2497,7 +3209,8 @@
       "text": {
         "en": "Only used while \"Same starting level for every bot\" is on.",
         "fr": "Utilisé seulement quand « Même niveau de départ » est activé.",
-        "ru": "Действует, только если включён одинаковый начальный уровень."
+        "ru": "Действует, только если включён одинаковый начальный уровень.",
+        "zh": "仅在“所有机器人使用相同初始等级”开启时使用。"
       }
     },
     {
@@ -2511,7 +3224,8 @@
       "text": {
         "en": "Ignored while \"Same starting level for every bot\" is on.",
         "fr": "Ignoré tant que « Même niveau de départ » est activé.",
-        "ru": "Не действует при одинаковом начальном уровне."
+        "ru": "Не действует при одинаковом начальном уровне.",
+        "zh": "在“所有机器人使用相同初始等级”开启时被忽略。"
       }
     },
     {
@@ -2524,7 +3238,8 @@
       "text": {
         "en": "Only used while level brackets are on.",
         "fr": "Utilisé seulement quand les tranches de niveau sont activées.",
-        "ru": "Действует только с диапазонами уровней."
+        "ru": "Действует только с диапазонами уровней.",
+        "zh": "仅在等级区间开启时使用。"
       }
     },
     {
@@ -2538,7 +3253,8 @@
       "text": {
         "en": "Rate 0 means the per-level curve, which is switched off below: this gives normal XP.",
         "fr": "Le taux 0 utilise la courbe par niveau, désactivée plus bas : l'XP reste normale.",
-        "ru": "Множитель 0 — это кривая, которая выключена ниже: опыт будет обычным."
+        "ru": "Множитель 0 — это кривая, которая выключена ниже: опыт будет обычным.",
+        "zh": "倍率 0 表示按等级曲线，但该曲线已在下方关闭：结果为正常经验。"
       }
     },
     {
@@ -2553,7 +3269,8 @@
       "text": {
         "en": "LLM chat is off, so this has no effect.",
         "fr": "La discussion IA est désactivée : sans effet.",
-        "ru": "Чат ИИ выключен — не действует."
+        "ru": "Чат ИИ выключен — не действует.",
+        "zh": "LLM 聊天已关闭，此项无效。"
       }
     },
     {
@@ -2566,7 +3283,8 @@
       "text": {
         "en": "\"New bots not above the players\" only sets the level of a bot when it is created: level brackets still move bots between ranges every 5 minutes.",
         "fr": "« Nouveaux bots pas au-dessus des joueurs » ne fixe le niveau qu'à la création d'un bot : les tranches de niveau déplacent toujours des bots toutes les 5 minutes.",
-        "ru": "«Новые боты не выше игроков» задаёт уровень только при создании бота: диапазоны уровней всё равно перемещают ботов каждые 5 минут."
+        "ru": "«Новые боты не выше игроков» задаёт уровень только при создании бота: диапазоны уровней всё равно перемещают ботов каждые 5 минут.",
+        "zh": "“新机器人不高于玩家等级”只在创建机器人时设定其等级：等级区间仍会每 5 分钟在各区间之间调动机器人。"
       }
     },
     {
@@ -2580,7 +3298,8 @@
       "text": {
         "en": "No effect while \"Bots log in and out in turns\" is off: the same bots stay online, there is nobody to pick. The \"Bots around my level\" recipe turns both on.",
         "fr": "Sans effet tant que « Les bots se connectent à tour de rôle » est désactivé : les mêmes bots restent en ligne, il n'y a personne à choisir. La recette « Bots autour de mon niveau » active les deux.",
-        "ru": "Не действует, пока «Боты заходят в игру по очереди» выключено: онлайн всегда одни и те же боты. Рецепт «Боты около моего уровня» включает оба."
+        "ru": "Не действует, пока «Боты заходят в игру по очереди» выключено: онлайн всегда одни и те же боты. Рецепт «Боты около моего уровня» включает оба.",
+        "zh": "“机器人轮流上下线”关闭时无效：在线的始终是同一批机器人，没有可挑选的对象。“机器人接近我的等级”方案会同时开启两者。"
       }
     },
     {
@@ -2593,7 +3312,8 @@
       "text": {
         "en": "Only used while \"Bots online around my level\" is on.",
         "fr": "Utilisé seulement quand « Bots en ligne autour de mon niveau » est activé.",
-        "ru": "Действует только с «Онлайн боты около моего уровня»."
+        "ru": "Действует только с «Онлайн боты около моего уровня».",
+        "zh": "仅在“在线机器人接近我的等级”开启时使用。"
       }
     },
     {
@@ -2607,7 +3327,8 @@
       "text": {
         "en": "Only used while \"Bots in High Risk or War Mode\" is on.",
         "fr": "Utilisé seulement quand « Bots en High Risk ou War Mode » est activé.",
-        "ru": "Действует только с «Боты в High Risk или War Mode»."
+        "ru": "Действует только с «Боты в High Risk или War Mode».",
+        "zh": "仅在“机器人处于 High Risk 或 War Mode”开启时使用。"
       }
     },
     {
@@ -2622,7 +3343,8 @@
       "text": {
         "en": "Only used while the High Risk losses are on.",
         "fr": "Utilisé seulement quand les pertes High Risk sont activées.",
-        "ru": "Действует только при включённых потерях High Risk."
+        "ru": "Действует только при включённых потерях High Risk.",
+        "zh": "仅在 High Risk 掉落开启时使用。"
       }
     },
     {
@@ -2635,7 +3357,8 @@
       "text": {
         "en": "Only used while bots join battlegrounds.",
         "fr": "Utilisé seulement quand les bots rejoignent les champs de bataille.",
-        "ru": "Действует только когда боты участвуют в полях боя."
+        "ru": "Действует только когда боты участвуют в полях боя.",
+        "zh": "仅在机器人参加战场时使用。"
       }
     },
     {
@@ -2650,7 +3373,8 @@
       "text": {
         "en": "Only used while the missions are on.",
         "fr": "Utilisé seulement quand les missions sont activées.",
-        "ru": "Действует только при включённых заданиях."
+        "ru": "Действует только при включённых заданиях.",
+        "zh": "仅在采集任务开启时使用。"
       }
     }
   ],
@@ -2660,12 +3384,14 @@
       "title": {
         "en": "CoA Bots: the recommended settings",
         "fr": "CoA Bots : les réglages recommandés",
-        "ru": "CoA Bots: рекомендуемые настройки"
+        "ru": "CoA Bots: рекомендуемые настройки",
+        "zh": "CoA Bots：推荐设置"
       },
       "summary": {
         "en": "500 bots, 60% awake, Conquest of Azeroth's channel number and name, no whisper flood, the written rotations on, bots of every level.",
         "fr": "500 bots, 60 % actifs, numéro et nom des canaux de Conquest of Azeroth, pas d'avalanche de chuchotements, rotations écrites activées, bots de tous niveaux.",
-        "ru": "500 ботов, 60% активны, каналы Conquest of Azeroth, без потока шёпота, ротации включены, боты всех уровней."
+        "ru": "500 ботов, 60% активны, каналы Conquest of Azeroth, без потока шёпота, ротации включены, боты всех уровней.",
+        "zh": "500 个机器人，60% 保持活跃，使用 Conquest of Azeroth 的频道编号和名称，不刷屏密语，开启专属循环，机器人覆盖所有等级。"
       },
       "changes": {
         "AiPlayerbot.MinRandomBots": "500",
@@ -2688,12 +3414,14 @@
       "title": {
         "en": "Fresh world: every bot starts at level 1",
         "fr": "Monde neuf : tous les bots commencent niveau 1",
-        "ru": "Новый мир: все боты с 1 уровня"
+        "ru": "Новый мир: все боты с 1 уровня",
+        "zh": "全新世界：所有机器人从 1 级开始"
       },
       "summary": {
         "en": "New bots start at level 1 and level up by playing. Level brackets are turned off so nothing moves them afterwards.",
         "fr": "Les nouveaux bots commencent niveau 1 et progressent en jouant. Les tranches de niveau sont désactivées pour que rien ne les déplace.",
-        "ru": "Новые боты начинают с 1 уровня и растут, играя. Диапазоны уровней выключены."
+        "ru": "Новые боты начинают с 1 уровня и растут, играя. Диапазоны уровней выключены.",
+        "zh": "新机器人从 1 级开始并通过游玩升级。等级区间已关闭，之后不会再调动它们。"
       },
       "changes": {
         "AiPlayerbot.DisableRandomLevels": "1",
@@ -2707,12 +3435,14 @@
       "title": {
         "en": "Solo self-found (1-59)",
         "fr": "Solo self-found (1-59)",
-        "ru": "Solo self-found (1-59)"
+        "ru": "Solo self-found (1-59)",
+        "zh": "单人自给自足（1-59）"
       },
       "summary": {
         "en": "Bots level up by playing from level 1 to 59: their gear is never generated, they wear what they loot in the world and in dungeons, earn from quests or get from you. 20 % of them clear the dungeons of their level in parties of five (up to 4 parties at once). At 60 they are geared as usual for endgame. Random bots are recreated at level 1 (one-time, after a backup). Bot experience speed ×2. Every value is in the Solo self-found tab.",
         "fr": "Les bots montent en jouant du niveau 1 au niveau 59 : leur équipement n'est jamais fabriqué, ils portent ce qu'ils ramassent dans le monde et en donjon, gagnent en quête ou reçoivent de vous. 20 % d'entre eux font les donjons de leur niveau en groupes de cinq (jusqu'à 4 groupes à la fois). Au niveau 60, ils sont équipés comme d'habitude pour la fin de jeu. Les bots aléatoires sont recréés au niveau 1 (une seule fois, après une sauvegarde). Vitesse d'expérience des bots ×2. Chaque valeur est dans l'onglet Solo self-found.",
-        "ru": "Боты растут, играя, с 1 по 59 уровень: экипировка им никогда не создаётся, они носят то, что добыли в мире и в подземельях, получили за задания или от вас. 20 % из них проходят подземелья своего уровня группами по пять (до 4 групп сразу). На 60-м уровне они экипируются как обычно для эндгейма. Случайные боты создаются заново с 1 уровня (один раз, после резервной копии). Скорость опыта ботов ×2. Все значения — во вкладке Solo self-found."
+        "ru": "Боты растут, играя, с 1 по 59 уровень: экипировка им никогда не создаётся, они носят то, что добыли в мире и в подземельях, получили за задания или от вас. 20 % из них проходят подземелья своего уровня группами по пять (до 4 групп сразу). На 60-м уровне они экипируются как обычно для эндгейма. Случайные боты создаются заново с 1 уровня (один раз, после резервной копии). Скорость опыта ботов ×2. Все значения — во вкладке Solo self-found.",
+        "zh": "机器人从 1 级到 59 级通过游玩升级：永远不生成装备，只穿戴在野外和副本中拾取的、任务获得的或你给的装备。其中 20 % 以五人小队刷对应等级的副本（最多同时 4 支小队）。到 60 级时照常配备终局装备。随机机器人会在 1 级重新创建（仅一次，先备份）。机器人经验速度 ×2。所有数值都在“单人自给自足”标签页中。"
       },
       "changes": {
         "AiPlayerbot.CoaSelfFound": "1",
@@ -2735,12 +3465,14 @@
       "title": {
         "en": "Bots around my level",
         "fr": "Bots autour de mon niveau",
-        "ru": "Боты около моего уровня"
+        "ru": "Боты около моего уровня",
+        "zh": "机器人接近我的等级"
       },
       "summary": {
         "en": "The realm keeps twice as many bots as are online and logs in those near your level (± 5). No bot changes level: works with Solo self-found too.",
         "fr": "Le royaume garde deux fois plus de bots qu'il n'y en a en ligne et connecte ceux qui sont proches de votre niveau (± 5). Aucun bot ne change de niveau : compatible aussi avec Solo self-found.",
-        "ru": "В мире вдвое больше ботов, чем онлайн, и в игру заходят те, кто близок к вашему уровню (± 5). Ни один бот не меняет уровень: совместимо и с Solo self-found."
+        "ru": "В мире вдвое больше ботов, чем онлайн, и в игру заходят те, кто близок к вашему уровню (± 5). Ни один бот не меняет уровень: совместимо и с Solo self-found.",
+        "zh": "国度保留两倍于在线数量的机器人，并让与你等级相近（± 5）的机器人登录。没有机器人会改变等级：也可与单人自给自足配合使用。"
       },
       "changes": {
         "AiPlayerbot.EnablePeriodicOnlineOffline": "1",
@@ -2754,12 +3486,14 @@
       "title": {
         "en": "Like Rexxar: a live realm",
         "fr": "Comme Rexxar : un royaume live",
-        "ru": "Как Rexxar: живой мир"
+        "ru": "Как Rexxar: живой мир",
+        "zh": "仿 Rexxar：正式国度体验"
       },
       "summary": {
         "en": "The rules of the official live realm: 1.5x XP, appearances, vanity and riding earned in game. Your bots start at level 1 and level up with you.",
         "fr": "Les règles du royaume live officiel : XP ×1,5, apparences, vanity et équitation à gagner en jeu. Vos bots partent du niveau 1 et montent avec vous.",
-        "ru": "Правила официального живого мира: опыт ×1,5, облики, vanity и верховая езда добываются в игре. Боты начинают с 1 уровня и растут вместе с вами."
+        "ru": "Правила официального живого мира: опыт ×1,5, облики, vanity и верховая езда добываются в игре. Боты начинают с 1 уровня и растут вместе с вами.",
+        "zh": "官方正式国度的规则：1.5 倍经验，外观、vanity 和骑术需在游戏中获得。你的机器人从 1 级开始，与你一起升级。"
       },
       "changes": {
         "Rate.XP.Kill": "1.5",
@@ -2783,12 +3517,14 @@
       "title": {
         "en": "Mixed levels: bots spread from 1 to max",
         "fr": "Niveaux mélangés : bots répartis de 1 au maximum",
-        "ru": "Смешанные уровни: боты от 1 до максимума"
+        "ru": "Смешанные уровни: боты от 1 до максимума",
+        "zh": "混合等级：机器人分布在 1 级到满级"
       },
       "summary": {
         "en": "Random starting levels, and level brackets keeping every range populated, weighted towards where real players are.",
         "fr": "Niveaux de départ aléatoires et tranches de niveau qui peuplent chaque fourchette, en privilégiant celles des vrais joueurs.",
-        "ru": "Случайные уровни и диапазоны, заполненные с упором на уровни игроков."
+        "ru": "Случайные уровни и диапазоны, заполненные с упором на уровни игроков.",
+        "zh": "随机初始等级，等级区间让每个区间都有机器人，并向真实玩家所在的等级倾斜。"
       },
       "changes": {
         "AiPlayerbot.DisableRandomLevels": "0",
@@ -2801,12 +3537,14 @@
       "title": {
         "en": "Solo-friendly realm",
         "fr": "Royaume confortable en solo",
-        "ru": "Удобный мир для соло"
+        "ru": "Удобный мир для соло",
+        "zh": "适合单人的国度"
       },
       "summary": {
         "en": "Twice the XP from kills and quests, dungeons at any level, groups with both factions.",
         "fr": "XP doublée pour les monstres et les quêtes, donjons à tout niveau, groupes des deux factions.",
-        "ru": "Двойной опыт за убийства и задания, подземелья на любом уровне, смешанные группы."
+        "ru": "Двойной опыт за убийства и задания, подземелья на любом уровне, смешанные группы.",
+        "zh": "击杀和任务经验翻倍，任意等级进入副本，两个阵营可组队。"
       },
       "changes": {
         "Rate.XP.Kill": "2",
@@ -2857,7 +3595,8 @@
       "label": {
         "en": "Start",
         "fr": "Démarrage",
-        "ru": "Начало"
+        "ru": "Начало",
+        "zh": "开始"
       },
       "groups": [
         "presets"
@@ -2868,12 +3607,14 @@
       "label": {
         "en": "Bots",
         "fr": "Bots",
-        "ru": "Боты"
+        "ru": "Боты",
+        "zh": "机器人"
       },
       "groups": [
         "population",
         "levels",
         "selffound",
+        "dungeonclear",
         "behaviour",
         "alts",
         "pvp",
@@ -2888,7 +3629,8 @@
       "label": {
         "en": "World",
         "fr": "Monde",
-        "ru": "Мир"
+        "ru": "Мир",
+        "zh": "世界"
       },
       "groups": [
         "realm",
@@ -2902,7 +3644,8 @@
       "label": {
         "en": "Tools",
         "fr": "Outils",
-        "ru": "Инструменты"
+        "ru": "Инструменты",
+        "zh": "工具"
       },
       "groups": [
         "dashboard"

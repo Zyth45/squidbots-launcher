@@ -133,3 +133,22 @@ test('who can join: written into manage.py and both templates, and again after a
   assert.match(fs.readFileSync(path.join(root, 'Scripts/manage.py'), 'utf8'), /address='127.0.0.1',/);
   assert.match(fs.readFileSync(path.join(root, 'Settings/worldserver.conf.template'), 'utf8'), /^BindIP = "127.0.0.1"$/m);
 });
+
+test('a key glued to a comment by a lone CR is found and put back on its own line', async () => {
+  const { gluedConfs } = require('../src/repack-checks.cjs');
+  const fsp = fs.promises;
+  const root = await tempDir();
+  const broken = '# The database info\r\n#\rPlayerbotsDatabaseInfo = "127.0.0.1;3306;a;b;c"\r\nOther = 1\r\n';
+  const realm = path.join(root, 'Royaumes', 'bronzebeard', 'configs', 'modules');
+  await fsp.mkdir(realm, { recursive: true });
+  await fsp.writeFile(path.join(realm, 'playerbots.conf'), broken);
+  await fsp.mkdir(path.join(root, 'Core', 'configs'), { recursive: true });
+  await fsp.writeFile(path.join(root, 'Core', 'configs', 'worldserver.conf'), 'A = 1\r\nB = 2\r\n');
+  assert.deepStrictEqual(await gluedConfs(root), ['Royaumes/bronzebeard/configs/modules/playerbots.conf']);
+  const running = { status: async () => [{ id: 'world', state: 'running' }] };
+  await assert.rejects(FIXES['conf-glued']({ root, control: running }), /Stop the server/);
+  await FIXES['conf-glued']({ root, control: { status: async () => [{ id: 'world', state: 'stopped' }] } });
+  assert.strictEqual(await fsp.readFile(path.join(realm, 'playerbots.conf'), 'utf8'), broken.replace('#\rPlayer', '#\r\nPlayer'));
+  assert.ok((await fsp.readdir(realm)).some(name => name.startsWith('playerbots.conf.bak-')));
+  assert.deepStrictEqual(await gluedConfs(root), []);
+});

@@ -54,8 +54,26 @@ function state(folder) {
   };
 }
 
+// The assembler of a 2.8.3 package downloads with Python's own certificates, which an antivirus that inspects HTTPS
+// breaks: the one bundled here falls back on Windows's curl.exe. It replaces the package's copy (kept as .bak) only
+// when that copy has no fallback and knows no command the bundled one lacks (a newer package keeps its own).
+const BUNDLED = path.join(__dirname, 'data', 'coa_assemble.py');
+const commands = text => [...text.matchAll(/add_parser\("([\w-]+)"/g)].map(match => match[1]);
+function refreshScript(folder) {
+  try {
+    const file = path.join(folder, SCRIPT);
+    const current = fs.readFileSync(file, 'utf8');
+    if (current.includes('def curl_download(')) return;
+    const bundled = fs.readFileSync(BUNDLED, 'utf8');
+    if (!commands(current).every(name => commands(bundled).includes(name))) return;
+    fs.copyFileSync(file, `${file}.bak`);
+    fs.writeFileSync(file, bundled);
+  } catch {}
+}
+
 // Runs the assembler with --json; each line it prints is an event ({ event, step, done, total, text, message }).
 function run(folder, args, onEvent = () => {}, { detached = false } = {}) {
+  refreshScript(folder);
   const exe = path.join(folder, PYTHON);
   const child = spawn(exe, ['-B', SCRIPT, '--json', ...args], { cwd: folder, windowsHide: true, detached, stdio: detached ? 'ignore' : ['ignore', 'pipe', 'pipe'] });
   if (detached) { child.unref(); return Promise.resolve({ pid: child.pid }); }
@@ -183,4 +201,4 @@ function clientKept(folder, client) {
 }
 function forgetKept(folder) { try { fs.rmSync(path.join(folder, KEPT), { force: true }); } catch {} }
 
-module.exports = { state, assemble, startMmaps, stopMmaps, rebuildMmaps, clientChanged, keepClient, clientKept, forgetKept, clientPrint, worldImport, fetchMmaps, STEPS, busy };
+module.exports = { state, assemble, refreshScript, startMmaps, stopMmaps, rebuildMmaps, clientChanged, keepClient, clientKept, forgetKept, clientPrint, worldImport, fetchMmaps, STEPS, busy };
