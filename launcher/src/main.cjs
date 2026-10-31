@@ -113,6 +113,8 @@ function persist(next) {
 }
 
 const gamePath = () => settings.installPaths.game || '';
+// The game the server takes its data from: the game folder, or else the client the Play tab shows (server edition).
+const gameDataPath = () => [settings.installPaths.game, settings.installPaths.addon].find(item => item && fs_exists(item)) || '';
 const serverPath = () => settings.installPaths.server || '';
 const realmlist = () => settings.realmlist || config.game.realmlists[0].address;
 
@@ -161,7 +163,7 @@ let clientDrift = { key: '', at: 0, changed: false };
 async function assemblyInfo(folder) {
   const asm = assembler.state(folder);
   // The game the data were taken from (the Game folder of the settings is often empty on a server-only PC).
-  const client = [asm.client, gamePath()].find(item => item && fs_exists(item)) || '';
+  const client = [asm.client, gameDataPath()].find(item => item && fs_exists(item)) || '';
   if (!client || !asm.extracted || asm.needed) return { ...asm, clientChanged: false };
   const key = `${path.resolve(folder)}|${path.resolve(client)}`;
   if (clientDrift.key !== key || Date.now() - clientDrift.at > 10 * 60 * 1000) clientDrift = { key, at: Date.now(), changed: await assembler.clientChanged(folder, client) };
@@ -531,7 +533,7 @@ function registerIpc() {
       const drift = asm.applies && !asm.needed ? await assemblyInfo(serverPath()) : null;
       if (drift?.clientKept) checks.push({ group: 'core', id: 'client.kept', state: 'warn', data: {}, action: 'assemble-refresh' });
       // The map data (tables, terrain, vmaps) taken again from the game: after a game patch with a new zone.
-      else if (drift?.extracted) checks.push({ group: 'bots', id: 'data.maps', state: drift.clientChanged ? 'warn' : 'info', data: {}, action: asm.mmaps.running ? '' : 'assemble-refresh' });
+      else if (drift) checks.push({ group: 'bots', id: 'data.refresh', state: drift.clientChanged ? 'warn' : 'info', data: {}, action: asm.mmaps.running ? '' : 'assemble-refresh' });
       return { checks, summary: summary(checks), at: new Date().toISOString(), deep: deep === true };
     } finally { if (deep === true) busyFiles = false; }
   });
@@ -732,7 +734,7 @@ function registerIpc() {
     const entry = feed?.repack;
     if (!entry?.sha256 || !entry.bytes) throw new Error('The full server is not on the channel yet.');
     // This server comes without game data: it is prepared from the game, so the game folder comes first.
-    if (!gamePath()) throw new Error('Choose your game folder first: the server takes its game data from it.');
+    if (!gameDataPath()) throw new Error('Choose your game folder first: the server takes its game data from it.');
     if (busyFiles || upgradeState.running || update.busy) throw new Error('Another operation is running.');
     const result = smokeDir && process.env.COA_SMOKE_IMPORT_DIR ? { filePaths: [process.env.COA_SMOKE_IMPORT_DIR] } : await dialog.showOpenDialog(window, { title: 'Choose an EMPTY folder for the server', properties: ['openDirectory', 'createDirectory'], defaultPath: 'C:\\' });
     if (result.canceled || !result.filePaths[0]) return null;
@@ -748,7 +750,7 @@ function registerIpc() {
       await persist({ ...settings, installPaths: { ...settings.installPaths, server: target } });
     } finally { busyFiles = false; }
     // No game data in the package: it is taken from the player's client now (the folder stays installed if this fails).
-    if (assembler.state(target).needed && gamePath()) await assembleServer().catch(error => send('assemble:progress', { event: 'error', message: error.message }));
+    if (assembler.state(target).needed && gameDataPath()) await assembleServer().catch(error => send('assemble:progress', { event: 'error', message: error.message }));
     return serverInfo();
   });
   handle('repack:downloadCancel', () => { installAbort?.abort(); return true; });
@@ -760,7 +762,7 @@ function registerIpc() {
   const assembleServerOnce = async (steps, { inside = false } = {}) => {
     const folder = serverPath();
     if (!folder) throw new Error('Install the server first.');
-    const client = gamePath() || (fs_exists(assembler.state(folder).client || '#') ? assembler.state(folder).client : '');
+    const client = gameDataPath() || (fs_exists(assembler.state(folder).client || '#') ? assembler.state(folder).client : '');
     if (!client) throw new Error('Show the launcher your game folder first (Play tab): the data comes from it.');
     if (assembling || busyFiles || (upgradeState.running && !inside) || update.busy) throw new Error('Another operation is running.');
     if (game) throw new Error('Close the game first.');
@@ -1890,7 +1892,7 @@ function registerIpc() {
     return {
       available: !!feed?.repack?.sha256 && !!config.server?.updatesUrl,
       folder: target, need: await reinstallNeed(current), free: freeBytes(path.dirname(current)),
-      game: !!gamePath(), realms: (await realms.status(current, { live: false }).catch(() => ({ realms: [] }))).realms.filter(realm => realm.state !== 'absent').map(realm => realm.key),
+      game: !!gameDataPath(), realms: (await realms.status(current, { live: false }).catch(() => ({ realms: [] }))).realms.filter(realm => realm.state !== 'absent').map(realm => realm.key),
       previous: previous?.reinstall ? { path: previous.path, bytes: await folderBytes(previous.path) } : null,
     };
   });
@@ -1898,7 +1900,7 @@ function registerIpc() {
     requireServer();
     const old = serverPath();
     if (!old || !feed?.repack?.sha256) throw new Error('The full server is not on the channel yet.');
-    if (!gamePath()) throw new Error('Choose your game folder first: the server takes its game data from it.');
+    if (!gameDataPath()) throw new Error('Choose your game folder first: the server takes its game data from it.');
     if (game) throw new Error('Close the game first.');
     if (upgradeState.running || busyFiles || assembling || update.busy) throw new Error('Another operation is running.');
     assertServerFree();

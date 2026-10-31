@@ -141,7 +141,7 @@ const CHECK_TEXT = {
   'coa.remote': { info: ['Only this PC can play', 'CoA.AllowRemoteClients = 0: players on other PCs are refused even with the right address.'] },
   'bots.mmapsUpdate': { info: ['Newer navigation maps are published ({version})', 'Download them (about 1.9 GB, a few minutes) to replace the maps of this server. Only the maps that match your game are taken; the others are built here.'] },
   'bots.mmaps': { info: ['Navigation maps of the bots: {done} of {total} maps', 'Built once from your game and kept. Bots walking through walls, stuck or going in straight lines? Rebuild them (about an hour, in the background; the server can keep running).'] },
-  'data.maps': {
+  'data.refresh': {
     info: ['Map data of the server', 'Taken from your game at install time. Your game got a patch with a new zone? Update them so the server knows it (about 30 minutes; the server is stopped first).'],
     warn: ['Your game was updated: update the map data', 'The server still has the map data of your game before its patch: a new zone is missing. Update them (about 30 minutes; the server is stopped first).'],
   },
@@ -220,7 +220,7 @@ function troubleshootView() {
   const step = REINSTALL_STEPS[s.upgradeStep] ? t(`reinstall.step.${s.upgradeStep}`, REINSTALL_STEPS[s.upgradeStep]) : '';
   const log = s.reinstallRunning || s.reinstallDone ? `<pre class="log" id="upgrade-log">${esc(s.upgradeLog.join(String.fromCharCode(10)))}</pre>` : '';
   const old = r?.previous ? `<div class="line-action">${icon('folder')}<span>${esc(t('reinstall.previous', 'Previous server kept in {path} ({size})', { path: r.previous.path, size: formatBytes(r.previous.bytes) }))}</span><button class="button ghost small" data-action="upgrade-revert" ${running ? 'disabled' : ''}>${esc(t('reinstall.back', 'Go back to it'))}</button><button class="button ghost small" data-action="reinstall-remove-old" ${running ? 'disabled' : ''}>${icon('trash')}${esc(t('reinstall.removeOld', 'Delete it'))}</button></div>` : '';
-  return `<details class="panel troubleshoot" ${running || s.reinstallDone || r?.previous || s.troubleshootOpen ? 'open' : ''}><summary data-action="troubleshoot-toggle">${icon('shield')}${esc(t('verify.troubleshoot', 'Troubleshooting'))}</summary>
+  return `<details class="panel troubleshoot" ${s.troubleshootOpen !== false ? 'open' : ''}><summary data-action="troubleshoot-toggle">${icon('shield')}${esc(t('verify.troubleshoot', 'Troubleshooting'))}</summary>
     <p class="muted">${esc(t('reinstall.what', 'When nothing else fixes the server: everything is installed again from scratch in a new folder next to this one. Your accounts, characters, bots, realms and settings are copied in. The current server stays untouched until the new one has started.'))}</p>
     <div class="button-row"><button class="button ghost" data-action="reinstall-run" ${running || s.upgradeRunning || r?.available === false ? 'disabled' : ''}>${icon('refresh')}${esc(t('reinstall.run', 'Reinstall CoA + Bots completely'))}</button>${running ? `<span class="pill warn">${esc(step)}</span>` : ''}</div>
     ${old}${log}</details>`;

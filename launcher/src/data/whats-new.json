@@ -1,5 +1,38 @@
 [
   {
+    "version": "0.3.52",
+    "items": {
+      "en": [
+        "Verification: \"Update map data\" now shows on every server prepared from your game, older installs included, so a new zone (Pale Reach) no longer needs a reinstall.",
+        "Verification: the \"Maps and game data present\" line shows its text again.",
+        "Reinstall and map data use the game the Play tab shows, even when no game folder was chosen in the settings.",
+        "Verification: the Troubleshooting panel is open by default.",
+        "Settings files with Windows line endings: a setting is no longer stuck to the comment above it, and Verification repairs the files already affected (thanks Nightlund)."
+      ],
+      "fr": [
+        "Vérification : « Mettre à jour les données » apparaît sur tout serveur préparé à partir de votre jeu, anciennes installations comprises : une nouvelle zone (Pale Reach) ne demande plus de réinstallation.",
+        "Vérification : la ligne « Cartes et données du jeu présentes » affiche de nouveau son texte.",
+        "La réinstallation et les données de cartes utilisent le jeu affiché dans l'onglet Jouer, même sans dossier de jeu choisi dans les réglages.",
+        "Vérification : le panneau Dépannage est ouvert par défaut.",
+        "Fichiers de réglages aux fins de ligne Windows : un réglage ne se colle plus au commentaire du dessus, et Vérification répare les fichiers déjà touchés (merci Nightlund)."
+      ],
+      "ru": [
+        "Проверка: «Обновить данные карт» теперь есть на любом сервере, подготовленном из вашей игры, включая старые установки: новая зона (Pale Reach) больше не требует переустановки.",
+        "Проверка: строка «Карты и данные игры на месте» снова показывает свой текст.",
+        "Переустановка и данные карт используют игру, показанную на вкладке «Играть», даже если папка игры не выбрана в настройках.",
+        "Проверка: панель «Устранение неполадок» открыта по умолчанию.",
+        "Файлы настроек с окончаниями строк Windows: настройка больше не прилипает к комментарию выше, а Проверка чинит уже затронутые файлы (спасибо Nightlund)."
+      ],
+      "zh": [
+        "检查：“更新地图数据”现在会出现在所有从你的游戏准备的服务器上，包括旧的安装：新区域（Pale Reach）不再需要重新安装。",
+        "检查：“地图和游戏数据齐全”一行重新显示其说明。",
+        "重新安装和地图数据使用“游戏”页显示的游戏，即使设置中没有选择游戏文件夹。",
+        "检查：“故障排除”面板默认展开。",
+        "使用 Windows 换行符的设置文件：设置不再粘到上方的注释行，检查页会修复已受影响的文件（感谢 Nightlund）。"
+      ]
+    }
+  },
+  {
     "version": "0.3.51",
     "items": {
       "en": [

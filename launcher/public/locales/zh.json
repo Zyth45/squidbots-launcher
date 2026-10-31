@@ -295,8 +295,8 @@
   "check.data.maps.bad.title": "缺少游戏数据",
   "check.data.maps.ok.text": "Data\\maps、vmaps、mmaps 和 dbc 均存在。",
   "check.data.maps.ok.title": "地图和游戏数据齐全",
-  "check.data.maps.warn.text": "服务器仍是你的游戏打补丁前的地图数据：缺少新区域。请更新它们（约 30 分钟；会先停止服务器）。",
-  "check.data.maps.warn.title": "你的游戏已更新：请更新地图数据",
+  "check.data.refresh.warn.text": "服务器仍是你的游戏打补丁前的地图数据：缺少新区域。请更新它们（约 30 分钟；会先停止服务器）。",
+  "check.data.refresh.warn.title": "你的游戏已更新：请更新地图数据",
   "check.db.own.bad.text": "{error}",
   "check.db.own.bad.title": "MySQL 属于其他文件夹",
   "check.db.own.ok.text": "在此端口响应的数据库属于本文件夹。",
@@ -1522,8 +1522,8 @@
   "modules.enchanterText": "一个为你的装备附魔的 NPC。默认只提供 60 级及以下的附魔。",
   "modules.enchanterTier": "{n} 级",
   "modules.enchanterTiers": "最高附魔等级：",
-  "check.data.maps.info.title": "服务器的地图数据",
-  "check.data.maps.info.text": "安装时从你的游戏中提取。你的游戏收到了带有新区域的补丁？请更新它们，让服务器认识新区域（约 30 分钟；会先停止服务器）。",
+  "check.data.refresh.info.title": "服务器的地图数据",
+  "check.data.refresh.info.text": "安装时从你的游戏中提取。你的游戏收到了带有新区域的补丁？请更新它们，让服务器认识新区域（约 30 分钟；会先停止服务器）。",
   "modules.enchanterEnable": "启用模块",
   "modules.enchanterCredit": "SquidBots 模块（AGPL）· 构想来自 AzerothCore 的 mod-npc-enchanter（StygianTheBest）",
   "modules.enchanterOriginal": "原始模块",
@@ -1535,5 +1535,7 @@
   "check.conf.glued.ok.title": "每项设置各占一行",
   "check.conf.glued.ok.text": "没有设置粘在上一行。",
   "check.conf.glued.bad.title": "设置粘在了注释行上",
-  "check.conf.glued.bad.text": "{count} 个文件中有设置粘在上方的注释行，服务器因此忽略它（“Missing property”）：{files}。请先停止服务器，修复会把每项放回单独一行，保留你的值并为每个文件保留副本。"
+  "check.conf.glued.bad.text": "{count} 个文件中有设置粘在上方的注释行，服务器因此忽略它（“Missing property”）：{files}。请先停止服务器，修复会把每项放回单独一行，保留你的值并为每个文件保留副本。",
+  "check.data.maps.warn.title": "机器人的导航地图正在生成",
+  "check.data.maps.warn.text": "Data\\mmaps 正在从你的客户端生成（主页）。服务器已在运行；在此之前，机器人可能会走直线。"
 }

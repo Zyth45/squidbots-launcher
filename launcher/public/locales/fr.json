@@ -1225,8 +1225,8 @@
   "assemble.locate": "Montrer mon dossier du jeu (les données du serveur en viennent)",
   "assemble.noServer": "Pas encore de serveur : le launcher télécharge notre serveur (environ 150 Mo, sans aucune donnée du jeu), puis prend les données du jeu dans ton propre client.",
   "assemble.bots": "CoA Bots",
-  "check.data.maps.warn.title": "Votre jeu a été mis à jour : mettez à jour les cartes",
-  "check.data.maps.warn.text": "Le serveur a encore les données de cartes de votre jeu d'avant son patch : une nouvelle zone manque. Mettez-les à jour (environ 30 minutes ; le serveur est d'abord arrêté).",
+  "check.data.refresh.warn.title": "Votre jeu a été mis à jour : mettez à jour les cartes",
+  "check.data.refresh.warn.text": "Le serveur a encore les données de cartes de votre jeu d'avant son patch : une nouvelle zone manque. Mettez-les à jour (environ 30 minutes ; le serveur est d'abord arrêté).",
   "assemble.mmapsPause": "Pause",
   "assemble.mmapsContinue": "Reprendre",
   "assemble.mmapsPausedText": "Cartes de navigation des bots : en pause à {done} sur {total} cartes. Reprends quand tu veux ; les cartes déjà faites sont gardées.",
@@ -1522,8 +1522,8 @@
   "modules.enchanterText": "Un PNJ qui pose des enchantements sur votre équipement. Par défaut, seulement les enchantements jusqu'au niveau 60.",
   "modules.enchanterTier": "Niveau {n}",
   "modules.enchanterTiers": "Niveau d'enchantement maximum :",
-  "check.data.maps.info.title": "Données de cartes du serveur",
-  "check.data.maps.info.text": "Prises dans votre jeu à l'installation. Votre jeu a reçu un patch avec une nouvelle zone ? Mettez-les à jour pour que le serveur la connaisse (environ 30 minutes ; le serveur est d'abord arrêté).",
+  "check.data.refresh.info.title": "Données de cartes du serveur",
+  "check.data.refresh.info.text": "Prises dans votre jeu à l'installation. Votre jeu a reçu un patch avec une nouvelle zone ? Mettez-les à jour pour que le serveur la connaisse (environ 30 minutes ; le serveur est d'abord arrêté).",
   "modules.enchanterEnable": "Activer le module",
   "modules.enchanterCredit": "Module SquidBots (AGPL) · idée du mod-npc-enchanter d'AzerothCore (StygianTheBest)",
   "modules.enchanterOriginal": "Module d'origine",
@@ -1535,5 +1535,7 @@
   "check.conf.glued.ok.title": "Chaque réglage sur sa ligne",
   "check.conf.glued.ok.text": "Aucun réglage n'est collé à la ligne du dessus.",
   "check.conf.glued.bad.title": "Réglages collés à un commentaire",
-  "check.conf.glued.bad.text": "{count} fichier(s) avec un réglage collé au commentaire du dessus, que le serveur ignore donc (« Missing property ») : {files}. Arrêtez le serveur, puis la correction remet chacun sur sa ligne, garde vos valeurs et une copie de chaque fichier."
+  "check.conf.glued.bad.text": "{count} fichier(s) avec un réglage collé au commentaire du dessus, que le serveur ignore donc (« Missing property ») : {files}. Arrêtez le serveur, puis la correction remet chacun sur sa ligne, garde vos valeurs et une copie de chaque fichier.",
+  "check.data.maps.warn.title": "Cartes de navigation des bots en cours",
+  "check.data.maps.warn.text": "Data\\mmaps est en cours de construction depuis votre client (page d'accueil). Le serveur tourne déjà ; en attendant, les bots peuvent marcher en ligne droite."
 }
