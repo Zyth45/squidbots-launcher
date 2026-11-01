@@ -39,6 +39,7 @@ const live = require('./live.cjs');
 const modules = require('./modules.cjs');
 const realms = require('./realms.cjs');
 const { mysqlLender } = require('./mysql-lender.cjs');
+const { fixManage } = require('./manage-fix.cjs');
 // The repack's own updates (squidbots-updates releases): the signed list, the run in progress, its last result.
 const update = { manifest: null, error: null, busy: false, phase: null, last: null };
 let feed = null;
@@ -682,33 +683,6 @@ function registerIpc() {
   });
   // ---- a repack the player downloaded (Jealous's zip): checked, then unpacked into an empty folder
   let pendingImport = null;
-  handle('repack:importPick', async () => {
-    requireServer();
-    if (busyFiles || upgradeState.running) throw new Error('Another operation is running.');
-    const result = smokeDir && process.env.COA_SMOKE_IMPORT_ZIP ? { filePaths: [process.env.COA_SMOKE_IMPORT_ZIP] } : await dialog.showOpenDialog(window, { title: 'Choose the repack zip you downloaded', properties: ['openFile'], filters: [{ name: 'Repack (zip)', extensions: ['zip'] }] });
-    if (result.canceled || !result.filePaths[0]) return null;
-    const file = path.resolve(result.filePaths[0]);
-    busyFiles = true;
-    try {
-      const { sha256, size } = await repackImport.hashZip(file, (done, total) => send('repack:import', { phase: 'hash', done, total }));
-      const content = await repackImport.inspectZip(file);
-      let known = null;
-      let listed = false;
-      if (feed) { listed = true; known = repackImport.findKnown(feed, sha256); }
-      if (!known && config.server.knownRepacksUrl) {
-        try {
-          const { data } = await fetchSigned(new URL(config.server.knownRepacksUrl), { key: config.keys.server, fetchImpl: netFetch, signal: AbortSignal.timeout(20000), maxBytes: 1024 * 1024 });
-          listed = true;
-          known = repackImport.findKnown(data, sha256);
-        } catch {}
-      }
-      pendingImport = { file, sha256, size, content };
-      send('repack:import', { phase: 'idle' });
-      const target = serverPath();
-      const targetFree = !!target && (!fs_exists(target) || !(await fs.readdir(target)).length);
-      return { name: path.basename(file), size, sha256, known, listed, ...content, target: targetFree ? target : '' };
-    } finally { busyFiles = false; }
-  });
   // The full repack from the feed: an empty folder chosen first, the zip downloaded (resumed, checked
   // by its sha256 from the signed feed), unpacked there, then removed. Every update comes after that.
   let installAbort = null;
@@ -742,6 +716,8 @@ function registerIpc() {
     assertFolder(target);
     await assertLocalDrive(target);
     if ((await fs.readdir(target).catch(() => [])).length) throw new Error('Choose an empty folder: the new server is installed there.');
+    // The bar shows at once: the folder checks and the first bytes take a few seconds.
+    send('repack:import', { phase: 'download', done: 0, total: entry.bytes });
     busyFiles = true;
     try {
       await installPackage(target);
@@ -768,6 +744,7 @@ function registerIpc() {
     if (game) throw new Error('Close the game first.');
     assembling = true;
     assembler.busy.add(path.resolve(folder));
+    await fixManage(folder).catch(() => {});
     try {
       // Only what is left (a run cut by a closed launcher goes on where it stopped; the extraction is not redone).
       const todo = steps || assembler.state(folder).missing;
@@ -794,7 +771,24 @@ function registerIpc() {
             }, 20000);
           } else stopWatch();
         };
-        try { await assembler.assemble(folder, client, onEvent, todo); } finally { stopWatch(); }
+        // The last line of the tool at work (a map, a model, a table), so a long step is seen moving.
+        const logs = path.join(folder, 'Assembler', 'logs');
+        let shown = '';
+        const detail = setInterval(async () => {
+          const names = await fs.readdir(logs).catch(() => []);
+          const found = (await Promise.all(names.filter(name => name.endsWith('.log')).map(async name => ({ name, at: (await statOrNull(path.join(logs, name)).catch(() => null))?.mtimeMs || 0 })))).sort((a, b) => b.at - a.at)[0];
+          if (!found || Date.now() - found.at > 60000) return;
+          const handle = await fs.open(path.join(logs, found.name), 'r').catch(() => null);
+          if (!handle) return;
+          try {
+            const { size } = await handle.stat();
+            const buffer = Buffer.alloc(Math.min(size, 4096));
+            await handle.read(buffer, 0, buffer.length, size - buffer.length);
+            const line = buffer.toString('utf8').split(/[\r\n]+/).map(item => item.trim()).filter(item => item && !item.startsWith('{') && !item.startsWith('}') && !item.startsWith('"')).pop() || '';
+            if (line && line !== shown) { shown = line; send('assemble:progress', { event: 'detail', text: line.slice(0, 100) }); }
+          } finally { await handle.close().catch(() => {}); }
+        }, 3000);
+        try { await assembler.assemble(folder, client, onEvent, todo); } finally { stopWatch(); clearInterval(detail); }
       }
       // The bots go in at once, on the new database.
       // A new database (first one, or one built again after a cut) needs them again even when their files are there.
@@ -862,38 +856,6 @@ function registerIpc() {
     return assembler.state(folder);
   });
   handle('assemble:mmapsRebuild', async () => { await assembler.rebuildMmaps(serverPath()); return assembler.state(serverPath()); });
-  handle('repack:importRun', async () => {
-    requireServer();
-    if (!pendingImport) throw new Error('Choose the repack zip first.');
-    if (pendingImport.content.missing.length) throw new Error('This zip is not a full repack.');
-    if (busyFiles || upgradeState.running) throw new Error('Another operation is running.');
-    let target = serverPath();
-    if (!target || (fs_exists(target) && (await fs.readdir(target)).length)) {
-      const result = smokeDir && process.env.COA_SMOKE_IMPORT_DIR ? { filePaths: [process.env.COA_SMOKE_IMPORT_DIR] } : await dialog.showOpenDialog(window, { title: 'Choose an EMPTY folder for the server', properties: ['openDirectory', 'createDirectory'], defaultPath: target ? path.dirname(target) : 'C:\\' });
-      if (result.canceled || !result.filePaths[0]) return null;
-      target = path.resolve(result.filePaths[0]);
-      assertFolder(target);
-      await assertLocalDrive(target);
-      if ((await fs.readdir(target).catch(() => [])).length) throw new Error('Choose an empty folder: the new server is installed there.');
-    }
-    busyFiles = true;
-    try {
-      const { file, content } = pendingImport;
-      const again = await repackImport.hashZip(file, (done, total) => send('repack:import', { phase: 'hash', done, total }));
-      if (again.sha256 !== pendingImport.sha256) { pendingImport = null; throw new Error('The zip changed since it was checked: choose it again.'); }
-      await repackImport.extractZip(file, target, { top: content.top, total: content.entries, onProgress: (done, total) => send('repack:import', { phase: 'extract', done, total }) });
-      if (!inspectRepack(target).repack) throw new Error('The unpacked folder is not a complete repack.');
-      await network.applyNetwork(target).catch(() => {});
-      settings.instances = [...new Set([serverPath(), target].filter(Boolean).map(item => path.normalize(item)).concat(settings.instances))].slice(0, 12);
-      await persist({ ...settings, installPaths: { ...settings.installPaths, server: target } });
-      pendingImport = null;
-    } finally { busyFiles = false; send('repack:import', { phase: 'idle' }); }
-    return serverInfo();
-  });
-  handle('repack:openSource', async () => {
-    const link = feed?.repack?.url || config.server?.repackSourceUrl;
-    if (link) await shell.openExternal(link);
-  });
   handle('feed:get', () => feed || refreshFeed());
   handle('update:state', () => repackUpdateState());
   handle('notes:list', () => patchNotes());
@@ -1330,7 +1292,12 @@ function registerIpc() {
     return serverInfo();
   });
   handle('repack:pause', () => { repackUpdater?.cancel(); bots?.updater.cancel(); });
-  const prepareStart = async () => { await applyCards(serverPath()).catch(() => {}); await network.applyNetwork(serverPath()).catch(() => {}); await modules.keepRotationOff(serverPath()); await quietLogs(serverPath()); };
+  // After each authserver start: the realms whose world already runs are shown online again at once.
+  const realmsOnline = async () => {
+    const coa = (await requireControl().status()).some(service => /world/i.test(service.id) && service.state === 'running');
+    await realms.clearOffline(serverPath(), { coa }).catch(() => {});
+  };
+  const prepareStart = async () => { await fixManage(serverPath()).catch(() => {}); await applyCards(serverPath()).catch(() => {}); await network.applyNetwork(serverPath()).catch(() => {}); await modules.keepRotationOff(serverPath()); await quietLogs(serverPath()); };
   const startEverything = async () => {
     baseByRealm = false;
     await prepareStart();
@@ -1340,8 +1307,8 @@ function registerIpc() {
     // The authserver after a worldserver: the world applies the updates of the auth database.
     // A realm that did not start says why on the page (not enough memory, an error of its world).
     const startRealms = () => realms.startMarked(serverPath()).then(failed => { if (failed.length) send('realms:failed', failed); }).catch(error => send('realms:failed', [{ key: '', error: error.message }]));
-    if (skipCoa) { await requireControl().start('mysql'); await startRealms(); await requireControl().start('auth'); }
-    else { try { await requireControl().startAll(); } finally { startRealms(); } }
+    if (skipCoa) { await requireControl().start('mysql'); await startRealms(); await requireControl().start('auth'); await realmsOnline(); }
+    else { try { await requireControl().startAll(); await realmsOnline(); } finally { startRealms(); } }
     // MySQL runs now: the names of the cards reach the realm list, stopped realms included.
     await applyCardNames(serverPath(), await realmCards.read(serverPath())).catch(() => {});
   };
@@ -1351,7 +1318,7 @@ function registerIpc() {
     await startEverything();
     return serverInfo();
   });
-  handle('repack:start', async id => { assertServerFree(); if (assembler.state(serverPath()).needed) throw new Error('Prepare the game data from your client first (home page).'); if (id === 'all') await startEverything(); else { await prepareStart(); await requireControl().start(text(id, 30)); } return serverInfo(); });
+  handle('repack:start', async id => { assertServerFree(); if (assembler.state(serverPath()).needed) throw new Error('Prepare the game data from your client first (home page).'); if (id === 'all') await startEverything(); else { await prepareStart(); await requireControl().start(text(id, 30)); if (text(id, 30) === 'auth') await realmsOnline(); } return serverInfo(); });
   // The repack's manager only stops everything (stop-all): one service alone is stopped by the launcher itself.
   const stopCoaWorld = async () => {
     const world = requireControl().services.find(service => /world/i.test(service.id));
@@ -1447,6 +1414,7 @@ function registerIpc() {
       await realms.create(serverPath(), text(key, 12), { bots: Number(options?.bots) || undefined, notify: line => send('realms:progress', line) });
       await realms.start(serverPath(), text(key, 12));
       await requireControl().start('auth');
+      await realmsOnline();
     } else await withMysql(() => realms.create(serverPath(), text(key, 12), { bots: Number(options?.bots) || undefined, notify: line => send('realms:progress', line) }));
     // A server open to other PCs: the new realm's world port joins the firewall rules (Windows asks for the
     // administrator; refused, the realm stays created and Who can join > Open the firewall does it later).
@@ -1472,6 +1440,7 @@ function registerIpc() {
   };
   handle('realms:start', async key => {
     assertServerFree();
+    await fixManage(serverPath()).catch(() => {});
     await applyCards(serverPath()).catch(() => {});
     await network.applyNetwork(serverPath()).catch(() => {});
     if (!(await mysqlRunning())) baseByRealm = true;
@@ -1481,6 +1450,7 @@ function registerIpc() {
     else await realms.start(serverPath(), text(key, 12));
     // The authserver once a world is up (the world applies the auth database updates).
     await requireControl().start('auth');
+    await realmsOnline();
     return realmsStatus();
   });
   handle('realms:stop', async key => {
@@ -2485,6 +2455,8 @@ async function main() {
   if (config.edition === 'server' && !smokeDir) createTray().catch(() => {});
   // The server watched every 20 seconds, window shown or not: ready, crash (and restart), the daily backup.
   if (!smokeDir) setInterval(() => serverWatch?.().catch(() => {}), 20000).unref();
+  // Scripts/manage.py fixed at once: a realm task can start MySQL before any server start.
+  if (!smokeDir) fixManage(serverPath()).catch(() => {});
   if (!smokeDir) setTimeout(() => applyCards(serverPath()).catch(() => {}), 5000).unref();
   if (settings.startServerOnOpen && !smokeDir) setTimeout(() => serverStartOnOpen?.().catch(() => {}), 4000).unref();
   // A new launcher and the news are looked for every 30 minutes (two small signed files).

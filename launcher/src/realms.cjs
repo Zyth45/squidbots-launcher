@@ -715,4 +715,12 @@ async function onlineRunning(root) {
 }
 const listening = port => new Promise(resolve => { const socket = require('node:net').connect({ host: '127.0.0.1', port }); const done = ok => { socket.destroy(); resolve(ok); }; socket.setTimeout(1500, () => done(false)); socket.once('connect', () => done(true)); socket.once('error', () => done(false)); });
 
-module.exports = { setRealmName, ahbotSettingsOf, setAhbotSettingsOf, onlineRunning, shippedTables, syncShippedTables, MODES, queueMarked, memoryFor, neededMb, botsOnline, setDisabled, versionReady, modulesOf, setModule, coaAutostart, setCoaAutostart, skipCoaAtStart, anotherStarting, refreshBotConfigs, status, create, start, stop, stopAll, startMarked, setOptions, settingsOf, saveSettings, purgeBots, writeConfigs, setKey };
+// The authserver marks every realm offline (flag bit 2) when it starts; a world clears that bit only at its own start,
+// then every UpdateUptimeInterval. Cleared again for the worlds already running, so they do not show Offline for minutes.
+async function clearOffline(root, { coa = false } = {}) {
+  const ids = (await status(root, { live: false })).realms.filter(realm => realm.state === 'running').map(realm => Number(realm.id)).filter(Number.isInteger);
+  if (coa) ids.push(1);
+  if (ids.length) await sql(root, `UPDATE acore_auth.realmlist SET flag = flag & ~2 WHERE id IN (${ids.join(',')})`);
+  return ids;
+}
+module.exports = { clearOffline, setRealmName, ahbotSettingsOf, setAhbotSettingsOf, onlineRunning, shippedTables, syncShippedTables, MODES, queueMarked, memoryFor, neededMb, botsOnline, setDisabled, versionReady, modulesOf, setModule, coaAutostart, setCoaAutostart, skipCoaAtStart, anotherStarting, refreshBotConfigs, status, create, start, stop, stopAll, startMarked, setOptions, settingsOf, saveSettings, purgeBots, writeConfigs, setKey };

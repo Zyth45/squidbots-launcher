@@ -295,7 +295,8 @@ function homeView() {
       refreshAddon(true);
     }, 0);
   }
-  if (!info.path) {
+  // No server yet, or a folder kept in the settings that holds none (deleted, or a reinstall from scratch).
+  if (!info.path || !info.installed) {
     const repack = s.feed?.repack;
     const p = s.importProgress;
     const pct = p?.total ? Math.floor((100 * p.done) / p.total) : null;
@@ -306,15 +307,13 @@ function homeView() {
     const packageVersion = (/\d+\.\d+(?:\.\d+)?/.exec(repack?.name || '') || [])[0] || repack?.release || '';
     const first = direct
       ? `<button class="split-button update" data-action="install-server" ${p || !gameOk ? 'disabled' : ''}><span class="split-main">${icon('download')}<span><strong>${esc(t('install.title', 'Install the server'))}</strong><small>${esc(t('install.package', 'SquidBots {version} · {size}', { version: packageVersion, size: formatBytes(repack.bytes) }))}</small><small class="muted">${esc(t('install.hint', 'Downloaded and installed by the launcher, in an empty folder you choose.'))}</small></span></span></button>${progress}`
-      : repack
-      ? `<button class="split-button update" data-action="feed-open" data-kind="repack"><span class="split-main">${icon('download')}<span><strong>${esc(t('home.download', 'Download the server'))}</strong><small>${esc(repack.name || repack.release)}${repack.size ? ` · ${esc(repack.size)}` : ''}</small><small class="muted">${esc(t('home.downloadThenUpdate', 'Base version: the launcher updates it to the latest one right after.'))}</small></span></span></button>`
       : `<button class="split-button ready" data-tab="server"><span class="split-main">${icon('download')}<span><strong>${esc(t('home.install', 'Install'))}</strong></span></span></button>`;
-    return `<div class="page classic"><section class="hero classic-hero"><div class="classic-main"><h1>${esc(t('home.title', 'My server'))}</h1><p class="status-line">${esc(direct ? t('assemble.noServer', 'No server yet: the launcher downloads our server (about 150 MB, without any game data), then takes the game data from your own client.') : repack ? t('home.noServerFeed', 'No server yet: download the full CoA Bots repack (Proton), then import the zip here. The launcher checks it and unpacks it; after that, every update comes from here in one click.') : t('home.noServer', 'No server yet: install the CoA repack with its bots in a few clicks, or show the folder of the one you have.'))}</p>
+    return `<div class="page classic"><section class="hero classic-hero"><div class="classic-main"><h1>${esc(t('home.title', 'My server'))}</h1><p class="status-line">${esc(direct ? t('assemble.noServer', 'No server yet: the launcher downloads our server (about 150 MB, without any game data), then takes the game data from your own client.') : t('home.noServer', 'No server yet: install the CoA repack with its bots in a few clicks, or show the folder of the one you have.'))}</p>
       ${direct ? `<ol class="setup-steps">
         <li class="${gameOk ? 'done' : 'current'}"><span class="step-num">${gameOk ? icon('check') : '1'}</span><div class="step-body"><strong>${esc(t('setup.game', 'Your game'))}</strong><small>${esc(gameOk ? s.client.path : t('setup.gameHint', 'The server takes its game data from your own CoA client.'))}</small></div><button class="button ${gameOk ? 'ghost small' : 'primary'}" data-action="client-locate">${icon('folder')}${esc(gameOk ? t('setup.change', 'Change') : t('setup.pickGame', 'Choose the game folder'))}</button></li>
         <li class="${gameOk ? 'current' : 'locked'}"><span class="step-num">2</span><div class="step-body">${first}${gameOk ? '' : `<small class="muted">${esc(t('setup.gameFirst', 'Choose your game folder first.'))}</small>`}</div></li>
       </ol>` : `<div class="button-row">${first}</div>`}
-      <details class="other-ways"><summary>${esc(t('setup.otherWays', 'Other ways to install…'))}</summary><div class="button-row"><button class="button ghost" data-action="home-import">${icon('folder')}${esc(t('home.haveZip', 'I have the zip: import it'))}</button><button class="button ghost" data-action="server-choose">${icon('folder')}${esc(t('home.haveServer', 'I already have a server folder'))}</button></div></details></div></section><div class="fresh-extras">${feedNewsRow()}</div></div>`;
+      <details class="other-ways"><summary>${esc(t('setup.otherWays', 'Other ways to install…'))}</summary><div class="button-row"><button class="button ghost" data-action="server-choose">${icon('folder')}${esc(t('home.haveServer', 'I already have a server folder'))}</button></div></details></div></section><div class="fresh-extras">${feedNewsRow()}</div></div>`;
   }
   // A server without game data: prepared from the player's own client before anything else.
   const asm = info.assembly;
@@ -374,7 +373,6 @@ function homeView() {
         <button class="side-card" data-tab="verify">${icon('bot')}<span><strong>CoA Bots</strong><small>${esc(info.bots?.installed ? `${info.bots.version}${info.bots.builtFor ? ` · ${shortRelease(info.bots.builtFor)}` : ''}` : t('bots.notInstalled', 'Not installed'))}</small></span><span class="card-tool" role="button" data-action="srv-tab" data-id="settings" title="${esc(t('srv.tab.settings', 'Server settings'))}">${icon('settings')}</span>${s.updates.bots ? '<i class="dot"></i>' : icon('next')}</button>
         <button class="side-card verify-card ${verifyState}" data-tab="verify">${icon('shield')}<span><strong>${esc(t('tab.verify', 'Verification'))}</strong><small>${esc(verifyText)}</small></span>${icon('next')}</button>
         ${addonCard()}
-        ${newerRepack(info) ? `<button class="side-card" data-action="repack-newer">${icon('download')}<span><strong>${esc(t('home.newRepack', 'New repack available'))}</strong><small>${esc(newerRepack(info).name || newerRepack(info).release)}</small></span><i class="dot"></i></button>` : ''}
         ${dash?.available ? `<button class="side-card" data-action="${dash.running ? 'dashboard-open' : 'dashboard-start'}">${icon('chart')}<span><strong>${esc(t('home.dashboard', 'Bots dashboard'))}</strong><small>${esc(dash.running ? t('home.dashboardOpen', 'Running on localhost:{port}: open it', { port: dash.port }) : t('home.dashboardStart', 'Map, bots, stats, chat: start it'))}</small></span>${icon('next')}</button>` : ''}
         <button class="side-card" data-action="network-open">${icon('globe')}<span><strong>${esc(t('net.card', 'Who can join'))}</strong><small>${esc(s.network?.mode === 'open' ? t('net.cardOpen', 'Other PCs: {address}', { address: s.network.address }) : t('net.cardLocal', 'This PC only'))}</small></span>${icon('next')}</button>
       </aside>
@@ -385,13 +383,6 @@ function homeView() {
 }
 
 // The feed announces a repack whose release differs from the one installed here.
-function newerRepack(info) {
-  const repack = App.state.feed?.repack;
-  if (!repack?.release || !info?.details?.release || App.state.config.hasUpdates) return null;
-  const day = release => /^main-(d{8})-/.exec(release)?.[1] || '';
-  return day(repack.release) > day(info.details.release) ? repack : null;
-}
-
 // Play: the game client of this PC. Dimmed while no game folder is known; a click then asks for it.
 function playButton() {
   const client = App.state.addon?.client;
@@ -652,11 +643,12 @@ function assemblyCard(asm) {
     const done = !now && (finished || (p?.step && order.indexOf(id) < order.indexOf(p.step)));
     return `<li class="${done ? 'ok' : now ? 'busy' : 'todo'}">${icon(done ? 'check' : now ? 'refresh' : 'chevron')}<span>${esc(t(`assemble.${id}`, label))}</span><small class="muted">${esc(done ? t('assemble.done', 'done') : now && pct !== null ? `${pct}%` : !p && noGame ? t('assemble.waiting', 'waiting') : time)}</small></li>`;
   }).join('');
-  const progress = p ? `<div class="hero-progress"><div class="progress${pct === null ? ' indeterminate' : ''}"><span data-pct="${pct ?? 30}"></span></div><span>${pct === null ? '' : `${pct}%`}</span></div><p class="muted small" title="${esc(p.text || '')}">${esc(ASSEMBLE_STEPS[p.step] ? t(`assemble.${p.step}`, ASSEMBLE_STEPS[p.step][0]) : t('assemble.starting', 'Starting…'))} · ${p.step === 'mmaps' && p.total > 1e6 ? esc(downloadLine(p)) : `<span id="assemble-elapsed">${esc(stepElapsed())}</span>`}</p>${p.warning ? `<p class="status-line bad">${icon('warning')}${esc(t('assemble.stuck', p.warning))}</p>` : ''}` : '';
+  const progress = p ? `<div class="hero-progress"><div class="progress${pct === null ? ' indeterminate' : ''}"><span data-pct="${pct ?? 30}"></span></div><span>${pct === null ? '' : `${pct}%`}</span></div><p class="muted small" title="${esc(p.text || '')}">${esc(ASSEMBLE_STEPS[p.step] ? t(`assemble.${p.step}`, ASSEMBLE_STEPS[p.step][0]) : t('assemble.starting', 'Starting…'))}${p.step === 'db' && p.text ? ` · ${esc(p.text)}` : ''} · ${p.step === 'mmaps' && p.total > 1e6 ? esc(downloadLine(p)) : `<span id="assemble-elapsed">${esc(stepElapsed())}</span>`}</p>${p.warning ? `<p class="status-line bad">${icon('warning')}${esc(t('assemble.stuck', p.warning))}</p>` : ''}` : '';
+  const detail = p?.detail && !['mmaps', 'mmaps-fetch'].includes(p.step) ? `<p class="muted small assemble-detail" id="assemble-detail">${esc(p.detail)}</p>` : '';
   const error = App.state.assembleError ? `<p class="status-line bad">${icon('warning')}${esc(translateError(App.state.assembleError))}</p>` : '';
   return `<p class="status-line">${esc(App.state.config.hasMmaps ? t('assemble.intro2', 'This server comes without any game data: the launcher takes it from your own Conquest of Azeroth client (about 30 minutes), installs the bots, then downloads their navigation maps (about 1.9 GB).') : t('assemble.intro', 'This server comes without any game data: the launcher takes it from your own Conquest of Azeroth client (about 30 minutes), then installs the bots and builds the navigation maps of the bots in the background (about an hour, you can already play).'))}</p>
     ${App.state.server?.driveBus === 'USB' ? `<p class="status-line bad">${icon('warning')}${esc(t('assemble.usbDrive', 'This server is on an external (USB) drive: MySQL can freeze there while the database is built. An internal disk is safer.'))}</p>` : ''}
-    <ol class="assemble-steps">${rows}</ol>${progress}${error}
+    <ol class="assemble-steps">${rows}</ol>${progress}${detail}${error}
     ${noGame && !p ? `<p class="status-line warn">${icon('warning')}${esc(t('assemble.waitGame', 'Waiting for your game folder: choose it and the preparation starts.'))}</p><div class="button-row"><button class="button primary" data-action="assemble-locate">${icon('folder')}${esc(t('setup.pickGame', 'Choose the game folder'))}</button></div>` : ''}
     ${p ? '' : `<div class="button-row"><button class="split-button update" data-action="assemble-run" ${noGame ? 'disabled' : ''}><span class="split-main">${icon('download')}<span><strong>${esc(t('assemble.run', 'Prepare the data from my game'))}</strong><small class="muted">${esc(t('assemble.client', 'Game folder: {path}', { path: App.state.client?.path || asm.client || t('assemble.noClient', 'not chosen yet (Play tab)') }))}</small></span></span></button></div>`}`;
 }
@@ -795,7 +787,6 @@ Object.assign(App.actions, {
     const result = await App.api.openFeedLink(target.dataset.kind);
     toast(result?.copied ? t('feed.copied', 'Your browser could not be opened: the link is copied, paste it in your browser.') : t('feed.opened', 'Opened in your browser.'), 'success');
   }, target),
-  'home-import': () => { App.state.srvTab = 'install'; App.go('server'); App.actions['repack-import']?.(document.createElement('button')); },
   'launcher-install': button => guard(() => App.api.installLauncher(), button),
   'world-force-stop': button => guard(async () => {
     if (!await confirmDialog({ title: t('home.forceStop', 'Force the world to stop'), body: esc(t('home.forceStopBody', 'Only the worldserver of this server is ended; the database keeps everything saved. What players did since the last save may be lost. The rest of the server is then stopped normally.')), confirm: t('home.forceStop', 'Force the world to stop'), danger: true })) return;
@@ -886,14 +877,6 @@ Object.assign(App.actions, {
   },
   'note-link': target => guard(() => App.api.openNote(target.dataset.index)),
   'feed-news-link': target => guard(() => App.api.openFeedLink(`news:${target.dataset.index}`)),
-  'repack-newer': () => {
-    const repack = App.state.feed?.repack;
-    if (!repack) return;
-    dialog.open(`${dialog.header(t('home.newRepack', 'New repack available'), repack.name || repack.release)}<div class="dialog-content">
-      ${repack.notes ? `<p>${esc(repack.notes)}</p>` : ''}
-      <ol class="notes"><li>${esc(t('home.newRepack1', 'Download the zip (Proton link).'))}</li><li>${esc(t('home.newRepack2', 'Import it: it goes into a new folder, your current server stays as it is.'))}</li><li>${esc(t('home.newRepack3', 'Bring your players over: Management > Installation > Bring players over from another repack.'))}</li></ol>
-    </div><footer class="dialog-foot"><button class="button ghost" data-action="home-import">${icon('folder')}${esc(t('home.haveZip', 'I have the zip: import it'))}</button><button class="button primary" data-action="feed-open" data-kind="repack">${icon('download')}${esc(t('home.download', 'Download the server'))}</button></footer>`);
-  },
   'news-open': target => showNews(target.dataset.area),
   // "install:bots-install": open Management > Installation, then run that action there.
   'verify-run-in': button => {

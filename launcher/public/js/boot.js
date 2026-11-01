@@ -49,6 +49,15 @@ function subscribe() {
     // The preparation is over: what was read on the half-made server (checks, the game card) is read again.
     if (event.event === 'idle') { App.state.assembleProgress = null; App.reloadAll(); return; }
     if (event.event === 'error') { App.state.assembleProgress = null; App.state.assembleError = event.message; App.render(); return; }
+    // The line the tool is on: shown under the bar, the step itself does not change.
+    if (event.event === 'detail') {
+      if (!App.state.assembleProgress) return;
+      App.state.assembleProgress.detail = event.text;
+      const line = document.getElementById('assemble-detail');
+      if (line) line.textContent = event.text;
+      else if (App.state.tab === 'home' && !$('#dialog').open) App.render();
+      return;
+    }
     App.state.assembleError = '';
     // The folder was just installed: the home page switches from the install card to the assembly one.
     if (!App.state.assembleProgress && !App.state.server?.assembly?.applies) App.api.serverInfo().then(info => { App.state.server = info; if (App.state.tab === 'home') App.render(); }).catch(() => {});

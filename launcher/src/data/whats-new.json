@@ -1,5 +1,42 @@
 [
   {
+    "version": "0.3.53",
+    "items": {
+      "en": [
+        "Windows 11 26H2: preparing and starting the server no longer stops at the database (\"This repack does not own the MySQL listener\").",
+        "Realms show online right after the login server starts, instead of up to 10 minutes later.",
+        "Home: the two install steps (your game, then Install the server) show whenever the saved folder holds no server, after a reinstall from scratch too.",
+        "One way to install: the launcher downloads the server and prepares it from your game. The zip import and the \"Where to download it\" link are gone.",
+        "Uninstalling the launcher removes its settings, so a reinstall starts fresh. Your server folder and its characters are kept.",
+        "Server preparation: the long steps show what they are working on (the map, the model, the database part)."
+      ],
+      "fr": [
+        "Windows 11 26H2 : la préparation et le démarrage du serveur ne s'arrêtent plus à la base de données (« This repack does not own the MySQL listener »).",
+        "Les royaumes s'affichent en ligne dès le démarrage du serveur de connexion, au lieu de jusqu'à 10 minutes plus tard.",
+        "Accueil : les deux étapes d'installation (votre jeu, puis Installer le serveur) s'affichent dès que le dossier enregistré ne contient pas de serveur, y compris après une réinstallation de zéro.",
+        "Une seule façon d'installer : le launcher télécharge le serveur et le prépare à partir de votre jeu. L'import de zip et le lien « Où le télécharger » disparaissent.",
+        "Désinstaller le launcher efface ses réglages : une réinstallation repart à neuf. Le dossier du serveur et ses personnages sont gardés.",
+        "Préparation du serveur : les longues étapes montrent ce qu'elles traitent (la carte, le modèle, la partie de la base)."
+      ],
+      "ru": [
+        "Windows 11 26H2: подготовка и запуск сервера больше не останавливаются на базе данных («This repack does not own the MySQL listener»).",
+        "Миры показываются в сети сразу после запуска сервера входа, а не через 10 минут.",
+        "Главная: два шага установки (ваша игра, затем «Установить сервер») показываются, когда в сохранённой папке нет сервера, в том числе после переустановки с нуля.",
+        "Один способ установки: лаунчер скачивает сервер и готовит его из вашей игры. Импорт zip и ссылка «Где скачать» убраны.",
+        "Удаление лаунчера стирает его настройки: переустановка начинается с чистого листа. Папка сервера и персонажи сохраняются.",
+        "Подготовка сервера: долгие этапы показывают, над чем работают (карта, модель, часть базы)."
+      ],
+      "zh": [
+        "Windows 11 26H2：准备和启动服务器不再停在数据库（“This repack does not own the MySQL listener”）。",
+        "登录服务器启动后，各服务器立即显示在线，而不是最多 10 分钟后。",
+        "主页：只要保存的文件夹中没有服务器（包括从头重新安装后），就会显示两个安装步骤（你的游戏，然后“安装服务器”）。",
+        "只有一种安装方式：启动器下载服务器并从你的游戏准备数据。导入 zip 和“在哪里下载”链接已移除。",
+        "卸载启动器会删除其设置：重新安装将从头开始。服务器文件夹及其角色会保留。",
+        "服务器准备：耗时的步骤会显示正在处理的内容（地图、模型、数据库部分）。"
+      ]
+    }
+  },
+  {
     "version": "0.3.52",
     "items": {
       "en": [

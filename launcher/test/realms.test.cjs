@@ -277,3 +277,8 @@ test('setKey keeps LF files LF, sets every line of the key and takes a value wit
   assert.strictEqual(realms.setKey('A = 1\n', 'B', '2'), 'A = 1\nB = 2\n');
   assert.strictEqual(realms.setKey('  X.Y = 1\nZ = 0\nX.Y=3\n', 'X.Y', '$1'), 'X.Y = $1\nZ = 0\nX.Y = $1\n');
 });
+
+test('clearOffline: no realm running and CoA stopped sends nothing to MySQL', async () => {
+  const root = repack();
+  assert.deepEqual(await realms.clearOffline(root), []);
+});

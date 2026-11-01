@@ -17,3 +17,12 @@ Function .onVerifyInstDir
     Abort
 FunctionEnd
 !endif
+
+; The launcher keeps its settings under %APPDATA%\CoA Launcher Lite (its app name), which the uninstaller of
+; electron-builder does not know: removed too on a real uninstall, never on an update (--updated).
+!macro customUnInstall
+  ${ifNot} ${isUpdated}
+    SetShellVarContext current
+    RMDir /r "$APPDATA\CoA Launcher Lite"
+  ${endIf}
+!macroend

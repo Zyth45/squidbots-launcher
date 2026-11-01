@@ -782,3 +782,6 @@ dialog.wizard-dialog .dialog-head p { font-size: 12px; margin-top: 2px; }
 .module-extra.tier-prices { gap: 6px 10px; }
 .module-card .tier-price { gap: 4px; }
 .module-card .tier-price input { width: 50px; }
+
+/* The line the preparation tool is on (a map, a model, a table). */
+.assemble-detail { margin-top: 2px; max-width: 640px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-family: ui-monospace, Consolas, monospace; opacity: .75; }

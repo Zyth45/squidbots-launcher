@@ -1537,5 +1537,6 @@
   "check.conf.glued.bad.title": "设置粘在了注释行上",
   "check.conf.glued.bad.text": "{count} 个文件中有设置粘在上方的注释行，服务器因此忽略它（“Missing property”）：{files}。请先停止服务器，修复会把每项放回单独一行，保留你的值并为每个文件保留副本。",
   "check.data.maps.warn.title": "机器人的导航地图正在生成",
-  "check.data.maps.warn.text": "Data\\mmaps 正在从你的客户端生成（主页）。服务器已在运行；在此之前，机器人可能会走直线。"
+  "check.data.maps.warn.text": "Data\\mmaps 正在从你的客户端生成（主页）。服务器已在运行；在此之前，机器人可能会走直线。",
+  "install.serverTab": "启动器会把服务器（约 150 MB，不含任何游戏数据）下载到你选择的空文件夹，然后从你自己的 Conquest of Azeroth 客户端提取游戏数据（约 30 分钟）并安装机器人。"
 }

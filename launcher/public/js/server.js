@@ -65,14 +65,26 @@ function importView(info) {
   const p = App.state.importProgress;
   const pct = p?.total ? Math.floor((100 * p.done) / p.total) : null;
   const working = p ? `<div class="hero-progress"><div class="progress${pct === null ? ' indeterminate' : ''}"><span data-pct="${pct ?? 30}"></span></div><span>${pct === null ? '' : `${pct}%`}</span></div><p class="muted small">${esc(p.phase === 'hash' ? t('import.hashing', 'Checking the zip…') : t('import.unpacking', 'Unpacking the repack… ({done}/{total} files)', { done: formatNumber(p.done), total: formatNumber(p.total) }))}</p>` : '';
+  // Since 2.8 the server comes without game data: the launcher downloads it, then prepares it from the player's game.
+  const offer = App.state.feed?.repack;
+  if (!info.installed) return installTail(info, directInstallCard(working, p));
   const source = loc(server.repackSource) || t('import.sourceDefault', 'the latest release of the CoA repack by Jealous (Proton link on Discord, #js-3067-server)');
   const repack = `<section class="panel" id="srv-repack"><header><h2>${icon('download')}${esc(t('server.repack', 'Server (repack)'))}</h2>${info.details?.release ? `<code>${esc(info.details.release)}</code>` : ''}</header>
     <p class="muted">${esc(info.installed ? (App.state.config.hasUpdates ? t('update.installedHint', 'Updates of the core, the bots and the addon come from the launcher in one click, with a backup: the card on the home page tells when one is out.') : t('import.installedHint', 'To move to a newer repack, import its zip: it goes into a new folder and this one stays as it is.')) : t('import.hint', 'Download {source}, then show the zip here: the launcher checks it, unpacks it and installs the bots.', { source }))}</p>
     <div class="folder-line">${icon('folder')}<span>${esc(info.path || t('server.noFolder', 'No folder chosen yet'))}</span><button class="button ghost small" data-action="server-choose">${esc(info.path ? t('common.change', 'Change') : t('server.chooseFolder', 'Choose a folder'))}</button>${info.path ? `<button class="icon-button" data-action="server-folder" title="${esc(t('play.openFolder', 'Open the folder'))}">${icon('external')}</button>` : ''}</div>
     ${working || `${!info.installed && info.bots ? `<label class="check with-bots"><input type="checkbox" id="with-bots" ${App.state.withBots === false ? '' : 'checked'}><span>${esc(t('server.withBots', 'Also install {name} (recommended)', { name: info.bots.name }))}</span></label>` : ''}
-    <div class="button-row">${info.installed && App.state.config.hasUpdates ? `<button class="button primary" data-action="update-check">${icon('refresh')}${esc(t('update.check', 'Check for an update'))}</button>` : `<button class="button primary" data-action="repack-import">${icon('download')}${esc(info.installed ? t('import.newer', 'Import a newer repack (zip)') : t('import.button', 'Import the repack zip'))}</button>`}${!(info.installed && App.state.config.hasUpdates) && (server.repackSourceUrl || App.state.feed?.repack) ? `<button class="button ghost" data-action="repack-source">${icon('external')}${esc(t('import.where', 'Where to download it'))}</button>` : ''}${info.installed ? `<button class="button ghost" data-action="server-repair">${icon('shield')}${esc(t('play.repair', 'Scan and repair'))}</button>` : ''}</div>`}
+    <div class="button-row">${info.installed && App.state.config.hasUpdates ? `<button class="button primary" data-action="update-check">${icon('refresh')}${esc(t('update.check', 'Check for an update'))}</button>` : ''}${info.installed ? `<button class="button ghost" data-action="server-repair">${icon('shield')}${esc(t('play.repair', 'Scan and repair'))}</button>` : ''}</div>`}
   </section>`;
   return installTail(info, repack);
+}
+
+function directInstallCard(working, p) {
+  const gameOk = !!App.state.client?.path;
+  const downloading = p?.phase === 'download' ? `<p class="muted small">${esc(t('install.downloading', 'Downloading the server… {done} / {total}', { done: formatBytes(p.done), total: formatBytes(p.total) }))}</p><button class="button ghost small" data-action="install-cancel">${icon('pause')}${esc(t('play.pause', 'Pause'))}</button>` : '';
+  return `<section class="panel" id="srv-repack"><header><h2>${icon('download')}${esc(t('install.title', 'Install the server'))}</h2></header>
+    <p class="muted">${esc(t('install.serverTab', 'The launcher downloads the server (about 150 MB, without any game data) into an empty folder you choose, then takes the game data from your own Conquest of Azeroth client (about 30 minutes) and installs the bots.'))}</p>
+    ${working ? (downloading || working) : `${gameOk ? '' : `<p class="status-line warn">${icon('warning')}${esc(t('setup.gameFirst', 'Choose your game folder first.'))}</p>`}<div class="button-row">${gameOk ? `<button class="button primary" data-action="install-server">${icon('download')}${esc(t('install.title', 'Install the server'))}</button>` : `<button class="button primary" data-action="client-locate">${icon('folder')}${esc(t('setup.pickGame', 'Choose the game folder'))}</button>`}<button class="button ghost" data-action="server-choose">${icon('folder')}${esc(t('home.haveServer', 'I already have a server folder'))}</button></div>`}
+  </section>`;
 }
 
 function installTail(info, repack) {
@@ -776,41 +788,6 @@ Object.assign(App.actions, {
   'server-repair': button => guard(async () => { const result = await checkServer(true, true); if (result.needsUpdate) await updateServer(true); else toast(t('play.nothingToRepair', 'Every file checked: nothing to repair.'), 'success'); }, button),
   'server-pause': () => App.api.pauseServer(),
   'bots-check': button => guard(async () => { App.state.botsCheck = await App.api.checkBots(false); refreshUpdates(); if (!App.state.botsCheck.needsUpdate) toast(t('server.upToDate', 'Up to date'), 'success'); App.refresh('server'); }, button),
-  'repack-source': button => guard(() => App.api.openRepackSource(), button),
-  'repack-import': button => guard(async () => {
-    const before = App.state.server;
-    const pick = await App.api.importPick();
-    if (!pick) return;
-    if (pick.missing.length) {
-      dialog.open(`${dialog.header(t('import.notFull', 'This zip is not a full repack'))}<div class="dialog-content"><p>${esc(pick.update ? t('import.isUpdate', '{name} looks like an update zip. Take the full repack zip (with Core, mysql, Scripts and Settings).', { name: pick.name }) : t('import.missing', 'Missing in {name}: {files}.', { name: pick.name, files: pick.missing.join(', ') }))}</p></div>`, 'small');
-      return;
-    }
-    const verdict = pick.known
-      ? `<div class="check ok"><span class="check-light"></span><div><strong>${esc(t('import.known', 'Genuine release: {name}', { name: pick.known.name || pick.known.release }))}</strong><small>${esc(pick.known.notes || '')}</small></div></div>`
-      : `<div class="check warn"><span class="check-light"></span><div><strong>${esc(pick.listed ? t('import.unknown', 'This zip is not in the list of known releases') : t('import.noList', 'The list of known releases could not be read'))}</strong><small>${esc(t('import.unknownHint', 'It may be newer than the list, or modified. It is unpacked anyway and the Verification page checks it.'))}</small></div></div>`;
-    const ok = await confirmDialog({
-      title: t('import.confirmTitle', 'Import {name}?', { name: pick.name }),
-      body: `${verdict}<p>${esc(t('import.confirmBody', '{files} files ({size}). {where}', { files: formatNumber(pick.entries), size: formatBytes(pick.size), where: pick.target ? t('import.into', 'Unpacked into {path}.', { path: pick.target }) : t('import.chooseFolder', 'Next, choose an empty folder for it.') }))}</p>`,
-      confirm: t('import.go', 'Import'),
-    });
-    if (!ok) return;
-    const info = await App.api.importRun();
-    App.state.importProgress = null;
-    if (!info) return;
-    Object.assign(App.state, { server: info, serverCheck: null, botsCheck: null, conf: null, backups: null, upgrade: null, verify: null, network: null, botsError: '', pending: {} });
-    toast(t('import.done', 'Repack ready in {path}.', { path: info.path }), 'success');
-    App.refresh('server');
-    refreshUpdates();
-    const withBots = info.bots && !info.bots.installed && App.state.withBots !== false;
-    if (withBots) {
-      try { await installBotsNow(); }
-      catch (error) { App.state.botsError = translateError(error.message); App.refresh('server'); throw error; }
-    }
-    App.go('home');
-    App.reloadAll();
-    // Moving from an older server: its players can be brought over.
-    if (before?.installed && before.path !== info.path) toast(t('import.bringPlayers', 'Your previous server is kept. To bring its players: Management > Installation > Bring players over from another repack.'));
-  }, button),
   'bots-install': button => guard(async () => {
     const b = App.state.server.bots;
     // The bot installer needs the worldserver stopped: offer to stop the server, and start it again after.
