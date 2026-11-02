@@ -1520,6 +1520,8 @@
   "assemble.refreshBody": "Les tables du jeu, le terrain et les vmaps sont repris de votre jeu (environ 30 minutes). Le serveur est d'abord arrêté s'il tourne ; vos personnages, les bots et la base restent.",
   "modules.enchanter": "PNJ enchanteur",
   "modules.enchanterText": "Un PNJ qui pose des enchantements sur votre équipement. Par défaut, seulement les enchantements jusqu'au niveau 60.",
+  "modules.enchanterWcr": "PNJ enchanteur : Warcraft Reborn",
+  "modules.enchanterWcrText": "Le PNJ enchanteur aussi sur le royaume Warcraft Reborn, avec les enchantements de ce royaume.",
   "modules.enchanterTier": "Niveau {n}",
   "modules.enchanterTiers": "Niveau d'enchantement maximum :",
   "check.data.refresh.info.title": "Données de cartes du serveur",
@@ -1538,5 +1540,15 @@
   "check.conf.glued.bad.text": "{count} fichier(s) avec un réglage collé au commentaire du dessus, que le serveur ignore donc (« Missing property ») : {files}. Arrêtez le serveur, puis la correction remet chacun sur sa ligne, garde vos valeurs et une copie de chaque fichier.",
   "check.data.maps.warn.title": "Cartes de navigation des bots en cours",
   "check.data.maps.warn.text": "Data\\mmaps est en cours de construction depuis votre client (page d'accueil). Le serveur tourne déjà ; en attendant, les bots peuvent marcher en ligne droite.",
-  "install.serverTab": "Le launcher télécharge le serveur (environ 150 Mo, sans aucune donnée du jeu) dans un dossier vide de votre choix, puis prend les données du jeu dans votre propre client Conquest of Azeroth (environ 30 minutes) et installe les bots."
+  "install.serverTab": "Le launcher télécharge le serveur (environ 150 Mo, sans aucune donnée du jeu) dans un dossier vide de votre choix, puis prend les données du jeu dans votre propre client Conquest of Azeroth (environ 30 minutes) et installe les bots.",
+  "damage.percent": "Pourcentage de leurs dégâts",
+  "damage.dps": "dégâts",
+  "damage.heal": "soigneur",
+  "damage.tank": "tank",
+  "damage.asClass": "Comme sa classe",
+  "damage.reset": "Revenir à 100 %",
+  "damage.specsTuned": "{n} spécialisation(s) à part",
+  "damage.intro": "Augmentez ou baissez les dégâts des bots d'une classe dont la rotation est en retard ou en avance. Bots seulement, avec leurs familiers et invocations : les dégâts d'un joueur humain ne changent jamais. 100 % = inchangé ; une spécialisation réglée à part l'emporte sur sa classe.",
+  "damage.when": "S'applique au prochain démarrage du serveur, ou tout de suite avec .reload config dans la console du monde.",
+  "damage.specCount": "{n} spécialisations"
 }

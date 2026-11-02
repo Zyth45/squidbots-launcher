@@ -1,5 +1,46 @@
 [
   {
+    "version": "0.3.54",
+    "items": {
+      "en": [
+        "Updating CoA Bots is no longer refused with code 13 when the launcher is installed inside the server folder.",
+        "Windows 11 26H2: updating CoA Bots no longer stops at the test start (code 50, « mysql is still starting »).",
+        "Windows 11 26H2: the checks of CoA Bots no longer take leftover connections for another program on the MySQL port.",
+        "The SquidBots Lite addon is never replaced by an older version.",
+        "With CoA Bots 2.9: a Bot damage tab in Settings raises or lowers the damage of the bots by class and specialization.",
+        "With CoA Bots 2.9: a setting for random suffixes on the gear of the bots.",
+        "Modules: the Enchanter NPC for Warcraft Reborn shows as coming soon when that realm is on."
+      ],
+      "fr": [
+        "La mise à jour de CoA Bots n'est plus refusée avec le code 13 quand le launcher est installé dans le dossier du serveur.",
+        "Windows 11 26H2 : la mise à jour de CoA Bots ne s'arrête plus au démarrage de test (code 50, « mysql is still starting »).",
+        "Windows 11 26H2 : les contrôles de CoA Bots ne prennent plus des connexions restantes pour un autre programme sur le port MySQL.",
+        "L'addon SquidBots Lite n'est jamais remplacé par une version plus ancienne.",
+        "Avec CoA Bots 2.9 : un onglet Dégâts des bots dans les Réglages augmente ou baisse les dégâts des bots par classe et spécialisation.",
+        "Avec CoA Bots 2.9 : un réglage pour les suffixes aléatoires de l'équipement des bots.",
+        "Modules : le PNJ enchanteur de Warcraft Reborn s'affiche « bientôt » quand ce royaume est activé."
+      ],
+      "ru": [
+        "Обновление CoA Bots больше не отклоняется с кодом 13, если лаунчер установлен в папке сервера.",
+        "Windows 11 26H2: обновление CoA Bots больше не останавливается на тестовом запуске (код 50, « mysql is still starting »).",
+        "Windows 11 26H2: проверки CoA Bots больше не принимают оставшиеся соединения за другую программу на порту MySQL.",
+        "Аддон SquidBots Lite больше никогда не заменяется более старой версией.",
+        "С CoA Bots 2.9: вкладка «Урон ботов» в настройках повышает или снижает урон ботов по классу и специализации.",
+        "С CoA Bots 2.9: настройка случайных суффиксов на снаряжении ботов.",
+        "Модули: NPC-зачарователь для Warcraft Reborn отображается как «скоро», когда этот мир включён."
+      ],
+      "zh": [
+        "当启动器安装在服务器文件夹内时，CoA Bots 更新不再因代码 13 被拒绝。",
+        "Windows 11 26H2：CoA Bots 更新不再在测试启动时停止（代码 50，« mysql is still starting »）。",
+        "Windows 11 26H2：CoA Bots 的检查不再把残留连接误认为 MySQL 端口上的其他程序。",
+        "SquidBots Lite 插件不会再被旧版本替换。",
+        "CoA Bots 2.9 起：设置中的“机器人伤害”标签可按职业和专精提高或降低机器人的伤害。",
+        "CoA Bots 2.9 起：机器人装备随机后缀的设置。",
+        "模块：启用 Warcraft Reborn 服务器时，其附魔师 NPC 显示为“即将推出”。"
+      ]
+    }
+  },
+  {
     "version": "0.3.53",
     "items": {
       "en": [

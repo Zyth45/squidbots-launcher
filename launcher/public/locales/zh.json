@@ -1520,6 +1520,8 @@
   "assemble.refreshBody": "将重新从你的游戏中提取游戏数据表、地形和 vmaps（约 30 分钟）。如果服务器正在运行，会先将其停止；你的角色、机器人和数据库都会保留。",
   "modules.enchanter": "附魔师 NPC",
   "modules.enchanterText": "一个为你的装备附魔的 NPC。默认只提供 60 级及以下的附魔。",
+  "modules.enchanterWcr": "附魔师 NPC：Warcraft Reborn",
+  "modules.enchanterWcrText": "Warcraft Reborn 国度也将拥有附魔师 NPC，提供该国度的附魔。",
   "modules.enchanterTier": "{n} 级",
   "modules.enchanterTiers": "最高附魔等级：",
   "check.data.refresh.info.title": "服务器的地图数据",
@@ -1538,5 +1540,15 @@
   "check.conf.glued.bad.text": "{count} 个文件中有设置粘在上方的注释行，服务器因此忽略它（“Missing property”）：{files}。请先停止服务器，修复会把每项放回单独一行，保留你的值并为每个文件保留副本。",
   "check.data.maps.warn.title": "机器人的导航地图正在生成",
   "check.data.maps.warn.text": "Data\\mmaps 正在从你的客户端生成（主页）。服务器已在运行；在此之前，机器人可能会走直线。",
-  "install.serverTab": "启动器会把服务器（约 150 MB，不含任何游戏数据）下载到你选择的空文件夹，然后从你自己的 Conquest of Azeroth 客户端提取游戏数据（约 30 分钟）并安装机器人。"
+  "install.serverTab": "启动器会把服务器（约 150 MB，不含任何游戏数据）下载到你选择的空文件夹，然后从你自己的 Conquest of Azeroth 客户端提取游戏数据（约 30 分钟）并安装机器人。",
+  "damage.percent": "其伤害百分比",
+  "damage.dps": "输出",
+  "damage.heal": "治疗",
+  "damage.tank": "坦克",
+  "damage.asClass": "与职业相同",
+  "damage.reset": "恢复为 100 %",
+  "damage.specsTuned": "{n} 个专精单独设置",
+  "damage.intro": "提高或降低输出循环落后或领先的职业的机器人伤害。仅限机器人及其宠物和召唤物：真人玩家的伤害永远不变。100 % = 不变；单独设置的专精优先于其职业。",
+  "damage.when": "在服务器下次启动时生效，或在世界控制台输入 .reload config 立即生效。",
+  "damage.specCount": "{n} 个专精"
 }

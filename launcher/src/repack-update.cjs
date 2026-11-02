@@ -9,6 +9,7 @@ const fsSync = require('node:fs');
 const path = require('node:path');
 const { spawn, execFile } = require('node:child_process');
 const { downloadObject } = require('./downloader.cjs');
+const { fixManage, fixUpdateTool } = require('./manage-fix.cjs');
 
 const text = (value, max) => String(value ?? '').slice(0, max);
 const RELEASE = /^main-\d{8}-[0-9a-f]{7,40}$/;
@@ -124,8 +125,15 @@ function runTool(folder, packageFolder, command, extra, onEvent) {
   const python = path.join(folder, 'Runtime', 'python', 'python.exe');
   const tool = path.join(folder, packageFolder, 'update', 'coa_update.py');
   const args = ['-B', '-X', 'utf8', tool, command, '--json', '--yes', '--repack', folder, ...extra];
-  return new Promise(resolve => {
+  // A launcher installed inside the repack is not « a program of the repack still running » (code 13).
+  // The files of a package before 2.9 bring back the manage.py and coa_common.py that Windows 26H2 stops (code 50
+  // at the test start): fixed again as soon as they are laid, while the installer runs.
+  const refix = () => fixManage(folder).catch(() => false);
+  return Promise.all([fixUpdateTool(path.join(folder, packageFolder)).catch(() => false), refix()]).then(() => new Promise(resolve => {
     const child = spawn(python, args, { cwd: path.join(folder, packageFolder), windowsHide: true, env: { ...process.env, PYTHONIOENCODING: 'utf-8' } });
+    // Decoded as a stream: a character cut between two chunks is not broken.
+    child.stdout.setEncoding('utf8');
+    child.stderr.setEncoding('utf8');
     const result = { code: null, error: null, details: [], log: [] };
     let buffer = '';
     const line = raw => {
@@ -137,13 +145,14 @@ function runTool(folder, packageFolder, command, extra, onEvent) {
       if (result.log.length > 400) result.log.shift();
       if (event.event === 'error') { result.error = { code: Number(event.code) || 0, text: text(event.text, 2000) }; result.details = []; }
       if (event.event === 'detail' && result.error) result.details.push(text(event.text, 500));
+      if (/^files laid/.test(event.text || '')) refix();
       onEvent(event);
     };
-    child.stdout.on('data', chunk => { buffer += chunk.toString('utf8'); const lines = buffer.split(/\r?\n/); buffer = lines.pop(); lines.forEach(line); });
-    child.stderr.on('data', chunk => chunk.toString('utf8').split(/\r?\n/).forEach(raw => raw.trim() && result.log.push(`[stderr] ${raw.trim()}`)));
+    child.stdout.on('data', chunk => { buffer += chunk; const lines = buffer.split(/\r?\n/); buffer = lines.pop(); lines.forEach(line); });
+    child.stderr.on('data', chunk => chunk.split(/\r?\n/).forEach(raw => raw.trim() && result.log.push(`[stderr] ${raw.trim()}`)));
     child.on('error', error => { result.error = { code: 1, text: `The update tool could not be started: ${error.message}` }; });
     child.on('close', code => { if (buffer) line(buffer); result.code = result.error && code === 0 ? result.error.code : code; resolve(result); });
-  });
+  }));
 }
 
 // An update without game data (2.8 onwards) does not carry the core's public SQL: its manifest lists them with their

@@ -65,6 +65,9 @@ async function install(repack, client, backupRoot) {
   for (const entry of await fs.readdir(source, { withFileTypes: true })) {
     if (!entry.isDirectory()) continue;
     const into = path.join(target, entry.name);
+    // A newer addon in the game (another server, a newer package) is never replaced by an older one.
+    const have = tocVersion(into, entry.name);
+    if (have && newer(have, tocVersion(path.join(source, entry.name), entry.name))) continue;
     if (fsSync.existsSync(into)) {
       const saved = path.join(backupRoot, `${entry.name}-${tocVersion(into, entry.name) || 'old'}`);
       await fs.rm(saved, { recursive: true, force: true });

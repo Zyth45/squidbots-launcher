@@ -46,3 +46,12 @@ test('installing replaces the addon and keeps the old one aside', async () => {
   assert.ok(fs.existsSync(path.join(backups, 'SquidBotsLite-2.2', 'SquidBotsLite.toc')));
   await assert.rejects(addon.install(a.repack, path.join(a.root, 'nowhere'), backups));
 });
+
+test('a newer addon in the game is never replaced by an older one', async () => {
+  const a = setup('2.8.3', '2.8.4');
+  const done = await addon.install(a.repack, a.client, path.join(a.root, 'backups'));
+  assert.deepEqual(done, []);
+  assert.match(fs.readFileSync(path.join(a.client, 'Interface', 'AddOns', 'SquidBotsLite', 'SquidBotsLite.toc'), 'utf8'), /2\.8\.4/);
+  const b = setup('2.8.4', '2.8.3');
+  assert.deepEqual(await addon.install(b.repack, b.client, path.join(b.root, 'backups')), ['SquidBotsLite']);
+});

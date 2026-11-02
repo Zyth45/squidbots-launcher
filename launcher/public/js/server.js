@@ -356,6 +356,9 @@ function modulesView() {
       <p class="module-credit">${esc(t('modules.by', 'By {author}', { author: 'SquidBots (Zyth45)' }))}</p>
     </section>
     ${enchanterCard(m.enchanter, m.worldRunning, stopFirst)}
+    ${(App.state.realms?.realms || []).some(realm => realm.key === 'reborn' && !['absent', 'disabled'].includes(realm.state)) ? `<section class="panel module-card soon coming">${moduleArt('enchanter')}<header><h2>${icon('star')}${esc(t('modules.enchanterWcr', 'Enchanter NPC: Warcraft Reborn'))}</h2><span class="pill info">${esc(t('modules.comingSoon', 'Coming soon'))}</span></header>
+      <p class="muted">${esc(t('modules.enchanterWcrText', 'The Enchanter NPC on the Warcraft Reborn realm too, with the enchantments of that realm.'))}</p>
+    </section>` : ''}
     <section class="panel module-card ${m.rotation?.available ? '' : 'soon'}">${moduleArt('rotation')}<header><h2>${icon('refresh')}${esc(t('modules.rotation', 'Rotation assistant'))}</h2>${moduleSwitch('modules-rotation', !!(m.rotation?.available && m.rotation.enabled), m.worldRunning || !m.rotation?.available)}</header>
       <p class="muted">${esc(t('modules.rotationText', 'One button that casts the next spell of your rotation for you.'))}</p>
       ${m.rotation?.available ? '' : ''}${m.rotation?.available ? stopFirst : ''}
@@ -438,7 +441,7 @@ function settingsView() {
   const quick = conf.recipes.filter(recipe => ['coa-recommended', 'fresh-level-1', 'self-found-world', 'bots-around-my-level', 'rexxar-like'].includes(recipe.id))
     .filter(recipe => !recipe.soon || conf.recipes.some(item => item.id === 'self-found-world'));
   const recipes = quick.length ? `<div class="recipes">${quick.map(recipe => `<div class="recipe-cell"><button class="recipe${recipe.soon ? ' soon' : ''}" ${recipe.soon ? 'disabled aria-disabled="true"' : `data-action="conf-recipe" data-id="${esc(recipe.id)}"`}><strong>${esc(loc(recipe.title))}${recipe.soon ? `<span class="soon-tag">${esc(t('conf.soon', 'Coming soon'))}</span>` : ''}</strong><small>${esc(loc(recipe.summary))}</small></button></div>`).join('')}</div>` : '';
-  const body = groups.filter(group => group.id === App.state.confGroup).map(group => `<section class="conf-group"><h3>${icon(group.icon)}${esc(loc(group.label))}</h3>${group.id === 'presets' ? presetsView(recipes) : group.id === 'population' ? ramAdvice(conf) : ''}${group.id === 'levels' && selfFoundOn() ? `<p class="status-line self-found-note">${icon('info')}${esc(t('conf.selfFoundLevels', 'Solo self-found is on: the bots only level up by playing (up to 59 without generated gear, geared as usual at 60). The level settings below do not apply, except the bots online around your level.'))}</p>` : ''}${conf.settings.filter(setting => setting.group === group.id).map(settingRow).join('')}</section>`).join('');
+  const body = groups.filter(group => group.id === App.state.confGroup).map(group => `<section class="conf-group"><h3>${icon(group.icon)}${esc(loc(group.label))}</h3>${group.id === 'presets' ? presetsView(recipes) : group.id === 'population' ? ramAdvice(conf) : group.id === 'damage' ? damageView() : ''}${group.id === 'levels' && selfFoundOn() ? `<p class="status-line self-found-note">${icon('info')}${esc(t('conf.selfFoundLevels', 'Solo self-found is on: the bots only level up by playing (up to 59 without generated gear, geared as usual at 60). The level settings below do not apply, except the bots online around your level.'))}</p>` : ''}${conf.settings.filter(setting => setting.group === group.id && !DAMAGE_KEYS.includes(setting.key)).map(settingRow).join('')}</section>`).join('');
   const key = realmKey || 'coa';
   const others = createdRealms().length > 1;
   const banner = !others ? '' : realmBanner(key, realmKey
@@ -456,6 +459,81 @@ function presetsView(recipes) {
     <div class="preset-card"><div><strong>${icon('download')}${esc(t('profile.title', 'Your settings profile'))}</strong><p>${esc(t('profile.text', 'Every value you changed, in one file: keep it, share it, or put it on another server. Importing shows the differences first.'))}</p></div><div class="button-row"><button class="button ghost" data-action="profile-export">${icon('download')}${esc(t('profile.export', 'Export'))}</button><button class="button ghost" data-action="profile-import">${icon('folder')}${esc(t('profile.import', 'Import'))}</button></div></div>
   </div><h4 class="preset-head">${esc(t('conf.recipesTitle', 'Ready-made settings'))}</h4>${recipes}`;
 }
+
+// ---------------------------------------------------------------- bot damage by class and specialization
+// AiPlayerbot.CoaBotDamageByClass ("Tinker:200, Ranger:150") and BySpec ("40:120"): one slider per class, its
+// specializations folded under it. A specialization left on « as its class » is not written.
+const DAMAGE_KEYS = ['AiPlayerbot.CoaBotDamageByClass', 'AiPlayerbot.CoaBotDamageBySpec'];
+const damageSetting = key => App.state.conf.settings.find(setting => setting.key === key);
+const foldClass = text => String(text || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+function damageMap(key, classes) {
+  const setting = damageSetting(key);
+  const text = App.state.pending[pendingKey(setting?.file, key)]?.value ?? setting?.value ?? '';
+  const out = {};
+  for (const part of String(text).split(',')) {
+    const [name, percent] = part.split(':');
+    const pct = Number(percent);
+    const word = String(name || '').trim();
+    if (!word || !(pct >= 1 && pct <= 1000)) continue;
+    const id = /^\d+$/.test(word) ? Number(word) : classes ? COA_CLASSES.find(item => foldClass(item.name) === foldClass(word))?.id : 0;
+    if (id) out[id] = pct;
+  }
+  return out;
+}
+function damageView() {
+  const byClass = damageMap(DAMAGE_KEYS[0], true);
+  const bySpec = damageMap(DAMAGE_KEYS[1], false);
+  const slider = (kind, id, value, inherited) => `<input type="range" min="${Math.min(10, value)}" max="${Math.max(300, value)}" step="${value % 5 ? 1 : 5}" value="${value}" data-damage="${kind}" data-id="${id}"${inherited ? '' : ' data-set="1"'} aria-label="${esc(t('damage.percent', 'Percent of their damage'))}"><output class="damage-pct${inherited ? ' muted' : ''}" data-damage-out="${kind}-${id}">${value} %</output>`;
+  const roleName = { d: t('damage.dps', 'damage'), h: t('damage.heal', 'healer'), t: t('damage.tank', 'tank') };
+  const rows = COA_CLASSES.map(item => {
+    const own = byClass[item.id] || 100;
+    const specs = item.specs.map(([id, name, role]) => `<div class="damage-row spec"><span>${esc(name)} <small class="muted">${esc(roleName[role])}</small></span>${slider('spec', id, bySpec[id] || own, !bySpec[id])}<button class="icon-button" data-action="damage-reset" data-kind="spec" data-id="${id}" title="${esc(t('damage.asClass', 'Like its class'))}">${icon('refresh')}</button></div>`).join('');
+    const tuned = item.specs.filter(([id]) => bySpec[id]).length;
+    return `<details class="damage-class"${tuned ? ' open' : ''}><summary class="damage-row"><span>${icon('chevron')}<strong>${esc(item.name)}</strong> <small class="muted">${esc(t('damage.specCount', '{n} specializations', { n: item.specs.length }))}</small>${tuned ? ` <em class="pill info">${esc(t('damage.specsTuned', '{n} specialization(s) set apart', { n: tuned }))}</em>` : ''}</span>${slider('class', item.id, own, false)}<button class="icon-button" data-action="damage-reset" data-kind="class" data-id="${item.id}" title="${esc(t('damage.reset', 'Back to 100 %'))}">${icon('refresh')}</button></summary>${specs}</details>`;
+  }).join('');
+  return `<div class="damage-intro">${icon('info')}<p>${esc(t('damage.intro', 'Raise or lower the damage of the bots of a class whose rotation is behind or ahead. Bots only, with their pets and summons: the damage of a human player is never changed. 100 % = unchanged; a specialization set apart wins over its class.'))}<small>${esc(t('damage.when', 'Applies at the next server start, or at once with .reload config in the world console.'))}</small></p></div>
+    <div class="damage-list">${rows}</div>`;
+}
+// The two keys written from the sliders, as pending changes like any other setting.
+function damageWrite() {
+  const byClass = {};
+  const bySpec = {};
+  $$('input[data-damage="class"]').forEach(input => { if (Number(input.value) !== 100) byClass[input.dataset.id] = Number(input.value); });
+  $$('input[data-damage="spec"]').forEach(input => { if (input.dataset.set === '1') bySpec[input.dataset.id] = Number(input.value); });
+  const classText = COA_CLASSES.filter(item => byClass[item.id]).map(item => `${item.name}:${byClass[item.id]}`).join(', ');
+  const specText = Object.entries(bySpec).map(([id, pct]) => `${id}:${pct}`).join(', ');
+  for (const [key, value] of [[DAMAGE_KEYS[0], classText], [DAMAGE_KEYS[1], specText]]) {
+    const setting = damageSetting(key);
+    if (!setting) continue;
+    const id = pendingKey(setting.file, key);
+    if (value === String(setting.value || '').trim()) delete App.state.pending[id];
+    else App.state.pending[id] = { file: setting.file, key, value, kind: 'quoted' };
+  }
+  patchConfBar();
+}
+// A class slider moves the specializations that follow it; a specialization moved is set apart.
+function damageSet(input, value, own) {
+  input.value = value;
+  if (own !== undefined) input.dataset.set = own ? '1' : '';
+  const out = $(`[data-damage-out="${input.dataset.damage}-${input.dataset.id}"]`);
+  if (out) { out.textContent = `${value} %`; out.classList.toggle('muted', input.dataset.damage === 'spec' && input.dataset.set !== '1'); }
+  if (input.dataset.damage === 'class') input.closest('details')?.querySelectorAll('input[data-damage="spec"]').forEach(spec => { if (spec.dataset.set !== '1') damageSet(spec, value); });
+}
+function damageInput(target) {
+  damageSet(target, target.value, target.dataset.damage === 'spec' ? true : undefined);
+  damageWrite();
+}
+Object.assign(App.actions, {
+  // Back to 100 % for a class, back to « like its class » for a specialization.
+  'damage-reset': (button, event) => {
+    event?.preventDefault();
+    const input = $(`input[data-damage="${button.dataset.kind}"][data-id="${button.dataset.id}"]`);
+    if (!input) return;
+    if (button.dataset.kind === 'class') damageSet(input, 100);
+    else damageSet(input, input.closest('details')?.querySelector('input[data-damage="class"]')?.value || 100, false);
+    damageWrite();
+  },
+});
 
 function settingRow(setting) {
   const conf = App.state.conf;
@@ -544,6 +622,7 @@ document.addEventListener('input', event => {
   }
   if (target.id === 'upgrade-folder') App.state.upgradeFolder = target.value;
   if (target.id === 'with-bots') App.state.withBots = target.checked;
+  if (target.dataset?.damage) { damageInput(target); return; }
   if (!target.dataset?.confKey) return;
   const { confFile: file, confKey: key, confKind: kind } = target.dataset;
   const value = target.type === 'checkbox' ? (target.checked ? '1' : '0') : target.value;

@@ -75,9 +75,11 @@ function refreshScript(folder) {
 function run(folder, args, onEvent = () => {}, { detached = false } = {}) {
   refreshScript(folder);
   const exe = path.join(folder, PYTHON);
-  const child = spawn(exe, ['-B', SCRIPT, '--json', ...args], { cwd: folder, windowsHide: true, detached, stdio: detached ? 'ignore' : ['ignore', 'pipe', 'pipe'] });
+  const child = spawn(exe, ['-B', '-X', 'utf8', SCRIPT, '--json', ...args], { cwd: folder, windowsHide: true, detached, env: { ...process.env, PYTHONIOENCODING: 'utf-8' }, stdio: detached ? 'ignore' : ['ignore', 'pipe', 'pipe'] });
   if (detached) { child.unref(); return Promise.resolve({ pid: child.pid }); }
   return new Promise((resolve, reject) => {
+    child.stdout.setEncoding('utf8');
+    child.stderr.setEncoding('utf8');
     let buffer = '';
     let failure = '';
     let tail = '';
