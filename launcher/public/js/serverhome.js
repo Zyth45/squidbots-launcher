@@ -140,6 +140,7 @@ const CHECK_TEXT = {
   },
   'coa.remote': { info: ['Only this PC can play', 'CoA.AllowRemoteClients = 0: players on other PCs are refused even with the right address.'] },
   'bots.mmapsUpdate': { info: ['Newer navigation maps are published ({version})', 'Download them (about 1.9 GB, a few minutes) to replace the maps of this server. Only the maps that match your game are taken; the others are built here.'] },
+  'bots.mmapsMissing': { warn: ['{count} map(s) without navigation for the bots', 'Maps new in your game ({maps}): bots walk there in straight lines. Add their navigation: ours are downloaded when they match your game, the others are built here in the background. The other maps are not touched.'] },
   'bots.mmaps': { info: ['Navigation maps of the bots: {done} of {total} maps', 'Built once from your game and kept. Bots walking through walls, stuck or going in straight lines? Rebuild them (about an hour, in the background; the server can keep running).'] },
   'data.refresh': {
     info: ['Map data of the server', 'Taken from your game at install time. Your game got a patch with a new zone? Update them so the server knows it (about 30 minutes; the server is stopped first).'],
@@ -170,6 +171,7 @@ const ACTIONS = {
   'logs-clean': ['logs-clean', '', 'Clean the logs'],
   'mmaps-rebuild': ['mmaps-rebuild', '', 'Rebuild'],
   'mmaps-update': ['mmaps-update', '', 'Download'],
+  'mmaps-missing': ['mmaps-missing', '', 'Add them'],
   'assemble-refresh': ['assemble-refresh', '', 'Update the data'],
 };
 
@@ -837,6 +839,13 @@ Object.assign(App.actions, {
     await App.api.assembleMmapsUpdate();
     App.state.server = await App.api.serverInfo();
     toast(t('verify.mmapsUpdated', 'The navigation maps are up to date.'), 'success');
+    runVerify(false);
+  }, button),
+  'mmaps-missing': button => guard(async () => {
+    App.state.mmapsAsked = Date.now();
+    await App.api.assembleMmapsMissing();
+    App.state.server = await App.api.serverInfo();
+    toast(t('verify.mmapsMissingDone', 'The navigation of the new maps is added: what was not downloaded is built in the background (progress on the home page).'), 'success');
     runVerify(false);
   }, button),
   'mmaps-rebuild': button => guard(async () => {

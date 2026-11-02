@@ -1257,6 +1257,10 @@
   "verify.mmapsUpdateBody": "Environ 1,9 Go. Les cartes de ce serveur sont remplacées une à une ; le serveur peut continuer de tourner.",
   "verify.mmapsUpdateGo": "Télécharger",
   "verify.mmapsUpdated": "Les cartes de navigation sont à jour.",
+  "check.bots.mmapsMissing.warn.title": "{count} carte(s) sans navigation pour les bots",
+  "check.bots.mmapsMissing.warn.text": "Cartes nouvelles de votre jeu ({maps}) : les bots y marchent en ligne droite. Ajoutez leur navigation : les nôtres sont téléchargées quand elles correspondent à votre jeu, les autres sont construites ici en arrière-plan. Les autres cartes ne sont pas touchées.",
+  "verify.action.mmaps-missing": "Les ajouter",
+  "verify.mmapsMissingDone": "La navigation des nouvelles cartes est ajoutée : ce qui n'a pas été téléchargé est construit en arrière-plan (progression sur l'accueil).",
   "assemble.mmaps": "Cartes de navigation des bots (téléchargement)",
   "fresh.purgeWarning": "Tous les bots aléatoires seront supprimés et recréés au niveau 1. Vos personnages et leurs alts sont conservés. Action irréversible (une sauvegarde est faite avant).",
   "fresh.stepsShort": "Le launcher enregistre ces réglages, arrête le serveur, fait une sauvegarde, supprime les bots aléatoires et redémarre le serveur. Quelques minutes.",
@@ -1550,5 +1554,11 @@
   "damage.specsTuned": "{n} spécialisation(s) à part",
   "damage.intro": "Augmentez ou baissez les dégâts des bots d'une classe dont la rotation est en retard ou en avance. Bots seulement, avec leurs familiers et invocations : les dégâts d'un joueur humain ne changent jamais. 100 % = inchangé ; une spécialisation réglée à part l'emporte sur sa classe.",
   "damage.when": "S'applique au prochain démarrage du serveur, ou tout de suite avec .reload config dans la console du monde.",
+  "damage.whenNow": "Enregistré pendant que le serveur tourne : appliqué tout de suite, sans redémarrer.",
+  "damage.threat": "Menace des bots tanks",
+  "damage.needs29": "Les dégâts par classe et par spécialisation arrivent avec CoA Bots 2.9 : mettez le serveur à jour pour les régler.",
+  "damage.threatHelp": "Les aide à garder les monstres sur eux. 100 % = inchangée.",
+  "conf.reloaded": "Appliqué tout de suite : le serveur a relu ses réglages.",
+  "conf.reloadFailed": "Le serveur n'a pas répondu : ces réglages s'appliqueront à son prochain démarrage.",
   "damage.specCount": "{n} spécialisations"
 }

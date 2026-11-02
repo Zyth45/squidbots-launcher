@@ -114,6 +114,7 @@ contextBridge.exposeInMainWorld('launcher', Object.freeze({
   assembleRefresh: options => call('assemble:refreshData', options),
   assembleMmapsRebuild: () => call('assemble:mmapsRebuild'),
   assembleMmapsUpdate: () => call('assemble:mmapsUpdate'),
+  assembleMmapsMissing: () => call('assemble:mmapsMissing'),
   assembleKeepClient: () => call('assemble:keepClient'),
   restartServer: () => call('repack:restartAll'),
   assembleStatus: () => call('assemble:status'),

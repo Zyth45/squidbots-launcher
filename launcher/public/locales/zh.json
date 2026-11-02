@@ -1341,6 +1341,10 @@
   "verify.mmapsUpdateGo": "下载",
   "verify.mmapsUpdateTitle": "下载导航地图？",
   "verify.mmapsUpdated": "导航地图已是最新。",
+  "check.bots.mmapsMissing.warn.title": "{count} 张地图没有机器人导航",
+  "check.bots.mmapsMissing.warn.text": "你的游戏中的新地图（{maps}）：机器人在那里走直线。添加它们的导航：与你的游戏匹配时下载我们的，其余在本地后台生成。其他地图不受影响。",
+  "verify.action.mmaps-missing": "添加",
+  "verify.mmapsMissingDone": "新地图的导航已添加：未下载的部分在后台生成（进度见主页）。",
   "verify.never": "尚未检查",
   "verify.ok": "一切正常",
   "verify.quick": "重新检查",
@@ -1550,5 +1554,11 @@
   "damage.specsTuned": "{n} 个专精单独设置",
   "damage.intro": "提高或降低输出循环落后或领先的职业的机器人伤害。仅限机器人及其宠物和召唤物：真人玩家的伤害永远不变。100 % = 不变；单独设置的专精优先于其职业。",
   "damage.when": "在服务器下次启动时生效，或在世界控制台输入 .reload config 立即生效。",
+  "damage.whenNow": "服务器运行时保存：立即生效，无需重启。",
+  "damage.threat": "机器人坦克的威胁",
+  "damage.needs29": "按职业和专精调整伤害随 CoA Bots 2.9 推出：请更新服务器后再设置。",
+  "damage.threatHelp": "帮助它们把怪物留在自己身上。100 % = 不变。",
+  "conf.reloaded": "已立即生效：服务器已重新读取设置。",
+  "conf.reloadFailed": "服务器没有响应：这些设置将在下次启动时生效。",
   "damage.specCount": "{n} 个专精"
 }

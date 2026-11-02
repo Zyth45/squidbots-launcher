@@ -1,5 +1,30 @@
 [
   {
+    "version": "0.3.55",
+    "items": {
+      "en": [
+        "Maps new in the game (after a CoA patch) get the navigation of the bots: « Update the data » adds it for them alone, and Verification offers it when it is missing. The other maps are not touched.",
+        "Bot damage: a slider for the threat of the bot tanks, up to ×3.",
+        "Settings saved while the server runs (bot damage, tank threat and the others marked « after .reload config ») apply at once, without a restart."
+      ],
+      "fr": [
+        "Les cartes nouvelles du jeu (après un patch CoA) reçoivent la navigation des bots : « Mettre à jour les données » l'ajoute pour elles seules, et la Vérification la propose quand elle manque. Les autres cartes ne sont pas touchées.",
+        "Dégâts des bots : un curseur pour la menace des bots tanks, jusqu'à ×3.",
+        "Les réglages enregistrés pendant que le serveur tourne (dégâts des bots, menace des tanks et les autres marqués « après .reload config ») s'appliquent tout de suite, sans redémarrer."
+      ],
+      "ru": [
+        "Новые карты игры (после патча CoA) получают навигацию ботов: «Обновить данные» добавляет её только для них, а Проверка предлагает её, если она отсутствует. Другие карты не затрагиваются.",
+        "Урон ботов: ползунок угрозы ботов-танков, до ×3.",
+        "Настройки, сохранённые при работающем сервере (урон ботов, угроза танков и другие с пометкой «после .reload config»), применяются сразу, без перезапуска."
+      ],
+      "zh": [
+        "游戏中的新地图（CoA 补丁之后）会获得机器人导航：“更新数据”只为它们添加，缺失时“检查”也会提供。其他地图不受影响。",
+        "机器人伤害：新增机器人坦克威胁滑块，最高 ×3。",
+        "服务器运行时保存的设置（机器人伤害、坦克威胁以及其他标注“执行 .reload config 后”的设置）立即生效，无需重启。"
+      ]
+    }
+  },
+  {
     "version": "0.3.54",
     "items": {
       "en": [

@@ -148,6 +148,55 @@ function rebuildMmaps(folder) {
   return startMmaps(folder);
 }
 
+// The maps of the game here, counted as the assembler counts them (map_ids): terrain tiles or a vmaps tree.
+function mapIds(folder) {
+  const ids = new Set();
+  const list = dir => { try { return fs.readdirSync(path.join(folder, 'Data', dir)); } catch { return []; } };
+  for (const name of list('maps')) { const m = /^(\d{7,})\.map$/i.exec(name); if (m) ids.add(Number(m[1].slice(0, -4))); }
+  for (const name of list('vmaps')) { const m = /^(\d+)\.vmtree$/i.exec(name); if (m) ids.add(Number(m[1])); }
+  return ids;
+}
+
+// The fingerprint of the maps/vmaps a map's navigation is built from (map_hash of coa_assemble.py: names and sizes).
+function mapHash(folder, id) {
+  const prefix = String(id).padStart(3, '0');
+  const files = [];
+  for (const dir of ['maps', 'vmaps']) {
+    let names = [];
+    try { names = fs.readdirSync(path.join(folder, 'Data', dir)); } catch {}
+    names = names.filter(name => (dir === 'maps' ? /\.map$/i.test(name) && name.slice(0, -4).slice(0, -4) === prefix : name.split('_')[0].split('.')[0] === prefix));
+    names.sort((a, b) => (a.toLowerCase() < b.toLowerCase() ? -1 : a.toLowerCase() > b.toLowerCase() ? 1 : 0));
+    for (const name of names) files.push(`${name}|${fs.statSync(path.join(folder, 'Data', dir, name)).size}\n`);
+  }
+  return require('node:crypto').createHash('sha256').update(files.join('')).digest('hex');
+}
+
+// Maps of the game with no navigation at all: new in the game (a client patch) and extracted by « Update the data »
+// after the navigation maps were finished. A map the generator could not build is not counted again.
+function missingMmaps(folder) {
+  const mm = readJson(path.join(folder, '.state', 'assemble.json'))?.mmaps || {};
+  let have = new Set();
+  try { have = new Set(fs.readdirSync(path.join(folder, 'Data', 'mmaps')).map(name => /^(\d{3,})\.mmap$/i.exec(name)).filter(Boolean).map(m => Number(m[1]))); } catch {}
+  return [...mapIds(folder)].filter(id => !have.has(id) && !(String(id) in (mm.maps || {})) && !(String(id) in (mm.failed || {}))).sort((a, b) => a - b);
+}
+
+// Only the maps without navigation are built: every other map here is taken as built from the data as they are now,
+// so the generator leaves it as it is (even one whose data a client patch changed; Rebuild does every map again).
+function buildMissingMmaps(folder) {
+  const missing = new Set(missingMmaps(folder));
+  if (!missing.size || state(folder).mmaps.running) return Promise.resolve({ pid: null, already: true });
+  const file = path.join(folder, '.state', 'assemble.json');
+  const saved = readJson(file) || {};
+  const mm = saved.mmaps = saved.mmaps || {};
+  mm.maps = mm.maps || {};
+  for (const id of mapIds(folder)) if (!missing.has(id) && !(String(id) in (mm.failed || {}))) mm.maps[String(id)] = mapHash(folder, id);
+  delete mm.paused;
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, JSON.stringify(saved, null, 1));
+  mmapsStarted.delete(path.resolve(folder));
+  return startMmaps(folder);
+}
+
 // Our navigation maps, downloaded instead of built: the assembler takes only the maps whose maps/vmaps here are those
 // they were built from (the others are built as before). The manifest was checked against its signature first.
 function fetchMmaps(folder, manifestFile, base, onEvent) {
@@ -203,4 +252,4 @@ function clientKept(folder, client) {
 }
 function forgetKept(folder) { try { fs.rmSync(path.join(folder, KEPT), { force: true }); } catch {} }
 
-module.exports = { state, assemble, refreshScript, startMmaps, stopMmaps, rebuildMmaps, clientChanged, keepClient, clientKept, forgetKept, clientPrint, worldImport, fetchMmaps, STEPS, busy };
+module.exports = { state, assemble, refreshScript, startMmaps, stopMmaps, rebuildMmaps, clientChanged, keepClient, clientKept, forgetKept, clientPrint, worldImport, fetchMmaps, missingMmaps, buildMissingMmaps, mapHash, STEPS, busy };

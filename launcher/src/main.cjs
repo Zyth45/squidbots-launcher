@@ -204,8 +204,8 @@ function canFetchMmaps(folder) {
   try { return require('node:fs').readFileSync(path.join(folder, 'Assembler', 'coa_assemble.py'), 'utf8').includes('mmaps-fetch'); } catch { return false; }
 }
 // The maps whose maps/vmaps here are those we built them from are downloaded; the others stay to be built here.
-async function downloadMmaps(folder, onEvent) {
-  const data = await publishedMmaps();
+async function downloadMmaps(folder, onEvent, only) {
+  const data = only || await publishedMmaps();
   if (!data) return false;
   const file = path.join(folder, '.state', 'mmaps-manifest.json');
   await fs.mkdir(path.dirname(file), { recursive: true });
@@ -234,6 +234,28 @@ async function downloadMmaps(folder, onEvent) {
   return true;
 }
 let mmapsFetching = false;
+
+// Maps new in the game (a client patch: « Update the data » extracts them, the navigation maps were finished before)
+// get their navigation without touching any other map: ours are downloaded when they match this game, the rest is
+// built here in the background. Returns how many maps had none.
+async function fillMissingMmaps(folder, onEvent = () => {}) {
+  const missing = assembler.missingMmaps(folder);
+  if (!missing.length || mmapsFetching) return 0;
+  mmapsFetching = true;
+  try {
+    if (config.server.mmapsUrl && canFetchMmaps(folder)) {
+      const data = await publishedMmaps().catch(() => null);
+      const maps = Object.fromEntries(missing.filter(id => data?.maps?.[String(id)]).map(id => [String(id), data.maps[String(id)]]));
+      // The version seen stays the one of this server: a newer set of ours is still offered in Verification.
+      if (Object.keys(maps).length) {
+        await downloadMmaps(folder, onEvent, { ...data, version: assembler.state(folder).mmaps.published, maps })
+          .catch(error => onEvent({ event: 'log', text: `Navigation maps not downloaded (${error.message}): they are built here.` }));
+      }
+    }
+  } finally { mmapsFetching = false; }
+  if (assembler.missingMmaps(folder).length) await assembler.buildMissingMmaps(folder);
+  return missing.length;
+}
 
 async function serverInfo() {
   if (!config.server) return null;
@@ -530,6 +552,9 @@ function registerIpc() {
         const published = await publishedMmaps().catch(() => null);
         if (published?.version && published.version !== asm.mmaps.published) checks.push({ group: 'bots', id: 'bots.mmapsUpdate', state: 'info', data: { version: published.version }, action: asm.mmaps.running || mmapsFetching ? '' : 'mmaps-update' });
       }
+      // Maps new in the game with no navigation (bots walk there in straight lines): only those are added.
+      const missing = asm.applies && !asm.needed && asm.mmaps.complete && !asm.mmaps.running ? assembler.missingMmaps(serverPath()) : [];
+      if (missing.length) checks.push({ group: 'bots', id: 'bots.mmapsMissing', state: 'warn', data: { count: missing.length, maps: missing.slice(0, 8).join(', ') + (missing.length > 8 ? '…' : '') }, action: mmapsFetching ? '' : 'mmaps-missing' });
       // Game files modified and kept by the player: the server data do not match them.
       const drift = asm.applies && !asm.needed ? await assemblyInfo(serverPath()) : null;
       if (drift?.clientKept) checks.push({ group: 'core', id: 'client.kept', state: 'warn', data: {}, action: 'assemble-refresh' });
@@ -828,7 +853,13 @@ function registerIpc() {
       || (await realms.status(serverPath(), { live: false })).realms.some(realm => ['running', 'starting'].includes(realm.state));
     if (stop && await running()) { await realms.stopAll(serverPath()); await requireControl().stopAll(); }
     if (await running()) throw new Error('Stop the server first: its game data are replaced.');
-    try { const done = await assembleServer(['dbc', 'maps', 'vmaps']); assembler.forgetKept(serverPath()); return done; } finally { clientDrift = { key: '', at: 0, changed: false }; }
+    try {
+      const done = await assembleServer(['dbc', 'maps', 'vmaps']);
+      assembler.forgetKept(serverPath());
+      // Navigation for the maps new in the game, never all of them again: in the background, the server can start.
+      if (assembler.state(serverPath()).mmaps.complete) fillMissingMmaps(serverPath(), event => send('assemble:mmaps', event)).catch(() => {});
+      return done;
+    } finally { clientDrift = { key: '', at: 0, changed: false }; }
   });
   handle('assemble:status', () => assembler.state(serverPath()));
   // "Keep my modified files": the game as it is now is accepted, at the player's own risk.
@@ -853,6 +884,13 @@ function registerIpc() {
       mmapsList.at = 0;
     } finally { mmapsFetching = false; }
     if (!assembler.state(folder).mmaps.complete) await assembler.startMmaps(folder);
+    return assembler.state(folder);
+  });
+  handle('assemble:mmapsMissing', async () => {
+    const folder = serverPath();
+    if (!folder) throw new Error('Choose the server folder first.');
+    if (assembling || mmapsFetching) throw new Error('Another operation is running.');
+    await fillMissingMmaps(folder, event => send('assemble:mmaps', event));
     return assembler.state(folder);
   });
   handle('assemble:mmapsRebuild', async () => { await assembler.rebuildMmaps(serverPath()); return assembler.state(serverPath()); });

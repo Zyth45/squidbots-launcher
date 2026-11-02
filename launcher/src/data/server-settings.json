@@ -3265,6 +3265,25 @@
     "ru": "Выкл.: меняется только урон по существам. Вкл.: также по игрокам и другим ботам (PvP).",
     "zh": "关闭：只改变对生物的伤害。开启：对玩家和其他机器人（PvP）同样生效。"
    }
+  },
+  {
+   "key": "AiPlayerbot.CoaTankThreatBonus",
+   "file": "playerbots.conf",
+   "group": "damage",
+   "kind": "int",
+   "when": "reload",
+   "label": {
+    "en": "Threat of the bot tanks",
+    "fr": "Menace des bots tanks",
+    "ru": "Угроза ботов-танков",
+    "zh": "机器人坦克的威胁"
+   },
+   "help": {
+    "en": "Extra threat of the bot tanks in percent: 0 = unchanged, 100 = ×2, 200 = ×3.",
+    "fr": "Menace en plus des bots tanks, en pourcentage : 0 = inchangée, 100 = ×2, 200 = ×3.",
+    "ru": "Дополнительная угроза ботов-танков в процентах: 0 = без изменений, 100 = ×2, 200 = ×3.",
+    "zh": "机器人坦克额外威胁的百分比：0 = 不变，100 = ×2，200 = ×3。"
+   }
   }
  ],
  "overrides": [

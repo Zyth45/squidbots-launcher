@@ -417,6 +417,11 @@ summary.damage-row { cursor: pointer; list-style: none; }
 summary.damage-row::-webkit-details-marker { display: none; }
 .damage-row.spec { padding-left: 30px; border-top: 1px solid var(--line); }
 .damage-row input[type="range"] { width: 100%; }
+.damage-class.threat { border-color: color-mix(in srgb, var(--accent, #3fb8af) 45%, var(--line)); margin-bottom: 8px; }
+.threat-label { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.threat-label > svg { width: 20px; height: 20px; flex: none; color: var(--accent, #3fb8af); }
+.threat-label strong, .threat-label small { display: block; }
+.threat-label small { margin-top: 2px; line-height: 1.35; }
 .damage-pct { text-align: right; font-variant-numeric: tabular-nums; }
 @media (max-width: 640px) { .damage-row { grid-template-columns: minmax(0, 1fr) 4.5em auto; } .damage-row input[type="range"] { grid-column: 1 / -1; grid-row: 2; } }
 .damage-class > summary > span > svg:first-child { width: 14px; height: 14px; margin-right: 6px; vertical-align: -2px; transform: rotate(-90deg); transition: transform .15s; }

@@ -432,7 +432,7 @@ function settingsView() {
   const tabs = groups.map(group => ({ id: group.id, icon: group.icon, label: loc(group.label) }));
   if (!tabs.some(tab => tab.id === App.state.confGroup)) App.state.confGroup = tabs[0]?.id;
   const changedIn = id => conf.settings.filter(setting => setting.group === id && App.state.pending[pendingKey(setting.file, setting.key)] !== undefined).length;
-  const tabButton = tab => `<button class="conf-tab${App.state.confGroup === tab.id && !confSearching() ? ' active' : ''}" data-action="conf-group" data-id="${esc(tab.id)}">${icon(tab.icon)}<span>${esc(tab.label)}</span>${changedIn(tab.id) ? `<em>${changedIn(tab.id)}</em>` : ''}${tab.id === 'presets' && isNew('wizard') ? newDot() : ''}</button>`;
+  const tabButton = tab => `<button class="conf-tab${App.state.confGroup === tab.id && !confSearching() ? ' active' : ''}" data-action="conf-group" data-id="${esc(tab.id)}">${icon(tab.icon)}<span>${esc(tab.label)}</span>${changedIn(tab.id) ? `<em>${changedIn(tab.id)}</em>` : ''}${(tab.id === 'presets' && isNew('wizard')) || (tab.id === 'damage' && isNew('damage')) ? newDot() : ''}</button>`;
   // The tabs in sections (Start, Bots, World, Tools); a tab of no section goes at the end of the list.
   const placed = new Set((conf.sections || []).flatMap(section => section.groups));
   const sections = [...(conf.sections || []).map(section => ({ label: loc(section.label), tabs: section.groups.map(id => tabs.find(tab => tab.id === id)).filter(Boolean) })), { label: '', tabs: tabs.filter(tab => !placed.has(tab.id)) }].filter(section => section.tabs.length);
@@ -441,7 +441,7 @@ function settingsView() {
   const quick = conf.recipes.filter(recipe => ['coa-recommended', 'fresh-level-1', 'self-found-world', 'bots-around-my-level', 'rexxar-like'].includes(recipe.id))
     .filter(recipe => !recipe.soon || conf.recipes.some(item => item.id === 'self-found-world'));
   const recipes = quick.length ? `<div class="recipes">${quick.map(recipe => `<div class="recipe-cell"><button class="recipe${recipe.soon ? ' soon' : ''}" ${recipe.soon ? 'disabled aria-disabled="true"' : `data-action="conf-recipe" data-id="${esc(recipe.id)}"`}><strong>${esc(loc(recipe.title))}${recipe.soon ? `<span class="soon-tag">${esc(t('conf.soon', 'Coming soon'))}</span>` : ''}</strong><small>${esc(loc(recipe.summary))}</small></button></div>`).join('')}</div>` : '';
-  const body = groups.filter(group => group.id === App.state.confGroup).map(group => `<section class="conf-group"><h3>${icon(group.icon)}${esc(loc(group.label))}</h3>${group.id === 'presets' ? presetsView(recipes) : group.id === 'population' ? ramAdvice(conf) : group.id === 'damage' ? damageView() : ''}${group.id === 'levels' && selfFoundOn() ? `<p class="status-line self-found-note">${icon('info')}${esc(t('conf.selfFoundLevels', 'Solo self-found is on: the bots only level up by playing (up to 59 without generated gear, geared as usual at 60). The level settings below do not apply, except the bots online around your level.'))}</p>` : ''}${conf.settings.filter(setting => setting.group === group.id && !DAMAGE_KEYS.includes(setting.key)).map(settingRow).join('')}</section>`).join('');
+  const body = groups.filter(group => group.id === App.state.confGroup).map(group => `<section class="conf-group"><h3>${icon(group.icon)}${esc(loc(group.label))}</h3>${group.id === 'presets' ? presetsView(recipes) : group.id === 'population' ? ramAdvice(conf) : group.id === 'damage' ? damageView() : ''}${group.id === 'levels' && selfFoundOn() ? `<p class="status-line self-found-note">${icon('info')}${esc(t('conf.selfFoundLevels', 'Solo self-found is on: the bots only level up by playing (up to 59 without generated gear, geared as usual at 60). The level settings below do not apply, except the bots online around your level.'))}</p>` : ''}${conf.settings.filter(setting => setting.group === group.id && !DAMAGE_KEYS.includes(setting.key) && setting.key !== THREAT_KEY).map(settingRow).join('')}</section>`).join('');
   const key = realmKey || 'coa';
   const others = createdRealms().length > 1;
   const banner = !others ? '' : realmBanner(key, realmKey
@@ -491,8 +491,30 @@ function damageView() {
     const tuned = item.specs.filter(([id]) => bySpec[id]).length;
     return `<details class="damage-class"${tuned ? ' open' : ''}><summary class="damage-row"><span>${icon('chevron')}<strong>${esc(item.name)}</strong> <small class="muted">${esc(t('damage.specCount', '{n} specializations', { n: item.specs.length }))}</small>${tuned ? ` <em class="pill info">${esc(t('damage.specsTuned', '{n} specialization(s) set apart', { n: tuned }))}</em>` : ''}</span>${slider('class', item.id, own, false)}<button class="icon-button" data-action="damage-reset" data-kind="class" data-id="${item.id}" title="${esc(t('damage.reset', 'Back to 100 %'))}">${icon('refresh')}</button></summary>${specs}</details>`;
   }).join('');
-  return `<div class="damage-intro">${icon('info')}<p>${esc(t('damage.intro', 'Raise or lower the damage of the bots of a class whose rotation is behind or ahead. Bots only, with their pets and summons: the damage of a human player is never changed. 100 % = unchanged; a specialization set apart wins over its class.'))}<small>${esc(t('damage.when', 'Applies at the next server start, or at once with .reload config in the world console.'))}</small></p></div>
-    <div class="damage-list">${rows}</div>`;
+  return `<div class="damage-intro">${icon('info')}<p>${esc(t('damage.intro', 'Raise or lower the damage of the bots of a class whose rotation is behind or ahead. Bots only, with their pets and summons: the damage of a human player is never changed. 100 % = unchanged; a specialization set apart wins over its class.'))}<small>${esc(t('damage.whenNow', 'Saved while the server runs: applied at once, without a restart.'))}</small></p></div>
+    ${threatView()}${damageSetting(DAMAGE_KEYS[0]) ? `<div class="damage-list">${rows}</div>` : `<p class="status-line">${icon('info')}${esc(t('damage.needs29', 'The damage by class and specialization comes with CoA Bots 2.9: update the server to set it.'))}</p>`}`;
+}
+
+// AiPlayerbot.CoaTankThreatBonus: extra threat of the bot tanks in percent (0 = unchanged, 100 = ×2). The slider
+// shows their whole threat, 100 to 300 %, and writes it minus 100.
+const THREAT_KEY = 'AiPlayerbot.CoaTankThreatBonus';
+function threatView() {
+  const setting = damageSetting(THREAT_KEY);
+  if (!setting) return '';
+  const bonus = Number(App.state.pending[pendingKey(setting.file, THREAT_KEY)]?.value ?? setting.value) || 0;
+  const pct = 100 + Math.max(0, Math.round(bonus));
+  return `<div class="damage-list"><div class="damage-class threat"><div class="damage-row"><span class="threat-label">${icon('shield')}<span><strong>${esc(t('damage.threat', 'Threat of the bot tanks'))}</strong><small class="muted">${esc(t('damage.threatHelp', 'Helps them keep the monsters on them. 100 % = unchanged.'))}</small></span></span><input type="range" min="100" max="${Math.max(300, pct)}" step="${pct % 5 ? 1 : 5}" value="${pct}" data-threat="1" aria-label="${esc(t('damage.threat', 'Threat of the bot tanks'))}"><output class="damage-pct" data-threat-out="1">${pct} %</output><button class="icon-button" data-action="threat-reset" title="${esc(t('damage.reset', 'Back to 100 %'))}">${icon('refresh')}</button></div></div></div>`;
+}
+function threatInput(target) {
+  const setting = damageSetting(THREAT_KEY);
+  if (!setting) return;
+  const out = $('[data-threat-out]');
+  if (out) out.textContent = `${target.value} %`;
+  const value = String(Number(target.value) - 100);
+  const id = pendingKey(setting.file, THREAT_KEY);
+  if (value === String(setting.value || '0').trim()) delete App.state.pending[id];
+  else App.state.pending[id] = { file: setting.file, key: THREAT_KEY, value, kind: setting.kind };
+  patchConfBar();
 }
 // The two keys written from the sliders, as pending changes like any other setting.
 function damageWrite() {
@@ -524,6 +546,12 @@ function damageInput(target) {
   damageWrite();
 }
 Object.assign(App.actions, {
+  'threat-reset': () => {
+    const input = $('input[data-threat]');
+    if (!input) return;
+    input.value = 100;
+    threatInput(input);
+  },
   // Back to 100 % for a class, back to « like its class » for a specialization.
   'damage-reset': (button, event) => {
     event?.preventDefault();
@@ -623,6 +651,7 @@ document.addEventListener('input', event => {
   if (target.id === 'upgrade-folder') App.state.upgradeFolder = target.value;
   if (target.id === 'with-bots') App.state.withBots = target.checked;
   if (target.dataset?.damage) { damageInput(target); return; }
+  if (target.dataset?.threat) { threatInput(target); return; }
   if (!target.dataset?.confKey) return;
   const { confFile: file, confKey: key, confKind: kind } = target.dataset;
   const value = target.type === 'checkbox' ? (target.checked ? '1' : '0') : target.value;
@@ -642,7 +671,7 @@ App.pages.server = {
     if (!info) return `<div class="page server">${skeleton(6)}</div>`;
     if (info.error) return `<div class="page server">${emptyState('warning', t('server.error', 'The server panel is unavailable'), info.error)}</div>`;
     if (!info.path && s.srvTab !== 'install') s.srvTab = 'install';
-    const tabs = `<nav class="subtabs">${SRV_TABS.filter(([id]) => id !== 'settings' || info.path).map(([id, iconName, key, fallback]) => `<button class="subtab${s.srvTab === id ? ' active' : ''}" data-action="srv-tab" data-id="${id}" ${!info.path && id !== 'install' ? 'disabled' : ''}>${icon(iconName)}<span>${esc(t(key, fallback))}</span>${id === 'settings' && Object.keys(s.pending).length ? `<em>${Object.keys(s.pending).length}</em>` : ''}${id === 'settings' && (isNew('settings') || isNew('wizard')) ? newDot() : ''}${(id === 'upgrade' && s.updates.core) || (id === 'install' && s.updates.bots) ? '<i class="dot"></i>' : ''}</button>`).join('')}</nav>`;
+    const tabs = `<nav class="subtabs">${SRV_TABS.filter(([id]) => id !== 'settings' || info.path).map(([id, iconName, key, fallback]) => `<button class="subtab${s.srvTab === id ? ' active' : ''}" data-action="srv-tab" data-id="${id}" ${!info.path && id !== 'install' ? 'disabled' : ''}>${icon(iconName)}<span>${esc(t(key, fallback))}</span>${id === 'settings' && Object.keys(s.pending).length ? `<em>${Object.keys(s.pending).length}</em>` : ''}${id === 'settings' && (isNew('settings') || isNew('wizard') || isNew('damage')) ? newDot() : ''}${(id === 'upgrade' && s.updates.core) || (id === 'install' && s.updates.bots) ? '<i class="dot"></i>' : ''}</button>`).join('')}</nav>`;
     const view = { services: servicesView, install: installView, backups: backupsView, upgrade: upgradeView, modules: modulesView, settings: settingsView }[s.srvTab];
     return `<div class="page server"><div class="page-head"><div><span class="eyebrow">${esc(t('server.eyebrow', 'On this PC'))}</span><h1>${esc(App.state.srvTab === 'settings' ? t('server.settingsTitle', 'Server settings') : t('server.title', 'Local server'))}</h1></div></div>${updateBanner()}<div class="srv-tabs-row">${tabs}${s.srvTab === 'settings' && info.path && App.state.conf && !App.state.conf.error ? realmPicker(App.state.conf.realm?.key || 'coa', 'conf-realm') : ''}</div><div class="srv-body">${view(info)}</div></div>`;
   },
@@ -737,7 +766,7 @@ Object.assign(App.actions, {
     toast(output || t('server.passwordChanged', 'New password for {name}.', { name: name.toUpperCase() }), 'success');
   }, button),
 
-  'conf-group': button => { App.state.confGroup = button.dataset.id; App.state.confSearch = ''; App.refresh('server'); $('#view')?.scrollTo({ top: 0 }); },
+  'conf-group': button => { App.state.confGroup = button.dataset.id; if (button.dataset.id === 'damage') markSeen('damage'); App.state.confSearch = ''; App.refresh('server'); $('#view')?.scrollTo({ top: 0 }); },
   'srv-tab': button => guard(async () => {
     if (button.dataset.id === 'settings') markSeen('settings');
     const s = App.state;
@@ -1067,9 +1096,19 @@ App.actions['ahbot-save'] = button => guard(async () => {
 
 async function saveConf(restart) {
   const realm = confRealm();
-  const result = await App.api.saveServerSettings(Object.values(App.state.pending), realm);
+  const changes = Object.values(App.state.pending);
+  const result = await App.api.saveServerSettings(changes, realm);
   App.state.pending = {};
   toast(result.written.length ? t('conf.savedFiles', 'Saved in {files}.', { files: result.written.join(', ') }) : t('conf.nothing', 'Nothing changed.'), 'success');
+  // Settings the world reads again with .reload config (bot damage, tank threat...): applied at once when it runs;
+  // a stopped server only saves them.
+  const reloadable = changes.some(change => App.state.conf.settings.find(setting => setting.file === change.file && setting.key === change.key)?.when === 'reload');
+  const running = realm ? realmList().some(item => item.key === realm && item.state === 'running') : worldRunning(App.state.server);
+  if (!restart && reloadable && running && result.written.length) {
+    await App.api.consoleRun('reload config', realm)
+      .then(() => toast(t('conf.reloaded', 'Applied at once: the server read its settings again.'), 'success'))
+      .catch(() => toast(t('conf.reloadFailed', 'The server did not answer: these settings apply at its next start.'), 'info'));
+  }
   if (restart && realm) {
     await App.api.realmsStop(realm);
     await App.api.realmsStart(realm);
