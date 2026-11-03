@@ -736,17 +736,21 @@ function registerIpc() {
     // This server comes without game data: it is prepared from the game, so the game folder comes first.
     if (!gameDataPath()) throw new Error('Choose your game folder first: the server takes its game data from it.');
     if (busyFiles || upgradeState.running || update.busy) throw new Error('Another operation is running.');
-    const result = smokeDir && process.env.COA_SMOKE_IMPORT_DIR ? { filePaths: [process.env.COA_SMOKE_IMPORT_DIR] } : await dialog.showOpenDialog(window, { title: 'Choose an EMPTY folder for the server', properties: ['openDirectory', 'createDirectory'], defaultPath: 'C:\\' });
+    // The folder of "Create a new server" is offered first: it is empty but for the ports it was given.
+    const created = serverPath() && await repackImport.preparedPorts(serverPath()) ? serverPath() : 'C:\\';
+    const result = smokeDir && process.env.COA_SMOKE_IMPORT_DIR ? { filePaths: [process.env.COA_SMOKE_IMPORT_DIR] } : await dialog.showOpenDialog(window, { title: 'Choose an EMPTY folder for the server', properties: ['openDirectory', 'createDirectory'], defaultPath: created });
     if (result.canceled || !result.filePaths[0]) return null;
     const target = path.resolve(result.filePaths[0]);
     assertFolder(target);
     await assertLocalDrive(target);
-    if ((await fs.readdir(target).catch(() => [])).length) throw new Error('Choose an empty folder: the new server is installed there.');
+    const ports = await repackImport.preparedPorts(target);
+    if (!ports && (await fs.readdir(target).catch(() => [])).length) throw new Error('Choose an empty folder: the new server is installed there.');
     // The bar shows at once: the folder checks and the first bytes take a few seconds.
     send('repack:import', { phase: 'download', done: 0, total: entry.bytes });
     busyFiles = true;
     try {
       await installPackage(target);
+      if (ports) await repackImport.keepPorts(target, ports);
       await network.applyNetwork(target).catch(() => {});
       settings.instances = [...new Set([serverPath(), target].filter(Boolean).map(item => path.normalize(item)).concat(settings.instances))].slice(0, 12);
       await persist({ ...settings, installPaths: { ...settings.installPaths, server: target } });

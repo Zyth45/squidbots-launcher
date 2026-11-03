@@ -69,4 +69,22 @@ function findKnown(list, sha256) {
   return (Array.isArray(list?.repacks) ? list.repacks : []).find(item => String(item.sha256).toLowerCase() === sha256) || null;
 }
 
-module.exports = { hashZip, inspectZip, extractZip, findKnown, REQUIRED };
+// A folder made by "Create a new server" with other ports holds only Settings/repack.json: it is installed as it is,
+// and those ports are kept over the package's own (null for any other folder).
+async function preparedPorts(folder) {
+  const top = await fsp.readdir(folder).catch(() => []);
+  if (top.length !== 1 || top[0] !== 'Settings') return null;
+  const inside = await fsp.readdir(path.join(folder, 'Settings')).catch(() => []);
+  if (inside.length !== 1 || inside[0] !== 'repack.json') return null;
+  try { const value = JSON.parse((await fsp.readFile(path.join(folder, 'Settings', 'repack.json'), 'utf8')).replace(/^﻿/, '')); return value && typeof value === 'object' && !Array.isArray(value) ? value : null; } catch { return null; }
+}
+
+// After unpacking: the package's repack.json gives its new options, the ports chosen before stay.
+async function keepPorts(folder, ports) {
+  const file = path.join(folder, 'Settings', 'repack.json');
+  let unpacked = {};
+  try { unpacked = JSON.parse((await fsp.readFile(file, 'utf8')).replace(/^﻿/, '')) || {}; } catch {}
+  await fsp.writeFile(file, JSON.stringify({ ...unpacked, ...ports }, null, 4));
+}
+
+module.exports = { hashZip, inspectZip, extractZip, findKnown, preparedPorts, keepPorts, REQUIRED };

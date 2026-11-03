@@ -2798,10 +2798,10 @@
     "zh": "本服务器已开放的内容"
    },
    "help": {
-    "en": "This also closes the raids: a dungeon difficulty or a raid above the stage cannot be entered (« Instance is closed »), Game Masters still enter. Each stage opens the ones before it. Naxxramas is never closed; stage 8 adds its caches and tokens. Callboard Caches follow the same stages. Players see the new difficulty list at their next login.",
-    "fr": "Ce réglage ferme aussi les raids : une difficulté de donjon ou un raid au-dessus du palier est inaccessible (« Instance is closed »), les MJ entrent quand même. Chaque palier ouvre les précédents. Naxxramas n'est jamais fermé ; le palier 8 ajoute ses coffres et jetons. Les coffres du Callboard suivent les mêmes paliers. Les joueurs voient la nouvelle liste des difficultés à leur prochaine connexion.",
-    "ru": "Этот параметр также закрывает рейды: сложность подземелья или рейд выше этапа недоступны («Instance is closed»), ГМ всё равно могут войти. Каждый этап открывает предыдущие. Наксрамас никогда не закрывается; этап 8 добавляет его сундуки и жетоны. Сундуки Callboard следуют тем же этапам. Игроки увидят новый список сложностей при следующем входе.",
-    "zh": "此设置也会关闭团队副本：高于该阶段的地下城难度或团队副本无法进入（“Instance is closed”），GM 仍可进入。每个阶段会开放之前的所有阶段。纳克萨玛斯从不关闭；阶段 8 会加入其宝箱和代币。Callboard 宝箱遵循相同阶段。玩家下次登录时才会看到新的难度列表。"
+    "en": "8 = everything released, Naxxramas included. This also closes the raids: a dungeon difficulty or a raid above the stage cannot be entered (« Instance is closed »), Game Masters still enter. Each stage opens the ones before it. Naxxramas is never closed; stage 8 adds its caches and tokens. Callboard Caches follow the same stages. Players see the new difficulty list at their next login.",
+    "fr": "8 = tout le contenu sorti, Naxxramas compris. Ce réglage ferme aussi les raids : une difficulté de donjon ou un raid au-dessus du palier est inaccessible (« Instance is closed »), les MJ entrent quand même. Chaque palier ouvre les précédents. Naxxramas n'est jamais fermé ; le palier 8 ajoute ses coffres et jetons. Les coffres du Callboard suivent les mêmes paliers. Les joueurs voient la nouvelle liste des difficultés à leur prochaine connexion.",
+    "ru": "8 = открыт весь контент, включая Наксрамас. Этот параметр также закрывает рейды: сложность подземелья или рейд выше этапа недоступны («Instance is closed»), ГМ всё равно могут войти. Каждый этап открывает предыдущие. Наксрамас никогда не закрывается; этап 8 добавляет его сундуки и жетоны. Сундуки Callboard следуют тем же этапам. Игроки увидят новый список сложностей при следующем входе.",
+    "zh": "8 = 已开放全部内容，包括纳克萨玛斯。此设置也会关闭团队副本：高于该阶段的地下城难度或团队副本无法进入（“Instance is closed”），GM 仍可进入。每个阶段会开放之前的所有阶段。纳克萨玛斯从不关闭；阶段 8 会加入其宝箱和代币。Callboard 宝箱遵循相同阶段。玩家下次登录时才会看到新的难度列表。"
    }
   },
   {
