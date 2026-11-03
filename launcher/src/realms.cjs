@@ -19,6 +19,7 @@ const { portOpen } = require('./server-control.cjs');
 const { validate } = require('./server-config.cjs');
 const CATALOG = require('./data/server-settings.json');
 const live = require('./live.cjs');
+const eco = require('./eco.cjs');
 const os = require('node:os');
 
 // Keys by settings file (the file names of the Server settings page).
@@ -253,6 +254,9 @@ async function writeConfigs(root, key, saved) {
   const prefix = chars.split(';').slice(0, 4).join(';');
   add('worldserver.conf', { CharacterDatabaseInfo: `"${prefix};acore_characters_${key}"`, LogsDir: `"${path.join(dir, 'Logs').replace(/\\/g, '/')}"` });
   add('playerbots.conf', { PlayerbotsDatabaseInfo: `"${prefix};acore_playerbots_${key}"` });
+  // CoA in its eco time: the realm copies the player's value of CoA, not the eco one.
+  const coaEco = await eco.activeRecord(root, 'coa');
+  if (coaEco) { const file = path.join(target, 'modules', 'playerbots.conf'); const text = await fsp.readFile(file, 'utf8').catch(() => null); if (text !== null) await fsp.writeFile(file, eco.restoreText(text, coaEco.original)); }
   for (const [fileId, keys] of edits) {
     if (!FILE_ID.test(fileId)) continue;
     const file = path.join(target, relOf(fileId));
@@ -394,7 +398,8 @@ async function coaAutostart(root) {
 }
 async function setCoaAutostart(root, on) {
   await fsp.mkdir(path.join(root, 'Royaumes'), { recursive: true });
-  await fsp.writeFile(path.join(root, 'Royaumes', 'coa.json'), JSON.stringify({ autostart: on === true }, null, 2));
+  const saved = (await readJson(path.join(root, 'Royaumes', 'coa.json'))) || {};
+  await fsp.writeFile(path.join(root, 'Royaumes', 'coa.json'), JSON.stringify({ ...saved, autostart: on === true }, null, 2));
 }
 async function skipCoaAtStart(root) {
   if (await coaAutostart(root)) return false;
@@ -545,20 +550,48 @@ async function start(root, key, { timeout = 1200 } = {}) {
   if (await processOf(root, key)) throw new Error(`${saved.name} is still starting or stopping.`);
   if (await portOpen(saved.raPort)) throw new Error(`Port ${saved.raPort} is already used by another program.`);
   if (await anotherStarting(root, key)) throw new Error('Another realm is starting: wait until it runs (two worlds must never apply their updates at the same time).');
+  await eco.wakeStopped(root, key);
   await refreshBotConfigs(root);
   await syncShippedTables(root, key);
   await writeConfigs(root, key, saved);
   // The realmlist follows the port (the address follows the CoA realm, set by the network choice).
   await sql(root, `UPDATE acore_auth.realmlist r JOIN acore_auth.realmlist c ON c.id = 1 SET r.name = '${String(saved.name || MODES[key].name).replace(/'/g, '')}', r.port = ${saved.worldPort}, r.address = c.address, r.localAddress = c.localAddress WHERE r.id = ${saved.id}`).catch(() => {});
   const child = launch(root, key, 'started by the launcher');
-  const deadline = Date.now() + timeout * 1000;
   skipped.delete(key);
-  while (Date.now() < deadline) {
+  starting.add(key);
+  try { await waitOpen(root, key, saved, child, timeout); } finally { starting.delete(key); }
+}
+const starting = new Set();
+async function waitOpen(root, key, saved, child, timeout) {
+  // The first start after an update may apply thousands of SQL files on a busy PC: the world is waited for as long
+  // as its logs grow, and given up only after `timeout` seconds without a new line (or 3 hours in all).
+  const end = Date.now() + 3 * 3600 * 1000;
+  let size = logsSize(root, key);
+  let moved = Date.now();
+  while (Date.now() < end && Date.now() - moved < timeout * 1000) {
     if (await portOpen(saved.worldPort)) { await markStarted(root, key); return; }
     if (!pidAlive(child.pid)) throw new Error(`${saved.name} stopped while starting. Look at Royaumes\\${key}\\Logs.`);
     await new Promise(resolve => setTimeout(resolve, 2000));
+    const now = logsSize(root, key);
+    if (now !== size) { size = now; moved = Date.now(); }
   }
-  throw new Error(`${saved.name} did not open port ${saved.worldPort} in time.`);
+  if (await portOpen(saved.worldPort)) { await markStarted(root, key); return; }
+  // Stuck before its port opened (no player could be in it): stopped, so no world of this repack is left running
+  // unknown to its scripts (the next update would refuse, code 13).
+  await new Promise(resolve => execFile('taskkill.exe', ['/PID', String(child.pid), '/T', '/F'], { windowsHide: true }, () => resolve()));
+  await fsp.rm(path.join(dirOf(root, key), '.state.json'), { force: true });
+  throw new Error(`${saved.name} did not open port ${saved.worldPort}: its logs had not moved for ${Math.round(timeout / 60)} minutes, it was stopped. Look at Royaumes\\${key}\\Logs.`);
+}
+// When the logs of a realm last changed (0: no logs).
+const STUCK_AFTER = 20 * 60 * 1000;
+function logsChanged(root, key) {
+  const dir = path.join(dirOf(root, key), 'Logs');
+  try { return fs.readdirSync(dir).reduce((last, name) => { try { return Math.max(last, fs.statSync(path.join(dir, name)).mtimeMs); } catch { return last; } }, 0); } catch { return 0; }
+}
+// Bytes written to the logs of a realm: they grow while its world applies its updates and loads.
+function logsSize(root, key) {
+  const dir = path.join(dirOf(root, key), 'Logs');
+  try { return fs.readdirSync(dir).reduce((sum, name) => { try { return sum + fs.statSync(path.join(dir, name)).size; } catch { return sum; } }, 0); } catch { return 0; }
 }
 
 function launch(root, key, why, env) {
@@ -566,7 +599,11 @@ function launch(root, key, why, env) {
   fs.mkdirSync(path.join(dir, 'Logs'), { recursive: true });
   const log = fs.openSync(path.join(dir, 'Logs', 'world-console.log'), 'a');
   fs.writeSync(log, `\n==== ${new Date().toISOString()} ${why} ====\n`);
-  const child = spawn(worldExe(root), ['-c', 'configs\\worldserver.conf'], { cwd: dir, windowsHide: true, detached: !env, stdio: ['ignore', log, log], env: env ? { ...process.env, ...env } : process.env });
+  // The core's SQL updater writes the MySQL password to %TEMP%\mysql_ac.conf, a fixed name: one temp folder per
+  // realm, so two worlds applying their updates at once never remove each other's file (ERROR 1045).
+  const tmp = path.join(dir, 'tmp');
+  fs.mkdirSync(tmp, { recursive: true });
+  const child = spawn(worldExe(root), ['-c', 'configs\\worldserver.conf'], { cwd: dir, windowsHide: true, detached: !env, stdio: ['ignore', log, log], env: { ...process.env, ...env, TEMP: tmp, TMP: tmp } });
   fs.closeSync(log);
   fs.writeFileSync(path.join(dir, '.state.json'), JSON.stringify({ pid: child.pid, exe: worldExe(root), started: new Date().toISOString() }));
   if (!env) child.unref();
@@ -594,6 +631,15 @@ async function stop(root, key) {
   try { await stopWorld(root, key, saved, pid); } finally { stopping.delete(key); }
 }
 async function stopWorld(root, key, saved, pid) {
+  // A world whose port never opened, not being started now (left by a start given up, or by an older launcher): no
+  // player can be in it. Stopped at once when its logs have not moved for 20 minutes (stuck), so nothing of this repack
+  // runs unknown to its scripts (code 13); one still writing them may be applying its SQL updates: never killed then.
+  if (pid && !starting.has(key) && !(await portOpen(saved.worldPort))) {
+    if (Date.now() - logsChanged(root, key) < STUCK_AFTER) throw Object.assign(new Error(`${saved.name} is still starting (updates of its database): try again in a few minutes.`), { code: 'REALM_SAVING' });
+    await new Promise(resolve => execFile('taskkill.exe', ['/PID', String(pid), '/T', '/F'], { windowsHide: true }, () => resolve()));
+    await fsp.rm(path.join(dirOf(root, key), '.state.json'), { force: true });
+    return;
+  }
   // The repack's RA account (Settings/repack.json) is an account of the shared auth database: valid on every realm.
   await live.raCommand(root, 'server shutdown 1s 0', 20000, saved.raPort).catch(() => {});
   // A world is never killed: one still saving its players would lose them. MySQL stays up for it (the callers stop).
@@ -713,7 +759,7 @@ async function onlineRunning(root) {
   if (up.length) await sql(root, `UPDATE acore_auth.realmlist SET flag = flag & ~2 WHERE id IN (${up.join(',')})`);
   return up;
 }
-const listening = port => new Promise(resolve => { const socket = require('node:net').connect({ host: '127.0.0.1', port }); const done = ok => { socket.destroy(); resolve(ok); }; socket.setTimeout(1500, () => done(false)); socket.once('connect', () => done(true)); socket.once('error', () => done(false)); });
+const listening = port => portOpen(port);
 
 // The authserver marks every realm offline (flag bit 2) when it starts; a world clears that bit only at its own start,
 // then every UpdateUptimeInterval. Cleared again for the worlds already running, so they do not show Offline for minutes.

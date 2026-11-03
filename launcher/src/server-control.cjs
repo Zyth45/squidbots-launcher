@@ -54,20 +54,15 @@ function validateServices(list) {
   });
 }
 
-function portOpen(port) {
-  return new Promise(resolve => {
-    const socket = net.connect({ host: '127.0.0.1', port, timeout: 800 });
-    const done = ok => { socket.destroy(); resolve(ok); };
-    socket.once('connect', () => done(true));
-    socket.once('timeout', () => done(false));
-    socket.once('error', () => done(false));
-  });
-}
+// On 127.0.0.1, or on the precise address the repack's configs bind to (probe.cjs).
+const probe = require('./probe.cjs');
+const portOpen = port => probe.portOpen(port);
 
 class ServerControl {
   constructor({ root, services, commands = {}, notify = () => {}, onAuthStarted = null }) {
     this.onAuthStarted = onAuthStarted;
     this.root = path.resolve(root);
+    probe.setRoot(this.root);
     this.services = services;
     this.commands = commands;
     this.notify = notify;
@@ -200,9 +195,13 @@ class ServerControl {
     await fsp.mkdir(path.dirname(this.logFile(id)), { recursive: true });
     const log = fs.openSync(this.logFile(id), 'a');
     fs.writeSync(log, `\n==== ${new Date().toISOString()} started by the launcher ====\n`);
+    // The core's SQL updater writes the MySQL password to %TEMP%\mysql_ac.conf, a fixed name: a temp folder of its
+    // own beside the program, so a realm applying its updates at the same time never removes it.
+    const tmp = /^(world|auth)server\.exe$/i.test(path.basename(exe)) ? path.join(path.dirname(exe), 'tmp') : '';
+    if (tmp) await fsp.mkdir(tmp, { recursive: true });
     const child = spawn(exe, service.args.map(arg => arg.replace(/\{root\}/g, this.root)), {
       cwd: this.resolve(service.cwd || '.'), windowsHide: true, detached: false,
-      stdio: [service.console ? 'pipe' : 'ignore', log, log],
+      stdio: [service.console ? 'pipe' : 'ignore', log, log], env: tmp ? { ...process.env, TEMP: tmp, TMP: tmp } : process.env,
     });
     fs.closeSync(log);
     this.children.set(id, child);

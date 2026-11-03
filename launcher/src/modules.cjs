@@ -59,6 +59,7 @@ async function status(root, { squidbots = true, client = '' } = {}) {
     dungeonclear: await dungeonStatus(root),
     enchanter: await enchanterStatus(root),
     manastorm: await manastormStatus(root),
+    mythicplus: await mythicPlusStatus(root),
     rotation: await rotationStatus(root),
     multirace: {
       enabled: confValue(conf, 'CoACustomRaces.Enable') === '1',
@@ -235,6 +236,16 @@ async function setAhbot(root, on) {
 
 // Manastorm Endless (core of CoA, from CoA Bots 2.5): off by default. Its tables are always there (the server needs
 // them to start); the switch only sets Enable, with ClientMode 2 (the native window of the patched client).
+// Mythic+ keystone runs (from CoA Bots 2.9): read at each run, so a .reload config applies it at once.
+const MYTHICPLUS = 'mod_coa_mythic_plus.conf';
+async function mythicPlusStatus(root) {
+  const conf = await moduleConf(root, MYTHICPLUS);
+  return { available: conf !== null, enabled: conf !== null && !/^(0|false)$/i.test(confValue(conf, 'MythicPlus.Enable') || '') };
+}
+async function setMythicPlus(root, on) {
+  await setModuleKeys(root, MYTHICPLUS, { 'MythicPlus.Enable': on ? '1' : '0' }, 'Mythic+ comes with CoA Bots 2.9.');
+}
+
 const MANASTORM = 'manastorm-endless.conf';
 async function manastormStatus(root) {
   const conf = await moduleConf(root, MANASTORM);
@@ -297,4 +308,4 @@ function runScript(root, command, apply) {
   }));
 }
 
-module.exports = { dungeonStatus, setDungeon, setDungeonDifficulties, enchanterStatus, setEnchanter, setEnchanterTiers, setEnchanterCost, ahbotStatus, setAhbot, ahbotSettings, setAhbotSettings, ahbotInstantKnown, manastormStatus, setManastorm, rotationStatus, setRotation, keepRotationOff, hasScript, runScript, status, setMultirace, setClientPatch, clientPatch, coreSupports, multiraceBlockers, RACES_CONF, RACES_DBC_COUNT };
+module.exports = { dungeonStatus, setDungeon, setDungeonDifficulties, enchanterStatus, setEnchanter, setEnchanterTiers, setEnchanterCost, ahbotStatus, setAhbot, ahbotSettings, setAhbotSettings, ahbotInstantKnown, manastormStatus, setManastorm, mythicPlusStatus, setMythicPlus, rotationStatus, setRotation, keepRotationOff, hasScript, runScript, status, setMultirace, setClientPatch, clientPatch, coreSupports, multiraceBlockers, RACES_CONF, RACES_DBC_COUNT };

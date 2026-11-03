@@ -368,6 +368,7 @@ function homeView() {
         </div>
         ${playButton()}
       </div>${App.state.addon?.clientTooNew ? `<p class="client-old">${icon('warning')}<span>${esc(t('home.clientTooNew', 'Your Ascension client is newer than this server handles ({file}): {note}', { file: App.state.addon.clientTooNew.file, note: App.state.addon.clientTooNew.note?.[App.state.settings.language] || App.state.addon.clientTooNew.note?.en || '' }))}</span></p>` : ''}${App.state.addon?.clientOutdated ? `<p class="client-old">${icon('warning')}<span>${esc(t('home.clientOld', 'Your Ascension client is not up to date ({file} is missing or old): open the official Ascension launcher once to update it (Manastorm needs it).', { file: App.state.addon.clientOutdated }))}</span></p>` : ''}
+        <label class="check home-restart"><input type="checkbox" data-setting="restartWorldOnCrash" data-page-setting="1" ${s.settings.restartWorldOnCrash ? 'checked' : ''}><span>${esc(t('settings.restartOnCrash', 'Start the world again after a crash (3 times an hour at most)'))}</span></label>
         <span class="chip classic-folder" title="${esc(info.path)}">${icon('folder')}<span>${esc(info.path)}</span></span>
       </div>
       <aside class="classic-side">${updateCard()}${componentCards()}

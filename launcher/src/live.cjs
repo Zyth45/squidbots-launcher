@@ -8,6 +8,7 @@ const net = require('node:net');
 const os = require('node:os');
 const path = require('node:path');
 const { execFile } = require('node:child_process');
+const probe = require('./probe.cjs');
 
 const readJson = file => { try { return JSON.parse(fs.readFileSync(file, 'utf8').replace(/^﻿/, '')); } catch { return null; } };
 
@@ -26,12 +27,18 @@ const raOpen = root => (openOn.get(root) || 0) > 0;
 // The remote console of a realm (same server, its own RA port) still busy with an earlier question.
 const raBusy = (root, port) => raOpen(port ? `${root}|${Number(port)}` : root);
 // portOverride: the RA port of another realm of the same server (same RA account, shared auth database).
+// Ra.IP set to a precise address (not 0.0.0.0 nor 127.0.0.1): the console is reached on the address it answers on.
 function raCommand(root, command, timeout = 15000, portOverride = 0) {
+  const port = Number(portOverride) || raSettings(root).port;
+  if (!probe.hosts(root).length) return raSession(root, command, timeout, portOverride, '127.0.0.1');
+  return probe.hostOf(port, root).then(host => raSession(root, command, timeout, portOverride, host || '127.0.0.1'));
+}
+function raSession(root, command, timeout, portOverride, host) {
   const { port: own, user, password } = raSettings(root);
   const port = Number(portOverride) || own;
   if (portOverride) root = `${root}|${port}`;
   return new Promise((resolve, reject) => {
-    const socket = net.connect({ host: '127.0.0.1', port });
+    const socket = net.connect({ host, port });
     openOn.set(root, (openOn.get(root) || 0) + 1);
     let counted = true;
     const uncount = () => { if (counted) { counted = false; openOn.set(root, openOn.get(root) - 1); } };

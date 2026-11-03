@@ -9,9 +9,9 @@ const loc = value => (value && typeof value === 'object' ? value[I18N.lang] || v
 
 // What's new: a red dot on the places a launcher update changed, until the player has opened them once.
 // Raise a number when its place changes again in a later launcher.
-const NEW_SPOTS = { modules: 1, settings: 1, realms: 1, wizard: 2, damage: 1 };
+const NEW_SPOTS = { modules: 1, settings: 1, realms: 1, wizard: 2, damage: 1, progression: 1 };
 // Shown even at the first launch, until the player opens it once.
-const FIRST_SPOTS = ['damage'];
+const FIRST_SPOTS = ['damage', 'progression'];
 const seenSpots = () => {
   try {
     const saved = localStorage.getItem('seenSpots');
@@ -52,7 +52,7 @@ const App = {
     if (App.state.config.edition === 'server' && ![...serverTabs, ...rightTabs].some(([id]) => id === App.state.tab)) App.state.tab = 'home';
     $('#tabs').innerHTML = (App.state.config.edition === 'server' ? serverTabs : [['play', 'play', t('tab.play', 'Play')], ...(isClassic() && App.state.config.game.hasAddons ? [['addons', 'addons', t('addon.title', 'Addons')]] : []), ...(App.state.config.server ? [['server', 'layers', t('tab.server', 'Local server')]] : [])]
       ).map(([id, iconName, label]) => `<button class="tab${App.state.tab === id ? ' active' : ''}" data-tab="${id}">${icon(iconName)}<span>${esc(label)}</span>${(id === 'server' || id === 'home') && hasUpdates() && !(App.state.config.edition === 'server' && id === 'server') ? `<i class="dot" title="${esc(t('updates.dot', 'A new version is available'))}"></i>` : (id === 'modules' && isNew('modules')) || (id === 'realms' && isNew('realms')) ? newDot() : ''}</button>`).join('');
-    $('#tabs-right').innerHTML = App.state.config.edition === 'server' ? rightTabs.map(([id, iconName, label]) => `<button class="tab${App.state.tab === id ? ' active' : ''}" data-tab="${id}">${icon(iconName)}<span>${esc(label)}</span>${id === 'server' && (isNew('settings') || isNew('wizard') || isNew('damage')) ? newDot() : ''}</button>`).join('') : '';
+    $('#tabs-right').innerHTML = App.state.config.edition === 'server' ? rightTabs.map(([id, iconName, label]) => `<button class="tab${App.state.tab === id ? ' active' : ''}" data-tab="${id}">${icon(iconName)}<span>${esc(label)}</span>${id === 'server' && (isNew('settings') || isNew('wizard') || isNew('damage') || isNew('progression')) ? newDot() : ''}</button>`).join('') : '';
     const banner = $('#launcher-banner');
     if (banner) banner.innerHTML = App.state.config.edition === 'server' && typeof launcherBanner === 'function' ? launcherBanner() : '';
     const page = App.pages[App.state.tab];

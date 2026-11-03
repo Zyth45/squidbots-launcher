@@ -192,7 +192,7 @@ async function repackChecks({ root, add, mysqlQuery, services }) {
   const settings = JSON.parse((await read(path.join(root, 'Settings/repack.json'))) || '{}');
   const worldUp = services.find(service => service.id === 'world')?.state === 'running';
   if (worldUp && settings.raPort) {
-    const ra = await require('./dashboard.cjs').portOpen(Number(settings.raPort));
+    const ra = await require('./probe.cjs').portOpen(Number(settings.raPort), root);
     add('services', 'ra', ra ? 'ok' : 'warn', { port: settings.raPort });
   }
   // Windows Firewall: a Block rule on one of our programs (Windows makes one when its "allow access" window was

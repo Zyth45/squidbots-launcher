@@ -1,597 +1,642 @@
 [
-  {
-    "version": "0.3.55",
-    "items": {
-      "en": [
-        "Maps new in the game (after a CoA patch) get the navigation of the bots: « Update the data » adds it for them alone, and Verification offers it when it is missing. The other maps are not touched.",
-        "Bot damage: a slider for the threat of the bot tanks, up to ×3.",
-        "Settings saved while the server runs (bot damage, tank threat and the others marked « after .reload config ») apply at once, without a restart."
-      ],
-      "fr": [
-        "Les cartes nouvelles du jeu (après un patch CoA) reçoivent la navigation des bots : « Mettre à jour les données » l'ajoute pour elles seules, et la Vérification la propose quand elle manque. Les autres cartes ne sont pas touchées.",
-        "Dégâts des bots : un curseur pour la menace des bots tanks, jusqu'à ×3.",
-        "Les réglages enregistrés pendant que le serveur tourne (dégâts des bots, menace des tanks et les autres marqués « après .reload config ») s'appliquent tout de suite, sans redémarrer."
-      ],
-      "ru": [
-        "Новые карты игры (после патча CoA) получают навигацию ботов: «Обновить данные» добавляет её только для них, а Проверка предлагает её, если она отсутствует. Другие карты не затрагиваются.",
-        "Урон ботов: ползунок угрозы ботов-танков, до ×3.",
-        "Настройки, сохранённые при работающем сервере (урон ботов, угроза танков и другие с пометкой «после .reload config»), применяются сразу, без перезапуска."
-      ],
-      "zh": [
-        "游戏中的新地图（CoA 补丁之后）会获得机器人导航：“更新数据”只为它们添加，缺失时“检查”也会提供。其他地图不受影响。",
-        "机器人伤害：新增机器人坦克威胁滑块，最高 ×3。",
-        "服务器运行时保存的设置（机器人伤害、坦克威胁以及其他标注“执行 .reload config 后”的设置）立即生效，无需重启。"
-      ]
-    }
-  },
-  {
-    "version": "0.3.54",
-    "items": {
-      "en": [
-        "Updating CoA Bots is no longer refused with code 13 when the launcher is installed inside the server folder.",
-        "Windows 11 26H2: updating CoA Bots no longer stops at the test start (code 50, « mysql is still starting »).",
-        "Windows 11 26H2: the checks of CoA Bots no longer take leftover connections for another program on the MySQL port.",
-        "The SquidBots Lite addon is never replaced by an older version.",
-        "With CoA Bots 2.9: a Bot damage tab in Settings raises or lowers the damage of the bots by class and specialization.",
-        "With CoA Bots 2.9: a setting for random suffixes on the gear of the bots.",
-        "Modules: the Enchanter NPC for Warcraft Reborn shows as coming soon when that realm is on."
-      ],
-      "fr": [
-        "La mise à jour de CoA Bots n'est plus refusée avec le code 13 quand le launcher est installé dans le dossier du serveur.",
-        "Windows 11 26H2 : la mise à jour de CoA Bots ne s'arrête plus au démarrage de test (code 50, « mysql is still starting »).",
-        "Windows 11 26H2 : les contrôles de CoA Bots ne prennent plus des connexions restantes pour un autre programme sur le port MySQL.",
-        "L'addon SquidBots Lite n'est jamais remplacé par une version plus ancienne.",
-        "Avec CoA Bots 2.9 : un onglet Dégâts des bots dans les Réglages augmente ou baisse les dégâts des bots par classe et spécialisation.",
-        "Avec CoA Bots 2.9 : un réglage pour les suffixes aléatoires de l'équipement des bots.",
-        "Modules : le PNJ enchanteur de Warcraft Reborn s'affiche « bientôt » quand ce royaume est activé."
-      ],
-      "ru": [
-        "Обновление CoA Bots больше не отклоняется с кодом 13, если лаунчер установлен в папке сервера.",
-        "Windows 11 26H2: обновление CoA Bots больше не останавливается на тестовом запуске (код 50, « mysql is still starting »).",
-        "Windows 11 26H2: проверки CoA Bots больше не принимают оставшиеся соединения за другую программу на порту MySQL.",
-        "Аддон SquidBots Lite больше никогда не заменяется более старой версией.",
-        "С CoA Bots 2.9: вкладка «Урон ботов» в настройках повышает или снижает урон ботов по классу и специализации.",
-        "С CoA Bots 2.9: настройка случайных суффиксов на снаряжении ботов.",
-        "Модули: NPC-зачарователь для Warcraft Reborn отображается как «скоро», когда этот мир включён."
-      ],
-      "zh": [
-        "当启动器安装在服务器文件夹内时，CoA Bots 更新不再因代码 13 被拒绝。",
-        "Windows 11 26H2：CoA Bots 更新不再在测试启动时停止（代码 50，« mysql is still starting »）。",
-        "Windows 11 26H2：CoA Bots 的检查不再把残留连接误认为 MySQL 端口上的其他程序。",
-        "SquidBots Lite 插件不会再被旧版本替换。",
-        "CoA Bots 2.9 起：设置中的“机器人伤害”标签可按职业和专精提高或降低机器人的伤害。",
-        "CoA Bots 2.9 起：机器人装备随机后缀的设置。",
-        "模块：启用 Warcraft Reborn 服务器时，其附魔师 NPC 显示为“即将推出”。"
-      ]
-    }
-  },
-  {
-    "version": "0.3.53",
-    "items": {
-      "en": [
-        "Windows 11 26H2: preparing and starting the server no longer stops at the database (\"This repack does not own the MySQL listener\").",
-        "Realms show online right after the login server starts, instead of up to 10 minutes later.",
-        "Home: the two install steps (your game, then Install the server) show whenever the saved folder holds no server, after a reinstall from scratch too.",
-        "One way to install: the launcher downloads the server and prepares it from your game. The zip import and the \"Where to download it\" link are gone.",
-        "Uninstalling the launcher removes its settings, so a reinstall starts fresh. Your server folder and its characters are kept.",
-        "Server preparation: the long steps show what they are working on (the map, the model, the database part)."
-      ],
-      "fr": [
-        "Windows 11 26H2 : la préparation et le démarrage du serveur ne s'arrêtent plus à la base de données (« This repack does not own the MySQL listener »).",
-        "Les royaumes s'affichent en ligne dès le démarrage du serveur de connexion, au lieu de jusqu'à 10 minutes plus tard.",
-        "Accueil : les deux étapes d'installation (votre jeu, puis Installer le serveur) s'affichent dès que le dossier enregistré ne contient pas de serveur, y compris après une réinstallation de zéro.",
-        "Une seule façon d'installer : le launcher télécharge le serveur et le prépare à partir de votre jeu. L'import de zip et le lien « Où le télécharger » disparaissent.",
-        "Désinstaller le launcher efface ses réglages : une réinstallation repart à neuf. Le dossier du serveur et ses personnages sont gardés.",
-        "Préparation du serveur : les longues étapes montrent ce qu'elles traitent (la carte, le modèle, la partie de la base)."
-      ],
-      "ru": [
-        "Windows 11 26H2: подготовка и запуск сервера больше не останавливаются на базе данных («This repack does not own the MySQL listener»).",
-        "Миры показываются в сети сразу после запуска сервера входа, а не через 10 минут.",
-        "Главная: два шага установки (ваша игра, затем «Установить сервер») показываются, когда в сохранённой папке нет сервера, в том числе после переустановки с нуля.",
-        "Один способ установки: лаунчер скачивает сервер и готовит его из вашей игры. Импорт zip и ссылка «Где скачать» убраны.",
-        "Удаление лаунчера стирает его настройки: переустановка начинается с чистого листа. Папка сервера и персонажи сохраняются.",
-        "Подготовка сервера: долгие этапы показывают, над чем работают (карта, модель, часть базы)."
-      ],
-      "zh": [
-        "Windows 11 26H2：准备和启动服务器不再停在数据库（“This repack does not own the MySQL listener”）。",
-        "登录服务器启动后，各服务器立即显示在线，而不是最多 10 分钟后。",
-        "主页：只要保存的文件夹中没有服务器（包括从头重新安装后），就会显示两个安装步骤（你的游戏，然后“安装服务器”）。",
-        "只有一种安装方式：启动器下载服务器并从你的游戏准备数据。导入 zip 和“在哪里下载”链接已移除。",
-        "卸载启动器会删除其设置：重新安装将从头开始。服务器文件夹及其角色会保留。",
-        "服务器准备：耗时的步骤会显示正在处理的内容（地图、模型、数据库部分）。"
-      ]
-    }
-  },
-  {
-    "version": "0.3.52",
-    "items": {
-      "en": [
-        "Verification: \"Update map data\" now shows on every server prepared from your game, older installs included, so a new zone (Pale Reach) no longer needs a reinstall.",
-        "Verification: the \"Maps and game data present\" line shows its text again.",
-        "Reinstall and map data use the game the Play tab shows, even when no game folder was chosen in the settings.",
-        "Verification: the Troubleshooting panel is open by default.",
-        "Settings files with Windows line endings: a setting is no longer stuck to the comment above it, and Verification repairs the files already affected (thanks Nightlund)."
-      ],
-      "fr": [
-        "Vérification : « Mettre à jour les données » apparaît sur tout serveur préparé à partir de votre jeu, anciennes installations comprises : une nouvelle zone (Pale Reach) ne demande plus de réinstallation.",
-        "Vérification : la ligne « Cartes et données du jeu présentes » affiche de nouveau son texte.",
-        "La réinstallation et les données de cartes utilisent le jeu affiché dans l'onglet Jouer, même sans dossier de jeu choisi dans les réglages.",
-        "Vérification : le panneau Dépannage est ouvert par défaut.",
-        "Fichiers de réglages aux fins de ligne Windows : un réglage ne se colle plus au commentaire du dessus, et Vérification répare les fichiers déjà touchés (merci Nightlund)."
-      ],
-      "ru": [
-        "Проверка: «Обновить данные карт» теперь есть на любом сервере, подготовленном из вашей игры, включая старые установки: новая зона (Pale Reach) больше не требует переустановки.",
-        "Проверка: строка «Карты и данные игры на месте» снова показывает свой текст.",
-        "Переустановка и данные карт используют игру, показанную на вкладке «Играть», даже если папка игры не выбрана в настройках.",
-        "Проверка: панель «Устранение неполадок» открыта по умолчанию.",
-        "Файлы настроек с окончаниями строк Windows: настройка больше не прилипает к комментарию выше, а Проверка чинит уже затронутые файлы (спасибо Nightlund)."
-      ],
-      "zh": [
-        "检查：“更新地图数据”现在会出现在所有从你的游戏准备的服务器上，包括旧的安装：新区域（Pale Reach）不再需要重新安装。",
-        "检查：“地图和游戏数据齐全”一行重新显示其说明。",
-        "重新安装和地图数据使用“游戏”页显示的游戏，即使设置中没有选择游戏文件夹。",
-        "检查：“故障排除”面板默认展开。",
-        "使用 Windows 换行符的设置文件：设置不再粘到上方的注释行，检查页会修复已受影响的文件（感谢 Nightlund）。"
-      ]
-    }
-  },
-  {
-    "version": "0.3.51",
-    "items": {
-      "en": [
-        "The launcher in Simplified Chinese (Launcher settings > Language).",
-        "Server live on the home page: how long the server has been up, and its crashes of the last 7 days.",
-        "Your alts: the level from which bots ride. Lower it so your low-level alts mount up and dismount with you.",
-        "Dungeon Clear tab in the server settings: smart rest and the health/mana thresholds the tank waits for, how many mobs the tank charges at once, loot, chests, resurrection; the rest thresholds of self-found parties too.",
-        "A clear message when the server preparation cannot reach GitHub because the secure connection is refused (an antivirus that scans HTTPS): what to do, in your language.",
-        "Guild bank deposits by your alts are on by default since CoA Bots 2.8.3: the setting and the wizard say what they deposit.",
-        "Verification: \"Update the data\" takes the map data again from your game, after a game patch with a new zone (the server is stopped first). The home page also tells you when your game was updated.",
-        "The server preparation now also downloads through Windows's own connection when an antivirus refuses Python's one.",
-        "Modules: preview of the Enchanter NPC, coming soon."
-      ],
-      "fr": [
-        "Le launcher en chinois simplifié (Réglages du launcher > Langue).",
-        "Serveur en direct sur l'accueil : depuis combien de temps le serveur tourne, et ses plantages des 7 derniers jours.",
-        "Vos alts : le niveau à partir duquel les bots montent à cheval. Baissez-le pour que vos alts de bas niveau montent et descendent avec vous.",
-        "Onglet Dungeon Clear dans les réglages du serveur : repos intelligent et seuils de vie/mana que le tank attend, nombre de monstres chargés à la fois, butin, coffres, résurrection ; les seuils de repos des groupes self-found aussi.",
-        "Un message clair quand la préparation du serveur n'arrive pas à joindre GitHub parce que la connexion sécurisée est refusée (antivirus qui analyse le HTTPS) : quoi faire, dans votre langue.",
-        "Les dépôts de vos alts à la banque de guilde sont activés par défaut depuis CoA Bots 2.8.3 : le réglage et l'assistant disent ce qu'ils déposent.",
-        "Vérification : « Mettre à jour les données » reprend les cartes de votre jeu après un patch qui ajoute une zone (le serveur est d'abord arrêté). L'accueil vous prévient aussi quand votre jeu a été mis à jour.",
-        "La préparation du serveur télécharge aussi par la connexion de Windows quand un antivirus refuse celle de Python.",
-        "Modules : aperçu du PNJ enchanteur, bientôt disponible."
-      ],
-      "ru": [
-        "Лаунчер на упрощённом китайском («Настройки лаунчера» > «Язык»).",
-        "«Сервер в реальном времени» на главной: сколько сервер уже работает и его сбои за последние 7 дней.",
-        "«Ваши альты»: уровень, с которого боты ездят верхом. Понизьте его, чтобы альты низкого уровня садились верхом и спешивались вместе с вами.",
-        "Вкладка Dungeon Clear в настройках сервера: умный отдых и пороги здоровья/маны, которых ждёт танк, сколько мобов танк берёт за раз, добыча, сундуки, воскрешение; а также пороги отдыха групп self-found.",
-        "Понятное сообщение, когда подготовка сервера не может связаться с GitHub из-за отклонённого безопасного соединения (антивирус проверяет HTTPS): что делать, на вашем языке.",
-        "Пополнение банка гильдии вашими альтами включено по умолчанию с CoA Bots 2.8.3: настройка и мастер объясняют, что они кладут.",
-        "Проверка: «Обновить данные» снова берёт данные карт из вашей игры после патча с новой зоной (сервер сначала останавливается). Главная страница тоже сообщает, когда игра обновилась.",
-        "Подготовка сервера теперь скачивает и через соединение Windows, если антивирус блокирует соединение Python.",
-        "Модули: предварительный показ NPC-зачарователя, скоро."
-      ],
-      "zh": [
-        "启动器支持简体中文（启动器设置 > 语言）。",
-        "主页“服务器实时状态”：服务器已运行多久，以及最近 7 天的崩溃次数。",
-        "你的小号：机器人开始使用坐骑的等级。调低它，让你的低等级小号和你一起上下坐骑。",
-        "服务器设置新增 Dungeon Clear 选项卡：智能休息及坦克等待的生命/法力阈值、坦克一次冲多少怪、拾取、宝箱、复活；以及自给小队的休息阈值。",
-        "当服务器准备过程因安全连接被拒绝（扫描 HTTPS 的杀毒软件）而无法连接 GitHub 时，会用你的语言给出明确提示和解决方法。",
-        "自 CoA Bots 2.8.3 起，小号存入公会银行默认开启：设置项和向导会说明它们存入哪些物品。",
-        "检查：“更新数据”会在游戏补丁加入新区域后，重新从你的游戏中提取地图数据（会先停止服务器）。主页也会在你的游戏更新后提醒你。",
-        "当杀毒软件拒绝 Python 的连接时，服务器准备现在也会通过 Windows 自带的连接下载。",
-        "模块：附魔师 NPC 预览，即将推出。"
-      ]
-    }
-  },
-  {
-    "version": "0.3.50",
-    "items": {
-      "en": [
-        "Setup wizard (Server settings > Presets and profiles): realms, world style, bots, what the bots do, your alts, experience, collections, server life, PvP and difficulty, with a recommendation for each, a summary, then it applies everything and starts your server. Your characters are never touched.",
-        "Search in the server settings: the launcher's settings first, then every key of the .conf files, editable in place.",
-        "New settings tabs: PvP (High Risk, War Mode, battlegrounds, duels) and Your alts (missions, quests, guild bank); the tabs are sorted in sections.",
-        "Settings profiles: export every value you changed to a file, and import one on another server (the differences are shown first).",
-        "\"Keep my modified files\" on the banner of a changed game, at your own risk; Verification reminds you, and \"Update the data\" goes back.",
-        "Reinstall completely also keeps own-settings.json, and an update list served stale just after a release is read again at once."
-      ],
-      "fr": [
-        "Assistant de configuration (Réglages du serveur > Préréglages et profils) : royaumes, style de monde, bots, activités des bots, vos alts, expérience, collections, vie du serveur, PvP et difficulté, avec une recommandation pour chaque question, un résumé, puis tout est appliqué et votre serveur démarre. Vos personnages ne sont jamais touchés.",
-        "Recherche dans les réglages du serveur : les réglages du launcher en premier, puis toutes les clés des fichiers .conf, modifiables sur place.",
-        "Nouveaux onglets de réglages : PvP (High Risk, War Mode, champs de bataille, duels) et Vos alts (missions, quêtes, banque de guilde) ; les onglets sont rangés en sections.",
-        "Profils de réglages : exportez toutes les valeurs que vous avez changées dans un fichier, et importez-le sur un autre serveur (les différences sont montrées d'abord).",
-        "« Garder mes fichiers modifiés » sur le bandeau du jeu modifié, à vos risques ; la Vérification vous le rappelle, et « Mettre à jour les données » revient en arrière.",
-        "Réinstaller complètement garde aussi own-settings.json, et une liste de mise à jour servie trop ancienne juste après une sortie est relue aussitôt."
-      ],
-      "ru": [
-        "Мастер настройки («Настройки сервера» > «Пресеты и профили»): миры, стиль мира, боты, занятия ботов, ваши альты, опыт, коллекции, жизнь сервера, PvP и сложность, с рекомендацией к каждому вопросу и сводкой, затем всё применяется и сервер запускается. Ваши персонажи не затрагиваются.",
-        "Поиск в настройках сервера: сначала настройки лаунчера, затем все ключи файлов .conf с правкой на месте.",
-        "Новые вкладки настроек: PvP (High Risk, War Mode, поля боя, дуэли) и «Ваши альты» (задания, квесты, банк гильдии); вкладки разбиты на разделы.",
-        "Профили настроек: экспортируйте все изменённые значения в файл и импортируйте на другом сервере (различия показываются заранее).",
-        "«Оставить мои изменённые файлы» на баннере изменённой игры, на ваш риск; Проверка напоминает об этом, а «Обновить данные» возвращает всё назад.",
-        "Полная переустановка сохраняет и own-settings.json, а устаревший сразу после выхода список обновлений перечитывается немедленно."
-      ],
-      "zh": [
-        "设置向导（服务器设置 > 预设与配置档）：国度、世界风格、机器人、机器人做什么、你的小号、经验、收藏、服务器生活、PvP 和难度，每项都有推荐，最后给出汇总，然后应用全部设置并启动服务器。你的角色永远不会被改动。",
-        "在服务器设置中搜索：先搜索启动器的设置，再搜索 .conf 文件的每个键，可直接编辑。",
-        "新的设置标签页：PvP（High Risk、War Mode、战场、决斗）和你的小号（采集任务、任务、公会银行）；标签页已按分区排列。",
-        "设置配置档：将你更改过的所有值导出到文件，并可在另一台服务器上导入（会先显示差异）。",
-        "游戏文件被修改时的横幅上新增“保留我修改的文件”，风险自负；“验证”会提醒你，“更新数据”可恢复。",
-        "“完全重新安装”也会保留 own-settings.json；发布后立即拿到的过期更新列表会马上重新读取。"
-      ]
-    }
-  },
-  {
-    "version": "0.3.49",
-    "items": {
-      "en": [
-        "Solo self-found in one preset and its own settings tab: bots level from 1 to 59 without generated gear, and 20 % of them clear the dungeons of their level in parties of five.",
-        "\"Bots online around my level\": among all your bots, those that log in are picked near the level of the players online, and no bot changes level.",
-        "Raids with your bots through Dungeon Clear, experimental: boss health counts a bot as 0.3 of a player (setting in Creature difficulty).",
-        "Verification > Troubleshooting: reinstall CoA + Bots completely in a new folder, with your accounts, characters, bots, realms and settings copied in; the old server stays until you delete it.",
-        "New experimental realm Free Pick (Dawnrise): one class, the Hero, every spell and talent chosen by you. No bots for now: they come in a next version.",
-        "Verification warns when Windows Firewall blocks the server (a \"Block\" rule left by a cancelled Windows window) and fixes it with your consent; a new realm gets its port opened when the server is open to other PCs.",
-        "Backups and Verification know every extra realm database."
-      ],
-      "fr": [
-        "Solo self-found en un seul préréglage et son propre onglet de réglages : les bots montent de 1 à 59 sans équipement fabriqué, et 20 % d'entre eux font les donjons de leur niveau en groupes de cinq.",
-        "« Bots en ligne autour de mon niveau » : parmi tous vos bots, ceux qui se connectent sont choisis près du niveau des joueurs en ligne, et aucun bot ne change de niveau.",
-        "Raids avec vos bots via Dungeon Clear, en expérimental : les PV des boss comptent un bot pour 0,3 joueur (réglage dans Difficulté des créatures).",
-        "Vérification > Dépannage : réinstaller complètement CoA + Bots dans un nouveau dossier, avec vos comptes, persos, bots, royaumes et réglages copiés ; l'ancien serveur reste jusqu'à ce que vous le supprimiez.",
-        "Nouveau royaume expérimental Free Pick (Dawnrise) : une seule classe, le Héros, chaque sort et talent choisi par vous. Sans bots pour l'instant : ils arrivent dans une prochaine version.",
-        "Vérification signale quand le pare-feu Windows bloque le serveur (une règle « Block » laissée par une fenêtre Windows annulée) et le corrige avec votre accord ; un nouveau royaume a son port ouvert quand le serveur est ouvert aux autres PC.",
-        "Les sauvegardes et la Vérification connaissent toutes les bases des royaumes en plus."
-      ],
-      "ru": [
-        "Solo self-found одним пресетом и своей вкладкой настроек: боты растут с 1 по 59 без созданной экипировки, а 20 % из них проходят подземелья своего уровня группами по пять.",
-        "«Онлайн боты около моего уровня»: из всех ваших ботов в игру заходят те, кто близок к уровню игроков онлайн, и ни один бот не меняет уровень.",
-        "Рейды с вашими ботами через Dungeon Clear, экспериментально: здоровье боссов считает бота как 0,3 игрока (настройка в «Сложность существ»).",
-        "Проверка > Устранение неполадок: полная переустановка CoA + Bots в новую папку с копией аккаунтов, персонажей, ботов, миров и настроек; прежний сервер остаётся, пока вы его не удалите.",
-        "Новый экспериментальный мир Free Pick (Dawnrise): один класс — Герой, каждое заклинание и талант выбираете вы. Пока без ботов: они появятся в следующей версии.",
-        "Проверка сообщает, когда брандмауэр Windows блокирует сервер (правило «Block» после отменённого окна Windows), и исправляет это с вашего согласия; новому миру открывается порт, когда сервер открыт для других ПК.",
-        "Резервные копии и Проверка знают базы всех дополнительных миров."
-      ],
-      "zh": [
-        "单人自给自足有了一个预设和专属设置标签页：机器人从 1 级到 59 级不生成装备，其中 20 % 以五人小队刷对应等级的副本。",
-        "“在线机器人接近我的等级”：在你的所有机器人中，挑选与在线玩家等级相近的机器人登录，没有机器人会改变等级。",
-        "通过 Dungeon Clear 带你的机器人打团队副本（实验性）：首领生命值将一个机器人计为 0.3 名玩家（设置位于“怪物难度”）。",
-        "验证 > 故障排除：在新文件夹中完全重新安装 CoA + Bots，并复制你的账号、角色、机器人、国度和设置；旧服务器会保留，直到你删除它。",
-        "新的实验性国度 Free Pick（Dawnrise）：只有一个职业 Hero，所有法术和天赋都由你选择。暂时没有机器人：将在后续版本加入。",
-        "当 Windows 防火墙阻止服务器（被取消的 Windows 窗口留下的“阻止”规则）时，“验证”会发出警告，并在你同意后修复；当服务器对其他电脑开放时，新国度会自动打开其端口。",
-        "备份和验证现已识别所有额外的国度数据库。"
-      ]
-    }
-  },
-  {
-    "version": "0.3.48",
-    "items": {
-      "en": [
-        "A new server downloads the bots' navigation maps (about 1.9 GB, minutes) instead of building them for hours; Verification offers newer ones when they are published.",
-        "\"Solo self-found (1-59)\" preset, \"Bot experience speed\" setting (×1 to ×5), and a \"Self-found bots in dungeons\" card, coming soon.",
-        "Switches show a tick or a cross, not only a colour.",
-        "The installer lets you choose where the launcher goes.",
-        "Preparing the server: a database build that was cut is done again, finished steps are ticked, the world import shows its progress, and a warning shows when the server is on a USB drive.",
-        "The launcher no longer restarts during the server preparation, and reads the signed list again before refusing a new version."
-      ],
-      "fr": [
-        "Un nouveau serveur télécharge les cartes de navigation des bots (environ 1,9 Go, quelques minutes) au lieu de les construire pendant des heures ; Vérification propose les plus récentes quand elles sont publiées.",
-        "Préréglage « Solo self-found (1-59) », réglage « Vitesse d'expérience des bots » (×1 à ×5), et une carte « Bots self-found en donjon », bientôt disponible.",
-        "Les interrupteurs affichent une coche ou une croix, pas seulement une couleur.",
-        "L'installeur vous laisse choisir où mettre le launcher.",
-        "Préparation du serveur : une base coupée en route est refaite, les étapes finies sont cochées, l'import du monde affiche sa progression, et un avertissement s'affiche si le serveur est sur un disque USB.",
-        "Le launcher ne redémarre plus pendant la préparation du serveur, et relit la liste signée avant de refuser une nouvelle version."
-      ],
-      "ru": [
-        "Новый сервер скачивает навигационные карты ботов (около 1,9 ГБ, несколько минут) вместо многочасового построения; «Проверка» предлагает более новые, когда они опубликованы.",
-        "Пресет «Solo self-found (1-59)», настройка «Скорость получения опыта ботами» (×1–×5) и карточка «Боты без готовой экипировки в подземельях» — скоро.",
-        "Переключатели показывают галочку или крестик, а не только цвет.",
-        "Установщик позволяет выбрать папку лаунчера.",
-        "Подготовка сервера: прерванное создание базы выполняется заново, готовые шаги отмечены, импорт мира показывает прогресс, а для сервера на USB-диске выводится предупреждение.",
-        "Лаунчер больше не перезапускается во время подготовки сервера и перечитывает подписанный список, прежде чем отклонить новую версию."
-      ],
-      "zh": [
-        "新服务器会下载机器人的导航地图（约 1.9 GB，几分钟），而不是花几个小时生成；有新版本发布时，“验证”会提供更新。",
-        "“单人自给自足（1-59）”预设、“机器人经验速度”设置（×1 到 ×5），以及“副本中的自给自足机器人”卡片，即将推出。",
-        "开关会显示勾或叉，而不仅仅是颜色。",
-        "安装程序允许你选择启动器的安装位置。",
-        "准备服务器：中断的数据库构建会重新进行，已完成的步骤会打勾，世界数据导入会显示进度，服务器位于 USB 驱动器上时会显示警告。",
-        "启动器在服务器准备期间不再重启，并会在拒绝新版本前重新读取签名列表。"
-      ]
+    {
+        "version": "0.3.56",
+        "items": {
+            "en": [
+                "Bot damage: the class and spec sliders go up to 500 % (some specs, like the Chronomancer, need it).",
+                "Server settings, World: a new Progression group to play like a progressive server: the content released on the realm (dungeon difficulties and raids, Molten Core to Naxxramas), Mythic+ and Manastorm on or off, and the Callboard and Prestigious Caches. Thanks to The Chicken for the idea!",
+                "Home: the « start the world again after a crash » option is right under the server button.",
+                "Several realms starting together after an update (CoA, Wildcard, Reborn) no longer stop on « Access denied for user … (using password: NO) »: each world has its own temporary folder.",
+                "Realms: an « Eco mode when nobody plays » switch on each realm card (CoA Bots 2.9.1 and later). With no player for 10 minutes, the bots far from players sleep; your own value comes back as soon as someone logs in.",
+                "Realms: a realm that takes long to start (thousands of updates on a busy PC) is waited for as long as it progresses; one really stuck is stopped instead of being left running, which blocked the next update (code 13).",
+                "A server bound to a precise address (BindIP set to the LAN IP of the PC, for instance) is seen started: its worlds and realms no longer wait for nothing.",
+                "Updating the server while the navigation maps of the bots are being built no longer fails with code 13: the build is paused for the update and goes on after it (the maps already built are kept)."
+            ],
+            "fr": [
+                "Dégâts des bots : les curseurs des classes et des spés montent jusqu'à 500 % (certaines spés, comme le Chronomancer, en ont besoin).",
+                "Réglages serveur, Monde : un nouveau groupe Progression pour jouer comme sur un serveur progressif : le contenu sorti sur le royaume (difficultés de donjon et raids, du Cœur du Magma à Naxxramas), Mythique+ et Manastorm activés ou non, et les coffres du Callboard et prestigieux. Merci à The Chicken pour l'idée !",
+                "Accueil : l'option « relancer le monde après un plantage » est juste sous le bouton du serveur.",
+                "Plusieurs royaumes qui démarrent ensemble après une mise à jour (CoA, Wildcard, Reborn) ne s'arrêtent plus sur « Access denied for user … (using password: NO) » : chaque monde a son propre dossier temporaire.",
+                "Royaumes : un interrupteur « Mode éco quand personne ne joue » sur chaque carte de royaume (CoA Bots 2.9.1 et plus). Sans joueur depuis 10 minutes, les bots loin des joueurs dorment ; votre propre valeur revient dès que quelqu'un se connecte.",
+                "Royaumes : un royaume long à démarrer (des milliers de mises à jour sur un PC chargé) est attendu tant qu'il avance ; un royaume vraiment bloqué est arrêté au lieu de rester lancé, ce qui bloquait la mise à jour suivante (code 13).",
+                "Un serveur lié à une adresse précise (BindIP réglé sur l'IP réseau local du PC, par exemple) est bien vu démarré : ses mondes et royaumes n'attendent plus dans le vide.",
+                "Mettre à jour le serveur pendant la génération des cartes de navigation des bots n'échoue plus en code 13 : la génération est mise en pause le temps de la mise à jour et reprend ensuite (les cartes déjà faites sont gardées)."
+            ],
+            "ru": [
+                "Урон ботов: ползунки классов и специализаций теперь до 500 % (некоторым специализациям, например Хрономанту, это нужно).",
+                "Настройки сервера, Мир: новая группа «Прогрессия», чтобы играть как на прогрессивном сервере: открытый контент (сложности подземелий и рейды, от Огненных Недр до Наксрамаса), Мифик+ и Manastorm вкл/выкл, сундуки Callboard и престижные сундуки. Спасибо The Chicken за идею!",
+                "Главная: опция «перезапускать мир после сбоя» теперь прямо под кнопкой сервера.",
+                "Несколько миров, запускающихся вместе после обновления (CoA, Wildcard, Reborn), больше не останавливаются с ошибкой «Access denied for user … (using password: NO)»: у каждого мира своя временная папка.",
+                "Миры: переключатель «Эко-режим, когда никто не играет» на карточке каждого мира (CoA Bots 2.9.1 и новее). Если 10 минут нет игроков, боты вдали от игроков засыпают; ваше значение возвращается, как только кто-то входит.",
+                "Миры: долго запускающийся мир (тысячи обновлений на загруженном ПК) ожидается, пока он продвигается; действительно зависший мир останавливается, а не остаётся запущенным, что блокировало следующее обновление (код 13).",
+                "Сервер, привязанный к конкретному адресу (например, BindIP = локальный IP ПК), теперь определяется как запущенный: его миры больше не ждут впустую.",
+                "Обновление сервера во время построения навигационных карт ботов больше не завершается ошибкой с кодом 13: построение приостанавливается на время обновления и продолжается после него (готовые карты сохраняются)."
+            ],
+            "zh": [
+                "机器人伤害：职业和专精滑块最高可达 500 %（部分专精，如时光法师，需要这么高）。",
+                "服务器设置 > 世界：新增“进度”分组，可像渐进式服务器一样游玩：本服务器已开放的内容（地下城难度和团队副本，从熔火之心到纳克萨玛斯）、史诗+ 和 Manastorm 开关，以及 Callboard 宝箱和荣耀宝箱。感谢 The Chicken 的创意！",
+                "主页：“崩溃后重新启动世界”选项现在就在服务器按钮下方。",
+                "更新后多个服务器同时启动（CoA、Wildcard、Reborn）时，不再因“Access denied for user … (using password: NO)”而停止：每个世界都有自己的临时文件夹。",
+                "服务器：每张服务器卡片上新增“无人游戏时的节能模式”开关（CoA Bots 2.9.1 及以上）。10 分钟无玩家时，远离玩家的机器人进入休眠；有人登录后立即恢复你自己的数值。",
+                "服务器：启动较慢的服务器（繁忙电脑上需应用数千个更新）只要仍在推进就会继续等待；真正卡住的服务器会被停止，而不是继续运行并阻止下一次更新（代码 13）。",
+                "绑定到特定地址的服务器（例如 BindIP 设为电脑的局域网 IP）现在能被正确识别为已启动：其世界和服务器不再空等。",
+                "在生成机器人导航地图期间更新服务器不再因代码 13 失败：更新期间生成会暂停，更新后继续（已完成的地图会保留）。"
+            ]
+        }
     },
-    "title": {
-      "en": "CoA Bots 2.8.1 and launcher 0.3.48",
-      "fr": "CoA Bots 2.8.1 et launcher 0.3.48",
-      "ru": "CoA Bots 2.8.1 и лаунчер 0.3.48",
-      "zh": "CoA Bots 2.8.1 与启动器 0.3.48"
+    {
+        "version": "0.3.55",
+        "items": {
+            "en": [
+                "Maps new in the game (after a CoA patch) get the navigation of the bots: « Update the data » adds it for them alone, and Verification offers it when it is missing. The other maps are not touched.",
+                "Bot damage: a slider for the threat of the bot tanks, up to ×3.",
+                "Settings saved while the server runs (bot damage, tank threat and the others marked « after .reload config ») apply at once, without a restart."
+            ],
+            "fr": [
+                "Les cartes nouvelles du jeu (après un patch CoA) reçoivent la navigation des bots : « Mettre à jour les données » l'ajoute pour elles seules, et la Vérification la propose quand elle manque. Les autres cartes ne sont pas touchées.",
+                "Dégâts des bots : un curseur pour la menace des bots tanks, jusqu'à ×3.",
+                "Les réglages enregistrés pendant que le serveur tourne (dégâts des bots, menace des tanks et les autres marqués « après .reload config ») s'appliquent tout de suite, sans redémarrer."
+            ],
+            "ru": [
+                "Новые карты игры (после патча CoA) получают навигацию ботов: «Обновить данные» добавляет её только для них, а Проверка предлагает её, если она отсутствует. Другие карты не затрагиваются.",
+                "Урон ботов: ползунок угрозы ботов-танков, до ×3.",
+                "Настройки, сохранённые при работающем сервере (урон ботов, угроза танков и другие с пометкой «после .reload config»), применяются сразу, без перезапуска."
+            ],
+            "zh": [
+                "游戏中的新地图（CoA 补丁之后）会获得机器人导航：“更新数据”只为它们添加，缺失时“检查”也会提供。其他地图不受影响。",
+                "机器人伤害：新增机器人坦克威胁滑块，最高 ×3。",
+                "服务器运行时保存的设置（机器人伤害、坦克威胁以及其他标注“执行 .reload config 后”的设置）立即生效，无需重启。"
+            ]
+        }
     },
-    "sections": [
-      {
-        "title": {
-          "en": "Solo self-found (1-59), optional",
-          "fr": "Solo self-found (1-59), en option",
-          "ru": "Solo self-found (1-59), по желанию",
-          "zh": "单人自给自足（1-59），可选"
-        },
+    {
+        "version": "0.3.54",
         "items": {
-          "en": [
-            "A new preset in Settings › Bot population: bots level up from level 1 and only wear what they loot, earn from quests or get from you. At 60 they are geared as usual. Nothing changes unless you pick it."
-          ],
-          "fr": [
-            "Nouveau préréglage dans Réglages › Population de bots : les bots montent depuis le niveau 1 et ne portent que ce qu'ils ramassent, gagnent en quête ou reçoivent de vous. Au niveau 60, ils sont équipés comme d'habitude. Rien ne change si vous ne le choisissez pas."
-          ],
-          "ru": [
-            "Новый пресет в Настройки › Население ботов: боты растут с 1 уровня и носят только добычу, награды за задания или то, что дали вы. На 60-м уровне экипируются как обычно. Ничего не меняется, пока вы его не выберете."
-          ],
-          "zh": [
-            "设置 › 机器人数量中的新预设：机器人从 1 级开始升级，只穿戴拾取的、任务获得的或你给的装备。到 60 级时照常配装。除非你选择它，否则不会有任何改变。"
-          ]
+            "en": [
+                "Updating CoA Bots is no longer refused with code 13 when the launcher is installed inside the server folder.",
+                "Windows 11 26H2: updating CoA Bots no longer stops at the test start (code 50, « mysql is still starting »).",
+                "Windows 11 26H2: the checks of CoA Bots no longer take leftover connections for another program on the MySQL port.",
+                "The SquidBots Lite addon is never replaced by an older version.",
+                "With CoA Bots 2.9: a Bot damage tab in Settings raises or lowers the damage of the bots by class and specialization.",
+                "With CoA Bots 2.9: a setting for random suffixes on the gear of the bots.",
+                "Modules: the Enchanter NPC for Warcraft Reborn shows as coming soon when that realm is on."
+            ],
+            "fr": [
+                "La mise à jour de CoA Bots n'est plus refusée avec le code 13 quand le launcher est installé dans le dossier du serveur.",
+                "Windows 11 26H2 : la mise à jour de CoA Bots ne s'arrête plus au démarrage de test (code 50, « mysql is still starting »).",
+                "Windows 11 26H2 : les contrôles de CoA Bots ne prennent plus des connexions restantes pour un autre programme sur le port MySQL.",
+                "L'addon SquidBots Lite n'est jamais remplacé par une version plus ancienne.",
+                "Avec CoA Bots 2.9 : un onglet Dégâts des bots dans les Réglages augmente ou baisse les dégâts des bots par classe et spécialisation.",
+                "Avec CoA Bots 2.9 : un réglage pour les suffixes aléatoires de l'équipement des bots.",
+                "Modules : le PNJ enchanteur de Warcraft Reborn s'affiche « bientôt » quand ce royaume est activé."
+            ],
+            "ru": [
+                "Обновление CoA Bots больше не отклоняется с кодом 13, если лаунчер установлен в папке сервера.",
+                "Windows 11 26H2: обновление CoA Bots больше не останавливается на тестовом запуске (код 50, « mysql is still starting »).",
+                "Windows 11 26H2: проверки CoA Bots больше не принимают оставшиеся соединения за другую программу на порту MySQL.",
+                "Аддон SquidBots Lite больше никогда не заменяется более старой версией.",
+                "С CoA Bots 2.9: вкладка «Урон ботов» в настройках повышает или снижает урон ботов по классу и специализации.",
+                "С CoA Bots 2.9: настройка случайных суффиксов на снаряжении ботов.",
+                "Модули: NPC-зачарователь для Warcraft Reborn отображается как «скоро», когда этот мир включён."
+            ],
+            "zh": [
+                "当启动器安装在服务器文件夹内时，CoA Bots 更新不再因代码 13 被拒绝。",
+                "Windows 11 26H2：CoA Bots 更新不再在测试启动时停止（代码 50，« mysql is still starting »）。",
+                "Windows 11 26H2：CoA Bots 的检查不再把残留连接误认为 MySQL 端口上的其他程序。",
+                "SquidBots Lite 插件不会再被旧版本替换。",
+                "CoA Bots 2.9 起：设置中的“机器人伤害”标签可按职业和专精提高或降低机器人的伤害。",
+                "CoA Bots 2.9 起：机器人装备随机后缀的设置。",
+                "模块：启用 Warcraft Reborn 服务器时，其附魔师 NPC 显示为“即将推出”。"
+            ]
         }
-      },
-      {
-        "title": {
-          "en": "Latest CoA core (284 changes since 2.8)",
-          "fr": "Dernier cœur CoA (284 changements depuis la 2.8)",
-          "ru": "Новое ядро CoA (284 изменения после 2.8)",
-          "zh": "最新 CoA 核心（自 2.8 起 284 项更改）"
-        },
+    },
+    {
+        "version": "0.3.53",
         "items": {
-          "en": [
-            "Creature magic resistance and new open-world creature damage.",
-            "PvE Power and PvP Power.",
-            "Cross-faction battlegrounds.",
-            "Road to De Other Side (map 937) is back.",
-            "Name filter and account-wide friends (opt-in).",
-            "Gathering nodes at their Ascension positions.",
-            "Large batches of dungeon, item, quest and class fixes."
-          ],
-          "fr": [
-            "Résistance magique des créatures et nouveaux dégâts des créatures en monde ouvert.",
-            "PvE Power et PvP Power.",
-            "Champs de bataille inter-factions.",
-            "Road to De Other Side (carte 937) est de retour.",
-            "Filtre des noms et amis à l'échelle du compte (au choix).",
-            "Points de récolte aux positions d'Ascension.",
-            "Gros lots de correctifs de donjons, objets, quêtes et classes."
-          ],
-          "ru": [
-            "Магическое сопротивление существ и новый урон существ в открытом мире.",
-            "PvE Power и PvP Power.",
-            "Межфракционные поля боя.",
-            "Road to De Other Side (карта 937) вернулась.",
-            "Фильтр имён и друзья на весь аккаунт (по желанию).",
-            "Точки сбора на позициях Ascension.",
-            "Большие наборы исправлений подземелий, предметов, заданий и классов."
-          ],
-          "zh": [
-            "怪物魔法抗性和新的野外怪物伤害。",
-            "PvE 强度和 PvP 强度。",
-            "跨阵营战场。",
-            "Road to De Other Side（地图 937）回归。",
-            "名称过滤和账号通用好友（可选启用）。",
-            "采集点位于其 Ascension 中的位置。",
-            "大量副本、物品、任务和职业修复。"
-          ]
+            "en": [
+                "Windows 11 26H2: preparing and starting the server no longer stops at the database (\"This repack does not own the MySQL listener\").",
+                "Realms show online right after the login server starts, instead of up to 10 minutes later.",
+                "Home: the two install steps (your game, then Install the server) show whenever the saved folder holds no server, after a reinstall from scratch too.",
+                "One way to install: the launcher downloads the server and prepares it from your game. The zip import and the \"Where to download it\" link are gone.",
+                "Uninstalling the launcher removes its settings, so a reinstall starts fresh. Your server folder and its characters are kept.",
+                "Server preparation: the long steps show what they are working on (the map, the model, the database part)."
+            ],
+            "fr": [
+                "Windows 11 26H2 : la préparation et le démarrage du serveur ne s'arrêtent plus à la base de données (« This repack does not own the MySQL listener »).",
+                "Les royaumes s'affichent en ligne dès le démarrage du serveur de connexion, au lieu de jusqu'à 10 minutes plus tard.",
+                "Accueil : les deux étapes d'installation (votre jeu, puis Installer le serveur) s'affichent dès que le dossier enregistré ne contient pas de serveur, y compris après une réinstallation de zéro.",
+                "Une seule façon d'installer : le launcher télécharge le serveur et le prépare à partir de votre jeu. L'import de zip et le lien « Où le télécharger » disparaissent.",
+                "Désinstaller le launcher efface ses réglages : une réinstallation repart à neuf. Le dossier du serveur et ses personnages sont gardés.",
+                "Préparation du serveur : les longues étapes montrent ce qu'elles traitent (la carte, le modèle, la partie de la base)."
+            ],
+            "ru": [
+                "Windows 11 26H2: подготовка и запуск сервера больше не останавливаются на базе данных («This repack does not own the MySQL listener»).",
+                "Миры показываются в сети сразу после запуска сервера входа, а не через 10 минут.",
+                "Главная: два шага установки (ваша игра, затем «Установить сервер») показываются, когда в сохранённой папке нет сервера, в том числе после переустановки с нуля.",
+                "Один способ установки: лаунчер скачивает сервер и готовит его из вашей игры. Импорт zip и ссылка «Где скачать» убраны.",
+                "Удаление лаунчера стирает его настройки: переустановка начинается с чистого листа. Папка сервера и персонажи сохраняются.",
+                "Подготовка сервера: долгие этапы показывают, над чем работают (карта, модель, часть базы)."
+            ],
+            "zh": [
+                "Windows 11 26H2：准备和启动服务器不再停在数据库（“This repack does not own the MySQL listener”）。",
+                "登录服务器启动后，各服务器立即显示在线，而不是最多 10 分钟后。",
+                "主页：只要保存的文件夹中没有服务器（包括从头重新安装后），就会显示两个安装步骤（你的游戏，然后“安装服务器”）。",
+                "只有一种安装方式：启动器下载服务器并从你的游戏准备数据。导入 zip 和“在哪里下载”链接已移除。",
+                "卸载启动器会删除其设置：重新安装将从头开始。服务器文件夹及其角色会保留。",
+                "服务器准备：耗时的步骤会显示正在处理的内容（地图、模型、数据库部分）。"
+            ]
         }
-      },
-      {
-        "title": {
-          "en": "Bots",
-          "fr": "Bots",
-          "ru": "Боты",
-          "zh": "机器人"
-        },
+    },
+    {
+        "version": "0.3.52",
         "items": {
-          "en": [
-            "Boss mechanics in the classic dungeons (thanks to Brytenwally).",
-            "Boss strategy for Road to De Other Side (thanks to steviecraycray).",
-            "Molten Core is back on Heroic, Mythic and Ascended on older databases.",
-            "Safety nets against battleground crashes (thanks to nightlund).",
-            "Bloodmage Eternal tanks play their form properly.",
-            "Gear settings are respected at level up (\"loot only\" bots)."
-          ],
-          "fr": [
-            "Mécaniques de boss dans les donjons classiques (merci à Brytenwally).",
-            "Stratégie de boss pour Road to De Other Side (merci à steviecraycray).",
-            "Cœur du Magma de retour en héroïque, mythique et Ascended sur les anciennes bases.",
-            "Filets de sécurité contre les plantages en champ de bataille (merci à nightlund).",
-            "Les tanks Bloodmage Eternal jouent correctement leur forme.",
-            "Les réglages d'équipement sont respectés à la montée de niveau (bots « butin seulement »)."
-          ],
-          "ru": [
-            "Механики боссов в классических подземельях (спасибо Brytenwally).",
-            "Стратегия боссов для Road to De Other Side (спасибо steviecraycray).",
-            "Огненные Недра снова в героическом, мифическом и Ascended режимах на старых базах.",
-            "Защита от падений на полях боя (спасибо nightlund).",
-            "Танки Bloodmage Eternal правильно используют свою форму.",
-            "Настройки экипировки соблюдаются при повышении уровня (боты «только добыча»)."
-          ],
-          "zh": [
-            "经典副本中的首领机制（感谢 Brytenwally）。",
-            "Road to De Other Side 的首领策略（感谢 steviecraycray）。",
-            "旧数据库上的熔火之心重新提供英雄、史诗和 Ascended 难度。",
-            "防止战场崩溃的安全措施（感谢 nightlund）。",
-            "Bloodmage Eternal 坦克能正确使用其形态。",
-            "升级时遵守装备设置（“仅靠拾取”的机器人）。"
-          ]
+            "en": [
+                "Verification: \"Update map data\" now shows on every server prepared from your game, older installs included, so a new zone (Pale Reach) no longer needs a reinstall.",
+                "Verification: the \"Maps and game data present\" line shows its text again.",
+                "Reinstall and map data use the game the Play tab shows, even when no game folder was chosen in the settings.",
+                "Verification: the Troubleshooting panel is open by default.",
+                "Settings files with Windows line endings: a setting is no longer stuck to the comment above it, and Verification repairs the files already affected (thanks Nightlund)."
+            ],
+            "fr": [
+                "Vérification : « Mettre à jour les données » apparaît sur tout serveur préparé à partir de votre jeu, anciennes installations comprises : une nouvelle zone (Pale Reach) ne demande plus de réinstallation.",
+                "Vérification : la ligne « Cartes et données du jeu présentes » affiche de nouveau son texte.",
+                "La réinstallation et les données de cartes utilisent le jeu affiché dans l'onglet Jouer, même sans dossier de jeu choisi dans les réglages.",
+                "Vérification : le panneau Dépannage est ouvert par défaut.",
+                "Fichiers de réglages aux fins de ligne Windows : un réglage ne se colle plus au commentaire du dessus, et Vérification répare les fichiers déjà touchés (merci Nightlund)."
+            ],
+            "ru": [
+                "Проверка: «Обновить данные карт» теперь есть на любом сервере, подготовленном из вашей игры, включая старые установки: новая зона (Pale Reach) больше не требует переустановки.",
+                "Проверка: строка «Карты и данные игры на месте» снова показывает свой текст.",
+                "Переустановка и данные карт используют игру, показанную на вкладке «Играть», даже если папка игры не выбрана в настройках.",
+                "Проверка: панель «Устранение неполадок» открыта по умолчанию.",
+                "Файлы настроек с окончаниями строк Windows: настройка больше не прилипает к комментарию выше, а Проверка чинит уже затронутые файлы (спасибо Nightlund)."
+            ],
+            "zh": [
+                "检查：“更新地图数据”现在会出现在所有从你的游戏准备的服务器上，包括旧的安装：新区域（Pale Reach）不再需要重新安装。",
+                "检查：“地图和游戏数据齐全”一行重新显示其说明。",
+                "重新安装和地图数据使用“游戏”页显示的游戏，即使设置中没有选择游戏文件夹。",
+                "检查：“故障排除”面板默认展开。",
+                "使用 Windows 换行符的设置文件：设置不再粘到上方的注释行，检查页会修复已受影响的文件（感谢 Nightlund）。"
+            ]
         }
-      },
-      {
-        "title": {
-          "en": "Dungeon Clear 2.8.1",
-          "fr": "Dungeon Clear 2.8.1",
-          "ru": "Dungeon Clear 2.8.1",
-          "zh": "Dungeon Clear 2.8.1"
-        },
+    },
+    {
+        "version": "0.3.51",
         "items": {
-          "en": [
-            "Heroic and Mythic runs are about 10 minutes faster.",
-            "Fixes in Blackrock Depths, Stratholme and Shadowfang Keep.",
-            "Known limits: Blackfathom Deeps and the Scarlet Cathedral can still get stuck; a Heroic or Mythic run still going at the 04:00 reset gets stuck: type .dc off."
-          ],
-          "fr": [
-            "Les runs héroïques et mythiques sont environ 10 minutes plus rapides.",
-            "Correctifs dans les Profondeurs de Blackrock, Stratholme et le donjon d'Ombrecroc.",
-            "Limites connues : les Profondeurs de Brassenoire et la cathédrale du Monastère écarlate peuvent encore bloquer ; un run héroïque ou mythique encore en cours à la remise à zéro de 04:00 se bloque : tapez .dc off."
-          ],
-          "ru": [
-            "Героические и мифические забеги примерно на 10 минут быстрее.",
-            "Исправления в Глубинах Черной горы, Стратхольме и Крепости Темного Клыка.",
-            "Известные ограничения: Непроглядная Пучина и Собор Монастыря Алого ордена ещё могут застрять; героический или мифический забег, идущий во время сброса в 04:00, застревает: введите .dc off."
-          ],
-          "zh": [
-            "英雄和史诗难度的副本快了约 10 分钟。",
-            "修复了黑石深渊、斯坦索姆和影牙城堡中的问题。",
-            "已知限制：黑暗深渊和血色修道院大教堂仍可能卡住；在 04:00 重置时仍在进行的英雄或史诗副本会卡住：请输入 .dc off。"
-          ]
+            "en": [
+                "The launcher in Simplified Chinese (Launcher settings > Language).",
+                "Server live on the home page: how long the server has been up, and its crashes of the last 7 days.",
+                "Your alts: the level from which bots ride. Lower it so your low-level alts mount up and dismount with you.",
+                "Dungeon Clear tab in the server settings: smart rest and the health/mana thresholds the tank waits for, how many mobs the tank charges at once, loot, chests, resurrection; the rest thresholds of self-found parties too.",
+                "A clear message when the server preparation cannot reach GitHub because the secure connection is refused (an antivirus that scans HTTPS): what to do, in your language.",
+                "Guild bank deposits by your alts are on by default since CoA Bots 2.8.3: the setting and the wizard say what they deposit.",
+                "Verification: \"Update the data\" takes the map data again from your game, after a game patch with a new zone (the server is stopped first). The home page also tells you when your game was updated.",
+                "The server preparation now also downloads through Windows's own connection when an antivirus refuses Python's one.",
+                "Modules: preview of the Enchanter NPC, coming soon."
+            ],
+            "fr": [
+                "Le launcher en chinois simplifié (Réglages du launcher > Langue).",
+                "Serveur en direct sur l'accueil : depuis combien de temps le serveur tourne, et ses plantages des 7 derniers jours.",
+                "Vos alts : le niveau à partir duquel les bots montent à cheval. Baissez-le pour que vos alts de bas niveau montent et descendent avec vous.",
+                "Onglet Dungeon Clear dans les réglages du serveur : repos intelligent et seuils de vie/mana que le tank attend, nombre de monstres chargés à la fois, butin, coffres, résurrection ; les seuils de repos des groupes self-found aussi.",
+                "Un message clair quand la préparation du serveur n'arrive pas à joindre GitHub parce que la connexion sécurisée est refusée (antivirus qui analyse le HTTPS) : quoi faire, dans votre langue.",
+                "Les dépôts de vos alts à la banque de guilde sont activés par défaut depuis CoA Bots 2.8.3 : le réglage et l'assistant disent ce qu'ils déposent.",
+                "Vérification : « Mettre à jour les données » reprend les cartes de votre jeu après un patch qui ajoute une zone (le serveur est d'abord arrêté). L'accueil vous prévient aussi quand votre jeu a été mis à jour.",
+                "La préparation du serveur télécharge aussi par la connexion de Windows quand un antivirus refuse celle de Python.",
+                "Modules : aperçu du PNJ enchanteur, bientôt disponible."
+            ],
+            "ru": [
+                "Лаунчер на упрощённом китайском («Настройки лаунчера» > «Язык»).",
+                "«Сервер в реальном времени» на главной: сколько сервер уже работает и его сбои за последние 7 дней.",
+                "«Ваши альты»: уровень, с которого боты ездят верхом. Понизьте его, чтобы альты низкого уровня садились верхом и спешивались вместе с вами.",
+                "Вкладка Dungeon Clear в настройках сервера: умный отдых и пороги здоровья/маны, которых ждёт танк, сколько мобов танк берёт за раз, добыча, сундуки, воскрешение; а также пороги отдыха групп self-found.",
+                "Понятное сообщение, когда подготовка сервера не может связаться с GitHub из-за отклонённого безопасного соединения (антивирус проверяет HTTPS): что делать, на вашем языке.",
+                "Пополнение банка гильдии вашими альтами включено по умолчанию с CoA Bots 2.8.3: настройка и мастер объясняют, что они кладут.",
+                "Проверка: «Обновить данные» снова берёт данные карт из вашей игры после патча с новой зоной (сервер сначала останавливается). Главная страница тоже сообщает, когда игра обновилась.",
+                "Подготовка сервера теперь скачивает и через соединение Windows, если антивирус блокирует соединение Python.",
+                "Модули: предварительный показ NPC-зачарователя, скоро."
+            ],
+            "zh": [
+                "启动器支持简体中文（启动器设置 > 语言）。",
+                "主页“服务器实时状态”：服务器已运行多久，以及最近 7 天的崩溃次数。",
+                "你的小号：机器人开始使用坐骑的等级。调低它，让你的低等级小号和你一起上下坐骑。",
+                "服务器设置新增 Dungeon Clear 选项卡：智能休息及坦克等待的生命/法力阈值、坦克一次冲多少怪、拾取、宝箱、复活；以及自给小队的休息阈值。",
+                "当服务器准备过程因安全连接被拒绝（扫描 HTTPS 的杀毒软件）而无法连接 GitHub 时，会用你的语言给出明确提示和解决方法。",
+                "自 CoA Bots 2.8.3 起，小号存入公会银行默认开启：设置项和向导会说明它们存入哪些物品。",
+                "检查：“更新数据”会在游戏补丁加入新区域后，重新从你的游戏中提取地图数据（会先停止服务器）。主页也会在你的游戏更新后提醒你。",
+                "当杀毒软件拒绝 Python 的连接时，服务器准备现在也会通过 Windows 自带的连接下载。",
+                "模块：附魔师 NPC 预览，即将推出。"
+            ]
         }
-      },
-      {
-        "title": {
-          "en": "Launcher 0.3.48",
-          "fr": "Launcher 0.3.48",
-          "ru": "Лаунчер 0.3.48",
-          "zh": "启动器 0.3.48"
-        },
+    },
+    {
+        "version": "0.3.50",
         "items": {
-          "en": [
-            "A new server downloads the bots' navigation maps (about 1.9 GB, minutes) instead of building them for hours; Verification offers newer ones when they are published.",
-            "\"Solo self-found (1-59)\" preset, \"Bot experience speed\" setting (×1 to ×5), and a \"Self-found bots in dungeons\" card, coming soon.",
-            "Switches show a tick or a cross, not only a colour.",
-            "The installer lets you choose where the launcher goes.",
-            "Preparing the server: a database build that was cut is done again, finished steps are ticked, the world import shows its progress, and a warning shows when the server is on a USB drive.",
-            "The launcher no longer restarts during the server preparation, and reads the signed list again before refusing a new version."
-          ],
-          "fr": [
-            "Un nouveau serveur télécharge les cartes de navigation des bots (environ 1,9 Go, quelques minutes) au lieu de les construire pendant des heures ; Vérification propose les plus récentes quand elles sont publiées.",
-            "Préréglage « Solo self-found (1-59) », réglage « Vitesse d'expérience des bots » (×1 à ×5), et une carte « Bots self-found en donjon », bientôt disponible.",
-            "Les interrupteurs affichent une coche ou une croix, pas seulement une couleur.",
-            "L'installeur vous laisse choisir où mettre le launcher.",
-            "Préparation du serveur : une base coupée en route est refaite, les étapes finies sont cochées, l'import du monde affiche sa progression, et un avertissement s'affiche si le serveur est sur un disque USB.",
-            "Le launcher ne redémarre plus pendant la préparation du serveur, et relit la liste signée avant de refuser une nouvelle version."
-          ],
-          "ru": [
-            "Новый сервер скачивает навигационные карты ботов (около 1,9 ГБ, несколько минут) вместо многочасового построения; «Проверка» предлагает более новые, когда они опубликованы.",
-            "Пресет «Solo self-found (1-59)», настройка «Скорость получения опыта ботами» (×1–×5) и карточка «Боты без готовой экипировки в подземельях» — скоро.",
-            "Переключатели показывают галочку или крестик, а не только цвет.",
-            "Установщик позволяет выбрать папку лаунчера.",
-            "Подготовка сервера: прерванное создание базы выполняется заново, готовые шаги отмечены, импорт мира показывает прогресс, а для сервера на USB-диске выводится предупреждение.",
-            "Лаунчер больше не перезапускается во время подготовки сервера и перечитывает подписанный список, прежде чем отклонить новую версию."
-          ],
-          "zh": [
-            "新服务器会下载机器人的导航地图（约 1.9 GB，几分钟），而不是花几个小时生成；有新版本发布时，“验证”会提供更新。",
-            "“单人自给自足（1-59）”预设、“机器人经验速度”设置（×1 到 ×5），以及“副本中的自给自足机器人”卡片，即将推出。",
-            "开关会显示勾或叉，而不仅仅是颜色。",
-            "安装程序允许你选择启动器的安装位置。",
-            "准备服务器：中断的数据库构建会重新进行，已完成的步骤会打勾，世界数据导入会显示进度，服务器位于 USB 驱动器上时会显示警告。",
-            "启动器在服务器准备期间不再重启，并会在拒绝新版本前重新读取签名列表。"
-          ]
+            "en": [
+                "Setup wizard (Server settings > Presets and profiles): realms, world style, bots, what the bots do, your alts, experience, collections, server life, PvP and difficulty, with a recommendation for each, a summary, then it applies everything and starts your server. Your characters are never touched.",
+                "Search in the server settings: the launcher's settings first, then every key of the .conf files, editable in place.",
+                "New settings tabs: PvP (High Risk, War Mode, battlegrounds, duels) and Your alts (missions, quests, guild bank); the tabs are sorted in sections.",
+                "Settings profiles: export every value you changed to a file, and import one on another server (the differences are shown first).",
+                "\"Keep my modified files\" on the banner of a changed game, at your own risk; Verification reminds you, and \"Update the data\" goes back.",
+                "Reinstall completely also keeps own-settings.json, and an update list served stale just after a release is read again at once."
+            ],
+            "fr": [
+                "Assistant de configuration (Réglages du serveur > Préréglages et profils) : royaumes, style de monde, bots, activités des bots, vos alts, expérience, collections, vie du serveur, PvP et difficulté, avec une recommandation pour chaque question, un résumé, puis tout est appliqué et votre serveur démarre. Vos personnages ne sont jamais touchés.",
+                "Recherche dans les réglages du serveur : les réglages du launcher en premier, puis toutes les clés des fichiers .conf, modifiables sur place.",
+                "Nouveaux onglets de réglages : PvP (High Risk, War Mode, champs de bataille, duels) et Vos alts (missions, quêtes, banque de guilde) ; les onglets sont rangés en sections.",
+                "Profils de réglages : exportez toutes les valeurs que vous avez changées dans un fichier, et importez-le sur un autre serveur (les différences sont montrées d'abord).",
+                "« Garder mes fichiers modifiés » sur le bandeau du jeu modifié, à vos risques ; la Vérification vous le rappelle, et « Mettre à jour les données » revient en arrière.",
+                "Réinstaller complètement garde aussi own-settings.json, et une liste de mise à jour servie trop ancienne juste après une sortie est relue aussitôt."
+            ],
+            "ru": [
+                "Мастер настройки («Настройки сервера» > «Пресеты и профили»): миры, стиль мира, боты, занятия ботов, ваши альты, опыт, коллекции, жизнь сервера, PvP и сложность, с рекомендацией к каждому вопросу и сводкой, затем всё применяется и сервер запускается. Ваши персонажи не затрагиваются.",
+                "Поиск в настройках сервера: сначала настройки лаунчера, затем все ключи файлов .conf с правкой на месте.",
+                "Новые вкладки настроек: PvP (High Risk, War Mode, поля боя, дуэли) и «Ваши альты» (задания, квесты, банк гильдии); вкладки разбиты на разделы.",
+                "Профили настроек: экспортируйте все изменённые значения в файл и импортируйте на другом сервере (различия показываются заранее).",
+                "«Оставить мои изменённые файлы» на баннере изменённой игры, на ваш риск; Проверка напоминает об этом, а «Обновить данные» возвращает всё назад.",
+                "Полная переустановка сохраняет и own-settings.json, а устаревший сразу после выхода список обновлений перечитывается немедленно."
+            ],
+            "zh": [
+                "设置向导（服务器设置 > 预设与配置档）：国度、世界风格、机器人、机器人做什么、你的小号、经验、收藏、服务器生活、PvP 和难度，每项都有推荐，最后给出汇总，然后应用全部设置并启动服务器。你的角色永远不会被改动。",
+                "在服务器设置中搜索：先搜索启动器的设置，再搜索 .conf 文件的每个键，可直接编辑。",
+                "新的设置标签页：PvP（High Risk、War Mode、战场、决斗）和你的小号（采集任务、任务、公会银行）；标签页已按分区排列。",
+                "设置配置档：将你更改过的所有值导出到文件，并可在另一台服务器上导入（会先显示差异）。",
+                "游戏文件被修改时的横幅上新增“保留我修改的文件”，风险自负；“验证”会提醒你，“更新数据”可恢复。",
+                "“完全重新安装”也会保留 own-settings.json；发布后立即拿到的过期更新列表会马上重新读取。"
+            ]
         }
-      }
-    ]
-  },
-  {
-    "version": "0.3.47",
-    "items": {
-      "en": [
-        "Stop all never cuts a realm that is still saving: it waits for it, and if it is not done after 5 minutes it leaves it and MySQL running and tells you (no more lost saves on Wildcard or Reborn).",
-        "After a CoA patch of your game, the home page offers to take the server data from it again, so the server matches your game.",
-        "The bots' navigation maps are built once and kept: updating the data after a game patch no longer builds them again. Bots walking oddly? Verification > Bots has a Rebuild button, and the home page offers to restart the server once they are ready.",
-        "A network drive (NAS, shared folder) is refused for the server: MySQL cannot run there.",
-        "Installing the bots tries again by itself when MySQL is unreachable for a moment.",
-        "Your own launcher.config.json keeps all its values; new options are only added next to them.",
-        "A sharper octopus in the Windows notifications.",
-        "Settings > Services: give an existing game account a new password."
-      ],
-      "fr": [
-        "Tout arrêter ne coupe plus un royaume qui sauvegarde encore : il l'attend, et s'il n'a pas fini au bout de 5 minutes, il le laisse tourner avec MySQL et vous prévient (plus de sauvegardes perdues sur Wildcard ou Reborn).",
-        "Après un patch CoA de votre jeu, l'accueil propose de reprendre les données du serveur, pour qu'il corresponde à votre jeu.",
-        "Les cartes de navigation des bots sont construites une fois puis gardées : reprendre les données après un patch du jeu ne les refait plus. Des bots qui marchent bizarrement ? Vérification > Bots a un bouton Reconstruire, et l'accueil propose de redémarrer le serveur quand elles sont prêtes.",
-        "Un lecteur réseau (NAS, dossier partagé) est refusé pour le serveur : MySQL ne peut pas y tourner.",
-        "L'installation des bots réessaie toute seule quand MySQL est injoignable un instant.",
-        "Votre propre launcher.config.json garde toutes ses valeurs ; les nouvelles options sont seulement ajoutées à côté.",
-        "Une pieuvre plus nette dans les notifications Windows.",
-        "Réglages > Services : donner un nouveau mot de passe à un compte de jeu existant."
-      ],
-      "ru": [
-        "«Остановить всё» больше не обрывает мир, который ещё сохраняется: ждёт его, а если через 5 минут он не закончил, оставляет его и MySQL работать и предупреждает (больше никаких потерянных сохранений в Wildcard и Reborn).",
-        "После патча CoA вашей игры главная страница предлагает заново взять из неё данные сервера, чтобы сервер соответствовал игре.",
-        "Навигационные карты ботов строятся один раз и сохраняются: обновление данных после патча игры больше их не перестраивает. Боты ходят странно? В Проверка > Боты есть кнопка «Перестроить», а главная страница предложит перезапустить сервер, когда они готовы.",
-        "Сетевой диск (NAS, общая папка) не принимается для сервера: MySQL там не работает.",
-        "Установка ботов сама повторяет попытку, если MySQL на мгновение недоступен.",
-        "Ваш собственный launcher.config.json сохраняет все свои значения; новые параметры лишь добавляются рядом.",
-        "Более чёткий осьминог в уведомлениях Windows.",
-        "Настройки > Службы: новый пароль для существующего игрового аккаунта."
-      ],
-      "zh": [
-        "“全部停止”永远不会中断仍在保存的国度：它会等待，如果 5 分钟后仍未完成，就让该国度和 MySQL 继续运行并通知你（Wildcard 或 Reborn 上不再丢失存档）。",
-        "游戏打了 CoA 补丁后，主页会提示从游戏重新提取服务器数据，使服务器与你的游戏保持一致。",
-        "机器人的导航地图只生成一次并保留：游戏补丁后更新数据不再重新生成。机器人走路异常？验证 > 机器人中有“重新生成”按钮，生成完成后主页会提示重启服务器。",
-        "网络驱动器（NAS、共享文件夹）不能用于服务器：MySQL 无法在其上运行。",
-        "MySQL 暂时无法连接时，安装机器人会自动重试。",
-        "你自己的 launcher.config.json 会保留所有值；新选项只会添加在旁边。",
-        "Windows 通知中的章鱼图标更清晰了。",
-        "设置 > 服务：为已有的游戏账号设置新密码。"
-      ]
+    },
+    {
+        "version": "0.3.49",
+        "items": {
+            "en": [
+                "Solo self-found in one preset and its own settings tab: bots level from 1 to 59 without generated gear, and 20 % of them clear the dungeons of their level in parties of five.",
+                "\"Bots online around my level\": among all your bots, those that log in are picked near the level of the players online, and no bot changes level.",
+                "Raids with your bots through Dungeon Clear, experimental: boss health counts a bot as 0.3 of a player (setting in Creature difficulty).",
+                "Verification > Troubleshooting: reinstall CoA + Bots completely in a new folder, with your accounts, characters, bots, realms and settings copied in; the old server stays until you delete it.",
+                "New experimental realm Free Pick (Dawnrise): one class, the Hero, every spell and talent chosen by you. No bots for now: they come in a next version.",
+                "Verification warns when Windows Firewall blocks the server (a \"Block\" rule left by a cancelled Windows window) and fixes it with your consent; a new realm gets its port opened when the server is open to other PCs.",
+                "Backups and Verification know every extra realm database."
+            ],
+            "fr": [
+                "Solo self-found en un seul préréglage et son propre onglet de réglages : les bots montent de 1 à 59 sans équipement fabriqué, et 20 % d'entre eux font les donjons de leur niveau en groupes de cinq.",
+                "« Bots en ligne autour de mon niveau » : parmi tous vos bots, ceux qui se connectent sont choisis près du niveau des joueurs en ligne, et aucun bot ne change de niveau.",
+                "Raids avec vos bots via Dungeon Clear, en expérimental : les PV des boss comptent un bot pour 0,3 joueur (réglage dans Difficulté des créatures).",
+                "Vérification > Dépannage : réinstaller complètement CoA + Bots dans un nouveau dossier, avec vos comptes, persos, bots, royaumes et réglages copiés ; l'ancien serveur reste jusqu'à ce que vous le supprimiez.",
+                "Nouveau royaume expérimental Free Pick (Dawnrise) : une seule classe, le Héros, chaque sort et talent choisi par vous. Sans bots pour l'instant : ils arrivent dans une prochaine version.",
+                "Vérification signale quand le pare-feu Windows bloque le serveur (une règle « Block » laissée par une fenêtre Windows annulée) et le corrige avec votre accord ; un nouveau royaume a son port ouvert quand le serveur est ouvert aux autres PC.",
+                "Les sauvegardes et la Vérification connaissent toutes les bases des royaumes en plus."
+            ],
+            "ru": [
+                "Solo self-found одним пресетом и своей вкладкой настроек: боты растут с 1 по 59 без созданной экипировки, а 20 % из них проходят подземелья своего уровня группами по пять.",
+                "«Онлайн боты около моего уровня»: из всех ваших ботов в игру заходят те, кто близок к уровню игроков онлайн, и ни один бот не меняет уровень.",
+                "Рейды с вашими ботами через Dungeon Clear, экспериментально: здоровье боссов считает бота как 0,3 игрока (настройка в «Сложность существ»).",
+                "Проверка > Устранение неполадок: полная переустановка CoA + Bots в новую папку с копией аккаунтов, персонажей, ботов, миров и настроек; прежний сервер остаётся, пока вы его не удалите.",
+                "Новый экспериментальный мир Free Pick (Dawnrise): один класс — Герой, каждое заклинание и талант выбираете вы. Пока без ботов: они появятся в следующей версии.",
+                "Проверка сообщает, когда брандмауэр Windows блокирует сервер (правило «Block» после отменённого окна Windows), и исправляет это с вашего согласия; новому миру открывается порт, когда сервер открыт для других ПК.",
+                "Резервные копии и Проверка знают базы всех дополнительных миров."
+            ],
+            "zh": [
+                "单人自给自足有了一个预设和专属设置标签页：机器人从 1 级到 59 级不生成装备，其中 20 % 以五人小队刷对应等级的副本。",
+                "“在线机器人接近我的等级”：在你的所有机器人中，挑选与在线玩家等级相近的机器人登录，没有机器人会改变等级。",
+                "通过 Dungeon Clear 带你的机器人打团队副本（实验性）：首领生命值将一个机器人计为 0.3 名玩家（设置位于“怪物难度”）。",
+                "验证 > 故障排除：在新文件夹中完全重新安装 CoA + Bots，并复制你的账号、角色、机器人、国度和设置；旧服务器会保留，直到你删除它。",
+                "新的实验性国度 Free Pick（Dawnrise）：只有一个职业 Hero，所有法术和天赋都由你选择。暂时没有机器人：将在后续版本加入。",
+                "当 Windows 防火墙阻止服务器（被取消的 Windows 窗口留下的“阻止”规则）时，“验证”会发出警告，并在你同意后修复；当服务器对其他电脑开放时，新国度会自动打开其端口。",
+                "备份和验证现已识别所有额外的国度数据库。"
+            ]
+        }
+    },
+    {
+        "version": "0.3.48",
+        "items": {
+            "en": [
+                "A new server downloads the bots' navigation maps (about 1.9 GB, minutes) instead of building them for hours; Verification offers newer ones when they are published.",
+                "\"Solo self-found (1-59)\" preset, \"Bot experience speed\" setting (×1 to ×5), and a \"Self-found bots in dungeons\" card, coming soon.",
+                "Switches show a tick or a cross, not only a colour.",
+                "The installer lets you choose where the launcher goes.",
+                "Preparing the server: a database build that was cut is done again, finished steps are ticked, the world import shows its progress, and a warning shows when the server is on a USB drive.",
+                "The launcher no longer restarts during the server preparation, and reads the signed list again before refusing a new version."
+            ],
+            "fr": [
+                "Un nouveau serveur télécharge les cartes de navigation des bots (environ 1,9 Go, quelques minutes) au lieu de les construire pendant des heures ; Vérification propose les plus récentes quand elles sont publiées.",
+                "Préréglage « Solo self-found (1-59) », réglage « Vitesse d'expérience des bots » (×1 à ×5), et une carte « Bots self-found en donjon », bientôt disponible.",
+                "Les interrupteurs affichent une coche ou une croix, pas seulement une couleur.",
+                "L'installeur vous laisse choisir où mettre le launcher.",
+                "Préparation du serveur : une base coupée en route est refaite, les étapes finies sont cochées, l'import du monde affiche sa progression, et un avertissement s'affiche si le serveur est sur un disque USB.",
+                "Le launcher ne redémarre plus pendant la préparation du serveur, et relit la liste signée avant de refuser une nouvelle version."
+            ],
+            "ru": [
+                "Новый сервер скачивает навигационные карты ботов (около 1,9 ГБ, несколько минут) вместо многочасового построения; «Проверка» предлагает более новые, когда они опубликованы.",
+                "Пресет «Solo self-found (1-59)», настройка «Скорость получения опыта ботами» (×1–×5) и карточка «Боты без готовой экипировки в подземельях» — скоро.",
+                "Переключатели показывают галочку или крестик, а не только цвет.",
+                "Установщик позволяет выбрать папку лаунчера.",
+                "Подготовка сервера: прерванное создание базы выполняется заново, готовые шаги отмечены, импорт мира показывает прогресс, а для сервера на USB-диске выводится предупреждение.",
+                "Лаунчер больше не перезапускается во время подготовки сервера и перечитывает подписанный список, прежде чем отклонить новую версию."
+            ],
+            "zh": [
+                "新服务器会下载机器人的导航地图（约 1.9 GB，几分钟），而不是花几个小时生成；有新版本发布时，“验证”会提供更新。",
+                "“单人自给自足（1-59）”预设、“机器人经验速度”设置（×1 到 ×5），以及“副本中的自给自足机器人”卡片，即将推出。",
+                "开关会显示勾或叉，而不仅仅是颜色。",
+                "安装程序允许你选择启动器的安装位置。",
+                "准备服务器：中断的数据库构建会重新进行，已完成的步骤会打勾，世界数据导入会显示进度，服务器位于 USB 驱动器上时会显示警告。",
+                "启动器在服务器准备期间不再重启，并会在拒绝新版本前重新读取签名列表。"
+            ]
+        },
+        "title": {
+            "en": "CoA Bots 2.8.1 and launcher 0.3.48",
+            "fr": "CoA Bots 2.8.1 et launcher 0.3.48",
+            "ru": "CoA Bots 2.8.1 и лаунчер 0.3.48",
+            "zh": "CoA Bots 2.8.1 与启动器 0.3.48"
+        },
+        "sections": [
+            {
+                "title": {
+                    "en": "Solo self-found (1-59), optional",
+                    "fr": "Solo self-found (1-59), en option",
+                    "ru": "Solo self-found (1-59), по желанию",
+                    "zh": "单人自给自足（1-59），可选"
+                },
+                "items": {
+                    "en": [
+                        "A new preset in Settings › Bot population: bots level up from level 1 and only wear what they loot, earn from quests or get from you. At 60 they are geared as usual. Nothing changes unless you pick it."
+                    ],
+                    "fr": [
+                        "Nouveau préréglage dans Réglages › Population de bots : les bots montent depuis le niveau 1 et ne portent que ce qu'ils ramassent, gagnent en quête ou reçoivent de vous. Au niveau 60, ils sont équipés comme d'habitude. Rien ne change si vous ne le choisissez pas."
+                    ],
+                    "ru": [
+                        "Новый пресет в Настройки › Население ботов: боты растут с 1 уровня и носят только добычу, награды за задания или то, что дали вы. На 60-м уровне экипируются как обычно. Ничего не меняется, пока вы его не выберете."
+                    ],
+                    "zh": [
+                        "设置 › 机器人数量中的新预设：机器人从 1 级开始升级，只穿戴拾取的、任务获得的或你给的装备。到 60 级时照常配装。除非你选择它，否则不会有任何改变。"
+                    ]
+                }
+            },
+            {
+                "title": {
+                    "en": "Latest CoA core (284 changes since 2.8)",
+                    "fr": "Dernier cœur CoA (284 changements depuis la 2.8)",
+                    "ru": "Новое ядро CoA (284 изменения после 2.8)",
+                    "zh": "最新 CoA 核心（自 2.8 起 284 项更改）"
+                },
+                "items": {
+                    "en": [
+                        "Creature magic resistance and new open-world creature damage.",
+                        "PvE Power and PvP Power.",
+                        "Cross-faction battlegrounds.",
+                        "Road to De Other Side (map 937) is back.",
+                        "Name filter and account-wide friends (opt-in).",
+                        "Gathering nodes at their Ascension positions.",
+                        "Large batches of dungeon, item, quest and class fixes."
+                    ],
+                    "fr": [
+                        "Résistance magique des créatures et nouveaux dégâts des créatures en monde ouvert.",
+                        "PvE Power et PvP Power.",
+                        "Champs de bataille inter-factions.",
+                        "Road to De Other Side (carte 937) est de retour.",
+                        "Filtre des noms et amis à l'échelle du compte (au choix).",
+                        "Points de récolte aux positions d'Ascension.",
+                        "Gros lots de correctifs de donjons, objets, quêtes et classes."
+                    ],
+                    "ru": [
+                        "Магическое сопротивление существ и новый урон существ в открытом мире.",
+                        "PvE Power и PvP Power.",
+                        "Межфракционные поля боя.",
+                        "Road to De Other Side (карта 937) вернулась.",
+                        "Фильтр имён и друзья на весь аккаунт (по желанию).",
+                        "Точки сбора на позициях Ascension.",
+                        "Большие наборы исправлений подземелий, предметов, заданий и классов."
+                    ],
+                    "zh": [
+                        "怪物魔法抗性和新的野外怪物伤害。",
+                        "PvE 强度和 PvP 强度。",
+                        "跨阵营战场。",
+                        "Road to De Other Side（地图 937）回归。",
+                        "名称过滤和账号通用好友（可选启用）。",
+                        "采集点位于其 Ascension 中的位置。",
+                        "大量副本、物品、任务和职业修复。"
+                    ]
+                }
+            },
+            {
+                "title": {
+                    "en": "Bots",
+                    "fr": "Bots",
+                    "ru": "Боты",
+                    "zh": "机器人"
+                },
+                "items": {
+                    "en": [
+                        "Boss mechanics in the classic dungeons (thanks to Brytenwally).",
+                        "Boss strategy for Road to De Other Side (thanks to steviecraycray).",
+                        "Molten Core is back on Heroic, Mythic and Ascended on older databases.",
+                        "Safety nets against battleground crashes (thanks to nightlund).",
+                        "Bloodmage Eternal tanks play their form properly.",
+                        "Gear settings are respected at level up (\"loot only\" bots)."
+                    ],
+                    "fr": [
+                        "Mécaniques de boss dans les donjons classiques (merci à Brytenwally).",
+                        "Stratégie de boss pour Road to De Other Side (merci à steviecraycray).",
+                        "Cœur du Magma de retour en héroïque, mythique et Ascended sur les anciennes bases.",
+                        "Filets de sécurité contre les plantages en champ de bataille (merci à nightlund).",
+                        "Les tanks Bloodmage Eternal jouent correctement leur forme.",
+                        "Les réglages d'équipement sont respectés à la montée de niveau (bots « butin seulement »)."
+                    ],
+                    "ru": [
+                        "Механики боссов в классических подземельях (спасибо Brytenwally).",
+                        "Стратегия боссов для Road to De Other Side (спасибо steviecraycray).",
+                        "Огненные Недра снова в героическом, мифическом и Ascended режимах на старых базах.",
+                        "Защита от падений на полях боя (спасибо nightlund).",
+                        "Танки Bloodmage Eternal правильно используют свою форму.",
+                        "Настройки экипировки соблюдаются при повышении уровня (боты «только добыча»)."
+                    ],
+                    "zh": [
+                        "经典副本中的首领机制（感谢 Brytenwally）。",
+                        "Road to De Other Side 的首领策略（感谢 steviecraycray）。",
+                        "旧数据库上的熔火之心重新提供英雄、史诗和 Ascended 难度。",
+                        "防止战场崩溃的安全措施（感谢 nightlund）。",
+                        "Bloodmage Eternal 坦克能正确使用其形态。",
+                        "升级时遵守装备设置（“仅靠拾取”的机器人）。"
+                    ]
+                }
+            },
+            {
+                "title": {
+                    "en": "Dungeon Clear 2.8.1",
+                    "fr": "Dungeon Clear 2.8.1",
+                    "ru": "Dungeon Clear 2.8.1",
+                    "zh": "Dungeon Clear 2.8.1"
+                },
+                "items": {
+                    "en": [
+                        "Heroic and Mythic runs are about 10 minutes faster.",
+                        "Fixes in Blackrock Depths, Stratholme and Shadowfang Keep.",
+                        "Known limits: Blackfathom Deeps and the Scarlet Cathedral can still get stuck; a Heroic or Mythic run still going at the 04:00 reset gets stuck: type .dc off."
+                    ],
+                    "fr": [
+                        "Les runs héroïques et mythiques sont environ 10 minutes plus rapides.",
+                        "Correctifs dans les Profondeurs de Blackrock, Stratholme et le donjon d'Ombrecroc.",
+                        "Limites connues : les Profondeurs de Brassenoire et la cathédrale du Monastère écarlate peuvent encore bloquer ; un run héroïque ou mythique encore en cours à la remise à zéro de 04:00 se bloque : tapez .dc off."
+                    ],
+                    "ru": [
+                        "Героические и мифические забеги примерно на 10 минут быстрее.",
+                        "Исправления в Глубинах Черной горы, Стратхольме и Крепости Темного Клыка.",
+                        "Известные ограничения: Непроглядная Пучина и Собор Монастыря Алого ордена ещё могут застрять; героический или мифический забег, идущий во время сброса в 04:00, застревает: введите .dc off."
+                    ],
+                    "zh": [
+                        "英雄和史诗难度的副本快了约 10 分钟。",
+                        "修复了黑石深渊、斯坦索姆和影牙城堡中的问题。",
+                        "已知限制：黑暗深渊和血色修道院大教堂仍可能卡住；在 04:00 重置时仍在进行的英雄或史诗副本会卡住：请输入 .dc off。"
+                    ]
+                }
+            },
+            {
+                "title": {
+                    "en": "Launcher 0.3.48",
+                    "fr": "Launcher 0.3.48",
+                    "ru": "Лаунчер 0.3.48",
+                    "zh": "启动器 0.3.48"
+                },
+                "items": {
+                    "en": [
+                        "A new server downloads the bots' navigation maps (about 1.9 GB, minutes) instead of building them for hours; Verification offers newer ones when they are published.",
+                        "\"Solo self-found (1-59)\" preset, \"Bot experience speed\" setting (×1 to ×5), and a \"Self-found bots in dungeons\" card, coming soon.",
+                        "Switches show a tick or a cross, not only a colour.",
+                        "The installer lets you choose where the launcher goes.",
+                        "Preparing the server: a database build that was cut is done again, finished steps are ticked, the world import shows its progress, and a warning shows when the server is on a USB drive.",
+                        "The launcher no longer restarts during the server preparation, and reads the signed list again before refusing a new version."
+                    ],
+                    "fr": [
+                        "Un nouveau serveur télécharge les cartes de navigation des bots (environ 1,9 Go, quelques minutes) au lieu de les construire pendant des heures ; Vérification propose les plus récentes quand elles sont publiées.",
+                        "Préréglage « Solo self-found (1-59) », réglage « Vitesse d'expérience des bots » (×1 à ×5), et une carte « Bots self-found en donjon », bientôt disponible.",
+                        "Les interrupteurs affichent une coche ou une croix, pas seulement une couleur.",
+                        "L'installeur vous laisse choisir où mettre le launcher.",
+                        "Préparation du serveur : une base coupée en route est refaite, les étapes finies sont cochées, l'import du monde affiche sa progression, et un avertissement s'affiche si le serveur est sur un disque USB.",
+                        "Le launcher ne redémarre plus pendant la préparation du serveur, et relit la liste signée avant de refuser une nouvelle version."
+                    ],
+                    "ru": [
+                        "Новый сервер скачивает навигационные карты ботов (около 1,9 ГБ, несколько минут) вместо многочасового построения; «Проверка» предлагает более новые, когда они опубликованы.",
+                        "Пресет «Solo self-found (1-59)», настройка «Скорость получения опыта ботами» (×1–×5) и карточка «Боты без готовой экипировки в подземельях» — скоро.",
+                        "Переключатели показывают галочку или крестик, а не только цвет.",
+                        "Установщик позволяет выбрать папку лаунчера.",
+                        "Подготовка сервера: прерванное создание базы выполняется заново, готовые шаги отмечены, импорт мира показывает прогресс, а для сервера на USB-диске выводится предупреждение.",
+                        "Лаунчер больше не перезапускается во время подготовки сервера и перечитывает подписанный список, прежде чем отклонить новую версию."
+                    ],
+                    "zh": [
+                        "新服务器会下载机器人的导航地图（约 1.9 GB，几分钟），而不是花几个小时生成；有新版本发布时，“验证”会提供更新。",
+                        "“单人自给自足（1-59）”预设、“机器人经验速度”设置（×1 到 ×5），以及“副本中的自给自足机器人”卡片，即将推出。",
+                        "开关会显示勾或叉，而不仅仅是颜色。",
+                        "安装程序允许你选择启动器的安装位置。",
+                        "准备服务器：中断的数据库构建会重新进行，已完成的步骤会打勾，世界数据导入会显示进度，服务器位于 USB 驱动器上时会显示警告。",
+                        "启动器在服务器准备期间不再重启，并会在拒绝新版本前重新读取签名列表。"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "version": "0.3.47",
+        "items": {
+            "en": [
+                "Stop all never cuts a realm that is still saving: it waits for it, and if it is not done after 5 minutes it leaves it and MySQL running and tells you (no more lost saves on Wildcard or Reborn).",
+                "After a CoA patch of your game, the home page offers to take the server data from it again, so the server matches your game.",
+                "The bots' navigation maps are built once and kept: updating the data after a game patch no longer builds them again. Bots walking oddly? Verification > Bots has a Rebuild button, and the home page offers to restart the server once they are ready.",
+                "A network drive (NAS, shared folder) is refused for the server: MySQL cannot run there.",
+                "Installing the bots tries again by itself when MySQL is unreachable for a moment.",
+                "Your own launcher.config.json keeps all its values; new options are only added next to them.",
+                "A sharper octopus in the Windows notifications.",
+                "Settings > Services: give an existing game account a new password."
+            ],
+            "fr": [
+                "Tout arrêter ne coupe plus un royaume qui sauvegarde encore : il l'attend, et s'il n'a pas fini au bout de 5 minutes, il le laisse tourner avec MySQL et vous prévient (plus de sauvegardes perdues sur Wildcard ou Reborn).",
+                "Après un patch CoA de votre jeu, l'accueil propose de reprendre les données du serveur, pour qu'il corresponde à votre jeu.",
+                "Les cartes de navigation des bots sont construites une fois puis gardées : reprendre les données après un patch du jeu ne les refait plus. Des bots qui marchent bizarrement ? Vérification > Bots a un bouton Reconstruire, et l'accueil propose de redémarrer le serveur quand elles sont prêtes.",
+                "Un lecteur réseau (NAS, dossier partagé) est refusé pour le serveur : MySQL ne peut pas y tourner.",
+                "L'installation des bots réessaie toute seule quand MySQL est injoignable un instant.",
+                "Votre propre launcher.config.json garde toutes ses valeurs ; les nouvelles options sont seulement ajoutées à côté.",
+                "Une pieuvre plus nette dans les notifications Windows.",
+                "Réglages > Services : donner un nouveau mot de passe à un compte de jeu existant."
+            ],
+            "ru": [
+                "«Остановить всё» больше не обрывает мир, который ещё сохраняется: ждёт его, а если через 5 минут он не закончил, оставляет его и MySQL работать и предупреждает (больше никаких потерянных сохранений в Wildcard и Reborn).",
+                "После патча CoA вашей игры главная страница предлагает заново взять из неё данные сервера, чтобы сервер соответствовал игре.",
+                "Навигационные карты ботов строятся один раз и сохраняются: обновление данных после патча игры больше их не перестраивает. Боты ходят странно? В Проверка > Боты есть кнопка «Перестроить», а главная страница предложит перезапустить сервер, когда они готовы.",
+                "Сетевой диск (NAS, общая папка) не принимается для сервера: MySQL там не работает.",
+                "Установка ботов сама повторяет попытку, если MySQL на мгновение недоступен.",
+                "Ваш собственный launcher.config.json сохраняет все свои значения; новые параметры лишь добавляются рядом.",
+                "Более чёткий осьминог в уведомлениях Windows.",
+                "Настройки > Службы: новый пароль для существующего игрового аккаунта."
+            ],
+            "zh": [
+                "“全部停止”永远不会中断仍在保存的国度：它会等待，如果 5 分钟后仍未完成，就让该国度和 MySQL 继续运行并通知你（Wildcard 或 Reborn 上不再丢失存档）。",
+                "游戏打了 CoA 补丁后，主页会提示从游戏重新提取服务器数据，使服务器与你的游戏保持一致。",
+                "机器人的导航地图只生成一次并保留：游戏补丁后更新数据不再重新生成。机器人走路异常？验证 > 机器人中有“重新生成”按钮，生成完成后主页会提示重启服务器。",
+                "网络驱动器（NAS、共享文件夹）不能用于服务器：MySQL 无法在其上运行。",
+                "MySQL 暂时无法连接时，安装机器人会自动重试。",
+                "你自己的 launcher.config.json 会保留所有值；新选项只会添加在旁边。",
+                "Windows 通知中的章鱼图标更清晰了。",
+                "设置 > 服务：为已有的游戏账号设置新密码。"
+            ]
+        }
+    },
+    {
+        "version": "0.3.46",
+        "items": {
+            "en": [
+                "The module, its discussions and its news are now on the CoA Modding Community Discord: https://discord.gg/Vhg9NktJf",
+                "CoA Bots 2.8: Dungeon Clear (your bot group clears a dungeon on its own, in Normal, Heroic and Mythic; on for the CoA realm), realm cards and names you can set, and the fixes since 2.7.",
+                "No more game data from us: the server is built on your PC from your own Conquest of Azeroth client (about 30 minutes, then the bots' navigation maps in the background). A repack you already have can be updated too.",
+                "Auction house: a Settings button (buyer, pace, price paid, CoA prices, per-seller cap, size, and the gold paid at once), applied live.",
+                "Lighter database: the old achievement rows of the bots are removed once after the update (backup first); again any time from Settings > Backups.",
+                "Also: a « Like Rexxar » card in Bot population, Stop on a single service stops only that one, and a server no longer shows « Starting » when it is stopped."
+            ],
+            "fr": [
+                "Le module, ses discussions et ses nouveautés sont maintenant sur le Discord CoA Modding Community : https://discord.gg/Vhg9NktJf",
+                "CoA Bots 2.8 : Dungeon Clear (votre groupe de bots fait un donjon en autonomie, en Normal, Héroïque et Mythique ; activé sur le royaume CoA), cartes et noms des royaumes réglables, et les correctifs depuis la 2.7.",
+                "Plus aucune donnée du jeu venant de nous : le serveur est construit sur votre PC à partir de votre propre client Conquest of Azeroth (environ 30 minutes, puis les cartes de navigation des bots en arrière-plan). Un repack que vous avez déjà peut aussi être mis à jour.",
+                "Hôtel des ventes : un bouton Réglages (acheteur, rythme, prix payé, prix de CoA, achats par vendeur, taille, et l'or payé tout de suite), appliqué en direct.",
+                "Base allégée : les anciennes lignes de hauts faits des bots sont supprimées une fois après la mise à jour (sauvegarde d'abord) ; à refaire quand vous voulez dans Réglages > Backups.",
+                "Aussi : une carte « Comme Rexxar » dans Population des bots, Stop sur un seul service n'arrête plus que lui, et un serveur arrêté n'affiche plus « Démarrage »."
+            ],
+            "ru": [
+                "Модуль, его обсуждения и новости теперь на Discord-сервере CoA Modding Community: https://discord.gg/Vhg9NktJf",
+                "CoA Bots 2.8: Dungeon Clear (ваша группа ботов сама проходит подземелье: Обычный, Героический и Эпохальный; включено для мира CoA), настраиваемые карточки и названия миров и исправления со времён 2.7.",
+                "Больше никаких игровых данных от нас: сервер собирается на вашем ПК из вашего собственного клиента Conquest of Azeroth (около 30 минут, затем навигационные карты ботов в фоне). Уже имеющийся репак тоже можно обновить.",
+                "Аукцион: кнопка «Настройки» (покупатель, темп, платимая цена, цены CoA, лимит на продавца, размер и мгновенная оплата), применяется на лету.",
+                "Облегчённая база: старые строки достижений ботов удаляются один раз после обновления (сначала копия); повторить можно в Настройки > Резервные копии.",
+                "А также: карточка «Как Rexxar» в Населении ботов, «Стоп» у одной службы останавливает только её, и остановленный сервер больше не показывает «Запуск»."
+            ],
+            "zh": [
+                "该模块、相关讨论和新闻现已移至 CoA Modding Community Discord：https://discord.gg/Vhg9NktJf",
+                "CoA Bots 2.8：Dungeon Clear（你的机器人队伍自行通关副本，支持普通、英雄和史诗难度；在 CoA 国度上默认开启）、可设置的国度卡片和名称，以及自 2.7 以来的修复。",
+                "我们不再提供游戏数据：服务器在你的电脑上根据你自己的 Conquest of Azeroth 客户端构建（约 30 分钟，之后在后台生成机器人的导航地图）。你已有的 repack 也可以更新。",
+                "拍卖行：新增设置按钮（买家、节奏、成交价、CoA 价格、每个卖家上限、规模，以及一次性支付的金币），实时生效。",
+                "数据库更轻量：更新后会一次性删除机器人的旧成就记录（先备份）；之后可随时在设置 > 备份中再次执行。",
+                "另外：机器人数量中新增「仿 Rexxar」卡片，对单个服务点击停止只会停止该服务，服务器停止后不再显示「正在启动」。"
+            ]
+        }
+    },
+    {
+        "version": "0.3.44",
+        "items": {
+            "en": [
+                "Closing the launcher never stops your server, and it can stay in the notification area. Windows notifications: new version, server ready, world crash.",
+                "Play starts the server first when it is off. Optional: open with Windows, start the server when the launcher opens, restart the world after a crash, one backup a day.",
+                "Fresh world in one click (every random bot made again at level 1), the bots XP multiplier, and the advised number of bots for your PC.",
+                "Console: export or import a character, a safer SQL console. Verification: clean the logs. A Cancel button while an update downloads."
+            ],
+            "fr": [
+                "Fermer le launcher n'arrête jamais votre serveur, et il peut rester dans la zone de notification. Notifications Windows : nouvelle version, serveur prêt, crash du monde.",
+                "Jouer démarre d'abord le serveur s'il est éteint. En option : ouvrir avec Windows, démarrer le serveur à l'ouverture, redémarrer le monde après un crash, une sauvegarde par jour.",
+                "Monde neuf en un clic (tous les bots aléatoires refaits au niveau 1), le multiplicateur d'XP des bots, et le nombre de bots conseillé pour votre PC.",
+                "Console : exporter ou importer un perso, une console SQL plus sûre. Vérification : nettoyer les logs. Un bouton Annuler pendant le téléchargement d'une mise à jour."
+            ],
+            "ru": [
+                "Закрытие лаунчера никогда не останавливает сервер, и он может оставаться в области уведомлений. Уведомления Windows: новая версия, сервер готов, сбой мира.",
+                "«Играть» сначала запускает сервер, если он выключен. Опции: открывать с Windows, запускать сервер при открытии, перезапуск мира после сбоя, одна копия в день.",
+                "Новый мир в один клик (все случайные боты заново с 1 уровня), множитель опыта ботов и рекомендуемое число ботов для вашего ПК.",
+                "Консоль: экспорт или импорт персонажа, более безопасная SQL-консоль. Проверка: очистка логов. Кнопка «Отмена» во время загрузки обновления."
+            ]
+        }
     }
-  },
-  {
-    "version": "0.3.46",
-    "items": {
-      "en": [
-        "The module, its discussions and its news are now on the CoA Modding Community Discord: https://discord.gg/Vhg9NktJf",
-        "CoA Bots 2.8: Dungeon Clear (your bot group clears a dungeon on its own, in Normal, Heroic and Mythic; on for the CoA realm), realm cards and names you can set, and the fixes since 2.7.",
-        "No more game data from us: the server is built on your PC from your own Conquest of Azeroth client (about 30 minutes, then the bots' navigation maps in the background). A repack you already have can be updated too.",
-        "Auction house: a Settings button (buyer, pace, price paid, CoA prices, per-seller cap, size, and the gold paid at once), applied live.",
-        "Lighter database: the old achievement rows of the bots are removed once after the update (backup first); again any time from Settings > Backups.",
-        "Also: a « Like Rexxar » card in Bot population, Stop on a single service stops only that one, and a server no longer shows « Starting » when it is stopped."
-      ],
-      "fr": [
-        "Le module, ses discussions et ses nouveautés sont maintenant sur le Discord CoA Modding Community : https://discord.gg/Vhg9NktJf",
-        "CoA Bots 2.8 : Dungeon Clear (votre groupe de bots fait un donjon en autonomie, en Normal, Héroïque et Mythique ; activé sur le royaume CoA), cartes et noms des royaumes réglables, et les correctifs depuis la 2.7.",
-        "Plus aucune donnée du jeu venant de nous : le serveur est construit sur votre PC à partir de votre propre client Conquest of Azeroth (environ 30 minutes, puis les cartes de navigation des bots en arrière-plan). Un repack que vous avez déjà peut aussi être mis à jour.",
-        "Hôtel des ventes : un bouton Réglages (acheteur, rythme, prix payé, prix de CoA, achats par vendeur, taille, et l'or payé tout de suite), appliqué en direct.",
-        "Base allégée : les anciennes lignes de hauts faits des bots sont supprimées une fois après la mise à jour (sauvegarde d'abord) ; à refaire quand vous voulez dans Réglages > Backups.",
-        "Aussi : une carte « Comme Rexxar » dans Population des bots, Stop sur un seul service n'arrête plus que lui, et un serveur arrêté n'affiche plus « Démarrage »."
-      ],
-      "ru": [
-        "Модуль, его обсуждения и новости теперь на Discord-сервере CoA Modding Community: https://discord.gg/Vhg9NktJf",
-        "CoA Bots 2.8: Dungeon Clear (ваша группа ботов сама проходит подземелье: Обычный, Героический и Эпохальный; включено для мира CoA), настраиваемые карточки и названия миров и исправления со времён 2.7.",
-        "Больше никаких игровых данных от нас: сервер собирается на вашем ПК из вашего собственного клиента Conquest of Azeroth (около 30 минут, затем навигационные карты ботов в фоне). Уже имеющийся репак тоже можно обновить.",
-        "Аукцион: кнопка «Настройки» (покупатель, темп, платимая цена, цены CoA, лимит на продавца, размер и мгновенная оплата), применяется на лету.",
-        "Облегчённая база: старые строки достижений ботов удаляются один раз после обновления (сначала копия); повторить можно в Настройки > Резервные копии.",
-        "А также: карточка «Как Rexxar» в Населении ботов, «Стоп» у одной службы останавливает только её, и остановленный сервер больше не показывает «Запуск»."
-      ],
-      "zh": [
-        "该模块、相关讨论和新闻现已移至 CoA Modding Community Discord：https://discord.gg/Vhg9NktJf",
-        "CoA Bots 2.8：Dungeon Clear（你的机器人队伍自行通关副本，支持普通、英雄和史诗难度；在 CoA 国度上默认开启）、可设置的国度卡片和名称，以及自 2.7 以来的修复。",
-        "我们不再提供游戏数据：服务器在你的电脑上根据你自己的 Conquest of Azeroth 客户端构建（约 30 分钟，之后在后台生成机器人的导航地图）。你已有的 repack 也可以更新。",
-        "拍卖行：新增设置按钮（买家、节奏、成交价、CoA 价格、每个卖家上限、规模，以及一次性支付的金币），实时生效。",
-        "数据库更轻量：更新后会一次性删除机器人的旧成就记录（先备份）；之后可随时在设置 > 备份中再次执行。",
-        "另外：机器人数量中新增「仿 Rexxar」卡片，对单个服务点击停止只会停止该服务，服务器停止后不再显示「正在启动」。"
-      ]
-    }
-  },
-  {
-    "version": "0.3.44",
-    "items": {
-      "en": [
-        "Closing the launcher never stops your server, and it can stay in the notification area. Windows notifications: new version, server ready, world crash.",
-        "Play starts the server first when it is off. Optional: open with Windows, start the server when the launcher opens, restart the world after a crash, one backup a day.",
-        "Fresh world in one click (every random bot made again at level 1), the bots XP multiplier, and the advised number of bots for your PC.",
-        "Console: export or import a character, a safer SQL console. Verification: clean the logs. A Cancel button while an update downloads."
-      ],
-      "fr": [
-        "Fermer le launcher n'arrête jamais votre serveur, et il peut rester dans la zone de notification. Notifications Windows : nouvelle version, serveur prêt, crash du monde.",
-        "Jouer démarre d'abord le serveur s'il est éteint. En option : ouvrir avec Windows, démarrer le serveur à l'ouverture, redémarrer le monde après un crash, une sauvegarde par jour.",
-        "Monde neuf en un clic (tous les bots aléatoires refaits au niveau 1), le multiplicateur d'XP des bots, et le nombre de bots conseillé pour votre PC.",
-        "Console : exporter ou importer un perso, une console SQL plus sûre. Vérification : nettoyer les logs. Un bouton Annuler pendant le téléchargement d'une mise à jour."
-      ],
-      "ru": [
-        "Закрытие лаунчера никогда не останавливает сервер, и он может оставаться в области уведомлений. Уведомления Windows: новая версия, сервер готов, сбой мира.",
-        "«Играть» сначала запускает сервер, если он выключен. Опции: открывать с Windows, запускать сервер при открытии, перезапуск мира после сбоя, одна копия в день.",
-        "Новый мир в один клик (все случайные боты заново с 1 уровня), множитель опыта ботов и рекомендуемое число ботов для вашего ПК.",
-        "Консоль: экспорт или импорт персонажа, более безопасная SQL-консоль. Проверка: очистка логов. Кнопка «Отмена» во время загрузки обновления."
-      ]
-    }
-  }
 ]

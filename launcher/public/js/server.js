@@ -432,7 +432,7 @@ function settingsView() {
   const tabs = groups.map(group => ({ id: group.id, icon: group.icon, label: loc(group.label) }));
   if (!tabs.some(tab => tab.id === App.state.confGroup)) App.state.confGroup = tabs[0]?.id;
   const changedIn = id => conf.settings.filter(setting => setting.group === id && App.state.pending[pendingKey(setting.file, setting.key)] !== undefined).length;
-  const tabButton = tab => `<button class="conf-tab${App.state.confGroup === tab.id && !confSearching() ? ' active' : ''}" data-action="conf-group" data-id="${esc(tab.id)}">${icon(tab.icon)}<span>${esc(tab.label)}</span>${changedIn(tab.id) ? `<em>${changedIn(tab.id)}</em>` : ''}${(tab.id === 'presets' && isNew('wizard')) || (tab.id === 'damage' && isNew('damage')) ? newDot() : ''}</button>`;
+  const tabButton = tab => `<button class="conf-tab${App.state.confGroup === tab.id && !confSearching() ? ' active' : ''}" data-action="conf-group" data-id="${esc(tab.id)}">${icon(tab.icon)}<span>${esc(tab.label)}</span>${changedIn(tab.id) ? `<em>${changedIn(tab.id)}</em>` : ''}${(tab.id === 'presets' && isNew('wizard')) || (tab.id === 'damage' && isNew('damage')) || (tab.id === 'progression' && isNew('progression')) ? newDot() : ''}</button>`;
   // The tabs in sections (Start, Bots, World, Tools); a tab of no section goes at the end of the list.
   const placed = new Set((conf.sections || []).flatMap(section => section.groups));
   const sections = [...(conf.sections || []).map(section => ({ label: loc(section.label), tabs: section.groups.map(id => tabs.find(tab => tab.id === id)).filter(Boolean) })), { label: '', tabs: tabs.filter(tab => !placed.has(tab.id)) }].filter(section => section.tabs.length);
@@ -441,7 +441,7 @@ function settingsView() {
   const quick = conf.recipes.filter(recipe => ['coa-recommended', 'fresh-level-1', 'self-found-world', 'bots-around-my-level', 'rexxar-like'].includes(recipe.id))
     .filter(recipe => !recipe.soon || conf.recipes.some(item => item.id === 'self-found-world'));
   const recipes = quick.length ? `<div class="recipes">${quick.map(recipe => `<div class="recipe-cell"><button class="recipe${recipe.soon ? ' soon' : ''}" ${recipe.soon ? 'disabled aria-disabled="true"' : `data-action="conf-recipe" data-id="${esc(recipe.id)}"`}><strong>${esc(loc(recipe.title))}${recipe.soon ? `<span class="soon-tag">${esc(t('conf.soon', 'Coming soon'))}</span>` : ''}</strong><small>${esc(loc(recipe.summary))}</small></button></div>`).join('')}</div>` : '';
-  const body = groups.filter(group => group.id === App.state.confGroup).map(group => `<section class="conf-group"><h3>${icon(group.icon)}${esc(loc(group.label))}</h3>${group.id === 'presets' ? presetsView(recipes) : group.id === 'population' ? ramAdvice(conf) : group.id === 'damage' ? damageView() : ''}${group.id === 'levels' && selfFoundOn() ? `<p class="status-line self-found-note">${icon('info')}${esc(t('conf.selfFoundLevels', 'Solo self-found is on: the bots only level up by playing (up to 59 without generated gear, geared as usual at 60). The level settings below do not apply, except the bots online around your level.'))}</p>` : ''}${conf.settings.filter(setting => setting.group === group.id && !DAMAGE_KEYS.includes(setting.key) && setting.key !== THREAT_KEY).map(settingRow).join('')}</section>`).join('');
+  const body = groups.filter(group => group.id === App.state.confGroup).map(group => `<section class="conf-group"><h3>${icon(group.icon)}${esc(loc(group.label))}</h3>${group.id === 'presets' ? presetsView(recipes) : group.id === 'population' ? ramAdvice(conf) : group.id === 'damage' ? damageView() : group.id === 'progression' ? progressionView() : ''}${group.id === 'levels' && selfFoundOn() ? `<p class="status-line self-found-note">${icon('info')}${esc(t('conf.selfFoundLevels', 'Solo self-found is on: the bots only level up by playing (up to 59 without generated gear, geared as usual at 60). The level settings below do not apply, except the bots online around your level.'))}</p>` : ''}${conf.settings.filter(setting => setting.group === group.id && !DAMAGE_KEYS.includes(setting.key) && setting.key !== THREAT_KEY).map(settingRow).join('')}</section>`).join('');
   const key = realmKey || 'coa';
   const others = createdRealms().length > 1;
   const banner = !others ? '' : realmBanner(key, realmKey
@@ -483,7 +483,7 @@ function damageMap(key, classes) {
 function damageView() {
   const byClass = damageMap(DAMAGE_KEYS[0], true);
   const bySpec = damageMap(DAMAGE_KEYS[1], false);
-  const slider = (kind, id, value, inherited) => `<input type="range" min="${Math.min(10, value)}" max="${Math.max(300, value)}" step="${value % 5 ? 1 : 5}" value="${value}" data-damage="${kind}" data-id="${id}"${inherited ? '' : ' data-set="1"'} aria-label="${esc(t('damage.percent', 'Percent of their damage'))}"><output class="damage-pct${inherited ? ' muted' : ''}" data-damage-out="${kind}-${id}">${value} %</output>`;
+  const slider = (kind, id, value, inherited) => `<input type="range" min="${Math.min(10, value)}" max="${Math.max(500, value)}" step="${value % 5 ? 1 : 5}" value="${value}" data-damage="${kind}" data-id="${id}"${inherited ? '' : ' data-set="1"'} aria-label="${esc(t('damage.percent', 'Percent of their damage'))}"><output class="damage-pct${inherited ? ' muted' : ''}" data-damage-out="${kind}-${id}">${value} %</output>`;
   const roleName = { d: t('damage.dps', 'damage'), h: t('damage.heal', 'healer'), t: t('damage.tank', 'tank') };
   const rows = COA_CLASSES.map(item => {
     const own = byClass[item.id] || 100;
@@ -562,6 +562,17 @@ Object.assign(App.actions, {
     damageWrite();
   },
 });
+
+// Progression: the Mythic+ keystones and Manastorm, the same switches as their modules (Conquest of Azeroth only).
+function progressionView() {
+  const m = App.state.modules;
+  if (confRealm() || !m || m.error) return '';
+  const row = (title, help, when, control) => `<div class="conf-row"><div class="conf-label"><strong>${esc(title)}</strong><p>${esc(help)}</p><small class="when">${icon('refresh')}${esc(when)}</small></div><div class="conf-control">${control}</div></div>`;
+  const rows = [];
+  if (m.mythicplus?.available) rows.push(row(t('progression.mythicPlus', 'Mythic+ dungeons (keystones)'), t('progression.mythicPlusHelp', 'Keystone runs in the Mythic dungeons. The Mythic dungeons themselves open with the content released above.'), loc(App.state.conf?.when?.reload), moduleSwitch('progression-mythicplus', !!m.mythicplus.enabled, false)));
+  if (m.manastorm?.available) rows.push(row('Manastorm Endless', t('modules.manastormText', 'Endless runs of Manastorm rooms, with its native window in game. Every player needs the updated client files of Manastorm.'), m.worldRunning ? t('progression.stopFirst', 'Stop the server to change it: it is read when the server starts.') : loc(App.state.conf?.when?.restart), moduleSwitch('modules-manastorm', !!m.manastorm.enabled, m.worldRunning)));
+  return rows.join('');
+}
 
 function settingRow(setting) {
   const conf = App.state.conf;
@@ -671,7 +682,7 @@ App.pages.server = {
     if (!info) return `<div class="page server">${skeleton(6)}</div>`;
     if (info.error) return `<div class="page server">${emptyState('warning', t('server.error', 'The server panel is unavailable'), info.error)}</div>`;
     if (!info.path && s.srvTab !== 'install') s.srvTab = 'install';
-    const tabs = `<nav class="subtabs">${SRV_TABS.filter(([id]) => id !== 'settings' || info.path).map(([id, iconName, key, fallback]) => `<button class="subtab${s.srvTab === id ? ' active' : ''}" data-action="srv-tab" data-id="${id}" ${!info.path && id !== 'install' ? 'disabled' : ''}>${icon(iconName)}<span>${esc(t(key, fallback))}</span>${id === 'settings' && Object.keys(s.pending).length ? `<em>${Object.keys(s.pending).length}</em>` : ''}${id === 'settings' && (isNew('settings') || isNew('wizard') || isNew('damage')) ? newDot() : ''}${(id === 'upgrade' && s.updates.core) || (id === 'install' && s.updates.bots) ? '<i class="dot"></i>' : ''}</button>`).join('')}</nav>`;
+    const tabs = `<nav class="subtabs">${SRV_TABS.filter(([id]) => id !== 'settings' || info.path).map(([id, iconName, key, fallback]) => `<button class="subtab${s.srvTab === id ? ' active' : ''}" data-action="srv-tab" data-id="${id}" ${!info.path && id !== 'install' ? 'disabled' : ''}>${icon(iconName)}<span>${esc(t(key, fallback))}</span>${id === 'settings' && Object.keys(s.pending).length ? `<em>${Object.keys(s.pending).length}</em>` : ''}${id === 'settings' && (isNew('settings') || isNew('wizard') || isNew('damage') || isNew('progression')) ? newDot() : ''}${(id === 'upgrade' && s.updates.core) || (id === 'install' && s.updates.bots) ? '<i class="dot"></i>' : ''}</button>`).join('')}</nav>`;
     const view = { services: servicesView, install: installView, backups: backupsView, upgrade: upgradeView, modules: modulesView, settings: settingsView }[s.srvTab];
     return `<div class="page server"><div class="page-head"><div><span class="eyebrow">${esc(t('server.eyebrow', 'On this PC'))}</span><h1>${esc(App.state.srvTab === 'settings' ? t('server.settingsTitle', 'Server settings') : t('server.title', 'Local server'))}</h1></div></div>${updateBanner()}<div class="srv-tabs-row">${tabs}${s.srvTab === 'settings' && info.path && App.state.conf && !App.state.conf.error ? realmPicker(App.state.conf.realm?.key || 'coa', 'conf-realm') : ''}</div><div class="srv-body">${view(info)}</div></div>`;
   },
@@ -766,7 +777,7 @@ Object.assign(App.actions, {
     toast(output || t('server.passwordChanged', 'New password for {name}.', { name: name.toUpperCase() }), 'success');
   }, button),
 
-  'conf-group': button => { App.state.confGroup = button.dataset.id; if (button.dataset.id === 'damage') markSeen('damage'); App.state.confSearch = ''; App.refresh('server'); $('#view')?.scrollTo({ top: 0 }); },
+  'conf-group': button => { App.state.confGroup = button.dataset.id; if (button.dataset.id === 'damage') markSeen('damage'); if (button.dataset.id === 'progression') markSeen('progression'); if (button.dataset.id === 'progression') App.api.modulesStatus().then(m => { App.state.modules = m; App.refresh('server'); }, () => {}); App.state.confSearch = ''; App.refresh('server'); $('#view')?.scrollTo({ top: 0 }); },
   'srv-tab': button => guard(async () => {
     if (button.dataset.id === 'settings') markSeen('settings');
     const s = App.state;
@@ -871,6 +882,12 @@ Object.assign(App.actions, {
     App.render();
   }, button),
   'manastorm-files': () => manastormClientDialog(false),
+  'progression-mythicplus': button => guard(async () => {
+    const result = await App.api.modulesMythicPlus(button.dataset.on !== '1');
+    App.state.modules = result;
+    toast(result.reloaded ? t('conf.reloaded', 'Applied at once: the server read its settings again.') : t('modules.restartNeeded', 'Saved: it applies at the next start of the server.'), 'success');
+    App.render();
+  }, button),
   'modules-rotation': button => guard(async () => {
     App.state.modules = await App.api.modulesRotation(button.dataset.on !== '1');
     toast(t('modules.restartNeeded', 'Saved: it applies at the next start of the server.'), 'success');

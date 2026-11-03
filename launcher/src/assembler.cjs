@@ -116,6 +116,14 @@ function startMmaps(folder, threads) {
   return run(folder, ['mmaps', ...(threads ? ['--threads', String(threads)] : [])], undefined, { detached: true });
 }
 
+// A generator left behind (its tool killed or crashed, the state not written): a program of the repack still running,
+// which stops every update (code 13). Every mmaps_generator of this repack, and the tool that builds the maps.
+function killStray(folder) {
+  const dir = path.resolve(folder).replace(/'/g, "''");
+  const script = `$dir = '${dir}\\'; Get-CimInstance Win32_Process | Where-Object { $_.ExecutablePath -and $_.ExecutablePath.StartsWith($dir, [StringComparison]::OrdinalIgnoreCase) -and ($_.Name -eq 'mmaps_generator.exe' -or ($_.Name -eq 'python.exe' -and $_.CommandLine -match 'coa_assemble\\.py.* mmaps( |$)')) } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }`;
+  try { require('node:child_process').execFileSync('powershell.exe', ['-NoProfile', '-Command', script], { windowsHide: true, stdio: 'ignore', timeout: 30000 }); } catch {}
+}
+
 // Pause: the build is stopped (its process tree: the tool and mmaps_generator); the maps already finished stay,
 // the map in progress is done again when it goes on (startMmaps).
 function stopMmaps(folder) {
@@ -125,6 +133,7 @@ function stopMmaps(folder) {
   if (pid && pidAlive(pid)) {
     try { require('node:child_process').execFileSync('taskkill.exe', ['/PID', String(pid), '/T', '/F'], { windowsHide: true, stdio: 'ignore' }); } catch {}
   }
+  killStray(folder);
   if (saved.mmaps) {
     saved.mmaps.running = false;
     saved.mmaps.paused = true;
@@ -133,6 +142,16 @@ function stopMmaps(folder) {
   fs.rmSync(path.join(folder, '.state', 'mmaps.lock'), { force: true });
   mmapsStarted.delete(path.resolve(folder));
   return state(folder);
+}
+
+// Before an update of the server: the build is paused (its programs would stop the update, code 13); true when it
+// ran, so that it goes on after the update.
+function pauseForUpdate(folder) {
+  const saved = readJson(path.join(folder, '.state', 'assemble.json')) || {};
+  const running = !!(saved.mmaps?.running && pidAlive(saved.mmaps.pid));
+  if (running) stopMmaps(folder);
+  else killStray(folder);
+  return running;
 }
 
 // Every map built again from the start (asked from Verification when bots walk oddly). The maps in place stay in use
@@ -252,4 +271,4 @@ function clientKept(folder, client) {
 }
 function forgetKept(folder) { try { fs.rmSync(path.join(folder, KEPT), { force: true }); } catch {} }
 
-module.exports = { state, assemble, refreshScript, startMmaps, stopMmaps, rebuildMmaps, clientChanged, keepClient, clientKept, forgetKept, clientPrint, worldImport, fetchMmaps, missingMmaps, buildMissingMmaps, mapHash, STEPS, busy };
+module.exports = { state, assemble, refreshScript, startMmaps, stopMmaps, pauseForUpdate, rebuildMmaps, clientChanged, keepClient, clientKept, forgetKept, clientPrint, worldImport, fetchMmaps, missingMmaps, buildMissingMmaps, mapHash, STEPS, busy };

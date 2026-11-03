@@ -1560,5 +1560,11 @@
   "damage.threatHelp": "帮助它们把怪物留在自己身上。100 % = 不变。",
   "conf.reloaded": "已立即生效：服务器已重新读取设置。",
   "conf.reloadFailed": "服务器没有响应：这些设置将在下次启动时生效。",
-  "damage.specCount": "{n} 个专精"
+  "damage.specCount": "{n} 个专精",
+  "progression.mythicPlus": "史诗+ 地下城（钥石）",
+  "progression.mythicPlusHelp": "史诗地下城中的钥石挑战。史诗地下城本身随上方已开放的内容一起开放。",
+  "progression.stopFirst": "请先停止服务器再更改：此项在服务器启动时读取。",
+  "realms.eco": "无人游戏时的节能模式",
+  "realms.ecoHint": "此服务器 10 分钟内没有玩家时，远离玩家的机器人进入休眠（活跃机器人：1 %）。一旦有玩家登录，即恢复你自己的数值。你的设置不会被更改。",
+  "realms.ecoAsleep": "机器人休眠中"
 }

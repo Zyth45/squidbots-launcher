@@ -349,5 +349,5 @@ document.addEventListener('mouseover', event => {
   if (!event.target.closest?.('[data-action="setup-wizard"]') || !isNew('wizard')) return;
   markSeen('wizard');
   $$('[data-action="setup-wizard"] .dot, .conf-tab[data-id="presets"] .dot').forEach(dot => dot.remove());
-  if (!isNew('settings') && !isNew('damage')) $$('.tab[data-tab="server"] .dot, .subtab[data-id="settings"] .dot').forEach(dot => dot.remove());
+  if (!isNew('settings') && !isNew('damage') && !isNew('progression')) $$('.tab[data-tab="server"] .dot, .subtab[data-id="settings"] .dot').forEach(dot => dot.remove());
 });

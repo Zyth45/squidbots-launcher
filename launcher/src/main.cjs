@@ -38,6 +38,7 @@ const tweaks = require('./repack-tweaks.cjs');
 const live = require('./live.cjs');
 const modules = require('./modules.cjs');
 const realms = require('./realms.cjs');
+const eco = require('./eco.cjs');
 const { mysqlLender } = require('./mysql-lender.cjs');
 const { fixManage } = require('./manage-fix.cjs');
 // The repack's own updates (squidbots-updates releases): the signed list, the run in progress, its last result.
@@ -966,6 +967,7 @@ function registerIpc() {
     const phase = (name, extra = {}) => { update.phase = name; send('update:event', { event: 'phase', phase: name, ...extra }); };
     // A server that was running is started again once the update ended well (the tool stops it for the update).
     const wasRunning = await serverControl()?.status().then(services => services.some(service => /world/i.test(service.id) && service.state === 'running')).catch(() => false);
+    let mmapsPaused = false;
     try {
       dashboard.stop();
       // The extra realms use the same worldserver and MySQL: stopped before the update, started again after it.
@@ -982,6 +984,8 @@ function registerIpc() {
       await repackUpdate.unpack(zip, folder, update.manifest.package.folder, (done, total) => send('update:event', { event: 'unpack', done, total })).catch(error => { throw Object.assign(new Error(error.message), { launcherCode: 'unpack' }); });
       // A package without game data: the core's public SQL are fetched now, checked by coa_update.py right after.
       await repackUpdate.fillSql(folder, update.manifest.package.folder, event => send('update:event', event)).catch(error => { throw Object.assign(new Error(error.message), { launcherCode: 'unpack' }); });
+      // The navigation maps being built are programs of the repack (code 13): paused, they go on after the update.
+      mmapsPaused = assembler.state(folder).applies && assembler.pauseForUpdate(folder);
       phase('check');
       let result = await runUpdateTool(folder, update.manifest.package.folder, 'check', []);
       if (!result.code) {
@@ -999,6 +1003,7 @@ function registerIpc() {
       updateAbort = null;
       update.busy = false;
       update.phase = null;
+      if (mmapsPaused) Promise.resolve(assembler.startMmaps(folder)).catch(() => {});
     }
     if (wasRunning && update.last && !update.last.code && !update.last.error) {
       network.applyNetwork(folder).catch(() => {}).then(() => modules.keepRotationOff(folder)).then(() => quietLogs(folder)).then(() => requireControl().startAll()).then(() => realms.startMarked(folder)).catch(() => {});
@@ -1028,13 +1033,14 @@ function registerIpc() {
     const packageFolder = await packageInRepack(folder);
     if (!packageFolder) throw new Error('The update tool is not in the server folder any more: use Backups\\<backup>\\Retour-Arriere.bat.');
     update.busy = true;
+    const mmapsPaused = assembler.state(folder).applies && assembler.pauseForUpdate(folder);
     try {
       update.phase = mode === 'finish' ? 'apply' : 'undo';
       send('update:event', { event: 'phase', phase: update.phase });
       update.last = mode === 'finish' || mode === 'undo-cut'
         ? await runUpdateTool(folder, packageFolder, 'apply', ['--on-cut', mode === 'finish' ? 'finish' : 'undo', '--no-addon'])
         : await runUpdateTool(folder, packageFolder, 'rollback', []);
-    } finally { update.busy = false; update.phase = null; }
+    } finally { update.busy = false; update.phase = null; if (mmapsPaused) Promise.resolve(assembler.startMmaps(folder)).catch(() => {}); }
     const state = repackUpdateState();
     send('update:state', state);
     return state;
@@ -1201,6 +1207,13 @@ function registerIpc() {
     await modules.setRotation(serverPath(), on === true);
     return modulesStatus();
   });
+  handle('modules:mythicplus', async on => {
+    if (!serverPath()) throw new Error('Choose the server folder first.');
+    await modules.setMythicPlus(serverPath(), on === true);
+    const running = await worldRunning();
+    const reloaded = running ? await live.raCommand(serverPath(), 'reload config', 30000).then(() => true, () => false) : false;
+    return { ...(await modulesStatus()), reloaded };
+  });
   handle('modules:manastorm', async on => {
     if (!serverPath()) throw new Error('Choose the server folder first.');
     if (await worldRunning()) throw new Error('Stop the server first: Manastorm is read when it starts.');
@@ -1335,7 +1348,7 @@ function registerIpc() {
     const coa = (await requireControl().status()).some(service => /world/i.test(service.id) && service.state === 'running');
     await realms.clearOffline(serverPath(), { coa }).catch(() => {});
   };
-  const prepareStart = async () => { await fixManage(serverPath()).catch(() => {}); await applyCards(serverPath()).catch(() => {}); await network.applyNetwork(serverPath()).catch(() => {}); await modules.keepRotationOff(serverPath()); await quietLogs(serverPath()); };
+  const prepareStart = async () => { await eco.wakeStopped(serverPath()).catch(() => {}); await fixManage(serverPath()).catch(() => {}); await applyCards(serverPath()).catch(() => {}); await network.applyNetwork(serverPath()).catch(() => {}); await modules.keepRotationOff(serverPath()); await quietLogs(serverPath()); };
   const startEverything = async () => {
     baseByRealm = false;
     await prepareStart();
@@ -1401,7 +1414,7 @@ function registerIpc() {
     // Screenshot tours only (--smoke): made-up realms, like COA_SMOKE_LIVE for the home page.
     if (smokeDir && process.env.COA_SMOKE_REALMS) return JSON.parse(process.env.COA_SMOKE_REALMS);
     if (!serverPath()) throw new Error('Choose the server folder first.');
-    return { ...(await realms.status(serverPath())), coa: await coaRealm() };
+    return { ...(await realms.status(serverPath())), coa: await coaRealm(), eco: await eco.status(serverPath()).catch(() => null) };
   };
   // MySQL (and the authserver to log in) of the repack, started through its own scripts when needed.
   const realmBase = async withAuth => { const c = requireControl(); await c.start('mysql'); if (withAuth) await c.start('auth'); };
@@ -1502,6 +1515,7 @@ function registerIpc() {
   handle('realms:memory', key => realms.memoryFor(serverPath(), text(key, 12)));
   handle('realms:modules', key => realms.modulesOf(serverPath(), text(key, 12)));
   handle('realms:module', (key, id, state) => realms.setModule(serverPath(), text(key, 12), text(id, 20), text(state, 4)));
+  handle('realms:eco', async (key, on) => { await eco.setEnabled(serverPath(), text(key, 12), on === true); return realmsStatus(); });
   handle('realms:options', async (key, options) => { if (text(key, 12) === 'coa') { await realms.setCoaAutostart(serverPath(), options?.autostart === true); return realmsStatus(); } await realms.setOptions(serverPath(), text(key, 12), { autostart: options?.autostart, bots: options?.bots }); return realmsStatus(); });
   const onePurge = (name, work) => oneServerJob(`recreating the bots of ${name}`, () => withMysql(work));
   handle('realms:purge', async key => { await onePurge(realms.MODES[text(key, 12)]?.title || key, () => realms.purgeBots(serverPath(), text(key, 12))); return realmsStatus(); });
@@ -1650,7 +1664,7 @@ function registerIpc() {
     return { ...(await sqlConsole.run(serverPath(), String(query).slice(0, 20000), { allowChanges: allowChanges === true })), backup };
   });
   const verify = require('./verify.cjs');
-  const watch = { world: null, crashes: null, restarts: [], backupDay: '' };
+  const watch = { world: null, crashes: null, restarts: [], backupDay: '', ecoAt: 0 };
   serverStartOnOpen = async () => {
     if (!serverPath() || !inspectRepack(serverPath()).repack || serverBusy()) return;
     const services = await requireControl().status();
@@ -1666,6 +1680,8 @@ function registerIpc() {
     const quiet = !serverBusy() && !found.states.size;
     const services = await found.status().catch(() => null);
     if (!services) return;
+    // Eco mode of the worlds (eco.cjs): a look every minute, never during an update or another server task.
+    if (quiet && Date.now() - watch.ecoAt >= 60000) { watch.ecoAt = Date.now(); await eco.tick(root).catch(() => {}); }
     const world = services.find(service => /world/i.test(service.id))?.state || null;
     const count = (await verify.crashes(root, 2).catch(() => [])).length;
     const crashed = watch.crashes !== null && count > watch.crashes;
@@ -2493,6 +2509,8 @@ async function main() {
   if (config.edition === 'server' && !smokeDir) createTray().catch(() => {});
   // The server watched every 20 seconds, window shown or not: ready, crash (and restart), the daily backup.
   if (!smokeDir) setInterval(() => serverWatch?.().catch(() => {}), 20000).unref();
+  // Eco mode of the realms: the player's value back at once for the worlds that do not run (then serverWatch).
+  if (!smokeDir) eco.wakeStopped(serverPath()).catch(() => {});
   // Scripts/manage.py fixed at once: a realm task can start MySQL before any server start.
   if (!smokeDir) fixManage(serverPath()).catch(() => {});
   if (!smokeDir) setTimeout(() => applyCards(serverPath()).catch(() => {}), 5000).unref();

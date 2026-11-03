@@ -180,6 +180,16 @@
     "ru": "Чат ботов (ИИ)",
     "zh": "机器人聊天（LLM）"
    }
+  },
+  {
+   "id": "progression",
+   "icon": "trophy",
+   "label": {
+    "en": "Progression (released content)",
+    "fr": "Progression (contenu sorti)",
+    "ru": "Прогрессия (открытый контент)",
+    "zh": "进度（已开放内容）"
+   }
   }
  ],
  "when": {
@@ -2693,6 +2703,316 @@
    }
   },
   {
+   "key": "Ascension.CallboardCache.ReleaseStage",
+   "file": "coa.conf",
+   "group": "progression",
+   "kind": "choice",
+   "when": "reload",
+   "choices": [
+    {
+     "value": "0",
+     "label": {
+      "en": "0 - Normal dungeons only",
+      "fr": "0 - Donjons normaux seulement",
+      "ru": "0 - Только обычные подземелья",
+      "zh": "0 - 仅普通地下城"
+     }
+    },
+    {
+     "value": "1",
+     "label": {
+      "en": "1 - Heroic dungeons",
+      "fr": "1 - Donjons héroïques",
+      "ru": "1 - Героические подземелья",
+      "zh": "1 - 英雄地下城"
+     }
+    },
+    {
+     "value": "2",
+     "label": {
+      "en": "2 - Mythic dungeons",
+      "fr": "2 - Donjons mythiques",
+      "ru": "2 - Мифические подземелья",
+      "zh": "2 - 史诗地下城"
+     }
+    },
+    {
+     "value": "3",
+     "label": {
+      "en": "3 - Molten Core",
+      "fr": "3 - Cœur du Magma",
+      "ru": "3 - Огненные Недра",
+      "zh": "3 - 熔火之心"
+     }
+    },
+    {
+     "value": "4",
+     "label": {
+      "en": "4 - Zul'Gurub",
+      "fr": "4 - Zul'Gurub",
+      "ru": "4 - Зул'Гуруб",
+      "zh": "4 - 祖尔格拉布"
+     }
+    },
+    {
+     "value": "5",
+     "label": {
+      "en": "5 - Onyxia's Lair",
+      "fr": "5 - Repaire d'Onyxia",
+      "ru": "5 - Логово Ониксии",
+      "zh": "5 - 奥妮克希亚的巢穴"
+     }
+    },
+    {
+     "value": "6",
+     "label": {
+      "en": "6 - Blackwing Lair",
+      "fr": "6 - Repaire de l'Aile noire",
+      "ru": "6 - Логово Крыла Тьмы",
+      "zh": "6 - 黑翼之巢"
+     }
+    },
+    {
+     "value": "7",
+     "label": {
+      "en": "7 - Ahn'Qiraj (ruins and temple)",
+      "fr": "7 - Ahn'Qiraj (ruines et temple)",
+      "ru": "7 - Ан'Кираж (руины и храм)",
+      "zh": "7 - 安其拉（废墟和神殿）"
+     }
+    },
+    {
+     "value": "8",
+     "label": {
+      "en": "8 - Naxxramas (its caches and tokens too)",
+      "fr": "8 - Naxxramas (ses coffres et jetons aussi)",
+      "ru": "8 - Наксрамас (и его сундуки и жетоны)",
+      "zh": "8 - 纳克萨玛斯（包括其宝箱和代币）"
+     }
+    }
+   ],
+   "label": {
+    "en": "Content released on the realm",
+    "fr": "Contenu sorti sur le royaume",
+    "ru": "Контент, открытый в мире",
+    "zh": "本服务器已开放的内容"
+   },
+   "help": {
+    "en": "This also closes the raids: a dungeon difficulty or a raid above the stage cannot be entered (« Instance is closed »), Game Masters still enter. Each stage opens the ones before it. Naxxramas is never closed; stage 8 adds its caches and tokens. Callboard Caches follow the same stages. Players see the new difficulty list at their next login.",
+    "fr": "Ce réglage ferme aussi les raids : une difficulté de donjon ou un raid au-dessus du palier est inaccessible (« Instance is closed »), les MJ entrent quand même. Chaque palier ouvre les précédents. Naxxramas n'est jamais fermé ; le palier 8 ajoute ses coffres et jetons. Les coffres du Callboard suivent les mêmes paliers. Les joueurs voient la nouvelle liste des difficultés à leur prochaine connexion.",
+    "ru": "Этот параметр также закрывает рейды: сложность подземелья или рейд выше этапа недоступны («Instance is closed»), ГМ всё равно могут войти. Каждый этап открывает предыдущие. Наксрамас никогда не закрывается; этап 8 добавляет его сундуки и жетоны. Сундуки Callboard следуют тем же этапам. Игроки увидят новый список сложностей при следующем входе.",
+    "zh": "此设置也会关闭团队副本：高于该阶段的地下城难度或团队副本无法进入（“Instance is closed”），GM 仍可进入。每个阶段会开放之前的所有阶段。纳克萨玛斯从不关闭；阶段 8 会加入其宝箱和代币。Callboard 宝箱遵循相同阶段。玩家下次登录时才会看到新的难度列表。"
+   }
+  },
+  {
+   "key": "Ascension.CallboardCache.PreviousStageOnly",
+   "file": "coa.conf",
+   "group": "progression",
+   "kind": "bool",
+   "when": "reload",
+   "label": {
+    "en": "Callboard Caches: one stage behind",
+    "fr": "Coffres du Callboard : un palier en retard",
+    "ru": "Сундуки Callboard: на этап позади",
+    "zh": "Callboard 宝箱：落后一个阶段"
+   },
+   "help": {
+    "en": "Generic Callboard Caches give gear of the stage before the released one. Off by default.",
+    "fr": "Les coffres génériques du Callboard donnent l'équipement du palier précédant celui qui est sorti. Désactivé par défaut.",
+    "ru": "Обычные сундуки Callboard дают снаряжение предыдущего этапа. По умолчанию выключено.",
+    "zh": "通用 Callboard 宝箱给予已开放阶段之前一个阶段的装备。默认关闭。"
+   }
+  },
+  {
+   "key": "Ascension.CallboardCache.ItemLevelAllowance",
+   "file": "coa.conf",
+   "group": "progression",
+   "kind": "int",
+   "when": "reload",
+   "min": 0,
+   "max": 100,
+   "label": {
+    "en": "Callboard Caches: item levels above yours",
+    "fr": "Coffres du Callboard : niveaux d'objet au-dessus du vôtre",
+    "ru": "Сундуки Callboard: уровни предметов выше вашего",
+    "zh": "Callboard 宝箱：高于你的物品等级"
+   },
+   "help": {
+    "en": "How far above the average item level of the one who opens it a Callboard Cache may reach. 6 by default.",
+    "fr": "Jusqu'où un coffre du Callboard peut monter au-dessus du niveau d'objet moyen de celui qui l'ouvre. 6 par défaut.",
+    "ru": "Насколько сундук Callboard может превышать средний уровень предметов открывающего. По умолчанию 6.",
+    "zh": "Callboard 宝箱最多可高于开启者平均物品等级多少。默认 6。"
+   }
+  },
+  {
+   "key": "Ascension.CallboardCache.CachePoints",
+   "file": "coa.conf",
+   "group": "progression",
+   "kind": "int",
+   "when": "reload",
+   "min": 1,
+   "max": 10000,
+   "label": {
+    "en": "Callboard Caches: points for one cache",
+    "fr": "Coffres du Callboard : points pour un coffre",
+    "ru": "Сундуки Callboard: очков за сундук",
+    "zh": "Callboard 宝箱：每个宝箱所需点数"
+   },
+   "help": {
+    "en": "Progress points that pay one cache. The game shows a tenth of it (150 shows as 15). 150 by default.",
+    "fr": "Points de progression qui paient un coffre. Le jeu en affiche un dixième (150 s'affiche 15). 150 par défaut.",
+    "ru": "Очки прогресса за один сундук. Игра показывает десятую часть (150 отображается как 15). По умолчанию 150.",
+    "zh": "兑换一个宝箱所需的进度点数。游戏显示其十分之一（150 显示为 15）。默认 150。"
+   }
+  },
+  {
+   "key": "Ascension.CallboardCache.GoldMin",
+   "file": "coa.conf",
+   "group": "progression",
+   "kind": "int",
+   "when": "reload",
+   "min": 0,
+   "max": 100000,
+   "label": {
+    "en": "Callboard Caches: minimum gold",
+    "fr": "Coffres du Callboard : or minimum",
+    "ru": "Сундуки Callboard: минимум золота",
+    "zh": "Callboard 宝箱：最少金币"
+   },
+   "help": {
+    "en": "Gold paid on top of the item. 5 by default.",
+    "fr": "Or donné en plus de l'objet. 5 par défaut.",
+    "ru": "Золото сверх предмета. По умолчанию 5.",
+    "zh": "物品之外额外给予的金币。默认 5。"
+   }
+  },
+  {
+   "key": "Ascension.CallboardCache.GoldMax",
+   "file": "coa.conf",
+   "group": "progression",
+   "kind": "int",
+   "when": "reload",
+   "min": 0,
+   "max": 100000,
+   "label": {
+    "en": "Callboard Caches: maximum gold",
+    "fr": "Coffres du Callboard : or maximum",
+    "ru": "Сундуки Callboard: максимум золота",
+    "zh": "Callboard 宝箱：最多金币"
+   },
+   "help": {
+    "en": "0 pays no gold. 15 by default.",
+    "fr": "0 ne donne pas d'or. 15 par défaut.",
+    "ru": "0 — без золота. По умолчанию 15.",
+    "zh": "0 表示不给金币。默认 15。"
+   }
+  },
+  {
+   "key": "Ascension.PrestigiousCache.ReleaseStage",
+   "file": "coa.conf",
+   "group": "progression",
+   "kind": "int",
+   "when": "reload",
+   "min": 1,
+   "max": 6,
+   "label": {
+    "en": "Prestigious Caches: newest tier released (1-6)",
+    "fr": "Coffres prestigieux : dernier palier de set sorti (1-6)",
+    "ru": "Престижные сундуки: последний открытый тир (1-6)",
+    "zh": "荣耀宝箱：最新开放的套装层级（1-6）"
+   },
+   "help": {
+    "en": "A Prestigious Cache never gives a token of a tier above this one. 6 by default.",
+    "fr": "Un coffre prestigieux ne donne jamais de jeton d'un palier au-dessus. 6 par défaut.",
+    "ru": "Престижный сундук никогда не даёт жетон тира выше этого. По умолчанию 6.",
+    "zh": "荣耀宝箱绝不会给出高于此层级的代币。默认 6。"
+   }
+  },
+  {
+   "key": "Ascension.PrestigiousCache.ClassicStages",
+   "file": "coa.conf",
+   "group": "progression",
+   "kind": "int",
+   "when": "reload",
+   "min": 0,
+   "max": 8,
+   "label": {
+    "en": "Prestigious Caches: Classic caches released (0-8)",
+    "fr": "Coffres prestigieux : coffres Classic sortis (0-8)",
+    "ru": "Престижные сундуки: открыто Classic (0-8)",
+    "zh": "荣耀宝箱：已开放的经典宝箱（0-8）"
+   },
+   "help": {
+    "en": "In order: heroic dungeons, Zul'Gurub, Molten Core, Onyxia, Blackwing Lair, Ruins and Temple of Ahn'Qiraj, Naxxramas. 8 by default.",
+    "fr": "Dans l'ordre : donjons héroïques, Zul'Gurub, Cœur du Magma, Onyxia, Aile noire, ruines et temple d'Ahn'Qiraj, Naxxramas. 8 par défaut.",
+    "ru": "По порядку: героические подземелья, Зул'Гуруб, Огненные Недра, Ониксия, Крыло Тьмы, руины и храм Ан'Киража, Наксрамас. По умолчанию 8.",
+    "zh": "依次为：英雄地下城、祖尔格拉布、熔火之心、奥妮克希亚、黑翼之巢、安其拉废墟和神殿、纳克萨玛斯。默认 8。"
+   }
+  },
+  {
+   "key": "Ascension.PrestigiousCache.TbcStages",
+   "file": "coa.conf",
+   "group": "progression",
+   "kind": "int",
+   "when": "reload",
+   "min": 0,
+   "max": 9,
+   "label": {
+    "en": "Prestigious Caches: Burning Crusade caches released (0-9)",
+    "fr": "Coffres prestigieux : coffres Burning Crusade sortis (0-9)",
+    "ru": "Престижные сундуки: открыто Burning Crusade (0-9)",
+    "zh": "荣耀宝箱：已开放的燃烧的远征宝箱（0-9）"
+   },
+   "help": {
+    "en": "0 keeps them on the Classic ladder. 0 by default.",
+    "fr": "0 les garde sur les paliers Classic. 0 par défaut.",
+    "ru": "0 — остаются на этапах Classic. По умолчанию 0.",
+    "zh": "0 表示保持在经典阶段。默认 0。"
+   }
+  },
+  {
+   "key": "Ascension.PrestigiousCache.TokenChancePercent",
+   "file": "coa.conf",
+   "group": "progression",
+   "kind": "int",
+   "when": "reload",
+   "min": 0,
+   "max": 100,
+   "label": {
+    "en": "Prestigious Caches: token chance (%)",
+    "fr": "Coffres prestigieux : chance de jeton (%)",
+    "ru": "Престижные сундуки: шанс жетона (%)",
+    "zh": "荣耀宝箱：代币几率（%）"
+   },
+   "help": {
+    "en": "Chance for a cache to also give a token of its tier. 25 by default.",
+    "fr": "Chance qu'un coffre donne aussi un jeton de son palier. 25 par défaut.",
+    "ru": "Шанс, что сундук также даст жетон своего тира. По умолчанию 25.",
+    "zh": "宝箱额外给予其层级代币的几率。默认 25。"
+   }
+  },
+  {
+   "key": "Ascension.PrestigiousCache.SecondTokenChancePercent",
+   "file": "coa.conf",
+   "group": "progression",
+   "kind": "int",
+   "when": "reload",
+   "min": 0,
+   "max": 100,
+   "label": {
+    "en": "Prestigious Caches: chance of a second token (%)",
+    "fr": "Coffres prestigieux : chance d'un second jeton (%)",
+    "ru": "Престижные сундуки: шанс второго жетона (%)",
+    "zh": "荣耀宝箱：第二个代币几率（%）"
+   },
+   "help": {
+    "en": "Chance for that token to be two. 5 by default.",
+    "fr": "Chance que ce jeton soit double. 5 par défaut.",
+    "ru": "Шанс, что жетонов будет два. По умолчанию 5.",
+    "zh": "该代币变为两个的几率。默认 5。"
+   }
+  },
+  {
    "key": "Dynamic.XP.Preset",
    "file": "dynamicxp.conf",
    "group": "xp",
@@ -3742,7 +4062,8 @@
     "realm",
     "rates",
     "xp",
-    "difficulty"
+    "difficulty",
+    "progression"
    ]
   },
   {

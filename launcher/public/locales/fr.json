@@ -1560,5 +1560,11 @@
   "damage.threatHelp": "Les aide à garder les monstres sur eux. 100 % = inchangée.",
   "conf.reloaded": "Appliqué tout de suite : le serveur a relu ses réglages.",
   "conf.reloadFailed": "Le serveur n'a pas répondu : ces réglages s'appliqueront à son prochain démarrage.",
-  "damage.specCount": "{n} spécialisations"
+  "damage.specCount": "{n} spécialisations",
+  "progression.mythicPlus": "Donjons Mythique+ (clés)",
+  "progression.mythicPlusHelp": "Les courses avec clé dans les donjons mythiques. Les donjons mythiques eux-mêmes s'ouvrent avec le contenu sorti ci-dessus.",
+  "progression.stopFirst": "Arrêtez le serveur pour le changer : il est lu au démarrage du serveur.",
+  "realms.eco": "Mode éco quand personne ne joue",
+  "realms.ecoHint": "Sans joueur sur ce royaume depuis 10 minutes, ses bots loin des joueurs dorment (bots actifs : 1 %). Votre propre valeur revient dès qu'un joueur se connecte. Vos réglages ne sont pas modifiés.",
+  "realms.ecoAsleep": "Bots endormis"
 }
