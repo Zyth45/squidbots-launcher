@@ -1,5 +1,38 @@
 [
     {
+        "version": "0.3.57",
+        "items": {
+            "en": [
+                "Home: a server update is shown as soon as the launcher has checked its own version (« Server 2.5 → 2.9.1 available »). It could stay on « Looking for a new launcher first… » until a restart. Thanks to LockDudeBro!",
+                "Settings, About: the line names the launcher (« Launcher 0.3.57: up to date »), so it is not mistaken for the server, which has its own updates on the home page.",
+                "Create a new server with other ports: the server downloaded into that folder keeps the ports you chose.",
+                "Server settings: the badge of a value set by a realm's rules now says « Locked by the rules of Dungeon Clear », for instance, and the help of the released content says that 8 opens everything, Naxxramas included.",
+                "French and Russian: the messages of the players' copy from an old server show the right text again."
+            ],
+            "fr": [
+                "Accueil : une mise à jour du serveur s'affiche dès que le launcher a vérifié sa propre version (« Serveur 2.5 → 2.9.1 disponible »). Elle pouvait rester sur « Recherche d'un nouveau launcher d'abord… » jusqu'au redémarrage. Merci à LockDudeBro !",
+                "Réglages, À propos : la ligne nomme le launcher (« Launcher 0.3.57 : à jour »), pour ne plus la confondre avec le serveur, qui a ses propres mises à jour sur l'accueil.",
+                "Créer un nouveau serveur avec d'autres ports : le serveur téléchargé dans ce dossier garde les ports choisis.",
+                "Réglages serveur : le badge d'une valeur fixée par les règles d'un royaume dit maintenant « Verrouillé par les règles de Dungeon Clear », par exemple, et l'aide du contenu sorti précise que 8 ouvre tout, Naxxramas compris.",
+                "Français et russe : les messages de la copie des joueurs d'un ancien serveur affichent de nouveau le bon texte."
+            ],
+            "ru": [
+                "Главная: обновление сервера показывается сразу после того, как лаунчер проверил свою версию («Сервер 2.5 → 2.9.1: доступно обновление»). Раньше оно могло оставаться на «Сначала ищем новый лаунчер…» до перезапуска. Спасибо LockDudeBro!",
+                "Настройки, О программе: строка называет лаунчер («Лаунчер 0.3.57: актуален»), чтобы его не путали с сервером, у которого свои обновления на главной.",
+                "Новый сервер с другими портами: сервер, загруженный в эту папку, сохраняет выбранные порты.",
+                "Настройки сервера: значок значения, заданного правилами мира, теперь пишет например «Заблокировано правилами Dungeon Clear», а справка по открытому контенту уточняет, что 8 открывает всё, включая Наксрамас.",
+                "Французский и русский: сообщения копирования игроков со старого сервера снова показывают правильный текст."
+            ],
+            "zh": [
+                "主页：启动器检查完自身版本后，立即显示服务器更新（“服务器 2.5 → 2.9.1 可更新”）。之前它可能一直停在“先查找新启动器…”，直到重启。感谢 LockDudeBro！",
+                "设置，关于：这一行写明是启动器（“启动器 0.3.57：已是最新”），不会再与服务器混淆，服务器的更新在主页上。",
+                "使用其他端口创建新服务器：下载到该文件夹的服务器会保留你选择的端口。",
+                "服务器设置：由某个服务器的规则设定的值，其标记现在显示例如“由 Dungeon Clear 的规则锁定”；已开放内容的说明写明 8 会开放全部内容，包括纳克萨玛斯。",
+                "法语和俄语：从旧服务器复制玩家时的提示再次显示正确的文字。"
+            ]
+        }
+    },
+    {
         "version": "0.3.56",
         "items": {
             "en": [
