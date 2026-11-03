@@ -633,7 +633,11 @@ function loadConfIndex() {
 // Where a value of a realm comes from: Conquest of Azeroth, the realm itself (back to CoA in one click), or its mode.
 function originTag(setting) {
   if (!setting.origin) return '';
-  if (setting.origin === 'mode') return `<span class="origin mode">${icon('key')}${esc(t('realms.fromMode', 'Set by the game mode'))}</span>`;
+  // Named after the realm (Wildcard, Reborn…): « game mode » alone was read as the Modules tab.
+  if (setting.origin === 'mode') {
+    const realm = App.state.conf?.realm?.name || confRealm();
+    return `<span class="origin mode" title="${esc(t('realms.fromRulesHint', 'This realm cannot change it: its rules set this value. It is not a choice of the Modules tab.'))}">${icon('key')}${esc(t('realms.fromRules', 'Locked by the rules of {realm}', { realm }))}</span>`;
+  }
   if (setting.origin === 'own') return `<span class="origin own">${esc(t('realms.fromRealm', 'This realm only'))}<button class="link-button" data-action="conf-reset" data-file="${esc(setting.file)}" data-key="${esc(setting.key)}">${icon('refresh')}${esc(t('realms.backToCoa', 'As CoA ({value})', { value: setting.coaValue }))}</button></span>`;
   return `<span class="origin coa">${esc(t('realms.fromCoa', 'As CoA'))}</span>`;
 }
