@@ -251,6 +251,18 @@ function showComponents() {
 }
 
 // ---------------------------------------------------------------- settings
+// The launcher's own state, named as such: its updates are not the server's (those are on the home page).
+function launcherLine(version, status) {
+  const next = status?.version || '';
+  switch (status?.phase) {
+    case 'ready': return t('settings.launcherLineReady', 'Launcher {version}: up to date', { version });
+    case 'idle': case 'checking': return t('settings.launcherLineChecking', 'Launcher {version}: looking for a new version…', { version });
+    case 'downloading': return t('settings.launcherLineDownloading', 'Launcher {version}: downloading {next}…', { version, next });
+    case 'downloaded': return t('settings.launcherLineDownloaded', 'Launcher {version}: {next} is ready, restart to install it', { version, next });
+    default: return t('settings.launcherLine', 'Launcher {version}: {message}', { version, message: status?.message || t('settings.updatesAuto', 'Launcher updates are checked automatically.') });
+  }
+}
+
 function showSettings() {
   const { settings, version, launcherUpdate, config } = App.state;
   const lang = code => `<option value="${code}" ${settings.language === code ? 'selected' : ''}>${{ fr: 'Français', en: 'English', ru: 'Русский', zh: '简体中文' }[code]}</option>`;
@@ -278,7 +290,7 @@ function showSettings() {
     <p class="muted small">${esc(t('settings.supportHint', 'The support report gathers versions, server state and recent logs into one zip (passwords are removed). Drop it on the support Discord.'))}</p>
     <div class="button-row"><button class="button primary small" data-action="support-report">${icon('download')}${esc(t('settings.report', 'Create a support report'))}</button>${config.discord ? `<button class="button ghost small" data-action="discord">${icon('discord')}${esc(t('settings.discord', 'Open the Discord'))}</button>` : ''}</div>
     <h3>${icon('info')}${esc(t('settings.about', 'About'))}</h3>
-    <p class="muted small">${esc(config.appName)} v${esc(version)} · ${esc(launcherUpdate?.message || t('settings.updatesAuto', 'Launcher updates are checked automatically.'))}</p>
+    <p class="muted small" id="launcher-line">${esc(config.appName)} · ${esc(launcherLine(version, launcherUpdate))}</p>
     ${config.edition === 'server' ? `<div class="button-row"><button class="button ghost small" data-action="launcher-check">${icon('refresh')}${esc(t('settings.checkLauncher', 'Check for a launcher update'))}</button>${config.hasUpdates ? `<button class="button ghost small" data-action="update-check">${icon('refresh')}${esc(t('settings.checkRepack', 'Check for a repack and bots update'))}</button>` : ''}</div>` : ''}
     ${config.edition === 'server' && config.hasBeta ? `${check('set-beta', 'betaUpdates', t('settings.beta', 'Receive beta versions (testers)'))}<p class="muted small">${esc(t('settings.betaHint', 'Betas come before the stable version and may have bugs. Backup and undo work as usual. Unticking never installs an older version: you stay on the beta until the next stable one.'))}</p>` : ''}
     ${config.edition === 'server' ? `<p class="small"><button class="link-button" data-action="source-link" data-id="launcher">${icon('external')}${esc(t('modules.launcherSource', 'Open source launcher: source code on GitHub'))}</button></p>` : ''}

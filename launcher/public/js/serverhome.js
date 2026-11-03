@@ -873,7 +873,11 @@ Object.assign(App.actions, {
     const status = await App.api.checkLauncher();
     App.state.launcherUpdate = status;
     const kind = status?.phase === 'error' ? 'error' : 'success';
-    toast(status?.phase === 'downloading' || status?.phase === 'downloaded' ? t('settings.launcherFound', 'A new launcher is being downloaded: the home page tells when it is ready.') : status?.message || t('settings.launcherUpToDate', 'Your launcher is up to date.'), kind);
+    toast(status?.phase === 'downloading' || status?.phase === 'downloaded' ? t('settings.launcherFound', 'A new launcher is being downloaded: the home page tells when it is ready.') : status?.phase === 'ready' ? t('settings.launcherUpToDateServer', 'Launcher {version}: up to date. The server has its own updates, on the home page.', { version: App.state.version }) : status?.message || t('settings.launcherUpToDate', 'Your launcher is up to date.'), kind);
+    // The server update card waits for this check: it is drawn again, and so is the About line.
+    const line = $('#launcher-line');
+    if (line) line.textContent = `${App.state.config.appName} · ${launcherLine(App.state.version, status)}`;
+    if (App.state.tab === 'home' && !$('#dialog').open) App.render();
   }, button),
   'feed-news': target => {
     const item = App.state.feed?.news?.[Number(target.dataset.index)];

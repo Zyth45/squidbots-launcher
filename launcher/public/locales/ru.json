@@ -456,8 +456,8 @@
   "import.chooseFolder": "Затем выберите для него пустую папку.",
   "import.clashes": "Некоторые учётные записи есть в обоих: см. журнал.",
   "import.confirmBody": "{files} файлов ({size}). {where}",
-  "import.confirmTitle": "Импортировать {name}?",
-  "import.done": "Репак готов в {path}.",
+  "import.confirmTitle": "Скопировать игроков старого сервера?",
+  "import.done": "Готово: аккаунтов {accounts}, персонажей {characters}.",
   "import.go": "Импортировать",
   "import.hashing": "Проверка архива…",
   "import.here": "Здесь: {accounts} учётных записей, {characters} персонажей",
@@ -1561,5 +1561,12 @@
   "progression.stopFirst": "Остановите сервер, чтобы изменить: значение читается при запуске сервера.",
   "realms.eco": "Эко-режим, когда никто не играет",
   "realms.ecoHint": "Если в этом мире 10 минут нет игроков, боты вдали от игроков засыпают (активных ботов: 1 %). Ваше значение возвращается, как только входит игрок. Ваши настройки не меняются.",
-  "realms.ecoAsleep": "Боты спят"
+  "realms.ecoAsleep": "Боты спят",
+  "settings.launcherLineReady": "Лаунчер {version}: актуален",
+  "settings.launcherLineChecking": "Лаунчер {version}: поиск новой версии…",
+  "settings.launcherLineDownloading": "Лаунчер {version}: загрузка {next}…",
+  "settings.launcherLineDownloaded": "Лаунчер {version}: версия {next} готова, перезапустите для установки",
+  "settings.launcherLine": "Лаунчер {version}: {message}",
+  "settings.launcherUpToDateServer": "Лаунчер {version}: актуален. У сервера свои обновления, на главной странице.",
+  "update.serverTitle": "Сервер {from} → {to}: доступно обновление"
 }

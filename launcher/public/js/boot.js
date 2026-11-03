@@ -122,7 +122,11 @@ function subscribe() {
     // Only the bar is redrawn: the page underneath (a form being filled…) is left alone.
     const bar = $('#launcher-banner');
     if (bar) bar.innerHTML = launcherBanner();
-    if (['downloading', 'downloaded'].includes(status.phase) && App.state.tab === 'home' && !$('#dialog').open) App.render();
+    // The server update card waits for the launcher's check ("Looking for a new launcher first…"): its end draws it again.
+    const waiting = App.state.update.state?.state === 'available';
+    if ((waiting || ['downloading', 'downloaded'].includes(status.phase)) && App.state.tab === 'home' && !$('#dialog').open) App.render();
+    const line = $('#launcher-line');
+    if (line) line.textContent = `${App.state.config.appName} · ${launcherLine(App.state.version, status)}`;
     if (status.phase === 'downloaded') toast(t('launcher.ready', 'A new launcher is ready: it installs when you restart.'), 'success');
   });
   api.onGameExit(async () => { App.state.client = await api.clientInfo(); App.refresh('play'); });
