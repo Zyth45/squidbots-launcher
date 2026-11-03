@@ -84,7 +84,15 @@ def main():
     if bad:
         raise SystemExit(f"ECHEC : aucun commit public de Jealous n'a l'arbre SQL du cœur ({bad} fichiers de Jealous "
                          f"modifiés ou absents au mieux, {commit[:9]})")
+    # 2.8.4 : SQL des modules externes compilés dans l'exe (mod-npc-enchanter : son propre dépôt, absent de l'arbre du
+    # cœur) : pris dans Source/sql-tree du repack complet, livrés dans l'overlay comme nos autres SQL.
+    ours = sql_tree(args.core_repo, args.core_commit)
+    tree_full = full / "Source" / "sql-tree"
+    extra = {p.relative_to(tree_full).as_posix(): p for p in (tree_full / "modules").rglob("*.sql")} \
+        if (tree_full / "modules").is_dir() else {}
+    extra = {rel: p for rel, p in extra.items() if rel not in ours and "/data/sql/" in rel}
     print(f"SQL à nous (livrés, appliqués en dernier) : {overlay}")
+    print(f"SQL des modules externes (overlay) : {sorted(extra)}")
     print(f"SQL publics : Jealous {commit}")
     stage = out / "staging-base" / "CoA-Repack"
     if stage.parent.exists():
@@ -105,6 +113,11 @@ def main():
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(subprocess.run(["git", "-C", args.core_repo, "show", f"{args.core_commit}:{rel}"],
                                           capture_output=True, check=True).stdout)
+    for rel, path in extra.items():
+        target = asm / "overlay" / rel
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(path.read_bytes())
+    overlay = list(overlay) + sorted(extra)
     order = json.loads((asm / "sql-order.json").read_text(encoding="utf-8"))
     sys.path.insert(0, str(HERE))
     from sql_order import classify
@@ -171,7 +184,9 @@ def make_update(update_dir, assembler_dir, out, name):
     # Place demandée avant d'appliquer : sauvegarde de la base et des exe (plus de cartes livrées, 6 Go c'était pour elles).
     spec["diskBytes"] = 4 << 30
     # Seul le launcher 0.3.46 prend les SQL publics (fill-sql) avant coa_update.py : un plus ancien échouerait.
-    spec["minLauncher"] = "0.3.46"
+    # 2.8.4 : jamais plus bas que celui de la release (0.3.52 pour la 2.8.4) : on garde le plus récent des deux.
+    vt = lambda s: tuple(int(x) for x in re.findall(r"\d+", str(s)))
+    spec["minLauncher"] = max(spec.get("minLauncher") or "0.3.46", "0.3.46", key=vt)
     # Le texte de la carte de mise à jour : plus de cartes livrées, quelle que soit la version de départ.
     spec["notice"] = {
         "en": "A small update (about 60 MB): only our files. The core SQL come from the public CoA repository, checked "
