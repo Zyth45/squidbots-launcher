@@ -1579,7 +1579,8 @@
   "update.tool.installBots": "正在安装 CoA Bots…",
   "update.tool.finishing": "正在完成被中断的更新…",
   "update.tool.running": "服务器程序仍在运行（{list}）：会先将其停止。",
-  "update.sqlUnpack": "正在准备核心的 SQL 文件：{n} 个文件…",
-  "update.sqlBytes": "正在下载核心的公开 SQL：{size}（总共几百 MB，可能需要几分钟）…",
-  "update.sqlStart": "正在下载核心的公开 SQL（几百 MB，可能需要几分钟）…"
+  "update.sqlUnpack": "CoA 核心的公开 SQL，逐个校验：已从压缩包取出 {n} 个文件…",
+  "update.sqlBytes": "CoA 核心的公开 SQL，逐个校验：完整压缩包，已接收 {size}（总共几百 MB，可能需要几分钟）…",
+  "update.sqlStart": "CoA 核心的公开 SQL，逐个校验：正在下载完整压缩包（几百 MB，可能需要几分钟）…",
+  "update.sqlLocal": "CoA 核心的公开 SQL，逐个校验：{done} / {total}（{copied} 个已在你的服务器上，{fetched} 个已下载）…"
 }

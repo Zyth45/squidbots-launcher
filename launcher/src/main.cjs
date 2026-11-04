@@ -987,7 +987,7 @@ function registerIpc() {
       phase('unpack');
       await repackUpdate.unpack(zip, folder, update.manifest.package.folder, (done, total) => send('update:event', { event: 'unpack', done, total })).catch(error => { throw Object.assign(new Error(error.message), { launcherCode: 'unpack' }); });
       // A package without game data: the core's public SQL are fetched now, checked by coa_update.py right after.
-      await repackUpdate.fillSql(folder, update.manifest.package.folder, event => send('update:event', event)).catch(error => { throw Object.assign(new Error(error.message), { launcherCode: 'unpack' }); });
+      await repackUpdate.fillSql(folder, update.manifest.package.folder, event => send('update:event', event), { fetchImpl: netFetch }).catch(error => { throw Object.assign(new Error(error.message), { launcherCode: 'unpack' }); });
       // The navigation maps being built are programs of the repack (code 13): paused, they go on after the update.
       mmapsPaused = assembler.state(folder).applies && assembler.pauseForUpdate(folder);
       phase('check');

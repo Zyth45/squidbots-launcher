@@ -158,9 +158,83 @@ function runTool(folder, packageFolder, command, extra, onEvent) {
 // An update without game data (2.8 onwards) does not carry the core's public SQL: its manifest lists them with their
 // SHA-256, and they are taken here from the public archive at the release commit (coa_assemble.py fill-sql), before
 // coa_update.py checks and applies the package as usual. Returns false for a package that carries its SQL.
-async function fillSql(folder, packageFolder, onEvent = () => {}) {
+// The public SQL of a package without game data, without the whole archive of the core (334 MB for 2.9.2): nearly all
+// of them are already in the repack (same sha256), the package's own ones are in its Assembler/overlay, and the few
+// left are taken one by one from the public repository at the release commit. Each file is checked by its sha256
+// (coa_update.py checks them again). Returns null when the archive is still needed: too many files missing, a
+// repository not named in assemble.json, or a file that could not be taken.
+const SQL_TREE = 'Source/sql-tree/';
+const SQL_MAX_FETCH = 300;
+const sha256Of = bytes => require('node:crypto').createHash('sha256').update(bytes).digest('hex');
+
+async function fillSqlLocal(folder, packageFolder, { fetchImpl = fetch, onEvent = () => {}, wait = ms => new Promise(resolve => setTimeout(resolve, ms)) } = {}) {
+  const base = path.join(folder, packageFolder);
+  let files, sql;
+  try {
+    files = JSON.parse(await fs.readFile(path.join(base, 'update', 'manifest.json'), 'utf8')).files;
+    sql = JSON.parse(await fs.readFile(path.join(base, 'payload', 'Assembler', 'assemble.json'), 'utf8')).sql;
+  } catch { return null; }
+  if (!/^[\w.-]+\/[\w.-]+$/.test(sql?.repo || '') || !/^[0-9a-f]{40}$/.test(sql?.commit || '')) return null;
+  const wanted = Object.entries(files || {}).filter(([name, info]) => name.startsWith(SQL_TREE) && /^[0-9a-f]{64}$/.test(info?.sha256 || ''))
+    .map(([name, info]) => ({ name, rel: name.slice(SQL_TREE.length), sha256: info.sha256 }))
+    .filter(file => file.rel && !file.rel.split('/').some(part => !part || part === '..') && !/^[A-Za-z]:/.test(file.rel));
+  const stats = { total: wanted.length, copied: 0, fetched: 0, bytes: 0 };
+  const lay = async (file, bytes) => {
+    const target = path.join(base, 'payload', ...file.name.split('/'));
+    await fs.mkdir(path.dirname(target), { recursive: true });
+    await fs.writeFile(target, bytes);
+  };
+  const report = () => onEvent({ event: 'sql', local: true, done: stats.copied + stats.fetched, ...stats });
+  const missing = [];
+  // Sixteen local files at a time (read, hashed, laid): the disk, not the network.
+  const local = async file => {
+    let found = null;
+    // Already in the package, in the repack, in the package's overlay, or an archived update (laid empty).
+    for (const source of [path.join(base, 'payload', ...file.name.split('/')), path.join(folder, ...file.name.split('/')), path.join(base, 'payload', 'Assembler', 'overlay', ...file.rel.split('/'))]) {
+      const bytes = await fs.readFile(source).catch(() => null);
+      if (bytes && sha256Of(bytes) === file.sha256) { found = bytes; break; }
+    }
+    if (!found && sha256Of(Buffer.alloc(0)) === file.sha256) found = Buffer.alloc(0);
+    if (found) { await lay(file, found); stats.copied++; if (stats.copied % 250 === 0) report(); } else missing.push(file);
+  };
+  const pending = [...wanted];
+  await Promise.all(Array.from({ length: Math.min(16, pending.length) }, async () => { while (pending.length) await local(pending.shift()); }));
+  report();
+  if (missing.length > SQL_MAX_FETCH) return null;
+  // Four at a time; a 429 or a 5xx is tried again after a pause, then the archive takes over.
+  const take = async file => {
+    const url = `https://raw.githubusercontent.com/${sql.repo}/${sql.commit}/${file.rel.split('/').map(encodeURIComponent).join('/')}`;
+    for (let attempt = 0; attempt < 4; attempt++) {
+      let response = null;
+      try { response = await fetchImpl(url, { redirect: 'follow', signal: AbortSignal.timeout(60000) }); } catch {}
+      if (response?.ok) {
+        const bytes = Buffer.from(await response.arrayBuffer());
+        if (sha256Of(bytes) !== file.sha256) return false;
+        await lay(file, bytes);
+        stats.fetched++;
+        stats.bytes += bytes.length;
+        report();
+        return true;
+      }
+      if (response && response.status !== 429 && response.status < 500) return false;
+      const later = Number(response?.headers?.get?.('retry-after'));
+      await wait(Number.isFinite(later) && later > 0 && later <= 30 ? later * 1000 : [2000, 5000, 10000][attempt] || 10000);
+    }
+    return false;
+  };
+  const queue = [...missing];
+  let failed = false;
+  await Promise.all(Array.from({ length: Math.min(4, queue.length) }, async () => {
+    while (queue.length && !failed) if (!(await take(queue.shift()))) failed = true;
+  }));
+  return failed ? null : stats;
+}
+
+async function fillSql(folder, packageFolder, onEvent = () => {}, options = {}) {
   const marker = path.join(folder, packageFolder, 'update', 'sql-source.json');
   if (!fsSync.existsSync(marker)) return false;
+  const local = await fillSqlLocal(folder, packageFolder, { ...options, onEvent }).catch(() => null);
+  if (local) { onEvent({ event: 'sql', local: true, finished: true, ...local, done: local.total }); return local; }
   const tool = path.join(folder, packageFolder, 'payload', 'Assembler', 'coa_assemble.py');
   const python = path.join(folder, 'Runtime', 'python', 'python.exe');
   const args = ['-B', '-X', 'utf8', tool, '--json', 'fill-sql', '--into', path.join(folder, packageFolder, 'payload'), '--manifest', path.join(folder, packageFolder, 'update', 'manifest.json')];
@@ -187,4 +261,4 @@ async function fillSql(folder, packageFolder, onEvent = () => {}) {
   return true;
 }
 
-module.exports = { cleanManifest, compareVersions, forRelease, packageSize, installed, status, fetchPackage, unpack, runTool, fillSql };
+module.exports = { cleanManifest, compareVersions, forRelease, packageSize, installed, status, fetchPackage, unpack, runTool, fillSql, fillSqlLocal };

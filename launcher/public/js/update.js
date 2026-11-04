@@ -65,9 +65,10 @@ function toolLine(text) {
 
 // The public SQL of the core, taken from GitHub after the unpacking: a few hundred MB, with no size given beforehand.
 function sqlLine(event) {
-  if (event.unpacking) return t('update.sqlUnpack', 'Preparing the SQL files of the core: {n} files…', { n: formatNumber(event.done) });
-  if (event.done) return t('update.sqlBytes', 'Downloading the public SQL of the core: {size} (a few hundred MB in all, it can take a few minutes)…', { size: formatBytes(event.done) });
-  return t('update.sqlStart', 'Downloading the public SQL of the core (a few hundred MB, it can take a few minutes)…');
+  if (event.local) return t('update.sqlLocal', 'Public SQL of the CoA core, checked one by one: {done} of {total} ({copied} already on your server, {fetched} downloaded)…', { done: formatNumber(event.done), total: formatNumber(event.total), copied: formatNumber(event.copied), fetched: formatNumber(event.fetched) });
+  if (event.unpacking) return t('update.sqlUnpack', 'Public SQL of the CoA core, checked one by one: {n} files taken out of the archive…', { n: formatNumber(event.done) });
+  if (event.done) return t('update.sqlBytes', 'Public SQL of the CoA core, checked one by one: whole archive downloaded, {size} (a few hundred MB in all, it can take a few minutes)…', { size: formatBytes(event.done) });
+  return t('update.sqlStart', 'Public SQL of the CoA core, checked one by one: downloading the whole archive (a few hundred MB, it can take a few minutes)…');
 }
 
 function updateStepOf(text) { return TOOL_STEPS.find(([pattern]) => pattern.test(text || ''))?.[1] || null; }
@@ -79,7 +80,7 @@ function onUpdateEvent(event) {
   if (event.event === 'phase') {
     if (event.phase === 'download') Object.assign(run, { step: 'download', done: 0, total: event.total || 0 });
     if (event.phase === 'unpack') Object.assign(run, { step: 'unpack', done: 0, total: 0, line: t('update.unpackLine', 'Unpacking the update files…') });
-    if (event.phase === 'check') run.step = 'check';
+    if (event.phase === 'check') Object.assign(run, { step: 'check', line: '' });
     if (event.phase === 'undo') run.step = 'undo';
   } else if (event.event === 'bytes') {
     // Speed over the last 10 seconds or so, for the time left.
@@ -92,7 +93,7 @@ function onUpdateEvent(event) {
   else if (event.event === 'unpack') Object.assign(run, { step: 'unpack', line: event.total > 1 ? t('update.unpackPart', 'Unpacking the update files: part {done} of {total}…', { done: event.done, total: event.total }) : t('update.unpackLine', 'Unpacking the update files…') });
   else if (event.event === 'step') { const step = updateStepOf(event.text) || run.step; if (step !== run.step) Object.assign(run, { done: 0, total: 0 }); run.step = step; run.line = event.text; if (step === 'test' && !run.testSince) run.testSince = Date.now(); }
   else if (event.event === 'progress') Object.assign(run, { done: event.done, total: event.total, line: event.text });
-  else if (event.event === 'sql') Object.assign(run, { step: 'unpack', line: sqlLine(event) });
+  else if (event.event === 'sql') Object.assign(run, { step: 'unpack', line: sqlLine(event), sql: event });
   else if (['info', 'installer', 'warn'].includes(event.event) && event.text) run.line = toolLine(event.text) ?? run.line;
   if (run.step !== before) run.stepSince = Date.now();
   if ($('#dialog').open && $('#update-live')) { $('#update-live').innerHTML = updateLive(); applyBars($('#update-live')); }

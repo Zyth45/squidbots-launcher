@@ -1579,7 +1579,8 @@
   "update.tool.installBots": "Installation de CoA Bots…",
   "update.tool.finishing": "Fin de la mise à jour interrompue…",
   "update.tool.running": "Programmes du serveur encore lancés ({list}) : ils sont arrêtés d'abord.",
-  "update.sqlUnpack": "Préparation des fichiers SQL du cœur : {n} fichiers…",
-  "update.sqlBytes": "Téléchargement des SQL publics du cœur : {size} (quelques centaines de Mo en tout, cela peut prendre quelques minutes)…",
-  "update.sqlStart": "Téléchargement des SQL publics du cœur (quelques centaines de Mo, cela peut prendre quelques minutes)…"
+  "update.sqlUnpack": "SQL publics du cœur CoA, vérifiés un par un : {n} fichiers tirés de l'archive…",
+  "update.sqlBytes": "SQL publics du cœur CoA, vérifiés un par un : archive complète, {size} reçus (quelques centaines de Mo en tout, cela peut prendre quelques minutes)…",
+  "update.sqlStart": "SQL publics du cœur CoA, vérifiés un par un : téléchargement de l'archive complète (quelques centaines de Mo, cela peut prendre quelques minutes)…",
+  "update.sqlLocal": "SQL publics du cœur CoA, vérifiés un par un : {done} sur {total} ({copied} déjà sur votre serveur, {fetched} téléchargés)…"
 }
