@@ -184,7 +184,13 @@ class ServerControl {
       // The repack's own manager starts the service (and whatever it depends on) and waits for it.
       this.states.set(id, 'starting');
       await this.emit();
+      const began = Date.now();
       try { await this.run({ ...start, timeout: Math.max(start.timeout, service.startTimeout) }, id); }
+      catch (error) {
+        // CoA 2.9.2 and older give up after 20 s on a slow or busy PC while the supervisor still starts the world:
+        // the start is only failed once nothing of it is alive any more, or after the service's own time.
+        if (!(await this.lateStart(service, began))) throw error;
+      }
       finally { this.states.delete(id); await this.emit(); }
       if (!(await portOpen(service.port))) throw new Error(`${service.name} did not open port ${service.port}. Look at its log.`);
       if (id === 'auth') await this.onAuthStarted?.().catch(() => {});
@@ -218,6 +224,17 @@ class ServerControl {
     this.states.delete(id);
     await this.emit();
     throw new Error(`${service.name} did not open port ${service.port} in time. Look at its log.`);
+  }
+
+  // The port opened after the start script gave up, while the repack's supervisor or the service's own process lived.
+  async lateStart(service, began) {
+    const deadline = began + service.startTimeout * 1000;
+    for (;;) {
+      if (await portOpen(service.port)) return true;
+      if (Date.now() >= deadline) return false;
+      if (!(await this.processAlive(service.id)) && !(service.id === 'world' && await this.processAlive('supervisor'))) return false;
+      await new Promise(resolve => setTimeout(resolve, this.lateDelay ?? 2000));
+    }
   }
 
   startCommand(service) {
