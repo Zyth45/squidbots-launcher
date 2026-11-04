@@ -1574,5 +1574,12 @@
   "settings.launcherLineDownloaded": "启动器 {version}：{next} 已就绪，重启以安装",
   "settings.launcherLine": "启动器 {version}：{message}",
   "settings.launcherUpToDateServer": "启动器 {version}：已是最新。服务器有自己的更新，在主页上。",
-  "update.serverTitle": "服务器 {from} → {to} 可更新"
+  "update.serverTitle": "服务器 {from} → {to} 可更新",
+  "update.tool.stopping": "正在停止服务器程序…",
+  "update.tool.installBots": "正在安装 CoA Bots…",
+  "update.tool.finishing": "正在完成被中断的更新…",
+  "update.tool.running": "服务器程序仍在运行（{list}）：会先将其停止。",
+  "update.sqlUnpack": "正在准备核心的 SQL 文件：{n} 个文件…",
+  "update.sqlBytes": "正在下载核心的公开 SQL：{size}（总共几百 MB，可能需要几分钟）…",
+  "update.sqlStart": "正在下载核心的公开 SQL（几百 MB，可能需要几分钟）…"
 }

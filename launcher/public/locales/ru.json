@@ -1568,5 +1568,12 @@
   "settings.launcherLineDownloaded": "Лаунчер {version}: версия {next} готова, перезапустите для установки",
   "settings.launcherLine": "Лаунчер {version}: {message}",
   "settings.launcherUpToDateServer": "Лаунчер {version}: актуален. У сервера свои обновления, на главной странице.",
-  "update.serverTitle": "Сервер {from} → {to}: доступно обновление"
+  "update.serverTitle": "Сервер {from} → {to}: доступно обновление",
+  "update.tool.stopping": "Остановка программ сервера…",
+  "update.tool.installBots": "Установка CoA Bots…",
+  "update.tool.finishing": "Завершение прерванного обновления…",
+  "update.tool.running": "Программы сервера ещё запущены ({list}): сначала они будут остановлены.",
+  "update.sqlUnpack": "Подготовка SQL-файлов ядра: {n} файлов…",
+  "update.sqlBytes": "Загрузка публичных SQL ядра: {size} (всего несколько сотен МБ, это может занять несколько минут)…",
+  "update.sqlStart": "Загрузка публичных SQL ядра (несколько сотен МБ, это может занять несколько минут)…"
 }

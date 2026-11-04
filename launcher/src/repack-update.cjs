@@ -176,7 +176,9 @@ async function fillSql(folder, packageFolder, onEvent = () => {}) {
         let event = null;
         try { event = JSON.parse(raw); } catch { continue; }
         if (event.event === 'error') failure = event.message;
-        else if (event.event === 'step') onEvent({ event: 'step', text: event.text });
+        // The public SQL of the core (a few hundred MB from GitHub): its bytes, then the files taken out of it.
+        else if (event.event === 'step') onEvent({ event: 'sql', done: 0 });
+        else if (event.event === 'progress') onEvent({ event: 'sql', done: Number(event.done) || 0, unpacking: event.text === 'unpacking' });
       }
     });
     child.once('error', reject);

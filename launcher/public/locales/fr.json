@@ -1574,5 +1574,12 @@
   "settings.launcherLineDownloaded": "Launcher {version} : la {next} est prête, redémarrez pour l'installer",
   "settings.launcherLine": "Launcher {version} : {message}",
   "settings.launcherUpToDateServer": "Launcher {version} : à jour. Le serveur a ses propres mises à jour, sur l'accueil.",
-  "update.serverTitle": "Serveur {from} → {to} disponible"
+  "update.serverTitle": "Serveur {from} → {to} disponible",
+  "update.tool.stopping": "Arrêt des programmes du serveur…",
+  "update.tool.installBots": "Installation de CoA Bots…",
+  "update.tool.finishing": "Fin de la mise à jour interrompue…",
+  "update.tool.running": "Programmes du serveur encore lancés ({list}) : ils sont arrêtés d'abord.",
+  "update.sqlUnpack": "Préparation des fichiers SQL du cœur : {n} fichiers…",
+  "update.sqlBytes": "Téléchargement des SQL publics du cœur : {size} (quelques centaines de Mo en tout, cela peut prendre quelques minutes)…",
+  "update.sqlStart": "Téléchargement des SQL publics du cœur (quelques centaines de Mo, cela peut prendre quelques minutes)…"
 }
