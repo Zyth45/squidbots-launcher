@@ -231,6 +231,7 @@ input:focus, select:focus { border-color: var(--accent); }
 .conf-group h3 .icon { color: var(--accent); width: 16px; height: 16px; }
 .conf-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px; align-items: center; padding: 12px 14px; border-radius: 11px; border: 1px solid var(--line); background: var(--panel); }
 .conf-row.changed { border-color: var(--accent); }
+.conf-row.conf-off { opacity: .5; }
 .conf-label p { color: var(--muted); font-size: 12.5px; margin-top: 2px; }
 .when { display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; color: var(--faint); font-size: 11px; }
 .when .icon { width: 11px; height: 11px; }

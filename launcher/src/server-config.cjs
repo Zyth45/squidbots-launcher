@@ -182,7 +182,10 @@ class ServerConfig {
     const settings = [];
     for (const setting of CATALOG.settings) {
       const values = await valuesOf(setting.file);
-      const current = values?.get(setting.key);
+      let current = values?.get(setting.key);
+      // A setting of a newer core, absent from a file updated from an older one: shown at its default, its line written
+      // only when the player changes it.
+      if (!current && values && setting.default !== undefined) current = { value: setting.default, absent: true };
       if (!current) continue;
       settings.push({ ...setting, value: setting.kind === 'quoted' ? current.value.replace(/^"|"$/g, '') : current.value });
     }
@@ -300,7 +303,14 @@ class ServerConfig {
         lines[i] = `${match[1]}${match[2]}${match[3]}${pairs.get(match[2])}${match[5]}`;
         missing.delete(match[2]);
       }
+      // A catalogued setting with a default (see overview) gets its line at the end of the file.
+      const added = [...missing].filter(key => CATALOG.settings.some(setting => setting.file === file.id && setting.key === key && setting.default !== undefined));
+      for (const key of added) missing.delete(key);
       if (missing.size) throw new Error(`Not found in ${file.name}: ${[...missing].join(', ')}.`);
+      if (added.length) {
+        while (lines.length && !lines[lines.length - 1].trim()) lines.pop();
+        lines.push('', ...added.map(key => `${key} = ${pairs.get(key)}`), '');
+      }
       const updated = lines.join(newline);
       if (updated === original) continue;
       const backup = this.resolve(`${BACKUPS}/${when}/${file.path}`);

@@ -1,5 +1,34 @@
 [
     {
+        "version": "0.3.58",
+        "items": {
+            "en": [
+                "Server update: the public SQL of the CoA core no longer need the whole 334 MB archive. The files already on your server are reused and the few new ones are downloaded one by one, each checked: a few seconds instead of several minutes on a slow connection.",
+                "Update window: the questions of the update tool no longer show as they are (« Stop them now? -> yes »): you read « Stopping the programs of the server… » or « Installing CoA Bots… ». The SQL step shows how many files are done.",
+                "Server start: on a slow or busy PC, a world taking more than 20 s to start no longer ends in « world stopped during startup ». The launcher waits while it is still starting, up to 10 minutes.",
+                "Server start: MySQL on a slow disk gets up to 16 minutes instead of 2."
+            ],
+            "fr": [
+                "Mise à jour du serveur : les SQL publics du cœur CoA ne demandent plus l'archive entière de 334 Mo. Les fichiers déjà sur votre serveur sont repris et les quelques nouveaux téléchargés un par un, chacun vérifié : quelques secondes au lieu de plusieurs minutes sur une connexion lente.",
+                "Fenêtre de mise à jour : les questions de l'outil de mise à jour ne s'affichent plus telles quelles (« Stop them now? -> yes ») : vous lisez « Arrêt des programmes du serveur… » ou « Installation de CoA Bots… ». L'étape des SQL montre combien de fichiers sont faits.",
+                "Démarrage du serveur : sur un PC lent ou occupé, un monde qui met plus de 20 s à démarrer ne finit plus sur « world stopped during startup ». Le launcher attend tant qu'il démarre encore, jusqu'à 10 minutes.",
+                "Démarrage du serveur : MySQL sur un disque lent a jusqu'à 16 minutes au lieu de 2."
+            ],
+            "ru": [
+                "Обновление сервера: публичным SQL ядра CoA больше не нужен весь архив на 334 МБ. Файлы, которые уже есть на вашем сервере, используются повторно, а немногие новые скачиваются по одному, каждый с проверкой: несколько секунд вместо нескольких минут на медленном соединении.",
+                "Окно обновления: вопросы средства обновления больше не показываются как есть («Stop them now? -> yes»): вы видите «Остановка программ сервера…» или «Установка CoA Bots…». Шаг SQL показывает, сколько файлов готово.",
+                "Запуск сервера: на медленном или загруженном ПК мир, которому нужно больше 20 с на запуск, больше не заканчивается сообщением «world stopped during startup». Лаунчер ждёт, пока он ещё запускается, до 10 минут.",
+                "Запуск сервера: MySQL на медленном диске получает до 16 минут вместо 2."
+            ],
+            "zh": [
+                "服务器更新：CoA 核心的公开 SQL 不再需要下载整个 334 MB 的压缩包。服务器上已有的文件会被直接复用，少量新文件逐个下载并逐一校验：在慢速网络下只需几秒，而不是几分钟。",
+                "更新窗口：更新工具的提问不再原样显示（“Stop them now? -> yes”），而是显示“正在停止服务器程序…”或“正在安装 CoA Bots…”。SQL 步骤会显示已完成的文件数。",
+                "服务器启动：在较慢或繁忙的电脑上，启动超过 20 秒的世界服务器不再以“world stopped during startup”结束。启动器会在它仍在启动时继续等待，最长 10 分钟。",
+                "服务器启动：慢速磁盘上的 MySQL 最多可等待 16 分钟，而不是 2 分钟。"
+            ]
+        }
+    },
+    {
         "version": "0.3.57",
         "items": {
             "en": [

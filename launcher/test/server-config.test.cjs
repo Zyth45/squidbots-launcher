@@ -120,3 +120,22 @@ test('a reinstall carries the values changed by hand, never a shipped default no
   assert.match(pb, /^AiPlayerbot\.AddClassAccountPoolSize = 60$/m);
   assert.ok(!fs.existsSync(path.join(newRoot, '.coa-launcher/config-changes.json')), 'hand edits are not recorded as launcher changes');
 });
+
+test('a newer setting absent from the file shows its default, and its line is written only when changed', async () => {
+  const root = await copyRepack();
+  const file = path.join(root, 'CoA-Bots', 'Core', 'configs', 'modules', 'playerbots.conf');
+  const before = await fsp.readFile(file, 'utf8');
+  const config = new ServerConfig(root);
+  const overview = await config.overview();
+  const percent = overview.settings.find(setting => setting.key === 'AiPlayerbot.RandomBotTransmogPercent');
+  assert.equal(percent.value, '50');
+  assert.deepEqual(percent.offWhen, { key: 'CoA.CollectionsForBots', values: ['2'] });
+  assert.equal(await fsp.readFile(file, 'utf8'), before);
+  await config.save([{ file: 'playerbots.conf', key: 'AiPlayerbot.RandomBotTransmogPercent', value: '30' }, { file: 'playerbots.conf', key: 'AiPlayerbot.MaxRandomBots', value: '77' }]);
+  const after = await fsp.readFile(file, 'utf8');
+  assert.equal(after.match(/^AiPlayerbot\.RandomBotTransmogPercent = 30$/gm).length, 1);
+  assert.equal(after.includes('RandomBotTransmogCosmeticSets'), false);
+  await config.save([{ file: 'playerbots.conf', key: 'AiPlayerbot.RandomBotTransmogPercent', value: '40' }]);
+  assert.equal((await fsp.readFile(file, 'utf8')).match(/RandomBotTransmogPercent/g).length, 1);
+  await assert.rejects(config.save([{ file: 'playerbots.conf', key: 'AiPlayerbot.NotInTheCatalog', value: '1' }]), /Not found/);
+});

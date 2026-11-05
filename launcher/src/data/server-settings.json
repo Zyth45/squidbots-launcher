@@ -3492,6 +3492,116 @@
    }
   },
   {
+   "key": "AiPlayerbot.RandomBotTransmog",
+   "file": "playerbots.conf",
+   "group": "collections",
+   "kind": "bool",
+   "when": "restart",
+   "default": "1",
+   "offWhen": {
+    "key": "CoA.CollectionsForBots",
+    "values": [
+     "2"
+    ]
+   },
+   "label": {
+    "en": "Transmog of the random bots",
+    "fr": "Transmog des bots aléatoires",
+    "ru": "Трансмог случайных ботов",
+    "zh": "随机机器人的幻化"
+   },
+   "help": {
+    "en": "Random bots wear the look of a set that fits their level. Purely visual: their gear and stats do not change. Off when every bot uses the collections.",
+    "fr": "Les bots aléatoires portent l'apparence d'un set adapté à leur niveau. Purement visuel : leur équipement et leurs stats ne changent pas. Sans effet quand tous les bots utilisent les collections.",
+    "ru": "Случайные боты носят облик комплекта под свой уровень. Только внешний вид: снаряжение и характеристики не меняются. Не действует, когда все боты используют коллекции.",
+    "zh": "随机机器人穿上符合其等级的套装外观。仅为外观：装备和属性不变。所有机器人都使用收藏时无效。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.RandomBotTransmogPercent",
+   "file": "playerbots.conf",
+   "group": "collections",
+   "kind": "int",
+   "when": "restart",
+   "min": 0,
+   "max": 100,
+   "default": "50",
+   "offWhen": {
+    "key": "CoA.CollectionsForBots",
+    "values": [
+     "2"
+    ]
+   },
+   "label": {
+    "en": "Random bots with a transmog (%)",
+    "fr": "Bots aléatoires avec une transmog (%)",
+    "ru": "Случайные боты с трансмогом (%)",
+    "zh": "使用幻化的随机机器人（%）"
+   },
+   "help": {
+    "en": "Share of the random bots that wear a transmog, always the same bots.",
+    "fr": "La part des bots aléatoires qui portent une transmog, toujours les mêmes.",
+    "ru": "Доля случайных ботов с трансмогом, всегда одни и те же боты.",
+    "zh": "使用幻化的随机机器人比例，始终是同一批机器人。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.RandomBotTransmogMinLevel",
+   "file": "playerbots.conf",
+   "group": "collections",
+   "kind": "int",
+   "when": "restart",
+   "min": 1,
+   "max": 80,
+   "default": "10",
+   "offWhen": {
+    "key": "CoA.CollectionsForBots",
+    "values": [
+     "2"
+    ]
+   },
+   "label": {
+    "en": "Transmog from level",
+    "fr": "Transmog à partir du niveau",
+    "ru": "Трансмог с уровня",
+    "zh": "幻化起始等级"
+   },
+   "help": {
+    "en": "Random bots below this level keep their own look.",
+    "fr": "Les bots aléatoires sous ce niveau gardent leur propre apparence.",
+    "ru": "Случайные боты ниже этого уровня сохраняют свой облик.",
+    "zh": "低于此等级的随机机器人保持自身外观。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.RandomBotTransmogCosmeticSets",
+   "file": "playerbots.conf",
+   "group": "collections",
+   "kind": "int",
+   "when": "restart",
+   "min": 0,
+   "max": 100,
+   "default": "50",
+   "offWhen": {
+    "key": "CoA.CollectionsForBots",
+    "values": [
+     "2"
+    ]
+   },
+   "label": {
+    "en": "Full cosmetic sets (%)",
+    "fr": "Sets cosmétiques entiers (%)",
+    "ru": "Полные косметические комплекты (%)",
+    "zh": "完整外观套装（%）"
+   },
+   "help": {
+    "en": "Among the random bots with a transmog, the share that wears a whole cosmetic set.",
+    "fr": "Parmi les bots aléatoires avec une transmog, la part qui porte un set cosmétique entier.",
+    "ru": "Среди случайных ботов с трансмогом доля тех, кто носит полный косметический комплект.",
+    "zh": "在使用幻化的随机机器人中，穿着完整外观套装的比例。"
+   }
+  },
+  {
    "key": "AiPlayerbot.SyncLevelWithPlayers",
    "file": "playerbots.conf",
    "group": "levels",

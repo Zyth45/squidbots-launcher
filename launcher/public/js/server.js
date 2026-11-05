@@ -235,6 +235,13 @@ function selfFoundOn() {
   return !!setting && String(confValue(setting)).trim() === '1';
 }
 
+// A setting without effect while another holds one of its values (offWhen in the catalog): shown greyed.
+function settingOff(setting) {
+  const rule = setting.offWhen;
+  const other = rule && App.state.conf?.settings.find(item => item.key === rule.key);
+  return !!other && rule.values.includes(String(confValue(other)).trim());
+}
+
 function warnings(key) {
   const conf = App.state.conf;
   const levelsOff = conf.settings.find(item => item.key === key);
@@ -578,7 +585,7 @@ function settingRow(setting) {
   const conf = App.state.conf;
   const warn = warnings(setting.key);
   const changed = App.state.pending[pendingKey(setting.file, setting.key)] !== undefined;
-  return `<div class="conf-row${changed ? ' changed' : ''}${setting.group === 'levels' && !setting.selfFoundOk && selfFoundOn() ? ' self-found-off' : ''}${setting.origin ? ` from-${setting.origin}` : ''}"><div class="conf-label"><strong>${esc(loc(setting.label))}</strong>${originTag(setting)}<p>${esc(loc(setting.help))}</p><small class="when">${icon('refresh')}${esc(loc(conf.when?.[setting.when]))}</small><div class="conf-warn" data-warn="${esc(setting.key)}" ${warn.length ? '' : 'hidden'}>${icon('info')}<span>${esc(warn.join(' '))}</span></div></div><div class="conf-control">${control(setting)}</div></div>`;
+  return `<div class="conf-row${changed ? ' changed' : ''}${setting.group === 'levels' && !setting.selfFoundOk && selfFoundOn() ? ' self-found-off' : ''}${settingOff(setting) ? ' conf-off' : ''}${setting.origin ? ` from-${setting.origin}` : ''}"${setting.offWhen ? ` data-off-file="${esc(setting.file)}" data-off-key="${esc(setting.key)}"` : ''}><div class="conf-label"><strong>${esc(loc(setting.label))}</strong>${originTag(setting)}<p>${esc(loc(setting.help))}</p><small class="when">${icon('refresh')}${esc(loc(conf.when?.[setting.when]))}</small><div class="conf-warn" data-warn="${esc(setting.key)}" ${warn.length ? '' : 'hidden'}>${icon('info')}<span>${esc(warn.join(' '))}</span></div></div><div class="conf-control">${control(setting)}</div></div>`;
 }
 
 // ---------------------------------------------------------------- search in the settings
@@ -675,6 +682,10 @@ document.addEventListener('input', event => {
   if (String(value).trim() === String(setting.value).trim()) delete App.state.pending[id];
   else App.state.pending[id] = { file, key, value, kind };
   target.closest('.conf-row')?.classList.toggle('changed', App.state.pending[id] !== undefined);
+  for (const row of $$('[data-off-key]')) {
+    const other = App.state.conf.settings.find(item => item.file === row.dataset.offFile && item.key === row.dataset.offKey);
+    if (other) row.classList.toggle('conf-off', settingOff(other));
+  }
   patchConfBar();
 });
 
