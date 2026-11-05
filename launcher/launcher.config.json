@@ -37,6 +37,7 @@
         "id": "mysql",
         "name": "MySQL",
         "port": 3307,
+        "startTimeout": 960,
         "start": {
           "exe": "Runtime/python/python.exe",
           "args": [
@@ -44,7 +45,7 @@
             "Scripts/manage.py",
             "start-mysql"
           ],
-          "timeout": 120
+          "timeout": 960
         }
       },
       {
