@@ -3506,6 +3506,26 @@
    }
   },
   {
+   "key": "CoA.LegacyMountFlight",
+   "file": "coa.conf",
+   "group": "collections",
+   "kind": "bool",
+   "when": "restart",
+   "default": "0",
+   "label": {
+    "en": "Legacy mount flight",
+    "fr": "Vol des montures à l'ancienne",
+    "ru": "Старые правила полёта на маунтах",
+    "zh": "旧版坐骑飞行规则"
+   },
+   "help": {
+    "en": "Off (default): every mount follows the flight rule: flying in Outland with Expert Riding, in Northrend with Cold Weather Flying, never in Azeroth, battlegrounds or no-fly areas, and a rider leaving a flying area is dismounted. On: the rule only covers mounts in the spellbook; Ash'adar never flies, other mounts fly wherever their own spell allows, and nobody is dismounted.",
+    "fr": "Désactivé (par défaut) : toutes les montures suivent la règle de vol : vol en Outreterre avec la monte experte, en Norfendre avec le Vol par temps froid, jamais en Azeroth, en champ de bataille ni en zone interdite, et un cavalier qui quitte une zone de vol est démonté. Activé : la règle ne couvre que les montures du grimoire ; Ash'adar ne vole jamais, les autres montures volent là où leur propre sort le permet, et personne n'est démonté.",
+    "ru": "Выкл. (по умолчанию): все маунты следуют правилу полёта: полёт в Запределье с мастерской верховой ездой, в Нордсколе с «Полётами в холодную погоду», никогда в Азероте, на полях боя и в зонах без полётов; всадника, покинувшего зону полётов, спешивают. Вкл.: правило касается только маунтов из книги заклинаний; Ash'adar никогда не летает, остальные маунты летают там, где позволяет их заклинание, и никого не спешивают.",
+    "zh": "关闭（默认）：所有坐骑遵循飞行规则：在外域需专家级骑术，在诺森德需寒冷天气飞行，在艾泽拉斯、战场和禁飞区永远不能飞行，离开飞行区域的骑手会被打下坐骑。开启：该规则只适用于法术书中的坐骑；Ash'adar 永远不能飞行，其他坐骑可在其自身法术允许的任何地方飞行，且不会有人被打下坐骑。"
+   }
+  },
+  {
    "key": "CoA.CollectionsForBots",
    "file": "coa.conf",
    "group": "collections",

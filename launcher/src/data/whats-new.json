@@ -9,7 +9,8 @@
                 "Settings files saved with a UTF-8 BOM (some editors add it) no longer stop the server at its first line: the BOM is removed before the start, a copy of the file is kept and the change is written in logs\\launcher-config.log.",
                 "Extra realms: their log folder is relative, so a server moved to another drive or folder keeps working.",
                 "Server settings, Creature difficulty: « Dungeon scaling for Dungeon Finder groups only » (CoA 2.9.5). On, as on the official CoA, only a Dungeon Finder group plays a classic dungeon at its own level. Off by default; an update never changes your value.",
-                "Server settings, Your alts: « Your own bots spend their talent points » lets your alts added as bots spend their free talent points themselves. Off by default."
+                "Server settings, Your alts: « Your own bots spend their talent points » lets your alts added as bots spend their free talent points themselves. Off by default.",
+                "Server settings, Collections and mounts: « Legacy mount flight » (CoA.LegacyMountFlight). Off by default: no flying in Azeroth. On: the flight rule only covers spellbook mounts, other mounts fly wherever their own spell allows. Your value is shown and only changed when you change it."
             ],
             "fr": [
                 "Réglages du serveur, Royaume : « Instances par heure » fixe le nombre de donjons ou raids différents qu'un compte peut ouvrir en une heure (CoA est livré avec 5). Votre valeur actuelle est affichée et ne change que si vous la changez.",
@@ -18,7 +19,8 @@
                 "Les fichiers de réglages enregistrés avec un BOM UTF-8 (certains éditeurs l'ajoutent) n'arrêtent plus le serveur à leur première ligne : le BOM est retiré avant le démarrage, une copie du fichier est gardée et le changement est noté dans logs\\launcher-config.log.",
                 "Royaumes supplémentaires : leur dossier de logs est relatif, un serveur déplacé sur un autre disque ou dossier continue de fonctionner.",
                 "Réglages du serveur, Difficulté des créatures : « Donjons ajustés seulement pour les groupes de la Recherche de donjons » (CoA 2.9.5). Activé, comme sur le CoA officiel, seul un groupe de la Recherche de donjons joue un donjon classique à son niveau. Désactivé par défaut ; une mise à jour ne change jamais votre valeur.",
-                "Réglages du serveur, Vos alts : « Vos propres bots dépensent leurs talents » laisse vos alts ajoutés en bots dépenser eux-mêmes leurs points de talent libres. Désactivé par défaut."
+                "Réglages du serveur, Vos alts : « Vos propres bots dépensent leurs talents » laisse vos alts ajoutés en bots dépenser eux-mêmes leurs points de talent libres. Désactivé par défaut.",
+                "Réglages du serveur, Collections et montures : « Vol des montures à l'ancienne » (CoA.LegacyMountFlight). Désactivé par défaut : pas de vol en Azeroth. Activé : la règle de vol ne couvre que les montures du grimoire, les autres volent là où leur propre sort le permet. Votre valeur est affichée et ne change que si vous la changez."
             ],
             "ru": [
                 "Настройки сервера, Игровой мир: « Подземелий в час » задаёт, сколько разных подземелий или рейдов аккаунт может открыть за час (в CoA — 5). Показано ваше текущее значение, оно меняется только когда вы его меняете.",
@@ -27,7 +29,8 @@
                 "Файлы настроек, сохранённые с UTF-8 BOM (его добавляют некоторые редакторы), больше не останавливают сервер на первой строке: BOM удаляется перед запуском, копия файла сохраняется, изменение записывается в logs\\launcher-config.log.",
                 "Дополнительные миры: их папка логов теперь относительная, сервер, перенесённый на другой диск или в другую папку, продолжает работать.",
                 "Настройки сервера, Сложность существ: «Масштабирование подземелий только для групп поиска подземелий» (CoA 2.9.5). Если включено, как на официальном CoA, только группа поиска подземелий проходит классическое подземелье на своём уровне. По умолчанию выключено; обновление никогда не меняет ваше значение.",
-                "Настройки сервера, Ваши альты: «Ваши боты сами распределяют таланты» — ваши альты-боты сами тратят свободные очки талантов. По умолчанию выключено."
+                "Настройки сервера, Ваши альты: «Ваши боты сами распределяют таланты» — ваши альты-боты сами тратят свободные очки талантов. По умолчанию выключено.",
+                "Настройки сервера, Коллекции и маунты: «Старые правила полёта на маунтах» (CoA.LegacyMountFlight). По умолчанию выключено: в Азероте не летают. Включено: правило полёта касается только маунтов из книги заклинаний, остальные летают там, где позволяет их заклинание. Ваше значение показано и меняется только вами."
             ],
             "zh": [
                 "服务器设置 › 国度：「每小时副本数」设置一个账号每小时可进入的不同副本或团队副本数量（CoA 默认为 5）。显示您当前的数值，只有您修改时才会更改。",
@@ -36,7 +39,8 @@
                 "带 UTF-8 BOM 保存的设置文件（某些编辑器会添加）不再让服务器在第一行停止：启动前会移除 BOM，保留文件副本，并将更改记录在 logs\\launcher-config.log 中。",
                 "额外国度：其日志文件夹改为相对路径，服务器移动到其他磁盘或文件夹后仍可正常运行。",
                 "服务器设置，怪物难度：「仅为地下城查找器队伍缩放地下城」（CoA 2.9.5）。开启后与官方 CoA 一致，只有地下城查找器队伍会按自身等级挑战经典地下城。默认关闭；更新永远不会更改你的设置值。",
-                "服务器设置，你的小号：「你自己的机器人自动分配天赋点」让作为机器人加入的小号自行分配空闲天赋点。默认关闭。"
+                "服务器设置，你的小号：「你自己的机器人自动分配天赋点」让作为机器人加入的小号自行分配空闲天赋点。默认关闭。",
+                "服务器设置，收藏与坐骑：「旧版坐骑飞行规则」（CoA.LegacyMountFlight）。默认关闭：艾泽拉斯不能飞行。开启：飞行规则只适用于法术书中的坐骑，其他坐骑可在其自身法术允许的地方飞行。会显示你的当前值，只有你更改时才会改变。"
             ]
         }
     },

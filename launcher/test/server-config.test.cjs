@@ -163,9 +163,12 @@ test('the 2.9.5 switches: shown at their default when an older conf lacks them, 
   await fsp.writeFile(dw, dwBefore);
   const bots = path.join(root, 'CoA-Bots', 'Core', 'configs', 'modules', 'playerbots.conf');
   const botsBefore = await fsp.readFile(bots, 'utf8');
+  const coa = path.join(root, 'Settings', 'coa.conf.template');
+  const coaBefore = 'CoA.MaxRidingFromStart = 1\r\n';
+  await fsp.writeFile(coa, coaBefore);
   const config = new ServerConfig(root);
   const settings = (await config.overview()).settings;
-  for (const key of ['DestinyWeaver.Scaling.LfgOnly', 'AiPlayerbot.AutoPickTalentsAltBots']) {
+  for (const key of ['DestinyWeaver.Scaling.LfgOnly', 'AiPlayerbot.AutoPickTalentsAltBots', 'CoA.LegacyMountFlight']) {
     const setting = settings.find(item => item.key === key);
     assert.equal(setting.value, '0', key);
   }
@@ -176,6 +179,7 @@ test('the 2.9.5 switches: shown at their default when an older conf lacks them, 
   assert.ok(after.startsWith(dwBefore));
   assert.equal(after.match(/^DestinyWeaver\.Scaling\.LfgOnly = 1\r?$/gm).length, 1);
   assert.equal(await fsp.readFile(bots, 'utf8'), botsBefore);
+  assert.equal(await fsp.readFile(coa, 'utf8'), coaBefore);
 });
 
 test('a UTF-8 BOM is removed from the .conf files only, bytes after it unchanged, a copy kept and logged', async () => {
