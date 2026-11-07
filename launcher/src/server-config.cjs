@@ -129,6 +129,38 @@ class ServerConfig {
 
   exists(relative) { return fs.existsSync(this.resolve(relative)); }
 
+  // A .conf saved by an editor with a UTF-8 BOM stops the core at its first line ("Failure to read line number 1").
+  // Only those three bytes go: every value stays, the file is kept first (restorable like a save) and the change logged.
+  async removeBoms() {
+    const folders = ['Settings', 'Core/configs', 'Core/configs/modules', 'CoA-Bots/Core/configs', 'CoA-Bots/Core/configs/modules'];
+    const fixed = [];
+    let when = '';
+    for (const folder of folders) {
+      const entries = await fsp.readdir(this.resolve(folder)).catch(() => []);
+      for (const name of entries.filter(item => /\.conf(\.template)?$/i.test(item))) {
+        const relative = `${folder}/${name}`;
+        const target = this.resolve(relative);
+        const stat = await fsp.stat(target).catch(() => null);
+        if (!stat?.isFile() || stat.size > MAX_FILE) continue;
+        const bytes = await fsp.readFile(target);
+        if (bytes[0] !== 0xEF || bytes[1] !== 0xBB || bytes[2] !== 0xBF) continue;
+        when ||= stamp();
+        const backup = this.resolve(`${BACKUPS}/${when}/${relative}`);
+        await fsp.mkdir(path.dirname(backup), { recursive: true });
+        await fsp.copyFile(target, backup);
+        await fsp.writeFile(`${target}.coa-tmp`, bytes.subarray(3));
+        await fsp.rename(`${target}.coa-tmp`, target);
+        fixed.push(relative);
+      }
+    }
+    if (fixed.length) {
+      const log = this.resolve('logs/launcher-config.log');
+      await fsp.mkdir(path.dirname(log), { recursive: true });
+      await fsp.appendFile(log, `${new Date().toISOString()} UTF-8 BOM removed (copy in ${BACKUPS}/${when}): ${fixed.join(', ')}\n`);
+    }
+    return fixed;
+  }
+
   // Every editable .conf, with the file its defaults and documentation come from.
   async files() {
     const found = [];

@@ -139,3 +139,34 @@ test('a newer setting absent from the file shows its default, and its line is wr
   assert.equal((await fsp.readFile(file, 'utf8')).match(/RandomBotTransmogPercent/g).length, 1);
   await assert.rejects(config.save([{ file: 'playerbots.conf', key: 'AiPlayerbot.NotInTheCatalog', value: '1' }]), /Not found/);
 });
+
+test('instances per hour: the value of worldserver.conf is shown, and only a change of the player writes it', async () => {
+  const root = await copyRepack();
+  const file = path.join(root, 'Settings', 'worldserver.conf.template');
+  const before = await fsp.readFile(file, 'utf8');
+  const config = new ServerConfig(root);
+  const setting = (await config.overview()).settings.find(item => item.key === 'AccountInstancesPerHour');
+  assert.equal(setting.value, '5');
+  assert.equal(setting.absent, undefined);
+  assert.equal(await fsp.readFile(file, 'utf8'), before);
+  await config.save([{ file: 'worldserver.conf', key: 'AccountInstancesPerHour', value: '30' }]);
+  const after = await fsp.readFile(file, 'utf8');
+  assert.equal(after.match(/^AccountInstancesPerHour = 30$/gm).length, 1);
+  assert.equal(after.replace('AccountInstancesPerHour = 30', 'AccountInstancesPerHour = 5'), before);
+});
+
+test('a UTF-8 BOM is removed from the .conf files only, bytes after it unchanged, a copy kept and logged', async () => {
+  const root = await copyRepack();
+  const file = path.join(root, 'Core', 'configs', 'modules', 'bom-test.conf');
+  await fsp.mkdir(path.dirname(file), { recursive: true });
+  const body = Buffer.from('Some.Key = "été"\r\nOther = 1\r\n', 'utf8');
+  await fsp.writeFile(file, Buffer.concat([Buffer.from([0xEF, 0xBB, 0xBF]), body]));
+  const config = new ServerConfig(root);
+  assert.deepEqual(await config.removeBoms(), ['Core/configs/modules/bom-test.conf']);
+  assert.ok((await fsp.readFile(file)).equals(body));
+  const backups = await fsp.readdir(path.join(root, '.coa-launcher', 'config-backups'));
+  const kept = await fsp.readFile(path.join(root, '.coa-launcher', 'config-backups', backups[0], 'Core', 'configs', 'modules', 'bom-test.conf'));
+  assert.equal(kept[0], 0xEF);
+  assert.match(await fsp.readFile(path.join(root, 'logs', 'launcher-config.log'), 'utf8'), /BOM removed.*bom-test\.conf/);
+  assert.deepEqual(await config.removeBoms(), []);
+});

@@ -73,7 +73,7 @@ test('configs of a realm: CoA, then its own values, then what its mode imposes; 
   assert.strictEqual(value(ws, 'Ra.Port'), '3543');
   assert.strictEqual(value(ws, 'SOAP.Enabled'), '0');
   assert.strictEqual(value(ws, 'CharacterDatabaseInfo'), '"127.0.0.1;3307;acore;secret;acore_characters_wildcard"');
-  assert.match(value(ws, 'LogsDir'), /Royaumes\/wildcard\/Logs"$/);
+  assert.strictEqual(value(ws, 'LogsDir'), '"Logs"');
   assert.strictEqual(value(pb, 'AiPlayerbot.MaxRandomBots'), '150');
   assert.strictEqual(value(pb, 'AiPlayerbot.MinRandomBots'), '500');
   assert.strictEqual(value(pb, 'AiPlayerbot.CommandServerPort'), '0');

@@ -57,6 +57,8 @@ function validateServices(list) {
 // On 127.0.0.1, or on the precise address the repack's configs bind to (probe.cjs).
 const probe = require('./probe.cjs');
 const portOpen = port => probe.portOpen(port);
+const PIPE_GONE = new Set(['EPIPE', 'ERR_STREAM_DESTROYED', 'ERR_STREAM_WRITE_AFTER_END']);
+const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 class ServerControl {
   constructor({ root, services, commands = {}, notify = () => {}, onAuthStarted = null }) {
@@ -81,8 +83,10 @@ class ServerControl {
       const collect = chunk => { output += chunk.toString(); if (output.length > 200000) output = output.slice(-100000); };
       child.stdout.on('data', collect);
       child.stderr.on('data', collect);
-      for (const line of input) child.stdin.write(`${line}\r\n`);
-      child.stdin.end();
+      // A command that ended early closes its stdin: writing to it then fails with EPIPE, which must not crash the launcher.
+      child.stdin.on('error', () => {});
+      for (const line of input) { try { child.stdin.write(`${line}\r\n`); } catch (error) { if (!PIPE_GONE.has(error.code)) throw error; } }
+      try { child.stdin.end(); } catch {}
       const timer = setTimeout(() => { exec('taskkill.exe', ['/PID', String(child.pid), '/T', '/F'], { windowsHide: true }).catch(() => child.kill()); reject(new Error(`${command.exe} took too long.`)); }, command.timeout * 1000);
       child.once('error', error => { clearTimeout(timer); reject(error); });
       child.once('exit', code => {
@@ -113,13 +117,33 @@ class ServerControl {
     if (!pid) return null;
     this.paths ||= new Map();
     if (!this.paths.has(pid)) {
-      const { stdout: exePath } = await exec('powershell.exe', ['-NoProfile', '-Command', `(Get-Process -Id ${pid}).Path`], { windowsHide: true, timeout: 10000 }).catch(() => ({ stdout: '' }));
       if (this.paths.size > 64) this.paths.clear();
-      this.paths.set(pid, exePath.trim());
+      this.paths.set(pid, await this.exePath(pid));
     }
     const file = this.paths.get(pid);
     if (!file) return { pid, file: '', inside: null };
-    return { pid, file, inside: path.resolve(file).toLowerCase().startsWith(this.root.toLowerCase() + path.sep) };
+    return { pid, file, inside: this.inside(file) };
+  }
+
+  // The full path of a running process ('' when it ended or cannot be read).
+  async exePath(pid) {
+    const { stdout } = await exec('powershell.exe', ['-NoProfile', '-Command', `(Get-Process -Id ${Number(pid)}).Path`], { windowsHide: true, timeout: 10000 }).catch(() => ({ stdout: '' }));
+    return String(stdout).trim();
+  }
+
+  inside(file) { return !!file && path.resolve(file).toLowerCase().startsWith(this.root.toLowerCase() + path.sep); }
+
+  // The programs of this server still running, whoever started them (a previous launcher, the repack's own scripts):
+  // only processes whose executable lies inside the server folder, never another MySQL of the PC.
+  async processesInside(names = ['mysqld.exe', 'authserver.exe', 'worldserver.exe']) {
+    if (process.platform !== 'win32') return [];
+    const filter = names.map(name => `Name='${name.replace(/[^\w.-]/g, '')}'`).join(' OR ');
+    const script = `Get-CimInstance Win32_Process -Filter "${filter}" | ForEach-Object { '{0}|{1}' -f $_.ProcessId, $_.ExecutablePath }`;
+    const { stdout } = await exec('powershell.exe', ['-NoProfile', '-Command', script], { windowsHide: true, timeout: 15000 }).catch(() => ({ stdout: '' }));
+    return String(stdout).split(/\r?\n/).map(line => {
+      const at = line.indexOf('|');
+      return at > 0 ? { pid: Number(line.slice(0, at).trim()), file: line.slice(at + 1).trim() } : null;
+    }).filter(item => item && Number.isInteger(item.pid) && item.pid > 0 && this.inside(item.file));
   }
 
   async processAlive(id) {
@@ -132,7 +156,11 @@ class ServerControl {
       // must still be the program the repack started.
       const { stdout } = await exec('tasklist.exe', ['/FI', `PID eq ${Number(record.pid)}`, '/FO', 'CSV', '/NH'], { windowsHide: true, timeout: 8000 });
       const name = /^"([^"]+)"/m.exec(stdout)?.[1] || '';
-      return name.toLowerCase() === path.basename(String(record.exe)).toLowerCase();
+      // Same program name is not enough either: Windows may give the number to another copy of it (another server's
+      // MySQL). The running file must be the one inside this server, else the record is old (it stays: it is manage.py's).
+      if (name.toLowerCase() !== path.basename(String(record.exe)).toLowerCase()) return false;
+      const file = await this.exePath(record.pid);
+      return !file || this.inside(file);
     } catch { return false; }
   }
 
@@ -205,13 +233,17 @@ class ServerControl {
     // own beside the program, so a realm applying its updates at the same time never removes it.
     const tmp = /^(world|auth)server\.exe$/i.test(path.basename(exe)) ? path.join(path.dirname(exe), 'tmp') : '';
     if (tmp) await fsp.mkdir(tmp, { recursive: true });
-    const child = spawn(exe, service.args.map(arg => arg.replace(/\{root\}/g, this.root)), {
+    // A --port argument follows the port the launcher watches (repack.json may move it), else the light never turns green.
+    const args = service.args.map(arg => arg.replace(/\{root\}/g, this.root)).map(arg => /^--port=/i.test(arg) ? `--port=${service.port}` : arg);
+    const child = spawn(exe, args, {
       cwd: this.resolve(service.cwd || '.'), windowsHide: true, detached: false,
       stdio: [service.console ? 'pipe' : 'ignore', log, log], env: tmp ? { ...process.env, TEMP: tmp, TMP: tmp } : process.env,
     });
     fs.closeSync(log);
     this.children.set(id, child);
     this.states.set(id, 'starting');
+    // Writing to a program that has just ended fails on its pipe: an unhandled pipe error would crash the launcher.
+    for (const stream of [child.stdin, child.stdout, child.stderr]) stream?.on('error', () => {});
     child.once('exit', () => { this.children.delete(id); this.states.delete(id); this.emit().catch(() => {}); });
     child.once('error', () => { this.children.delete(id); this.states.delete(id); });
     await this.emit();
@@ -275,9 +307,11 @@ class ServerControl {
       if (service.stop) {
         await this.run(service.stop, id);
       } else if (child && service.console && service.stopCommand) {
-        child.stdin.write(`${service.stopCommand}\r\n`);
+        // A console already closed means the world ended by itself: the wait below sees it.
+        if (child.stdin?.writable) { try { child.stdin.write(`${service.stopCommand}\r\n`); } catch (error) { if (!PIPE_GONE.has(error.code)) throw error; } }
       } else if (service.stopExe) {
-        await exec(this.resolve(service.stopExe), service.stopArgs, { cwd: this.root, windowsHide: true, timeout: 60000 });
+        // A busy MySQL (the world has just saved) may answer late or fail: the wait and the last resort below still stop it.
+        await this.gracefulStop(service);
       } else if (child) {
         await exec('taskkill.exe', ['/PID', String(child.pid), '/T'], { windowsHide: true }).catch(() => {});
       } else {
@@ -286,7 +320,7 @@ class ServerControl {
         await exec('taskkill.exe', ['/PID', String(owner.pid), '/T'], { windowsHide: true }).catch(() => {});
       }
       const deadline = Date.now() + 90 * 1000;
-      while (Date.now() < deadline && await portOpen(service.port)) await new Promise(resolve => setTimeout(resolve, 1000));
+      while (Date.now() < deadline && await portOpen(service.port)) await pause(1000);
       if (await portOpen(service.port)) {
         const owner = child ? { pid: child.pid } : await this.ownedProcess(service.port);
         if (owner) await exec('taskkill.exe', ['/PID', String(owner.pid), '/T', '/F'], { windowsHide: true }).catch(() => {});
@@ -297,19 +331,61 @@ class ServerControl {
     }
   }
 
+  async gracefulStop(service) {
+    await exec(this.resolve(service.stopExe), service.stopArgs, { cwd: this.root, windowsHide: true, timeout: 60000 })
+      .catch(error => { this.note(service.id, `${path.basename(service.stopExe)} failed (${error.message}); the launcher waits for the port, then stops it itself.`); });
+  }
+
+  async anyOpen(services) {
+    for (const service of services) if (await portOpen(service.port)) return true;
+    return false;
+  }
+
+  // Never under a world or an authserver still at work (the world closes its port first and saves for a while):
+  // once they are gone, a MySQL of this server still running gets a minute to end, then is ended.
+  async stopMysqlLeft() {
+    const mysql = this.services.find(service => service.id === 'mysql');
+    if (!mysql || process.platform !== 'win32') return;
+    const others = this.services.filter(service => service.id !== 'mysql');
+    const until = Date.now() + (this.saveWait ?? 300000);
+    for (;;) {
+      if (await this.anyOpen(others)) return;
+      if (!(await this.processesInside(['worldserver.exe', 'authserver.exe'])).length) break;
+      if (Date.now() >= until) return;
+      await pause(2000);
+    }
+    const left = async () => (await this.processesInside(['mysqld.exe'])).length > 0 || (await this.ownedProcess(mysql.port)) !== null;
+    const grace = Date.now() + (this.mysqlWait ?? 60000);
+    while (Date.now() < grace && await left()) await pause(2000);
+    let found = await this.processesInside(['mysqld.exe']);
+    if (!found.length) return;
+    this.note('mysql', `MySQL still running after the stop (${found.map(item => `PID ${item.pid}`).join(', ')}): ending it.`);
+    for (const item of found) await exec('taskkill.exe', ['/PID', String(item.pid), '/T'], { windowsHide: true }).catch(() => {});
+    const last = Date.now() + 20000;
+    while (Date.now() < last && (found = await this.processesInside(['mysqld.exe'])).length) await pause(2000);
+    for (const item of found) await exec('taskkill.exe', ['/PID', String(item.pid), '/T', '/F'], { windowsHide: true }).catch(() => {});
+    if (found.length) this.note('mysql', `MySQL forced to stop (${found.map(item => `PID ${item.pid}`).join(', ')}).`);
+  }
+
+  note(id, text) { try { fs.appendFileSync(this.logFile(id), `\n==== ${new Date().toISOString()} ${text}\n`); } catch {} }
+
   async stopAll() {
     if (this.commands.stopAll) {
       for (const service of this.services) this.states.set(service.id, 'stopping');
       await this.emit();
+      let failure = null;
       try {
         // A worldserver that has only just started may refuse the graceful-shutdown connection:
         // one more try a few seconds later, before reporting a failure.
         try { await this.run(this.commands.stopAll, 'stop-all'); }
         catch {
-          await new Promise(resolve => setTimeout(resolve, this.retryDelay ?? 15000));
-          await this.run(this.commands.stopAll, 'stop-all');
+          await pause(this.retryDelay ?? 15000);
+          try { await this.run(this.commands.stopAll, 'stop-all'); } catch (error) { failure = error; }
         }
+        // MySQL left behind (the stop script failed, or a previous launcher started it): stopped anyway.
+        await this.stopMysqlLeft();
       } finally { this.states.clear(); await this.emit(); }
+      if (failure && this.services.some(service => service.id !== 'mysql') && await this.anyOpen(this.services.filter(service => service.id !== 'mysql'))) throw failure;
       return;
     }
     for (const service of [...this.services].reverse()) await this.stop(service.id);
@@ -330,7 +406,10 @@ class ServerControl {
     const world = this.services.find(service => service.console);
     const child = world && this.children.get(world.id);
     if (!child?.stdin?.writable) throw new Error('Start the worldserver from the launcher first.');
-    for (const command of commands) child.stdin.write(`${command}\r\n`);
+    for (const command of commands) {
+      try { child.stdin.write(`${command}\r\n`); }
+      catch (error) { if (PIPE_GONE.has(error.code)) throw new Error('The worldserver has just stopped: the command was not sent.'); throw error; }
+    }
   }
 
   async tail(id, lines = 200) {

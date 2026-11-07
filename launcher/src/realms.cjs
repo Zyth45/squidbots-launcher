@@ -252,7 +252,9 @@ async function writeConfigs(root, key, saved) {
   const chars = confValue(ws, 'CharacterDatabaseInfo') || '';
   if (chars.split(';').length < 5) throw new Error('CharacterDatabaseInfo cannot be read in worldserver.conf.');
   const prefix = chars.split(';').slice(0, 4).join(';');
-  add('worldserver.conf', { CharacterDatabaseInfo: `"${prefix};acore_characters_${key}"`, LogsDir: `"${path.join(dir, 'Logs').replace(/\\/g, '/')}"` });
+  // LogsDir is the launcher's own value, written again before every start: relative to the realm's folder (its
+  // worldserver runs there), it stays right when the server is moved to another drive or folder.
+  add('worldserver.conf', { CharacterDatabaseInfo: `"${prefix};acore_characters_${key}"`, LogsDir: '"Logs"' });
   add('playerbots.conf', { PlayerbotsDatabaseInfo: `"${prefix};acore_playerbots_${key}"` });
   // CoA in its eco time: the realm copies the player's value of CoA, not the eco one.
   const coaEco = await eco.activeRecord(root, 'coa');

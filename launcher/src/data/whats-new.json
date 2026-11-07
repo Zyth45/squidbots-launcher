@@ -1,5 +1,38 @@
 [
     {
+        "version": "0.3.59",
+        "items": {
+            "en": [
+                "Server settings, Realm: « Instances per hour » sets how many different dungeons or raids an account may enter in one hour (CoA ships 5). Your current value is shown and only changed when you change it.",
+                "Server stop: MySQL is always stopped, even when its stop command fails or a previous launcher started it. It is only ended once the worlds and the authserver are gone, and only the MySQL of your server, never another one of the PC.",
+                "Safer stop: a process number reused by Windows is no longer mistaken for your authserver or MySQL, and the launcher no longer crashes when a world stops by itself while it sends it a command.",
+                "Settings files saved with a UTF-8 BOM (some editors add it) no longer stop the server at its first line: the BOM is removed before the start, a copy of the file is kept and the change is written in logslauncher-config.log.",
+                "Extra realms: their log folder is relative, so a server moved to another drive or folder keeps working."
+            ],
+            "fr": [
+                "Réglages du serveur, Royaume : « Instances par heure » fixe le nombre de donjons ou raids différents qu'un compte peut ouvrir en une heure (CoA est livré avec 5). Votre valeur actuelle est affichée et ne change que si vous la changez.",
+                "Arrêt du serveur : MySQL est toujours arrêté, même quand sa commande d'arrêt échoue ou qu'un ancien launcher l'a démarré. Il n'est terminé qu'une fois les mondes et l'authserver arrêtés, et seulement le MySQL de votre serveur, jamais un autre du PC.",
+                "Arrêt plus sûr : un numéro de processus réutilisé par Windows n'est plus pris pour votre authserver ou votre MySQL, et le launcher ne plante plus quand un monde s'arrête de lui-même pendant qu'il lui envoie une commande.",
+                "Les fichiers de réglages enregistrés avec un BOM UTF-8 (certains éditeurs l'ajoutent) n'arrêtent plus le serveur à leur première ligne : le BOM est retiré avant le démarrage, une copie du fichier est gardée et le changement est noté dans logslauncher-config.log.",
+                "Royaumes supplémentaires : leur dossier de logs est relatif, un serveur déplacé sur un autre disque ou dossier continue de fonctionner."
+            ],
+            "ru": [
+                "Настройки сервера, Игровой мир: « Подземелий в час » задаёт, сколько разных подземелий или рейдов аккаунт может открыть за час (в CoA — 5). Показано ваше текущее значение, оно меняется только когда вы его меняете.",
+                "Остановка сервера: MySQL теперь всегда останавливается, даже если его команда остановки не сработала или его запустил прежний лаунчер. Он завершается только после остановки миров и authserver, и только MySQL вашего сервера, никогда другой на ПК.",
+                "Более надёжная остановка: номер процесса, повторно выданный Windows, больше не принимается за ваш authserver или MySQL, а лаунчер больше не падает, если мир остановился сам, пока ему отправлялась команда.",
+                "Файлы настроек, сохранённые с UTF-8 BOM (его добавляют некоторые редакторы), больше не останавливают сервер на первой строке: BOM удаляется перед запуском, копия файла сохраняется, изменение записывается в logslauncher-config.log.",
+                "Дополнительные миры: их папка логов теперь относительная, сервер, перенесённый на другой диск или в другую папку, продолжает работать."
+            ],
+            "zh": [
+                "服务器设置 › 国度：「每小时副本数」设置一个账号每小时可进入的不同副本或团队副本数量（CoA 默认为 5）。显示您当前的数值，只有您修改时才会更改。",
+                "停止服务器：即使 MySQL 的停止命令失败，或由之前的启动器启动，MySQL 也一定会被停止。只有在世界服和登录服都停止后才会结束它，而且只结束您服务器的 MySQL，绝不动电脑上的其他 MySQL。",
+                "更安全的停止：被 Windows 重复使用的进程号不再被误认为您的登录服或 MySQL；世界服在接收命令时自行停止，启动器也不再崩溃。",
+                "带 UTF-8 BOM 保存的设置文件（某些编辑器会添加）不再让服务器在第一行停止：启动前会移除 BOM，保留文件副本，并将更改记录在 logslauncher-config.log 中。",
+                "额外国度：其日志文件夹改为相对路径，服务器移动到其他磁盘或文件夹后仍可正常运行。"
+            ]
+        }
+    },
+    {
         "version": "0.3.58",
         "items": {
             "en": [
@@ -90,7 +123,7 @@
             ],
             "ru": [
                 "Урон ботов: ползунки классов и специализаций теперь до 500 % (некоторым специализациям, например Хрономанту, это нужно).",
-                "Настройки сервера, Мир: новая группа «Прогрессия», чтобы играть как на прогрессивном сервере: открытый контент (сложности подземелий и рейды, от Огненных Недр до Наксрамаса), Мифик+ и Manastorm вкл/выкл, сундуки Callboard и престижные сундуки. Спасибо The Chicken за идею!",
+                "Настройки сервера, Игровой мир: новая группа «Прогрессия», чтобы играть как на прогрессивном сервере: открытый контент (сложности подземелий и рейды, от Огненных Недр до Наксрамаса), Мифик+ и Manastorm вкл/выкл, сундуки Callboard и престижные сундуки. Спасибо The Chicken за идею!",
                 "Главная: опция «перезапускать мир после сбоя» теперь прямо под кнопкой сервера.",
                 "Несколько миров, запускающихся вместе после обновления (CoA, Wildcard, Reborn), больше не останавливаются с ошибкой «Access denied for user … (using password: NO)»: у каждого мира своя временная папка.",
                 "Миры: переключатель «Эко-режим, когда никто не играет» на карточке каждого мира (CoA Bots 2.9.1 и новее). Если 10 минут нет игроков, боты вдали от игроков засыпают; ваше значение возвращается, как только кто-то входит.",

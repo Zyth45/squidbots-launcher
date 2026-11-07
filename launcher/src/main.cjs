@@ -1352,7 +1352,7 @@ function registerIpc() {
     const coa = (await requireControl().status()).some(service => /world/i.test(service.id) && service.state === 'running');
     await realms.clearOffline(serverPath(), { coa }).catch(() => {});
   };
-  const prepareStart = async () => { await eco.wakeStopped(serverPath()).catch(() => {}); await fixManage(serverPath()).catch(() => {}); await applyCards(serverPath()).catch(() => {}); await network.applyNetwork(serverPath()).catch(() => {}); await modules.keepRotationOff(serverPath()); await quietLogs(serverPath()); };
+  const prepareStart = async () => { await new ServerConfig(serverPath()).removeBoms().catch(() => {}); await eco.wakeStopped(serverPath()).catch(() => {}); await fixManage(serverPath()).catch(() => {}); await applyCards(serverPath()).catch(() => {}); await network.applyNetwork(serverPath()).catch(() => {}); await modules.keepRotationOff(serverPath()); await quietLogs(serverPath()); };
   const startEverything = async () => {
     baseByRealm = false;
     await prepareStart();
@@ -1392,16 +1392,25 @@ function registerIpc() {
       // The authserver recorded by the repack (.state/auth.json), only when it is this repack's program.
       const record = JSON.parse(await fs.readFile(path.join(root, '.state', 'auth.json'), 'utf8').catch(() => '{}'));
       if (!record?.pid || !String(record.exe || '').toLowerCase().startsWith(root.toLowerCase())) throw new Error('The authserver was not started from this repack; stop it where it was started.');
-      await require('node:util').promisify(require('node:child_process').execFile)('taskkill.exe', ['/PID', String(Number(record.pid)), '/T', '/F'], { windowsHide: true }).catch(() => {});
+      // Windows reuses process numbers: the one recorded is ended only while it is still this server's authserver.
+      // Else the program of this server listening on the authserver port.
+      const c = requireControl();
+      const recorded = await c.exePath(record.pid);
+      const owner = c.inside(recorded) && /^authserver\.exe$/i.test(path.basename(recorded)) ? { pid: Number(record.pid) } : await c.ownedProcess(service.port);
+      if (!owner) throw new Error('The authserver was not started from this repack; stop it where it was started.');
+      await require('node:util').promisify(require('node:child_process').execFile)('taskkill.exe', ['/PID', String(Number(owner.pid)), '/T', '/F'], { windowsHide: true }).catch(() => {});
     } else if (id === 'mysql') {
       // The worlds need their database: MySQL alone only once every world is stopped.
       const worldOn = (await requireControl().status()).some(item => /world/i.test(item.id) && item.state !== 'stopped');
       const realmOn = (await realms.status(root, { live: false }).catch(() => ({ realms: [] }))).realms.some(realm => ['running', 'starting', 'stopping'].includes(realm.state));
       if (worldOn || realmOn) throw new Error('Stop the worlds first (CoA and the realms): they need MySQL. Or use Stop all.');
-      await require('node:util').promisify(require('node:child_process').execFile)(path.join(root, 'mysql', 'bin', 'mysqladmin.exe'), [`--defaults-file=${path.join(root, 'mysql', 'admin-client.ini')}`, 'shutdown'], { windowsHide: true, timeout: 60000 });
+      await require('node:util').promisify(require('node:child_process').execFile)(path.join(root, 'mysql', 'bin', 'mysqladmin.exe'), [`--defaults-file=${path.join(root, 'mysql', 'admin-client.ini')}`, 'shutdown'], { windowsHide: true, timeout: 60000 })
+        // A busy MySQL may refuse the shutdown: the launcher still stops it below.
+        .catch(error => requireControl().note('mysql', `mysqladmin shutdown failed (${error.message}).`));
     } else return requireControl().stop(id);
     const deadline = Date.now() + 60000;
     while (Date.now() < deadline && await portOpen(service.port)) await new Promise(resolve => setTimeout(resolve, 1000));
+    if (id === 'mysql') await requireControl().stopMysqlLeft();
   };
   handle('repack:stop', async id => { if (id === 'all') { baseByRealm = false; await realms.stopAll(serverPath()); await requireControl().stopAll(); } else await stopOne(text(id, 30)); return serverInfo(); });
   handle('repack:tail', id => requireControl().tail(text(id, 30)));
@@ -1495,6 +1504,7 @@ function registerIpc() {
   };
   handle('realms:start', async key => {
     assertServerFree();
+    await new ServerConfig(serverPath()).removeBoms().catch(() => {});
     await fixManage(serverPath()).catch(() => {});
     await applyCards(serverPath()).catch(() => {});
     await network.applyNetwork(serverPath()).catch(() => {});

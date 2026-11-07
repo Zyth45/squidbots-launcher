@@ -471,6 +471,28 @@
    }
   },
   {
+   "key": "AccountInstancesPerHour",
+   "file": "worldserver.conf",
+   "group": "realm",
+   "kind": "int",
+   "when": "restart",
+   "min": 1,
+   "max": 1000,
+   "default": "10",
+   "label": {
+    "en": "Instances per hour",
+    "fr": "Instances par heure",
+    "ru": "Подземелий в час",
+    "zh": "每小时副本数"
+   },
+   "help": {
+    "en": "How many different dungeons or raids an account may enter in one hour. CoA ships 5; raise it to farm dungeons alone or with bots.",
+    "fr": "Le nombre de donjons ou raids différents qu'un compte peut ouvrir en une heure. CoA est livré avec 5 ; augmentez-le pour enchaîner les donjons seul ou avec des bots.",
+    "ru": "Сколько разных подземелий или рейдов аккаунт может открыть за час. В CoA по умолчанию 5; увеличьте, чтобы проходить подземелья подряд одному или с ботами.",
+    "zh": "一个账号每小时可进入的不同副本或团队副本数量。CoA 默认为 5；独自或与机器人连续刷副本时可调高。"
+   }
+  },
+  {
    "key": "Death.SicknessLevel",
    "file": "worldserver.conf",
    "group": "realm",
