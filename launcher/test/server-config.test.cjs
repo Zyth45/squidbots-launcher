@@ -172,6 +172,7 @@ test('the 2.9.5 switches: shown at their default when an older conf lacks them, 
     const setting = settings.find(item => item.key === key);
     assert.equal(setting.value, '0', key);
   }
+  assert.equal(settings.find(item => item.key === 'CoA.DayNightSpeed').value, '1');
   assert.equal(await fsp.readFile(dw, 'utf8'), dwBefore);
   assert.equal(await fsp.readFile(bots, 'utf8'), botsBefore);
   await config.save([{ file: 'destiny_weaver.conf', key: 'DestinyWeaver.Scaling.LfgOnly', value: '1' }]);

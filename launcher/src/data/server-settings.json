@@ -493,6 +493,73 @@
    }
   },
   {
+   "key": "CoA.DayNightSpeed",
+   "file": "coa.conf",
+   "group": "realm",
+   "kind": "choice",
+   "when": "reload",
+   "default": "1",
+   "choices": [
+    {
+     "value": "1",
+     "label": {
+      "en": "1× (real time)",
+      "fr": "1× (temps réel)",
+      "ru": "1× (реальное время)",
+      "zh": "1×（现实时间）"
+     }
+    },
+    {
+     "value": "2",
+     "label": {
+      "en": "2×",
+      "fr": "2×",
+      "ru": "2×",
+      "zh": "2×"
+     }
+    },
+    {
+     "value": "4",
+     "label": {
+      "en": "4×",
+      "fr": "4×",
+      "ru": "4×",
+      "zh": "4×"
+     }
+    },
+    {
+     "value": "6",
+     "label": {
+      "en": "6×",
+      "fr": "6×",
+      "ru": "6×",
+      "zh": "6×"
+     }
+    },
+    {
+     "value": "12",
+     "label": {
+      "en": "12×",
+      "fr": "12×",
+      "ru": "12×",
+      "zh": "12×"
+     }
+    }
+   ],
+   "label": {
+    "en": "Day/night cycle speed",
+    "fr": "Vitesse du cycle jour/nuit",
+    "ru": "Скорость смены дня и ночи",
+    "zh": "昼夜循环速度"
+   },
+   "help": {
+    "en": "How fast the day/night cycle runs, as a multiple of real time. Every client's sky and the CoA abilities that read the night (Witch Hunter, Bloodmage, Sun Cleric) follow the same faster clock: at 4×, night comes four times a day for those classes too. Server timers, game events, respawns and the Call Board keep real time. The minimap clock shows the faster time; the client's \"local time\" option shows the real one.",
+    "fr": "La vitesse du cycle jour/nuit, en multiple du temps réel. Le ciel de chaque client et les techniques CoA qui dépendent de la nuit (Witch Hunter, Bloodmage, Sun Cleric) suivent la même horloge accélérée : à 4×, la nuit tombe quatre fois par jour pour ces classes aussi. Les minuteries du serveur, les événements, les réapparitions et le Call Board restent en temps réel. L'horloge de la minicarte montre l'heure accélérée ; l'option « heure locale » du client montre l'heure réelle.",
+    "ru": "Скорость смены дня и ночи, кратная реальному времени. Небо у каждого клиента и способности CoA, зависящие от ночи (Witch Hunter, Bloodmage, Sun Cleric), идут по тем же ускоренным часам: при 4× ночь наступает четыре раза в сутки и для этих классов. Таймеры сервера, игровые события, возрождение и Call Board идут в реальном времени. Часы у миникарты показывают ускоренное время; опция клиента «местное время» — реальное.",
+    "zh": "昼夜循环的速度，以现实时间的倍数表示。每个客户端的天空以及依赖夜晚的 CoA 技能（Witch Hunter、Bloodmage、Sun Cleric）都遵循同一个加速时钟：4× 时，这些职业每天也会经历四次夜晚。服务器计时、游戏事件、重生和 Call Board 仍按现实时间。小地图时钟显示加速后的时间；客户端的「本地时间」选项显示真实时间。"
+   }
+  },
+  {
    "key": "Death.SicknessLevel",
    "file": "worldserver.conf",
    "group": "realm",
