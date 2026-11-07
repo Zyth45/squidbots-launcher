@@ -1377,6 +1377,26 @@
    }
   },
   {
+   "key": "AiPlayerbot.AutoPickTalentsAltBots",
+   "file": "playerbots.conf",
+   "group": "alts",
+   "kind": "bool",
+   "when": "restart",
+   "default": "0",
+   "label": {
+    "en": "Your own bots spend their talent points",
+    "fr": "Vos propres bots dépensent leurs talents",
+    "ru": "Ваши боты сами распределяют таланты",
+    "zh": "你自己的机器人自动分配天赋点"
+   },
+   "help": {
+    "en": "Your alts added as bots spend their free talent points by themselves, on levelup and at login. Points already spent stay as they are. Off by default.",
+    "fr": "Vos alts ajoutés en bots dépensent eux-mêmes leurs points de talent libres, en montant de niveau et à la connexion. Les points déjà dépensés restent tels quels. Désactivé par défaut.",
+    "ru": "Ваши альты-боты сами тратят свободные очки талантов при повышении уровня и при входе. Уже потраченные очки не меняются. По умолчанию выключено.",
+    "zh": "作为机器人加入的小号会在升级和登录时自行分配空闲天赋点。已分配的点数保持不变。默认关闭。"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaSelfFound",
    "file": "playerbots.conf",
    "group": "selffound",
@@ -3349,6 +3369,26 @@
     "fr": "Multiplicateur (1 par défaut, inchangé). Difficulté normale seulement : héroïque, mythique, champs de bataille, arènes, familiers, invocations et mannequins ne changent jamais.",
     "ru": "Множитель (по умолчанию 1, без изменений). Только обычная сложность: героик, мифик, поля боя, арены, питомцы, призванные существа и манекены не меняются.",
     "zh": "倍率（默认 1，不变）。仅限普通难度：英雄、史诗、战场、竞技场、宠物、召唤物和训练假人永远不会改变。"
+   }
+  },
+  {
+   "key": "DestinyWeaver.Scaling.LfgOnly",
+   "file": "destiny_weaver.conf",
+   "group": "difficulty",
+   "kind": "bool",
+   "when": "restart",
+   "default": "0",
+   "label": {
+    "en": "Dungeon scaling for Dungeon Finder groups only",
+    "fr": "Donjons ajustés seulement pour les groupes de la Recherche de donjons",
+    "ru": "Масштабирование подземелий только для групп поиска подземелий",
+    "zh": "仅为地下城查找器队伍缩放地下城"
+   },
+   "help": {
+    "en": "On (official CoA): only a Dungeon Finder group, in the dungeon it was given, plays a classic dungeon at its own level; walking in keeps the original creatures and loot. Off: every group inside scales, bots and alts included. Off by default.",
+    "fr": "Activé (comme le CoA officiel) : seul un groupe de la Recherche de donjons, dans le donjon attribué, joue un donjon classique à son niveau ; en y entrant à pied, on garde les créatures et le butin d'origine. Désactivé : tout groupe à l'intérieur est ajusté, bots et alts compris. Désactivé par défaut.",
+    "ru": "Вкл. (как на официальном CoA): только группа поиска подземелий в назначенном ей подземелье проходит классическое подземелье на своём уровне; вошедшие пешком получают исходных существ и добычу. Выкл.: масштабируется любая группа внутри, включая ботов и альтов. По умолчанию выключено.",
+    "zh": "开启（与官方 CoA 一致）：只有地下城查找器队伍在其分配到的地下城中，才会按自身等级挑战经典地下城；步行进入则保留原始怪物和战利品。关闭：地下城内的任何队伍都会缩放，包括机器人和小号。默认关闭。"
    }
   },
   {

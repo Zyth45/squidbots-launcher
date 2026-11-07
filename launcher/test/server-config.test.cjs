@@ -155,6 +155,29 @@ test('instances per hour: the value of worldserver.conf is shown, and only a cha
   assert.equal(after.replace('AccountInstancesPerHour = 30', 'AccountInstancesPerHour = 5'), before);
 });
 
+test('the 2.9.5 switches: shown at their default when an older conf lacks them, written only when changed', async () => {
+  const root = await copyRepack();
+  const dw = path.join(root, 'Core', 'configs', 'modules', 'destiny_weaver.conf');
+  await fsp.mkdir(path.dirname(dw), { recursive: true });
+  const dwBefore = 'DestinyWeaver.Scaling.DungeonIds = "36,43"\r\n';
+  await fsp.writeFile(dw, dwBefore);
+  const bots = path.join(root, 'CoA-Bots', 'Core', 'configs', 'modules', 'playerbots.conf');
+  const botsBefore = await fsp.readFile(bots, 'utf8');
+  const config = new ServerConfig(root);
+  const settings = (await config.overview()).settings;
+  for (const key of ['DestinyWeaver.Scaling.LfgOnly', 'AiPlayerbot.AutoPickTalentsAltBots']) {
+    const setting = settings.find(item => item.key === key);
+    assert.equal(setting.value, '0', key);
+  }
+  assert.equal(await fsp.readFile(dw, 'utf8'), dwBefore);
+  assert.equal(await fsp.readFile(bots, 'utf8'), botsBefore);
+  await config.save([{ file: 'destiny_weaver.conf', key: 'DestinyWeaver.Scaling.LfgOnly', value: '1' }]);
+  const after = await fsp.readFile(dw, 'utf8');
+  assert.ok(after.startsWith(dwBefore));
+  assert.equal(after.match(/^DestinyWeaver\.Scaling\.LfgOnly = 1\r?$/gm).length, 1);
+  assert.equal(await fsp.readFile(bots, 'utf8'), botsBefore);
+});
+
 test('a UTF-8 BOM is removed from the .conf files only, bytes after it unchanged, a copy kept and logged', async () => {
   const root = await copyRepack();
   const file = path.join(root, 'Core', 'configs', 'modules', 'bom-test.conf');
