@@ -1490,11 +1490,11 @@ function registerIpc() {
   handle('realms:create', async (key, options) => {
     if (options?.start === true) {
       await realmBase(false);
-      await realms.create(serverPath(), text(key, 12), { bots: Number(options?.bots) || undefined, notify: line => send('realms:progress', line) });
+      await realms.create(serverPath(), text(key, 12), { bots: Number(options?.bots) || undefined, name: text(options?.name, 32) || undefined, notify: line => send('realms:progress', line) });
       await realms.start(serverPath(), text(key, 12));
       await requireControl().start('auth');
       await realmsOnline();
-    } else await withMysql(() => realms.create(serverPath(), text(key, 12), { bots: Number(options?.bots) || undefined, notify: line => send('realms:progress', line) }));
+    } else await withMysql(() => realms.create(serverPath(), text(key, 12), { bots: Number(options?.bots) || undefined, name: text(options?.name, 32) || undefined, notify: line => send('realms:progress', line) }));
     // A server open to other PCs: the new realm's world port joins the firewall rules (Windows asks for the
     // administrator; refused, the realm stays created and Who can join > Open the firewall does it later).
     if ((await network.readNetwork(serverPath()).catch(() => ({}))).mode === 'open') {

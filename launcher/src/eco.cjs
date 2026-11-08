@@ -15,7 +15,7 @@ const ECO_VALUE = '1';
 // COA_ECO_AFTER_MS: a shorter wait, for the tests on a real server only.
 const ECO_AFTER = Number(process.env.COA_ECO_AFTER_MS) || 10 * 60 * 1000;
 const SINCE = [2, 9, 1];
-const REALM_KEYS = ['wildcard', 'reborn', 'dawnrise'];
+const REALM_KEYS = ['wildcard', 'reborn', 'dawnrise', 'living'];
 
 const stateFile = root => path.join(root, 'Royaumes', 'eco-state.json');
 const optionsFile = (root, key) => path.join(root, 'Royaumes', key === 'coa' ? 'coa.json' : path.join(key, 'realm.json'));

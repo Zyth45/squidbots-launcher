@@ -8,12 +8,12 @@ itself: a card prepares values among the unsaved changes (Save or Discard), or a
 |---|---|---|
 | **Classic** | Every Living world option back to its default: the bots as before 3.0. Pack `classic`, made by the launcher from the manifest (never written in it), so a new option is in it at once. | Done |
 | **Living server** | Pack `living`: every shown switch of the manifest on (live, world, economy, artisans and craft orders, group combat), bots keep their bags (`RefreshClearsInventory = 0`), surname "None", Need on real upgrades (`LootNeedRollLevel = 2`); numbers stay at their defaults. Not in it: the merged AH bot and its options (hidden while mod-ah-bot-plus is in the core) and Server first (meant for a new realm). User's decision, 08/11: "we put EVERYTHING in for now", trimmed only if the consumption measure demands it. Classic does not touch the bags. | Done |
-| **New living server** | A new realm beside the others, opening like an official server. Design below. | Announced, design |
+| **New living server** | A new realm beside the others, opening like an official server: mode `living` of src/realms.cjs, its own values from `livingOwn()`. Offered once the update tool of CoA Bots knows its databases. | Coded (local), waiting for the Builder's part |
 
 The choice window shows once (`livingChoice` in `public/js/core.js`). "Decide later" closes it; the cards stay in
 Ready-made settings. A pack saved can be undone with "Go back" (see LIVING-WORLD-MANIFEST.md).
 
-## New living server: design
+## New living server: design (coded on branch 3.0)
 
 ### What the player gets
 
@@ -90,6 +90,10 @@ more world running: about 1.5 to 2.5 GB of RAM with 150 bots), asks for the name
 lines (the `notify` of `create()`). At the end, the realm shows in the Realms tab, started at the next start of the
 server (autostart, as the other realms). Going back: switch the realm off (`setDisabled`). Deleting its databases is
 left to the player.
+
+### The hook for the update tool
+
+The card and the Realms tab offer the realm only when `CoA-Bots/coa_common.py` lists `acore_characters_living` (`updaterKnows()`, as for the other realms). Until the Builder adds `acore_characters_living` and `acore_playerbots_living` there, the card stays greyed ("Coming soon") and `create()` refuses. The tests use a mock `coa_common.py` that lists them.
 
 ### What other sessions must deliver first
 

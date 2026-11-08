@@ -1169,14 +1169,47 @@ function livingWorlds() {
   const classic = packs.find(pack => pack.id === 'classic');
   if (!classic) return [];
   const living = packs.find(pack => pack.id === 'living') || { id: 'living', soon: true, title: { en: t('pack.livingTitle', 'Living server') }, summary: { en: '' } };
-  const fresh = { id: 'new-living-realm', soon: true, title: { en: t('pack.newRealmTitle', 'New living server') }, summary: { en: t('pack.newRealmText', 'A new realm beside yours, its world opening like an official server: bots from level 1, solo self-found, an empty auction house, "server first" announcements. Your realms are not touched.') } };
+  const realm = App.state.realms?.realms?.find(item => item.key === 'living');
+  const made = !!realm && realm.state !== 'absent';
+  const fresh = { id: 'new-living-realm', action: 'living-realm', soon: !made && !realm?.ready, title: { en: t('pack.newRealmTitle', 'New living server') }, summary: { en: made ? t('pack.newRealmMade', 'Made: it is in the Realms tab.') : t('pack.newRealmText2', 'A new realm beside yours, its world opening like an official server: bots from level 1, solo self-found, an auction house that fills up as the realm grows, "server first" announcements. Your realms are not touched.') } };
   return [classic, living, fresh];
 }
+
+// The new living server: its name, what is made, then the realm is created like the other realms (its two databases,
+// its line in the realm list, its values written once). Nothing else of the server changes.
+function livingRealmDialog() {
+  return new Promise(resolve => {
+    dialog.open(`${dialog.header(t('pack.newRealmTitle', 'New living server'))}<div class="dialog-content">
+      <p>${esc(t('pack.newRealmSteps', 'The launcher makes a new realm beside yours: its own characters (none yet) and its own bots, created at level 1 and growing with the age of the server. It takes the Solo self-found settings, the Living server values and an auction house that fills up as the realm grows. One more world runs: about 2 GB of memory with 150 bots. Your realms, characters and settings are not touched.'))}</p>
+      <label class="field"><span>${esc(t('pack.newRealmName', 'Its name in the realm list'))}</span><input id="living-name" type="text" maxlength="32" value="${esc(t('pack.newRealmDefault', 'Living world'))}"></label>
+    </div><footer class="dialog-foot"><button class="button ghost" data-choice="no">${esc(t('common.cancel', 'Cancel'))}</button><button class="button primary" data-choice="yes">${icon('play')}${esc(t('pack.newRealmCreate', 'Make the realm'))}</button></footer>`);
+    const element = $('#dialog');
+    const done = value => { element.removeEventListener('click', onClick); element.removeEventListener('close', onClose); dialog.close(); resolve(value); };
+    const onClick = event => { const choice = event.target.closest('[data-choice]')?.dataset.choice; if (choice) done(choice === 'yes' ? $('#living-name').value.trim() || t('pack.newRealmDefault', 'Living world') : null); };
+    const onClose = () => { if (!element.open) done(null); };
+    element.addEventListener('click', onClick);
+    element.addEventListener('close', onClose, { once: true });
+  });
+}
+
+Object.assign(App.actions, {
+  'living-realm': button => guard(async () => {
+    const realm = App.state.realms?.realms?.find(item => item.key === 'living');
+    if (realm && realm.state !== 'absent') { App.go('realms'); return; }
+    const name = await livingRealmDialog();
+    if (!name) return;
+    const off = App.api.onRealmsProgress(line => { App.state.realmLine = line; App.refresh(App.state.tab); });
+    try { await realmAction('living', () => App.api.realmsCreate('living', { name })); }
+    finally { off(); App.state.realmLine = ''; }
+    toast(t('pack.newRealmDone', '"{name}" is made: start it in the Realms tab, then pick it in the realm list of the game.', { name }), 'success');
+    App.go('realms');
+  }, button),
+});
 
 function livingRecipes() {
   const worlds = livingWorlds();
   if (!worlds.length) return '';
-  return `<h4 class="preset-head">${esc(t('pack.worldsTitle', 'Living world'))}</h4><div class="recipes">${worlds.map(pack => `<div class="recipe-cell"><button class="recipe${pack.soon ? ' soon' : ''}" ${pack.soon ? 'disabled aria-disabled="true"' : `data-action="pack-prepare" data-id="${esc(pack.id)}"`}><strong>${esc(loc(pack.title))}${pack.soon ? `<span class="soon-tag">${esc(t('conf.soon', 'Coming soon'))}</span>` : ''}</strong><small>${esc(loc(pack.summary))}</small></button></div>`).join('')}</div>`;
+  return `<h4 class="preset-head">${esc(t('pack.worldsTitle', 'Living world'))}</h4><div class="recipes">${worlds.map(pack => `<div class="recipe-cell"><button class="recipe${pack.soon ? ' soon' : ''}" ${pack.soon ? 'disabled aria-disabled="true"' : pack.action ? `data-action="${esc(pack.action)}"` : `data-action="pack-prepare" data-id="${esc(pack.id)}"`}><strong>${esc(loc(pack.title))}${pack.soon ? `<span class="soon-tag">${esc(t('conf.soon', 'Coming soon'))}</span>` : ''}</strong><small>${esc(loc(pack.summary))}</small></button></div>`).join('')}</div>`;
 }
 
 // Once (first launch, or the first 3.0 launch): the three worlds, the player picks one or closes. Picking prepares its
@@ -1193,6 +1226,7 @@ function livingChoiceDialog() {
     element.removeEventListener('click', onClick);
     dialog.close();
     const pack = (App.state.conf?.packs || []).find(item => item.id === choice);
+    if (choice === 'new-living-realm') { App.actions['living-realm']({}); return; }
     if (pack) { App.state.srvTab = 'settings'; App.state.confGroup = 'presets'; App.actions['pack-prepare']({ dataset: { id: pack.id } }); }
   };
   element.addEventListener('click', onClick);

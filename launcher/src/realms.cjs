@@ -63,6 +63,15 @@ const MODES = {
       'worldserver.conf': { 'PlayerStart.CustomSpells': '1', 'AlwaysMaxSkillForLevel': '1', 'CharacterCreating.Disabled.ClassMask': '4294966783' },
     },
   },
+  // 3.0 "New living server": a CoA realm opening like an official server (docs/LIVING-WORLDS-3.0.md). Its characters
+  // database starts empty (no character, no auction); the launch mode and the auction house launch curve are imposed,
+  // the rest (Solo self-found, the Living pack, the economy) is written once as the realm's own values.
+  living: {
+    id: 5, name: 'Living world', prefix: 'rndlv', step: 4,
+    keys: {
+      'playerbots.conf': { 'AiPlayerbot.CoaFreshStart.Enable': '1', 'AiPlayerbot.CoaEconomy.LaunchCurve.Enable': '1' },
+    },
+  },
 };
 // Tables the new characters database needs filled (the world fails or misbehaves without them).
 const SEED_TABLES = ['updates', 'updates_include', 'worldstates', 'active_arena_season', 'playerbots_names', 'playerbots_guild_names',
@@ -121,7 +130,6 @@ function copyDump(root, args, target) {
     load.once('error', reject);
   });
 }
-const hasDatabase = async (root, name) => (await sql(root, `SHOW DATABASES LIKE '${name}'`)) === name;
 
 // ---------------------------------------------------------------- realm files
 async function realmFile(root, key) { return readJson(path.join(dirOf(root, key), 'realm.json')); }
@@ -412,8 +420,13 @@ async function skipCoaAtStart(root) {
 // ---------------------------------------------------------------- create
 // MySQL must run. Never touches a database that already exists (a realm removed by hand and created again keeps
 // its characters).
-async function create(root, key, { bots = DEFAULT_BOTS, notify = () => {} } = {}) {
+// db: the MySQL calls (tests give their own, to check what is written where).
+async function create(root, key, { bots = DEFAULT_BOTS, notify = () => {}, name, db = { sql, copyDump } } = {}) {
   const m = mode(key);
+  const run = { sql: (_root, query) => db.sql(root, query), copyDump: (_root, args, target) => db.copyDump(root, args, target) };
+  const exists = async database => (await run.sql(root, `SHOW DATABASES LIKE '${database}'`)) === database;
+  // The new living server takes the name the player gave it (letters, digits, spaces, ' and -).
+  const realmName = key === 'living' && typeof name === 'string' && /^[\p{L}\p{N} '-]{2,32}$/u.test(name.trim()) ? name.trim() : m.name;
   if (!fs.existsSync(worldExe(root))) throw new Error('The realms need CoA Bots installed in this server.');
   if (!versionReady(botsVersion(root)) || !updaterKnows(root, key)) throw new Error('This realm needs a newer CoA Bots: its update tool must know the realm databases.');
   await refreshBotConfigs(root);
@@ -423,53 +436,84 @@ async function create(root, key, { bots = DEFAULT_BOTS, notify = () => {} } = {}
   for (const port of [p.worldPort, p.raPort]) if (await portOpen(port) && !(await processOf(root, key))) throw new Error(`Port ${port} is already used by another program.`);
 
   // The realm id: the usual one, unless another realm of this server already has it.
-  const rows = (await sql(root, 'SELECT id, name FROM acore_auth.realmlist')).split(/\r?\n/).filter(Boolean).map(line => line.split('\t'));
+  const rows = (await run.sql(root, 'SELECT id, name FROM acore_auth.realmlist')).split(/\r?\n/).filter(Boolean).map(line => line.split('\t'));
   let id = m.id;
-  const same = rows.find(([, name]) => name === m.name);
+  const same = rows.find(([, listed]) => listed === realmName);
   if (same) id = Number(same[0]);
   else if (rows.some(([rid]) => Number(rid) === id)) id = Math.max(...rows.map(([rid]) => Number(rid))) + 1;
 
   const chars = `acore_characters_${key}`;
   const botsDb = `acore_playerbots_${key}`;
-  if (!(await hasDatabase(root, chars))) {
+  if (!(await exists(chars))) {
     notify(`Creating ${chars}…`);
-    await sql(root, `CREATE DATABASE ${chars} DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
-    await copyDump(root, ['--no-data', '--skip-triggers', 'acore_characters'], chars);
-    const present = new Set((await sql(root, "SELECT table_name FROM information_schema.tables WHERE table_schema = 'acore_characters'")).split(/\r?\n/));
+    await run.sql(root, `CREATE DATABASE ${chars} DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
+    await run.copyDump(root, ['--no-data', '--skip-triggers', 'acore_characters'], chars);
+    const present = new Set((await run.sql(root, "SELECT table_name FROM information_schema.tables WHERE table_schema = 'acore_characters'")).split(/\r?\n/));
     const seed = SEED_TABLES.filter(table => present.has(table));
-    if (seed.length) await copyDump(root, ['--no-create-info', 'acore_characters', ...seed], chars);
+    if (seed.length) await run.copyDump(root, ['--no-create-info', 'acore_characters', ...seed], chars);
   }
-  if (!(await hasDatabase(root, botsDb))) {
+  if (!(await exists(botsDb))) {
     notify(`Creating ${botsDb}…`);
-    await sql(root, `CREATE DATABASE ${botsDb} DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
-    await copyDump(root, ['acore_playerbots'], botsDb);
+    await run.sql(root, `CREATE DATABASE ${botsDb} DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
+    await run.copyDump(root, ['acore_playerbots'], botsDb);
     // The bot state of the CoA realm is not this realm's: its bots are made again with their own prefix.
-    const present = new Set((await sql(root, `SELECT table_name FROM information_schema.tables WHERE table_schema = '${botsDb}'`)).split(/\r?\n/));
-    for (const table of ['playerbots_random_bots', 'playerbots_coa_brain_usage', 'playerbots_account_type']) if (present.has(table)) await sql(root, `TRUNCATE ${botsDb}.${table}`);
+    const present = new Set((await run.sql(root, `SELECT table_name FROM information_schema.tables WHERE table_schema = '${botsDb}'`)).split(/\r?\n/));
+    for (const table of ['playerbots_random_bots', 'playerbots_coa_brain_usage', 'playerbots_account_type']) if (present.has(table)) await run.sql(root, `TRUNCATE ${botsDb}.${table}`);
   }
   // The worldserver logs in as the user of its DatabaseInfo, which only has rights on the repack's own databases.
   const ws = await fsp.readFile(path.join(BOTS_CONFIGS(root), 'worldserver.conf'), 'utf8');
   const user = ((confValue(ws, 'CharacterDatabaseInfo') || '').split(';')[2] || 'acore').replace(/'/g, '');
-  const hosts = (await sql(root, `SELECT host FROM mysql.user WHERE user = '${user}'`)).split(/\r?\n/).filter(Boolean);
-  for (const host of hosts) for (const db of [chars, botsDb]) await sql(root, `GRANT ALL PRIVILEGES ON ${db}.* TO '${user}'@'${host.replace(/'/g, '')}'`);
-  await listRealm(root, { id, name: m.name, worldPort: p.worldPort });
+  const hosts = (await run.sql(root, `SELECT host FROM mysql.user WHERE user = '${user}'`)).split(/\r?\n/).filter(Boolean);
+  for (const host of hosts) for (const database of [chars, botsDb]) await run.sql(root, `GRANT ALL PRIVILEGES ON ${database}.* TO '${user}'@'${host.replace(/'/g, '')}'`);
+  await listRealm(root, { id, name: realmName, worldPort: p.worldPort }, run.sql);
 
-  const saved = { key, id, name: m.name, worldPort: p.worldPort, raPort: p.raPort, autostart: true, created: new Date().toISOString() };
+  const saved = { key, id, name: realmName, worldPort: p.worldPort, raPort: p.raPort, autostart: true, created: new Date().toISOString() };
   await fsp.writeFile(path.join(dir, 'realm.json'), JSON.stringify(saved, null, 2));
   // A new realm starts with fewer bots than most CoA realms: one more world costs memory.
   const own = await ownSettings(root, key);
+  let changed = false;
   if (!own['playerbots.conf']?.[BOT_COUNT[1]]) {
     const count = String(Math.max(0, Math.min(2000, m.bots ?? (Number(bots) || DEFAULT_BOTS))));
     own['playerbots.conf'] = { ...own['playerbots.conf'], [BOT_COUNT[0]]: count, [BOT_COUNT[1]]: count };
-    await writeOwn(root, key, own);
+    changed = true;
   }
+  // The new living server: its own values written once (a value the player already set for this realm stays).
+  if (key === 'living') {
+    for (const [file, keys] of Object.entries(livingOwn())) own[file] = { ...keys, ...own[file] };
+    changed = true;
+  }
+  if (changed) await writeOwn(root, key, own);
   await writeConfigs(root, key, saved);
   return saved;
 }
 
+// The own values of the new living server (docs/LIVING-WORLDS-3.0.md), written once at its creation; the player changes
+// them later like any realm setting. Solo self-found as it is, the Living pack, the server firsts, and the economy of
+// CoA Economie: an auction house that fills up gradually from the start, never empty, with no epics at first.
+function livingOwn() {
+  const own = {};
+  const fileOf = key => CATALOG.settings.find(setting => setting.key === key)?.file;
+  const put = (file, key, value) => { if (file) own[file] = { ...own[file], [key]: String(value) }; };
+  for (const [key, value] of Object.entries(CATALOG.recipes.find(recipe => recipe.id === 'self-found-world')?.changes || {})) put(fileOf(key), key, value);
+  for (const [key, value] of Object.entries(CATALOG.packs.find(pack => pack.id === 'living')?.changes || {})) put(fileOf(key), key, value);
+  const E = 'AiPlayerbot.CoaEconomy.';
+  put('playerbots.conf', 'AiPlayerbot.CoaWorld.ServerFirst.Enable', 1);
+  for (const part of ['Filter', 'Buyer', 'Market', 'Rarity']) put('playerbots.conf', `${E}${part}.Enable`, 1);
+  put('playerbots.conf', `${E}LaunchCurve.LevelMargin`, 5);
+  put('playerbots.conf', `${E}LaunchCurve.StartStockPercent`, 15);
+  put('playerbots.conf', `${E}LaunchCurve.LaunchPremiumPercent`, 100);
+  // The merged AH bot only once mod-ah-bot-plus has left the core (its option is then shown in the manifest): both at
+  // once would double the auction house.
+  if (!CATALOG.hidden.includes(`${E}AHBot.Enable`)) {
+    put('playerbots.conf', `${E}AHBot.Enable`, 1);
+    for (const key of ['AuctionHouseBot.Enable', 'AuctionHouseBot.EnableSeller', 'AuctionHouseBot.Buyer.Enabled']) put('mod_ahbot.conf', key, 1);
+  }
+  return own;
+}
+
 // Its line of the realm list, made from the CoA one (address, flags, build).
-function listRealm(root, { id, name, worldPort }) {
-  return sql(root, `REPLACE INTO acore_auth.realmlist (id,name,address,localAddress,localSubnetMask,port,icon,flag,timezone,allowedSecurityLevel,population,gamebuild) SELECT ${Number(id)},'${String(name).replace(/'/g, '')}',address,localAddress,localSubnetMask,${Number(worldPort)},icon,flag,timezone,allowedSecurityLevel,0,gamebuild FROM acore_auth.realmlist WHERE id=1`);
+function listRealm(root, { id, name, worldPort }, runSql = sql) {
+  return runSql(root, `REPLACE INTO acore_auth.realmlist (id,name,address,localAddress,localSubnetMask,port,icon,flag,timezone,allowedSecurityLevel,population,gamebuild) SELECT ${Number(id)},'${String(name).replace(/'/g, '')}',address,localAddress,localSubnetMask,${Number(worldPort)},icon,flag,timezone,allowedSecurityLevel,0,gamebuild FROM acore_auth.realmlist WHERE id=1`);
 }
 
 // The name of a realm in the game's realm list (its card): kept in realm.json, written to the list now when MySQL
@@ -771,4 +815,4 @@ async function clearOffline(root, { coa = false } = {}) {
   if (ids.length) await sql(root, `UPDATE acore_auth.realmlist SET flag = flag & ~2 WHERE id IN (${ids.join(',')})`);
   return ids;
 }
-module.exports = { clearOffline, setRealmName, ahbotSettingsOf, setAhbotSettingsOf, onlineRunning, shippedTables, syncShippedTables, MODES, queueMarked, memoryFor, neededMb, botsOnline, setDisabled, versionReady, modulesOf, setModule, coaAutostart, setCoaAutostart, skipCoaAtStart, anotherStarting, refreshBotConfigs, status, create, start, stop, stopAll, startMarked, setOptions, settingsOf, saveSettings, purgeBots, writeConfigs, setKey };
+module.exports = { livingOwn, clearOffline, setRealmName, ahbotSettingsOf, setAhbotSettingsOf, onlineRunning, shippedTables, syncShippedTables, MODES, queueMarked, memoryFor, neededMb, botsOnline, setDisabled, versionReady, modulesOf, setModule, coaAutostart, setCoaAutostart, skipCoaAtStart, anotherStarting, refreshBotConfigs, status, create, start, stop, stopAll, startMarked, setOptions, settingsOf, saveSettings, purgeBots, writeConfigs, setKey };

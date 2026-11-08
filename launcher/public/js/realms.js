@@ -33,11 +33,12 @@ const REALMS_INFO = {
   wildcard: { color: '#c27bff', title: 'Wildcard', sub: 'Darkmoon', textKey: 'realms.wildcardText', text: 'One class, the Hero: its spells and talents are drawn at random. A new game every time.' },
   reborn: { color: '#ff8a3d', title: 'Warcraft Reborn', sub: 'Bronzebeard', textKey: 'realms.rebornText', text: 'The ten original classes, reworked: classic Warcraft, plus.' },
   dawnrise: { color: '#5cc8ff', title: 'Free Pick', sub: 'Dawnrise', textKey: 'realms.dawnriseText', text: 'One class, the Hero: choose every spell and talent yourself, from every class.', experimental: true, noBots: true, since: '2.8.2' },
+  living: { color: '#7fd17a', title: 'Living world', sub: 'New server', textKey: 'realms.livingText', text: 'A new CoA realm opening like an official server: bots from level 1 that grow with the server, solo self-found, an auction house that fills up, server firsts.' },
 };
 const realmEmblem = (key, size = 56) => `<span class="realm-emblem realm-${key} s${size}">${REALM_EMBLEMS[key] || ''}</span>`;
 const realmTitle = key => REALMS_INFO[key]?.title || key;
 // Short names, for the lights of the home page.
-const realmShort = key => ({ coa: 'CoA', wildcard: 'Wildcard', reborn: 'Reborn', dawnrise: 'Free Pick' }[key] || key);
+const realmShort = key => ({ coa: 'CoA', wildcard: 'Wildcard', reborn: 'Reborn', dawnrise: 'Free Pick', living: 'Living' }[key] || key);
 
 async function loadRealms() {
   const before = !!App.state.realms?.available;

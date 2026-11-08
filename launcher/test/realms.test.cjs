@@ -13,7 +13,7 @@ function repack({ knowsRealms = true, version = '2.6' } = {}) {
   fs.mkdirSync(path.join(configs, 'modules'), { recursive: true });
   fs.writeFileSync(path.join(root, 'CoA-Bots', 'Core', 'worldserver.exe'), '');
   fs.writeFileSync(path.join(root, 'CoA-Bots', 'release.json'), JSON.stringify({ version }));
-  fs.writeFileSync(path.join(root, 'CoA-Bots', 'coa_common.py'), knowsRealms ? 'MYSQL_DATA_KNOWN = {"acore_characters_wildcard", "acore_characters_reborn", "acore_characters_dawnrise"}\n' : 'MYSQL_DATA_KNOWN = {"acore_characters"}\n');
+  fs.writeFileSync(path.join(root, 'CoA-Bots', 'coa_common.py'), knowsRealms ? 'MYSQL_DATA_KNOWN = {"acore_characters_wildcard", "acore_characters_reborn", "acore_characters_dawnrise", "acore_characters_living"}\n' : 'MYSQL_DATA_KNOWN = {"acore_characters"}\n');
   fs.writeFileSync(path.join(configs, 'worldserver.conf'), [
     'RealmID = 1', 'WorldServerPort = 8085', 'Ra.Port = 3443', 'SOAP.Enabled = 1', 'Rate.XP.Kill = 1',
     'CharacterCreating.Disabled.ClassMask = 0', 'LogsDir = "C:/x/Core/Logs"',
@@ -44,7 +44,7 @@ test('without any realm, the server calls change nothing', async () => {
   await realms.stopAll(root);
   assert.deepStrictEqual(await realms.startMarked(root), []);
   const status = await realms.status(root, { live: false });
-  assert.deepStrictEqual(status.realms.map(realm => realm.state), ['absent', 'absent', 'absent']);
+  assert.deepStrictEqual(status.realms.map(realm => realm.state), ['absent', 'absent', 'absent', 'absent']);
   assert.ok(!fs.existsSync(path.join(root, 'Royaumes')));
   assert.strictEqual(snapshot(root), before);
 });
@@ -216,12 +216,13 @@ test('start with the server: a realm waits its turn, and is left stopped when me
     fs.writeFileSync(path.join(dir, 'settings.json'), JSON.stringify({ 'playerbots.conf': { 'AiPlayerbot.MaxRandomBots': '150' } }));
   }
   await realms.queueMarked(root);
-  let list = (await realms.status(root, { live: false })).realms;
+  // The new living server is not created here: it stays absent.
+  let list = (await realms.status(root, { live: false })).realms.filter(realm => realm.state !== 'absent');
   assert.deepStrictEqual(list.map(realm => `${realm.state}:${realm.after}`), ['queued:coa', 'queued:coa', 'queued:coa']);
   assert.strictEqual(list[0].firstStart, true);
   const failed = await realms.startMarked(root, { freeMb: () => 1000 });
   assert.deepStrictEqual(failed.map(item => item.error), ['memory', 'memory', 'memory']);
-  list = (await realms.status(root, { live: false })).realms;
+  list = (await realms.status(root, { live: false })).realms.filter(realm => realm.state !== 'absent');
   assert.deepStrictEqual(list.map(realm => realm.state), ['stopped', 'stopped', 'stopped']);
   assert.deepStrictEqual(list[0].skipped, { reason: 'memory', need: realms.neededMb(150), free: 1000 });
   assert.strictEqual(realms.neededMb(300), 6600);
@@ -281,4 +282,70 @@ test('setKey keeps LF files LF, sets every line of the key and takes a value wit
 test('clearOffline: no realm running and CoA stopped sends nothing to MySQL', async () => {
   const root = repack();
   assert.deepEqual(await realms.clearOffline(root), []);
+});
+
+// A MySQL that answers like an empty server and records every statement.
+function fakeMysql() {
+  const statements = [];
+  const dumps = [];
+  return {
+    statements, dumps,
+    db: {
+      sql: async (_root, query) => {
+        statements.push(query);
+        if (/^SELECT id, name FROM acore_auth\.realmlist/.test(query)) return '1\tConquest of Azeroth';
+        if (/information_schema\.tables WHERE table_schema = 'acore_characters'/.test(query)) return 'characters\nupdates\nworldstates\nauctionhouse';
+        if (/information_schema\.tables/.test(query)) return 'playerbots_random_bots\nplayerbots_names';
+        if (/^SELECT host FROM mysql\.user/.test(query)) return 'localhost';
+        return '';
+      },
+      copyDump: async (_root, args, target) => { dumps.push({ args, target }); },
+    },
+  };
+}
+
+test('the new living server: its own databases only, the launch mode imposed, its values written once', async () => {
+  const root = repack();
+  // The update tool of CoA Bots must know the realm databases (the Builder adds them; here a mock of coa_common.py).
+  fs.writeFileSync(path.join(root, 'CoA-Bots', 'coa_common.py'), 'MYSQL_DATA_KNOWN = {"acore_characters_living", "acore_playerbots_living"}\n');
+  const coa = snapshot(path.join(root, 'CoA-Bots'));
+  const mysql = fakeMysql();
+  const saved = await realms.create(root, 'living', { name: 'Azeroth Reborn', db: mysql.db });
+  assert.deepStrictEqual([saved.id, saved.name, saved.worldPort, saved.raPort], [5, 'Azeroth Reborn', 8485, 3843]);
+  // Never a write in a database of the CoA realm or of another realm: only the living databases, its realm line and
+  // the rights of its two databases.
+  const writes = mysql.statements.filter(query => /^\s*(INSERT|REPLACE|UPDATE|DELETE|TRUNCATE|DROP|ALTER|CREATE|GRANT)\b/i.test(query));
+  assert.ok(writes.length > 0);
+  for (const query of writes) {
+    assert.ok(/acore_(characters|playerbots)_living\b/.test(query) || /^REPLACE INTO acore_auth\.realmlist .* SELECT 5,'Azeroth Reborn'/.test(query), query);
+  }
+  assert.ok(mysql.dumps.every(dump => /^acore_(characters|playerbots)_living$/.test(dump.target)));
+  // The characters database is the schema of CoA's without its rows: no character, no auction.
+  assert.ok(mysql.dumps.some(dump => dump.target === 'acore_characters_living' && dump.args.includes('--no-data')));
+  assert.ok(!mysql.dumps.some(dump => dump.target === 'acore_characters_living' && dump.args.includes('auctionhouse')));
+  // Its own values: Solo self-found, the Living pack, the server firsts and the launch curve of the economy.
+  const own = JSON.parse(fs.readFileSync(path.join(root, 'Royaumes', 'living', 'settings.json'), 'utf8'));
+  assert.strictEqual(own['playerbots.conf']['AiPlayerbot.CoaSelfFound'], '1');
+  assert.strictEqual(own['playerbots.conf']['AiPlayerbot.CoaWorld.ServerFirst.Enable'], '1');
+  assert.strictEqual(own['playerbots.conf']['AiPlayerbot.CoaLive.Enable'], '1');
+  assert.strictEqual(own['playerbots.conf']['AiPlayerbot.CoaEconomy.LaunchCurve.StartStockPercent'], '15');
+  assert.strictEqual(own['mod_dungeon_clear.conf']['DungeonClear.SelfFound.MaxGroups'], '4');
+  // The merged AH bot waits for mod-ah-bot-plus to leave the core.
+  assert.strictEqual(own['playerbots.conf']['AiPlayerbot.CoaEconomy.AHBot.Enable'], undefined);
+  assert.strictEqual(own['mod_ahbot.conf'], undefined);
+  // Imposed by the mode, in its configs: the launch mode, the launch curve, its bot prefix.
+  const pb = path.join(root, 'Royaumes', 'living', 'configs', 'modules', 'playerbots.conf');
+  assert.strictEqual(value(pb, 'AiPlayerbot.CoaFreshStart.Enable'), '1');
+  assert.strictEqual(value(pb, 'AiPlayerbot.CoaEconomy.LaunchCurve.Enable'), '1');
+  assert.strictEqual(value(pb, 'AiPlayerbot.RandomBotAccountPrefix'), '"rndlv"');
+  // CoA's own files are untouched.
+  assert.strictEqual(snapshot(path.join(root, 'CoA-Bots')), coa);
+});
+
+test('the new living server is only offered when the update tool of CoA Bots knows its databases', async () => {
+  const root = repack();
+  fs.writeFileSync(path.join(root, 'CoA-Bots', 'coa_common.py'), 'MYSQL_DATA_KNOWN = {"acore_characters_wildcard", "acore_characters_reborn", "acore_characters_dawnrise"}\n');
+  const status = await realms.status(root, { live: false });
+  assert.strictEqual(status.realms.find(realm => realm.key === 'living').ready, false);
+  await assert.rejects(realms.create(root, 'living', { db: fakeMysql().db }), /newer CoA Bots/);
 });
