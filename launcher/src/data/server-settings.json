@@ -2025,6 +2025,26 @@
    }
   },
   {
+   "key": "DungeonClear.PetsDefensiveBetweenFights",
+   "file": "mod_dungeon_clear.conf",
+   "group": "dungeonclear",
+   "kind": "bool",
+   "when": "restart",
+   "default": "1",
+   "label": {
+    "en": "Pets wait between fights",
+    "fr": "Familiers en attente entre les combats",
+    "ru": "Питомцы ждут между боями",
+    "zh": "宠物在战斗间隙待命"
+   },
+   "help": {
+    "en": "During a Dungeon Clear run, the bots' pets and summons stay defensive out of combat and come back if they stray past 30 yards, so they do not pull a pack ahead of the group. They fight normally once the fight starts. On by default.",
+    "fr": "Pendant un run Dungeon Clear, les familiers et invocations des bots restent défensifs hors combat et reviennent s'ils s'éloignent à plus de 30 mètres : ils ne tirent plus de pack devant le groupe. En combat, ils se battent normalement. Activé par défaut.",
+    "ru": "Во время забега Dungeon Clear питомцы и призванные существа ботов вне боя остаются в защитном режиме и возвращаются, если отходят дальше 30 метров, поэтому они не агрят группы мобов впереди отряда. В бою они сражаются как обычно. Включено по умолчанию.",
+    "zh": "在 Dungeon Clear 副本中，机器人的宠物和召唤物在非战斗时保持防御姿态，离开超过 30 码会自动返回，因此不会在队伍前方拉怪。战斗开始后正常作战。默认开启。"
+   }
+  },
+  {
    "file": "playerbots.conf",
    "key": "AiPlayerbot.RandomBotJoinLfg",
    "group": "behaviour",
