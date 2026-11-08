@@ -1,6 +1,10 @@
 {
  "schema": 1,
- "onByDefault": [],
+ "onByDefault": [
+  "AiPlayerbot.CoaWorld.Invasions.Scourge.Enable",
+  "AiPlayerbot.CoaWorld.Invasions.Legion.Enable",
+  "AiPlayerbot.CoaWorld.Invasions.AhnQiraj.Enable"
+ ],
  "groups": [
   {
    "id": "lw-invasions",
@@ -94,6 +98,224 @@
   }
  ],
  "options": [
+  {
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "when": "reload",
+   "key": "AiPlayerbot.CoaWorld.Invasions.Enable",
+   "type": "bool",
+   "default": 0,
+   "label": {
+    "en": "World invasions",
+    "fr": "Invasions du monde",
+    "ru": "Вторжения в мир",
+    "zh": "世界入侵"
+   },
+   "help": {
+    "en": "Off by default. On: the Scourge marches on Stormwind or Orgrimmar, the Legion opens a portal outside a town, the Qiraji storm the Scarab Wall. Announced 10 minutes before, in waves, with a boss and a reward; bots of your level come to defend with you.",
+    "fr": "Désactivé par défaut. Activé : le Fléau marche sur Hurlevent ou Orgrimmar, la Légion ouvre un portail aux portes d'une ville, les Qiraji assaillent le Mur du Scarabée. Annoncé 10 minutes avant, par vagues, avec un boss et une récompense ; des bots de ton niveau viennent défendre avec toi.",
+    "ru": "Выключено по умолчанию. Включено: Плеть идёт на Штормград или Оргриммар, Легион открывает портал у города, киражи штурмуют Стену Скарабея. Объявляется за 10 минут, волнами, с боссом и наградой; боты вашего уровня приходят защищать вместе с вами.",
+    "zh": "默认关闭。开启后：天灾军团进攻暴风城或奥格瑞玛，燃烧军团在城镇外打开传送门，其拉虫族猛攻甲虫之墙。提前 10 分钟公告，分波来袭，有首领和奖励；与你等级相近的机器人会前来一起防守。"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "when": "reload",
+   "key": "AiPlayerbot.CoaWorld.Invasions.MinRealPlayers",
+   "type": "int",
+   "default": 1,
+   "min": 1,
+   "max": 50,
+   "onlyWhen": {
+    "key": "AiPlayerbot.CoaWorld.Invasions.Enable",
+    "values": [
+     1
+    ]
+   },
+   "label": {
+    "en": "Players needed online for an invasion",
+    "fr": "Joueurs connectés nécessaires pour une invasion",
+    "ru": "Сколько игроков онлайн нужно для вторжения",
+    "zh": "触发入侵所需在线玩家数"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "when": "reload",
+   "key": "AiPlayerbot.CoaWorld.Invasions.WarningMinutes",
+   "type": "int",
+   "default": 10,
+   "min": 0,
+   "max": 60,
+   "onlyWhen": {
+    "key": "AiPlayerbot.CoaWorld.Invasions.Enable",
+    "values": [
+     1
+    ]
+   },
+   "label": {
+    "en": "Notice before an invasion (minutes)",
+    "fr": "Préavis avant une invasion (minutes)",
+    "ru": "Предупреждение перед вторжением (минуты)",
+    "zh": "入侵前预告（分钟）"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "when": "reload",
+   "key": "AiPlayerbot.CoaWorld.Invasions.DurationMinutes",
+   "type": "int",
+   "default": 30,
+   "min": 5,
+   "max": 180,
+   "onlyWhen": {
+    "key": "AiPlayerbot.CoaWorld.Invasions.Enable",
+    "values": [
+     1
+    ]
+   },
+   "label": {
+    "en": "Time to kill the boss (minutes)",
+    "fr": "Temps pour tuer le boss (minutes)",
+    "ru": "Время на убийство босса (минуты)",
+    "zh": "击杀首领的时限（分钟）"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "when": "reload",
+   "key": "AiPlayerbot.CoaWorld.Invasions.HealthPct",
+   "type": "int",
+   "default": 100,
+   "min": 10,
+   "max": 1000,
+   "onlyWhen": {
+    "key": "AiPlayerbot.CoaWorld.Invasions.Enable",
+    "values": [
+     1
+    ]
+   },
+   "label": {
+    "en": "Invaders' health (%)",
+    "fr": "Vie des envahisseurs (%)",
+    "ru": "Здоровье захватчиков (%)",
+    "zh": "入侵者生命值（%）"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "when": "reload",
+   "key": "AiPlayerbot.CoaWorld.Invasions.BotsPct",
+   "type": "int",
+   "default": 10,
+   "min": 0,
+   "max": 50,
+   "onlyWhen": {
+    "key": "AiPlayerbot.CoaWorld.Invasions.Enable",
+    "values": [
+     1
+    ]
+   },
+   "label": {
+    "en": "Bots sent to defend (% of random bots online)",
+    "fr": "Bots envoyés en défense (% des bots aléatoires connectés)",
+    "ru": "Боты на защиту (% случайных ботов онлайн)",
+    "zh": "派去防守的机器人（在线随机机器人的 %）"
+   },
+   "help": {
+    "en": "0 sends none. At most the number below.",
+    "fr": "0 n'en envoie aucun. Au plus le nombre ci-dessous.",
+    "ru": "0: никого. Не больше числа ниже.",
+    "zh": "0 表示不派。最多为下方的数量。"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "when": "reload",
+   "key": "AiPlayerbot.CoaWorld.Invasions.BotsMax",
+   "type": "int",
+   "default": 120,
+   "min": 0,
+   "max": 500,
+   "onlyWhen": {
+    "key": "AiPlayerbot.CoaWorld.Invasions.Enable",
+    "values": [
+     1
+    ]
+   },
+   "label": {
+    "en": "Most bots sent to defend",
+    "fr": "Nombre maximal de bots envoyés en défense",
+    "ru": "Максимум ботов на защиту",
+    "zh": "派去防守的机器人上限"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "when": "reload",
+   "key": "AiPlayerbot.CoaWorld.Invasions.Scourge.Enable",
+   "type": "bool",
+   "default": 1,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Invasions.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Scourge on Stormwind and Orgrimmar (level 20+)",
+    "fr": "Le Fléau sur Hurlevent et Orgrimmar (niveau 20+)",
+    "ru": "Плеть на Штормград и Оргриммар (уровень 20+)",
+    "zh": "天灾进攻暴风城和奥格瑞玛（20 级以上）"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "when": "reload",
+   "key": "AiPlayerbot.CoaWorld.Invasions.Legion.Enable",
+   "type": "bool",
+   "default": 1,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Invasions.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Legion portals outside the towns (level 45+)",
+    "fr": "Portails de la Légion aux portes des villes (niveau 45+)",
+    "ru": "Порталы Легиона у городов (уровень 45+)",
+    "zh": "城镇外的燃烧军团传送门（45 级以上）"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "when": "reload",
+   "key": "AiPlayerbot.CoaWorld.Invasions.AhnQiraj.Enable",
+   "type": "bool",
+   "default": 1,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Invasions.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Gates of Ahn'Qiraj (level 55+)",
+    "fr": "Portes d'Ahn'Qiraj (niveau 55+)",
+    "ru": "Врата Ан'Киража (уровень 55+)",
+    "zh": "安其拉之门（55 级以上）"
+   }
+  },
   {
    "key": "AiPlayerbot.LootNeedRollLevel",
    "file": "playerbots.conf",
@@ -282,6 +504,33 @@
     "values": [
      0
     ]
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.Buyer.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-economy",
+   "type": "bool",
+   "default": 0,
+   "when": "reload",
+   "hidden": true,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.AHBot.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Auction house: human-like buyer",
+    "fr": "Hôtel des ventes : acheteur à l'humaine",
+    "ru": "Аукцион: покупатель как человек",
+    "zh": "拍卖行：拟人化买家"
+   },
+   "help": {
+    "en": "The auction house bot buys like people: it takes time to notice new auctions, jumps on bargains, sometimes outbids players, and never pays more than the house's own lowest price. Needs the AH bot buyer.",
+    "fr": "Le bot de l'hôtel des ventes achète comme un joueur : il met du temps à remarquer les nouvelles ventes, saute sur les bonnes affaires, surenchérit parfois sur les joueurs et ne paie jamais plus que le prix le plus bas de la maison. Demande l'acheteur du bot de l'hôtel des ventes.",
+    "ru": "Бот аукциона покупает как люди: не сразу замечает новые лоты, хватает выгодные предложения, иногда перебивает ставки игроков и никогда не платит больше самой низкой цены дома. Нужен покупатель бота аукциона.",
+    "zh": "拍卖行机器人像真人一样购买：需要时间才注意到新拍卖，抢购便宜货，有时会抬价超过玩家，但绝不会付出高于系统最低价的价格。需要拍卖行机器人的买家功能。"
    }
   }
  ],

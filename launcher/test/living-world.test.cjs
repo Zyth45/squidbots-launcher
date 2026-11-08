@@ -15,6 +15,7 @@ test('the living world manifest shipped with the launcher is valid and makes its
   // The built-in AH bot stays hidden while mod-ah-bot-plus is in the core (both at once double the auction house).
   assert.ok(CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.AHBot.Enable'));
   assert.ok(CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.Filter.Enable'));
+  assert.ok(CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.Buyer.Enable'));
   // Shown one day: the hidden options must then be valid too (their rules included).
   const manifest = require('../src/data/living-world.json');
   const shown = CATALOG.build(require('../src/data/server-settings.json'), { ...manifest, options: manifest.options.map(({ hidden, ...option }) => option) });
@@ -26,6 +27,11 @@ test('the living world manifest shipped with the launcher is valid and makes its
   assert.ok(living.every(setting => setting.default !== undefined && setting.label.en));
   // Every switch of the shipped manifest is off by default, unless named in onByDefault.
   const allowed = require('../src/data/living-world.json').onByDefault || [];
+  for (const key of allowed) {
+    const setting = living.find(item => item.key === key);
+    const master = setting && CATALOG.settings.find(item => item.key === setting.offWhen?.key);
+    assert.ok(master && master.default === '0' && setting.offWhen.values.includes('0') && !setting.hideOff, `${key}: idleWhen on a master off by default`);
+  }
   assert.deepEqual(living.filter(setting => /(^|.)Enabled?$/i.test(setting.key) && setting.default !== '0' && !allowed.includes(setting.key)).map(setting => setting.key), []);
   const section = CATALOG.sections.find(item => item.id === 'living');
   assert.ok(section && living.every(setting => section.groups.includes(setting.group)));
@@ -34,7 +40,7 @@ test('the living world manifest shipped with the launcher is valid and makes its
 test('a manifest option is turned into a setting; a malformed one is refused, never guessed', () => {
   const built = CATALOG.build(require('../src/data/server-settings.json'), {
     groups: GROUPS,
-    onByDefault: ['Living.City.Enable'],
+    onByDefault: ['Living.City.Enable', 'Living.City.Market.Enable', 'Living.City.Bells.Enable', 'Living.City.Lamps.Enable'],
     options: [
       { key: 'Living.Invasions.Enable', file: 'mod_living.conf', group: 'lw-test', type: 'bool', default: 0, label: 'Invasions', help: 'Off by default.' },
       { key: 'Living.Invasions.Rate', file: 'mod_living.conf', group: 'lw-test', type: 'int', default: 5, min: 1, max: 60, when: 'reload', label: { en: 'Rate', fr: 'Fréquence' } },
@@ -48,18 +54,26 @@ test('a manifest option is turned into a setting; a malformed one is refused, ne
       { key: 'Living.Pvp.Enable', file: 'mod_living.conf', group: 'lw-test', type: 'bool', default: true, label: 'x' },
       { key: 'Living.Social.Enabled', file: 'mod_living.conf', group: 'lw-test', type: 'int', default: 1, label: 'x' },
       { key: 'Living.Travel.Enable', file: 'mod_living.conf', group: 'lw-test', type: 'bool', default: false, label: 'Travellers' },
-      { key: 'Living.City.Enable', file: 'mod_living.conf', group: 'lw-test', type: 'bool', default: 1, label: 'City life' },
+      { key: 'Living.City.Enable', file: 'mod_living.conf', group: 'lw-test', type: 'bool', default: 0, label: 'City life' },
+      // On by default under a master off by default: accepted, greyed while the master is off.
+      { key: 'Living.City.Market.Enable', file: 'mod_living.conf', group: 'lw-test', type: 'bool', default: 1, idleWhen: { key: 'Living.City.Enable', values: [0] }, label: 'Market' },
+      // In onByDefault but with no master, or under a master on by default: refused.
+      { key: 'Living.City.Bells.Enable', file: 'mod_living.conf', group: 'lw-test', type: 'bool', default: 1, label: 'Bells' },
+      { key: 'Living.City.Lamps.Enable', file: 'mod_living.conf', group: 'lw-test', type: 'bool', default: 1, idleWhen: { key: 'Living.Invasions.Enable', values: [1] }, label: 'Lamps' },
     ],
   });
   const enable = built.settings.find(setting => setting.key === 'Living.Invasions.Enable');
   assert.deepEqual({ kind: enable.kind, default: enable.default, when: enable.when, label: enable.label }, { kind: 'bool', default: '0', when: 'restart', label: { en: 'Invasions' } });
   const rate = built.settings.find(setting => setting.key === 'Living.Invasions.Rate');
   assert.deepEqual([rate.min, rate.max, rate.when, rate.label.fr], [1, 60, 'reload', 'Fréquence']);
-  assert.equal(built.refused.length, 8);
+  assert.equal(built.refused.length, 10);
+  assert.ok(built.refused.some(line => line.startsWith('Living.City.Bells.Enable: onByDefault needs idleWhen')));
+  assert.ok(built.refused.some(line => line.startsWith('Living.City.Lamps.Enable: onByDefault needs idleWhen')));
+  assert.deepEqual(built.settings.find(setting => setting.key === 'Living.City.Market.Enable').offWhen, { key: 'Living.City.Enable', values: ['0'] });
   assert.ok(built.refused.some(line => line.startsWith('Living.Pvp.Enable: a new feature ships off')));
   assert.ok(built.refused.some(line => line.startsWith('Living.Social.Enabled: a new feature ships off')));
   assert.equal(built.settings.find(setting => setting.key === 'Living.Travel.Enable').default, '0');
-  assert.equal(built.settings.find(setting => setting.key === 'Living.City.Enable').default, '1');
+  assert.equal(built.settings.find(setting => setting.key === 'Living.City.Enable').default, '0');
   assert.equal(built.settings.filter(setting => setting.key === 'AiPlayerbot.RandomBotTalk').length, 1);
   assert.ok(built.groups.some(group => group.id === 'lw-test'));
 });

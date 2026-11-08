@@ -54,11 +54,11 @@ function build(base = BASE, living = LIVING) {
   const ids = new Set(groups.map(group => group.id));
   const keys = new Set(base.settings.map(setting => `${setting.file}\u0000${setting.key}`));
   const refused = [];
-  const hidden = [];
+  const onByDefault = new Set(living.onByDefault || []);
   const hiddenSettings = [];
   const settings = [];
   for (const option of living.options || []) {
-    const why = problem(option, ids, keys, new Set(living.onByDefault || []));
+    const why = problem(option, ids, keys, onByDefault);
     if (why) { refused.push(`${option?.key || '?'}: ${why}`); continue; }
     keys.add(`${option.file}\u0000${option.key}`);
     const setting = { key: option.key, file: option.file, group: option.group, living: true, kind: TYPES[option.type], when: option.when || 'restart', default: asText(option.default), label: text(option.label) };
@@ -68,29 +68,41 @@ function build(base = BASE, living = LIVING) {
     if (option.type === 'choice') setting.choices = option.choices.map(choice => ({ value: String(choice.value), label: text(choice.label) }));
     for (const field of ['onlyWhen', 'idleWhen']) if (option[field] !== undefined) setting[field] = option[field];
     // hidden: checked and kept in the manifest, not shown to the players yet (a feature waiting for a decision).
-    if (option.hidden === true) { hidden.push(option.key); hiddenSettings.push(setting); continue; }
+    if (option.hidden === true) { hiddenSettings.push(setting); continue; }
     settings.push(setting);
   }
   // onlyWhen { key, values }: the option is shown only while that bool or choice setting holds one of the values (hidden
   // otherwise). idleWhen { key, values }: the option has no effect while that setting holds one of the values (shown
   // greyed). Both become the catalog's offWhen.
-  for (const setting of [...settings]) {
+  for (const setting of [...settings, ...hiddenSettings]) {
     for (const field of ['onlyWhen', 'idleWhen']) {
       const rule = setting[field];
-      if (rule === undefined || !settings.includes(setting)) continue;
+      if (rule === undefined || (!settings.includes(setting) && !hiddenSettings.includes(setting))) continue;
       delete setting[field];
       const other = [...base.settings, ...settings, ...hiddenSettings].find(item => item.key === rule?.key);
       const all = other?.kind === 'bool' ? ['0', '1'] : other?.kind === 'choice' ? other.choices.map(choice => String(choice.value)) : null;
       const values = Array.isArray(rule?.values) ? rule.values.map(asText) : [];
       if (!all || !values.length || values.some(value => !all.includes(value)) || setting.offWhen) {
         refused.push(`${setting.key}: ${field} (a bool or choice key, and some of its values; one rule per option)`);
-        settings.splice(settings.indexOf(setting), 1);
+        for (const list of [settings, hiddenSettings]) if (list.includes(setting)) list.splice(list.indexOf(setting), 1);
         continue;
       }
       if (field === 'onlyWhen') { setting.offWhen = { key: rule.key, values: all.filter(value => !values.includes(value)) }; setting.hideOff = true; }
-      else setting.offWhen = { key: rule.key, values };
+      else { setting.offWhen = { key: rule.key, values }; setting.idleRule = true; }
     }
   }
+  // A switch of onByDefault must sit under a master switch that is off by default: an idleWhen on that master, idle at
+  // its default 0. Nothing runs until the player turns the master on.
+  for (const setting of [...settings, ...hiddenSettings]) {
+    if (!onByDefault.has(setting.key) || !SWITCH.test(setting.key) || setting.default === '0') continue;
+    const master = [...base.settings, ...settings, ...hiddenSettings].find(item => item.key === setting.offWhen?.key);
+    const rule = setting.idleRule;
+    if (!rule || !master || master.default !== '0' || !setting.offWhen.values.includes('0')) {
+      refused.push(`${setting.key}: onByDefault needs idleWhen on a master switch off by default`);
+      for (const list of [settings, hiddenSettings]) if (list.includes(setting)) list.splice(list.indexOf(setting), 1);
+    }
+  }
+  for (const setting of [...settings, ...hiddenSettings]) delete setting.idleRule;
   const used = groups.filter(group => settings.some(setting => setting.group === group.id));
   return {
     ...base,
@@ -99,7 +111,7 @@ function build(base = BASE, living = LIVING) {
     sections: used.length ? [...(base.sections || []), { ...SECTION, groups: groups.map(group => group.id) }] : base.sections || [],
     packs: packsOf(living, settings, refused),
     refused,
-    hidden,
+    hidden: hiddenSettings.map(setting => setting.key),
   };
 }
 

@@ -17,7 +17,9 @@ installed shows nothing.
   is shown for players who never set the option.
 - New living world features are **off by default**: `default` is the value that keeps the feature off. The launcher
   enforces it: an option whose key ends in `.Enable` or `.Enabled` with a default other than 0/false is refused,
-  unless its key is listed in `onByDefault` (an explicit, reviewed exception).
+  unless its key is listed in `onByDefault`. That exception is only for a sub-switch under a master switch: the
+  sub-switch needs `idleWhen` on a master whose default is 0 (it shows greyed and does nothing until the player turns
+  the master on). Example: the Scourge, Legion and Ahn'Qiraj invasions under `CoaWorld.Invasions.Enable`.
 
 ## Format
 
@@ -108,6 +110,7 @@ An option is left out (never guessed) when:
 - its `key`, `file`, `group`, `type` or `label` is missing or wrong;
 - it has no `default`, or a `default` outside its bounds or its choices;
 - it is a `.Enable`/`.Enabled` switch on by default and not listed in `onByDefault`;
+- it is listed in `onByDefault` without an `idleWhen` on a master switch off by default;
 - its key is already in the catalog.
 
 The test `launcher/test/living-world.test.cjs` fails when an option of the shipped manifest is refused. Run it after
