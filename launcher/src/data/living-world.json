@@ -1253,6 +1253,52 @@
    "file": "playerbots.conf",
    "group": "lw-social",
    "when": "reload",
+   "key": "AiPlayerbot.CoaSoul.Enable",
+   "type": "bool",
+   "default": 0,
+   "label": {
+    "en": "Bot personalities",
+    "fr": "Personnalités des bots",
+    "ru": "Характеры ботов",
+    "zh": "机器人性格"
+   },
+   "help": {
+    "en": "Each random bot gets a lasting personality (lazy, quester, wanderer, trader, PvP) that changes what it likes to do and, with CoA Live, how it talks.",
+    "fr": "Chaque bot aléatoire reçoit une personnalité durable (paresseux, chercheur de quêtes, vagabond, marchand, PvP) qui change ce qu'il aime faire et, avec CoA Live, sa façon de parler.",
+    "ru": "Каждый случайный бот получает постоянный характер (ленивый, любитель заданий, странник, торговец, PvP), который меняет его занятия и, с CoA Live, манеру речи.",
+    "zh": "每个随机机器人都会获得持久的性格（懒散、任务狂、漫游者、商人、PvP），改变它喜欢做的事，配合 CoA Live 还会改变说话方式。"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "when": "reload",
+   "key": "AiPlayerbot.CoaSoul.Weights",
+   "type": "text",
+   "default": "20,40,20,10,10",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaSoul.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Personality mix",
+    "fr": "Répartition des personnalités",
+    "ru": "Распределение характеров",
+    "zh": "性格比例"
+   },
+   "help": {
+    "en": "Five numbers separated by commas, in this order: lazy, quester, wanderer, trader, PvP. They are shares, for example 20,40,20,10,10. Each bot keeps the personality it got.",
+    "fr": "Cinq nombres séparés par des virgules, dans cet ordre : paresseux, chercheur de quêtes, vagabond, marchand, PvP. Ce sont des parts, par exemple 20,40,20,10,10. Chaque bot garde la personnalité qu'il a reçue.",
+    "ru": "Пять чисел через запятую, в таком порядке: ленивый, любитель заданий, странник, торговец, PvP. Это доли, например 20,40,20,10,10. Каждый бот сохраняет полученный характер.",
+    "zh": "五个用逗号分隔的数字，顺序为：懒散、任务狂、漫游者、商人、PvP。它们是比例，例如 20,40,20,10,10。每个机器人会保留已获得的性格。"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "when": "reload",
    "key": "AiPlayerbot.CoaLive.TypoChance",
    "type": "int",
    "default": 4,
@@ -1850,7 +1896,8 @@
     "AiPlayerbot.CoaLive.Immersion.Enable": 1,
     "AiPlayerbot.CoaWorld.Density.Enable": 1,
     "AiPlayerbot.EnablePeriodicOnlineOffline": 1,
-    "AiPlayerbot.CoaCombat.BlackwingLair.Enable": 1
+    "AiPlayerbot.CoaCombat.BlackwingLair.Enable": 1,
+    "AiPlayerbot.CoaSoul.Enable": 1
    }
   }
  ]
