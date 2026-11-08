@@ -121,7 +121,9 @@ function build(base = BASE, living = LIVING) {
     groups: [...base.groups, ...groups],
     settings: [...base.settings, ...settings],
     sections: used.length ? [...baseSections, { ...SECTION, groups: groups.filter(group => sectionOf[group.id] === 'living').map(group => group.id) }] : baseSections,
-    packs: packsOf(living, settings, refused),
+    // A pack may also set a key of the main catalog that a Living world option needs (for example the bots' online
+    // rotation for the density); Classic is made from the manifest only, so it never touches those.
+    packs: packsOf(living, settings, refused, base.settings),
     refused,
     hidden: hiddenSettings.map(setting => setting.key),
   };
@@ -150,7 +152,7 @@ const CLASSIC = {
   summary: { en: 'The bots as you know them: every Living world feature off (the defaults).', fr: 'Les bots comme tu les connais : toutes les fonctions du Monde vivant coupées (les valeurs par défaut).', ru: 'Боты как прежде: все функции «Живого мира» выключены (значения по умолчанию).', zh: '你熟悉的机器人：所有鲜活世界功能关闭（默认值）。' },
 };
 
-function packsOf(living, settings, refused) {
+function packsOf(living, settings, refused, baseSettings = []) {
     // An option with "classic": false is left out of Classic (a value the player may have set before 3.0, that Classic must
   // not reset).
   const classic = settings.filter(setting => !setting.notClassic);
@@ -164,8 +166,8 @@ function packsOf(living, settings, refused) {
     const changes = {};
     let why = null;
     for (const [key, raw] of Object.entries(pack.changes)) {
-      const setting = settings.find(item => item.key === key);
-      const bad = setting ? valueProblem(setting, asText(raw)) : 'not an option of the manifest';
+      const setting = settings.find(item => item.key === key) || baseSettings.find(item => item.key === key);
+      const bad = setting ? valueProblem(setting, asText(raw)) : 'not an option of the manifest or the catalog';
       if (bad) { why = `${key}: ${bad}`; break; }
       changes[key] = asText(raw);
     }

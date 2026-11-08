@@ -25,6 +25,10 @@ test('the living world manifest shipped with the launcher is valid and makes its
   assert.deepEqual(switches.filter(setting => livingPack.changes[setting.key] !== '1').map(setting => setting.key), []);
   assert.deepEqual([livingPack.changes['AiPlayerbot.CoaBotSurname'], livingPack.changes['AiPlayerbot.RefreshClearsInventory'], livingPack.changes['AiPlayerbot.LootNeedRollLevel']], ['0', '0', '2']);
   assert.ok(!Object.keys(livingPack.changes).some(key => CATALOG.hidden.includes(key)));
+  // The density needs the bots' online rotation, a key of the main catalog: the pack turns it on, Classic never.
+  assert.equal(livingPack.changes['AiPlayerbot.EnablePeriodicOnlineOffline'], '1');
+  assert.ok(!Object.hasOwn(CATALOG.packs.find(pack => pack.id === 'classic').changes, 'AiPlayerbot.EnablePeriodicOnlineOffline'));
+  assert.ok(CATALOG.hidden.includes('AiPlayerbot.CoaWorld.Events.Enable') && CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.DataFile.Enable'));
   assert.ok(CATALOG.build(require('../src/data/server-settings.json'), { groups: GROUPS, options: [{ key: 'Living.A', file: 'mod_living.conf', group: 'lw-test', type: 'bool', default: 0, label: 'x' }], packs: [{ id: 'classic', title: 'x', changes: { 'Living.A': 1 } }] }).refused.some(line => line.startsWith('pack classic:')));
   // The built-in AH bot stays hidden while mod-ah-bot-plus is in the core (both at once double the auction house).
   assert.ok(CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.AHBot.Enable'));

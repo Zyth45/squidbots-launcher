@@ -146,9 +146,10 @@ A pack is a set of recommended values of the manifest's options. Its card shows 
 ```
 
 - `id`: lowercase letters, digits and `-`. `title` is required, `summary` optional (Texts as above).
-- `changes`: only keys of this manifest's options, each value fitting its option (0/1, one of the choices, within
-  min/max, no quotes). A pack with one wrong key or value is refused whole. A pack may turn features on: that is its
-  purpose, and the player chooses it.
+- `changes`: keys of this manifest's options, or a key of the main catalog that an option needs (for example
+  `AiPlayerbot.EnablePeriodicOnlineOffline` for the density), each value fitting its setting (0/1, one of the choices,
+  within min/max, no quotes). A pack with one wrong key or value is refused whole. A pack may turn features on: that
+  is its purpose, and the player chooses it. Classic is made from the manifest only: it never touches a catalog key.
 - **Prepare** puts the values among the unsaved changes, as the "Ready-made settings" cards do: the player sees them,
   then saves or discards. Nothing is written before Save. A pack is never applied by itself (install, update, start).
 - **Go back**: when the pack is saved, the launcher keeps the value each key had before (in
