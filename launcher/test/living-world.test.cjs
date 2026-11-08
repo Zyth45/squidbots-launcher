@@ -15,6 +15,11 @@ test('the living world manifest shipped with the launcher is valid and makes its
   // The built-in AH bot stays hidden while mod-ah-bot-plus is in the core (both at once double the auction house).
   assert.ok(CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.AHBot.Enable'));
   assert.ok(CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.Filter.Enable'));
+  // Shown one day: the hidden options must then be valid too (their rules included).
+  const manifest = require('../src/data/living-world.json');
+  const shown = CATALOG.build(require('../src/data/server-settings.json'), { ...manifest, options: manifest.options.map(({ hidden, ...option }) => option) });
+  assert.deepEqual([shown.refused, shown.hidden], [[], []]);
+  assert.deepEqual(shown.settings.find(setting => setting.key === 'AiPlayerbot.CoaEconomy.Filter.Enable').offWhen, { key: 'AiPlayerbot.CoaEconomy.AHBot.Enable', values: ['0'] });
   assert.ok(!CATALOG.settings.some(setting => setting.key === 'AiPlayerbot.CoaEconomy.AHBot.Enable'));
   const living = CATALOG.settings.filter(setting => setting.living);
   assert.ok(living.length >= 1);

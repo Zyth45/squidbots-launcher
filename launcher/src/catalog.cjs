@@ -55,6 +55,7 @@ function build(base = BASE, living = LIVING) {
   const keys = new Set(base.settings.map(setting => `${setting.file}\u0000${setting.key}`));
   const refused = [];
   const hidden = [];
+  const hiddenSettings = [];
   const settings = [];
   for (const option of living.options || []) {
     const why = problem(option, ids, keys, new Set(living.onByDefault || []));
@@ -67,7 +68,7 @@ function build(base = BASE, living = LIVING) {
     if (option.type === 'choice') setting.choices = option.choices.map(choice => ({ value: String(choice.value), label: text(choice.label) }));
     for (const field of ['onlyWhen', 'idleWhen']) if (option[field] !== undefined) setting[field] = option[field];
     // hidden: checked and kept in the manifest, not shown to the players yet (a feature waiting for a decision).
-    if (option.hidden === true) { hidden.push(option.key); continue; }
+    if (option.hidden === true) { hidden.push(option.key); hiddenSettings.push(setting); continue; }
     settings.push(setting);
   }
   // onlyWhen { key, values }: the option is shown only while that bool or choice setting holds one of the values (hidden
@@ -78,7 +79,7 @@ function build(base = BASE, living = LIVING) {
       const rule = setting[field];
       if (rule === undefined || !settings.includes(setting)) continue;
       delete setting[field];
-      const other = [...base.settings, ...settings].find(item => item.key === rule?.key);
+      const other = [...base.settings, ...settings, ...hiddenSettings].find(item => item.key === rule?.key);
       const all = other?.kind === 'bool' ? ['0', '1'] : other?.kind === 'choice' ? other.choices.map(choice => String(choice.value)) : null;
       const values = Array.isArray(rule?.values) ? rule.values.map(asText) : [];
       if (!all || !values.length || values.some(value => !all.includes(value)) || setting.offWhen) {

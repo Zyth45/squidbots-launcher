@@ -263,7 +263,7 @@
    "group": "lw-economy",
    "type": "bool",
    "default": 0,
-   "when": "restart",
+   "when": "reload",
    "hidden": true,
    "label": {
     "en": "Auction house: CoA sellable items only",
@@ -272,10 +272,16 @@
     "zh": "拍卖行：仅限 CoA 可出售物品"
    },
    "help": {
-    "en": "The auction house bot leaves out deprecated, Bloodforged (while Bloodforged is off), Worldforged and scaled copies of items.",
-    "fr": "Le bot de l'hôtel des ventes écarte les objets obsolètes, Bloodforged (tant que Bloodforged est désactivé), Worldforged et les copies d'objets à niveau ajusté.",
-    "ru": "Бот аукциона пропускает устаревшие предметы, Bloodforged (пока Bloodforged выключен), Worldforged и масштабированные копии предметов.",
-    "zh": "拍卖行机器人会排除已废弃、Bloodforged（Bloodforged 关闭时）、Worldforged 以及缩放副本物品。"
+    "en": "The auction house bot leaves out deprecated, Bloodforged (while Bloodforged is off), Worldforged and scaled copies of items. Needs the auction house bot above.",
+    "fr": "Le bot de l'hôtel des ventes écarte les objets obsolètes, Bloodforged (tant que Bloodforged est désactivé), Worldforged et les copies d'objets à niveau ajusté. Demande le bot de l'hôtel des ventes ci-dessus.",
+    "ru": "Бот аукциона пропускает устаревшие предметы, Bloodforged (пока Bloodforged выключен), Worldforged и масштабированные копии предметов. Нужен бот аукциона выше.",
+    "zh": "拍卖行机器人会排除已废弃、Bloodforged（Bloodforged 关闭时）、Worldforged 以及缩放副本物品。需要开启上方的拍卖行机器人。"
+   },
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.AHBot.Enable",
+    "values": [
+     0
+    ]
    }
   }
  ],
