@@ -1200,7 +1200,8 @@ function livingChoiceDialog() {
 
 function packCards(group) {
   const conf = App.state.conf;
-  if (!group.id.startsWith('lw-') || !conf.packs?.length) return '';
+  // Only the tabs of the Living world section (Group combat, under Bots, has no pack).
+  if (!conf.sections?.find(section => section.id === 'living')?.groups.includes(group.id) || !conf.packs?.length) return '';
   const undo = conf.packUndo?.[packTarget()];
   return `<div class="preset-cards">${conf.packs.map(pack => packCard(pack, undo)).join('')}</div>`;
 }
