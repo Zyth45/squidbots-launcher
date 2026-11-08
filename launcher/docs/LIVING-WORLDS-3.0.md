@@ -64,10 +64,20 @@ living: {
    - the **Solo self-found (1-59)** preset as it is (recipe `self-found-world`: CoaSelfFound, its max level, its share
      of bots, the XP rate, Dungeon Clear's self-found groups). Nothing is made again;
    - the values of the **Living server** pack (`living`);
-   - the economy options (built-in AH bot, filter, buyer) once they are shown (not while mod-ah-bot-plus is in the
-     core).
-3. Imposed by the mode: `CoaFreshStart.Enable = 1`, the built-in AH bot with its launch curve
-   (`CoaEconomy.AHBot.Enable = 1`, `CoaEconomy.LaunchCurve.Enable = 1`), the databases, ports and bot prefix.
+   - the economy, as proposed by CoA Economie (08/11): an auction house that fills up gradually, is never empty and
+     has no epics at first:
+     - `playerbots.conf`: `CoaEconomy.Filter.Enable`, `Buyer.Enable`, `Market.Enable`, `Rarity.Enable`,
+       `LaunchCurve.Enable`, `RpgSell.Enable`, `BotAuctions.Enable`, `Artisans.Enable`, `CraftOrders.Enable` = 1
+       (CraftOrders with `CoaLive.Enable = 1`), `RefreshClearsInventory = 0`;
+     - the launch curve tuned for a new realm (not in the manifest, written as the realm's own values):
+       `CoaEconomy.LaunchCurve.LevelMargin = 5` (more choice on day 1), `StartStockPercent = 15` (never empty),
+       `LaunchPremiumPercent = 100` (x2 at start); the other LaunchCurve keys stay as in the .dist (RareFromLevel 20,
+       EpicFromLevel 50, AllowLegendary 0, FrontPercentile 80, TopCount 3, MinPopulation 20);
+     - `mod_ahbot.conf`: `AuctionHouseBot.Enable = 1`, `AuctionHouseBot.EnableSeller = 1`,
+       `AuctionHouseBot.Buyer.Enabled = 1`; MinItems/MaxItems as in the CoA preset (the launch curve scales them).
+3. Imposed by the mode: `CoaFreshStart.Enable = 1`, the launch curve (`CoaEconomy.LaunchCurve.Enable = 1`), the
+   databases, ports and bot prefix. The merged AH bot (`CoaEconomy.AHBot.Enable = 1`) joins only once mod-ah-bot-plus
+   is out of the core (the Pilote's call): both at once would double the auction house.
 
 The number of bots is not a new default: the realm takes what the Solo self-found preset gives (the preset does not
 set a count today, so the usual realm count of `create()` applies). It will be adjusted with the A/B bench figures

@@ -1643,6 +1643,27 @@
     "zh": "随机机器人会把战利品挂到拍卖行、领取收入，并购买负担得起的装备提升或背包，各自有不同的节俭程度和耐心。"
    },
    "classic": false
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.DataFile.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-economy",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "hidden": true,
+   "label": {
+    "en": "Economy data for the dashboard",
+    "fr": "Données économiques pour le dashboard",
+    "ru": "Экономические данные для панели",
+    "zh": "供仪表盘使用的经济数据"
+   },
+   "help": {
+    "en": "Writes economy.json for the SquidBots dashboard, only while its living page is open.",
+    "fr": "Écrit economy.json pour le dashboard SquidBots, seulement pendant que sa page « vivant » est ouverte.",
+    "ru": "Записывает economy.json для панели SquidBots, только пока открыта её «живая» страница.",
+    "zh": "仅在 SquidBots 仪表盘的鲜活页面打开时写入 economy.json。"
+   }
   }
  ],
  "packs": [
