@@ -25,7 +25,12 @@ test('the living world manifest shipped with the launcher is valid and makes its
   assert.ok(CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.Filter.Enable'));
   assert.ok(CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.Buyer.Enable'));
   assert.ok(CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.Market.Enable'));
-  assert.ok(CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.RpgSell.Enable') && CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.BotAuctions.Enable'));
+  // Bots selling and buying by themselves are not an AH bot: shown, in the Living pack, out of Classic.
+  for (const key of ['AiPlayerbot.CoaEconomy.RpgSell.Enable', 'AiPlayerbot.CoaEconomy.BotAuctions.Enable']) {
+    assert.ok(!CATALOG.hidden.includes(key) && CATALOG.settings.some(setting => setting.key === key), key);
+    assert.equal(CATALOG.packs.find(pack => pack.id === 'living').changes[key], '1');
+    assert.ok(!Object.hasOwn(CATALOG.packs.find(pack => pack.id === 'classic').changes, key));
+  }
   assert.ok(CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.LaunchCurve.Enable') && CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.Rarity.Enable'));
   // Shown one day: the hidden options must then be valid too (their rules included).
   const manifest = require('../src/data/living-world.json');

@@ -1404,7 +1404,6 @@
    "type": "bool",
    "default": 0,
    "when": "restart",
-   "hidden": true,
    "key": "AiPlayerbot.CoaEconomy.RpgSell.Enable",
    "label": {
     "en": "Bots sell their loot at vendors",
@@ -1417,7 +1416,8 @@
     "fr": "Entre deux quêtes, les bots aléatoires passent chez un marchand pour vendre ce dont ils n'ont pas besoin et réparer. Marche mieux quand les bots gardent leurs sacs (AiPlayerbot.RefreshClearsInventory = 0 dans playerbots.conf).",
     "ru": "Между заданиями случайные боты заходят к торговцам, чтобы продать ненужное и починиться. Лучше всего работает, когда боты сохраняют сумки (AiPlayerbot.RefreshClearsInventory = 0 в playerbots.conf).",
     "zh": "随机机器人在任务间隙会去商人处出售不需要的物品并修理装备。机器人保留背包时效果最好（playerbots.conf 中 AiPlayerbot.RefreshClearsInventory = 0）。"
-   }
+   },
+   "classic": false
   },
   {
    "file": "playerbots.conf",
@@ -1425,7 +1425,6 @@
    "type": "bool",
    "default": 0,
    "when": "restart",
-   "hidden": true,
    "key": "AiPlayerbot.CoaEconomy.BotAuctions.Enable",
    "label": {
     "en": "Bots use the auction house",
@@ -1438,7 +1437,8 @@
     "fr": "Les bots aléatoires mettent leur butin en vente à l'hôtel des ventes, récupèrent leurs ventes et achètent les améliorations ou les sacs qu'ils peuvent se payer, chacun avec son sens de l'économie et sa patience.",
     "ru": "Случайные боты выставляют добычу на аукцион, забирают выручку и покупают улучшения или сумки, которые могут себе позволить, каждый со своей бережливостью и терпением.",
     "zh": "随机机器人会把战利品挂到拍卖行、领取收入，并购买负担得起的装备提升或背包，各自有不同的节俭程度和耐心。"
-   }
+   },
+   "classic": false
   }
  ],
  "packs": [
@@ -1459,7 +1459,9 @@
    },
    "changes": {
     "AiPlayerbot.CoaBotSurname": 0,
-    "AiPlayerbot.RefreshClearsInventory": 0
+    "AiPlayerbot.RefreshClearsInventory": 0,
+    "AiPlayerbot.CoaEconomy.RpgSell.Enable": 1,
+    "AiPlayerbot.CoaEconomy.BotAuctions.Enable": 1
    }
   }
  ]
