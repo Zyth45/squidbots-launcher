@@ -634,6 +634,26 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaCombat.MoltenCore.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-combat",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "label": {
+    "en": "Molten Core: improved boss tactics",
+    "fr": "Cœur du Magma : tactiques de boss améliorées",
+    "ru": "Огненные Недра: улучшенная тактика боссов",
+    "zh": "熔火之心：改进的首领战术"
+   },
+   "help": {
+    "en": "Off by default. On: the bots use the CoA fixes for Molten Core: kill orders for Lucifron's and Sulfuron's adds, a burst before Baron Geddon's Armageddon, interrupts kept for Shazzrah's Arcane Force Nova, stepping out of Golemagg's Cave In, and Ragnaros' Sons of Flame killed one at a time.",
+    "fr": "Désactivé par défaut. Activé : les bots appliquent les correctifs CoA du Cœur du Magma : ordre d'élimination des adds de Lucifron et de Sulfuron, burst avant l'Armageddon du baron Geddon, interruptions gardées pour la Nova de force arcanique de Shazzrah, sortie de l'Éboulement de Golemagg, et Fils de la flamme de Ragnaros tués un par un.",
+    "ru": "Выключено по умолчанию. Включено: боты используют исправления CoA для Огненных Недр: порядок убийства аддов Люцифрона и Сульфурона, всплеск урона перед Армагеддоном барона Геддона, прерывания для чародейской новы Шаззраха, выход из обвала Големагга и Сыны пламени Рагнароса по одному.",
+    "zh": "默认关闭。开启后：机器人使用 CoA 针对熔火之心的修正：鲁西弗隆和萨弗隆小怪的击杀顺序、迦顿男爵末日审判前的爆发、为沙斯拉尔的奥术新星保留打断、离开焚化者古雷曼格的塌方区域，以及逐个击杀拉格纳罗斯的烈焰之子。"
+   }
+  },
+  {
    "file": "playerbots.conf",
    "when": "reload",
    "group": "lw-population",
