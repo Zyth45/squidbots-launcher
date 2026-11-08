@@ -1464,6 +1464,26 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaPets.AutoBooks",
+   "file": "playerbots.conf",
+   "group": "alts",
+   "kind": "bool",
+   "when": "reload",
+   "default": "0",
+   "label": {
+    "en": "Alts use their books by themselves",
+    "fr": "Les alts utilisent leurs livres tout seuls",
+    "ru": "Альты сами используют свои книги",
+    "zh": "小号自动使用书籍"
+   },
+   "help": {
+    "en": "After a level up your alts learn their new spells from their class book, and when a profession reaches the top of its rank, the next rank from the Book of Artisans. Each alt can still say no with \"pet auto off\".",
+    "fr": "Après un gain de niveau, tes alts apprennent leurs nouveaux sorts dans leur livre de classe et, quand un métier atteint le haut de son rang, le rang suivant dans le Livre des artisans. Chaque alt peut encore refuser avec « pet auto off ».",
+    "ru": "После повышения уровня ваши альты изучают новые заклинания из книги класса, а когда профессия достигает потолка ранга — следующий ранг из Книги ремесленников. Каждый альт может отказаться командой «pet auto off».",
+    "zh": "升级后，你的小号会从职业书中学习新法术；专业技能达到当前等级上限时，会从工匠之书学习下一等级。每个小号仍可用“pet auto off”拒绝。"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaSelfFound",
    "file": "playerbots.conf",
    "group": "selffound",
