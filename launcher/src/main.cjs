@@ -1010,7 +1010,22 @@ function registerIpc() {
       if (mmapsPaused) Promise.resolve(assembler.startMmaps(folder)).catch(() => {});
     }
     if (wasRunning && update.last && !update.last.code && !update.last.error) {
-      network.applyNetwork(folder).catch(() => {}).then(() => modules.keepRotationOff(folder)).then(() => quietLogs(folder)).then(() => requireControl().startAll()).then(() => realms.startMarked(folder)).catch(() => {});
+      // The tool's own test start has just stopped: the manager refuses a start while that shutdown is still finishing,
+      // so the start is tried again for up to a minute. Any other failure is shown instead of being dropped.
+      const startAgain = async (tries = 12) => {
+        for (let attempt = 1; ; attempt += 1) {
+          try { return await requireControl().startAll(); } catch (error) {
+            if (attempt >= tries || !/still finishing/i.test(error.message)) throw error;
+            await new Promise(resolve => setTimeout(resolve, 5000));
+          }
+        }
+      };
+      network.applyNetwork(folder).catch(() => {}).then(() => modules.keepRotationOff(folder)).then(() => quietLogs(folder)).then(() => startAgain()).then(() => realms.startMarked(folder))
+        .catch(error => {
+          const text = `The server was not started again after the update: ${error.message}`;
+          send('update:event', { event: 'warn', text });
+          try { requireControl().note('world', text); } catch { /* the log is a help, not a need */ }
+        });
     }
     const state2 = repackUpdateState();
     send('update:state', state2);

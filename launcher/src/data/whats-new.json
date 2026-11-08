@@ -11,7 +11,8 @@
                 "Server settings, Creature difficulty: « Dungeon scaling for Dungeon Finder groups only » (CoA 2.9.5). On, as on the official CoA, only a Dungeon Finder group plays a classic dungeon at its own level. Off by default; an update never changes your value.",
                 "Server settings, Your alts: « Your own bots spend their talent points » lets your alts added as bots spend their free talent points themselves. Off by default.",
                 "Server settings, Collections and mounts: « Legacy mount flight » (CoA.LegacyMountFlight). Off by default: no flying in Azeroth. On: the flight rule only covers spellbook mounts, other mounts fly wherever their own spell allows. Your value is shown and only changed when you change it.",
-                "Server settings, Realm: « Day/night cycle speed » (CoA 2.9.5) makes the day and night go 1 to 12 times faster than real time, for the sky and the CoA abilities that read the night. Real time by default."
+                "Server settings, Realm: « Day/night cycle speed » (CoA 2.9.5) makes the day and night go 1 to 12 times faster than real time, for the sky and the CoA abilities that read the night. Real time by default.",
+                "After a CoA Bots update, a server that was running starts again even when the update's last test is still shutting down: the launcher waits for it (up to a minute) instead of leaving the server stopped without a word."
             ],
             "fr": [
                 "Réglages du serveur, Royaume : « Instances par heure » fixe le nombre de donjons ou raids différents qu'un compte peut ouvrir en une heure (CoA est livré avec 5). Votre valeur actuelle est affichée et ne change que si vous la changez.",
@@ -22,7 +23,8 @@
                 "Réglages du serveur, Difficulté des créatures : « Donjons ajustés seulement pour les groupes de la Recherche de donjons » (CoA 2.9.5). Activé, comme sur le CoA officiel, seul un groupe de la Recherche de donjons joue un donjon classique à son niveau. Désactivé par défaut ; une mise à jour ne change jamais votre valeur.",
                 "Réglages du serveur, Vos alts : « Vos propres bots dépensent leurs talents » laisse vos alts ajoutés en bots dépenser eux-mêmes leurs points de talent libres. Désactivé par défaut.",
                 "Réglages du serveur, Collections et montures : « Vol des montures à l'ancienne » (CoA.LegacyMountFlight). Désactivé par défaut : pas de vol en Azeroth. Activé : la règle de vol ne couvre que les montures du grimoire, les autres volent là où leur propre sort le permet. Votre valeur est affichée et ne change que si vous la changez.",
-                "Réglages du serveur, Royaume : « Vitesse du cycle jour/nuit » (CoA 2.9.5) fait passer le jour et la nuit 1 à 12 fois plus vite que le temps réel, pour le ciel et les techniques CoA qui dépendent de la nuit. Temps réel par défaut."
+                "Réglages du serveur, Royaume : « Vitesse du cycle jour/nuit » (CoA 2.9.5) fait passer le jour et la nuit 1 à 12 fois plus vite que le temps réel, pour le ciel et les techniques CoA qui dépendent de la nuit. Temps réel par défaut.",
+                "Après une mise à jour de CoA Bots, un serveur qui tournait redémarre même si le dernier essai de la mise à jour finit encore de s'arrêter : le launcher l'attend (jusqu'à une minute) au lieu de laisser le serveur arrêté sans rien dire."
             ],
             "ru": [
                 "Настройки сервера, Игровой мир: « Подземелий в час » задаёт, сколько разных подземелий или рейдов аккаунт может открыть за час (в CoA — 5). Показано ваше текущее значение, оно меняется только когда вы его меняете.",
@@ -33,7 +35,8 @@
                 "Настройки сервера, Сложность существ: «Масштабирование подземелий только для групп поиска подземелий» (CoA 2.9.5). Если включено, как на официальном CoA, только группа поиска подземелий проходит классическое подземелье на своём уровне. По умолчанию выключено; обновление никогда не меняет ваше значение.",
                 "Настройки сервера, Ваши альты: «Ваши боты сами распределяют таланты» — ваши альты-боты сами тратят свободные очки талантов. По умолчанию выключено.",
                 "Настройки сервера, Коллекции и маунты: «Старые правила полёта на маунтах» (CoA.LegacyMountFlight). По умолчанию выключено: в Азероте не летают. Включено: правило полёта касается только маунтов из книги заклинаний, остальные летают там, где позволяет их заклинание. Ваше значение показано и меняется только вами.",
-                "Настройки сервера, Игровой мир: «Скорость смены дня и ночи» (CoA 2.9.5) ускоряет день и ночь в 1–12 раз относительно реального времени — для неба и способностей CoA, зависящих от ночи. По умолчанию реальное время."
+                "Настройки сервера, Игровой мир: «Скорость смены дня и ночи» (CoA 2.9.5) ускоряет день и ночь в 1–12 раз относительно реального времени — для неба и способностей CoA, зависящих от ночи. По умолчанию реальное время.",
+                "После обновления CoA Bots работавший сервер снова запускается, даже если последний тестовый запуск обновления ещё завершается: лаунчер ждёт его (до минуты), а не оставляет сервер молча остановленным."
             ],
             "zh": [
                 "服务器设置 › 国度：「每小时副本数」设置一个账号每小时可进入的不同副本或团队副本数量（CoA 默认为 5）。显示您当前的数值，只有您修改时才会更改。",
@@ -44,7 +47,8 @@
                 "服务器设置，怪物难度：「仅为地下城查找器队伍缩放地下城」（CoA 2.9.5）。开启后与官方 CoA 一致，只有地下城查找器队伍会按自身等级挑战经典地下城。默认关闭；更新永远不会更改你的设置值。",
                 "服务器设置，你的小号：「你自己的机器人自动分配天赋点」让作为机器人加入的小号自行分配空闲天赋点。默认关闭。",
                 "服务器设置，收藏与坐骑：「旧版坐骑飞行规则」（CoA.LegacyMountFlight）。默认关闭：艾泽拉斯不能飞行。开启：飞行规则只适用于法术书中的坐骑，其他坐骑可在其自身法术允许的地方飞行。会显示你的当前值，只有你更改时才会改变。",
-                "服务器设置，国度：「昼夜循环速度」（CoA 2.9.5）让昼夜比现实时间快 1 到 12 倍，影响天空以及依赖夜晚的 CoA 技能。默认为现实时间。"
+                "服务器设置，国度：「昼夜循环速度」（CoA 2.9.5）让昼夜比现实时间快 1 到 12 倍，影响天空以及依赖夜晚的 CoA 技能。默认为现实时间。",
+                "CoA Bots 更新后，即使更新的最后一次测试仍在关闭，原本运行的服务器也会重新启动：启动器会等待它（最多一分钟），而不是默默地让服务器保持停止。"
             ]
         }
     },
