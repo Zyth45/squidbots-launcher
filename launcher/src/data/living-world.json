@@ -1392,6 +1392,26 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaLive.City.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-citylife",
+   "type": "bool",
+   "default": 0,
+   "when": "reload",
+   "label": {
+    "en": "City Life",
+    "fr": "Vie des villes",
+    "ru": "Жизнь городов",
+    "zh": "城市生活"
+   },
+   "help": {
+    "en": "Bots visiting a capital sit at the inn, talk at the bank and the auction house, hammer at the forge and train on dummies, a few minutes each, so capitals look full.",
+    "fr": "Les bots de passage dans une capitale s'assoient à l'auberge, discutent à la banque et à l'hôtel des ventes, martèlent à la forge et s'entraînent sur les mannequins, quelques minutes chaque fois : les capitales ont l'air pleines.",
+    "ru": "Боты в столице сидят в таверне, беседуют у банка и аукциона, стучат молотом в кузнице и тренируются на манекенах, по несколько минут, чтобы столицы выглядели оживлёнными.",
+    "zh": "来到主城的机器人会在旅店坐下、在银行和拍卖行聊天、在锻造炉敲打、在训练假人上练习，每样几分钟，让主城显得热闹。"
+   }
+  },
+  {
    "key": "AiPlayerbot.RefreshClearsInventory",
    "file": "playerbots.conf",
    "group": "lw-economy",
@@ -1674,7 +1694,8 @@
     "AiPlayerbot.CoaWorld.Guilds.Help": 1,
     "AiPlayerbot.RefreshClearsInventory": 0,
     "AiPlayerbot.CoaEconomy.RpgSell.Enable": 1,
-    "AiPlayerbot.CoaEconomy.BotAuctions.Enable": 1
+    "AiPlayerbot.CoaEconomy.BotAuctions.Enable": 1,
+    "AiPlayerbot.CoaLive.City.Enable": 1
    }
   }
  ]
