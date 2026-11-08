@@ -797,6 +797,60 @@
     "ru": "Цены изучаются по лотам, проданным между игроками и SquidBots (никогда не по самому боту аукциона), и бот аукциона подтягивает свои цены к ним.",
     "zh": "价格从玩家与 SquidBots 之间成交的拍卖中学习（绝不来自拍卖行机器人自身），拍卖行机器人会把自己的价格向其靠拢。"
    }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.LaunchCurve.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-economy",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "hidden": true,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.AHBot.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Launch auction house (new realm)",
+    "fr": "Hôtel des ventes de lancement (royaume neuf)",
+    "ru": "Аукцион запуска (новый мир)",
+    "zh": "开服拍卖行（新国度）"
+   },
+   "help": {
+    "en": "On a new realm the AH bot only lists what the realm's characters could have reached: low levels, white and green first, blues later, epics once someone has the level. Its stock grows and its launch prices fade as the population levels up.",
+    "fr": "Sur un royaume neuf, le bot de l'hôtel des ventes ne met en vente que ce que les personnages du royaume auraient pu atteindre : bas niveaux, blancs et verts d'abord, bleus ensuite, épiques quand quelqu'un a le niveau. Son stock grandit et ses prix de lancement s'effacent à mesure que la population monte de niveau.",
+    "ru": "В новом мире бот аукциона выставляет только то, до чего могли добраться персонажи мира: сначала низкие уровни, белые и зелёные, потом синие, эпические — когда кто-то достигнет уровня. Его запас растёт, а стартовые цены сходят на нет по мере роста уровня населения.",
+    "zh": "在新国度中，拍卖行机器人只上架国度角色可能达到的物品：先是低等级的白色和绿色物品，之后是蓝色，有人达到等级后才有史诗。随着人口升级，库存增长，开服价格逐渐消退。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.Rarity.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-economy",
+   "type": "bool",
+   "default": 0,
+   "when": "reload",
+   "hidden": true,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.AHBot.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Auction house: rarity premium",
+    "fr": "Hôtel des ventes : prime de rareté",
+    "ru": "Аукцион: наценка за редкость",
+    "zh": "拍卖行：稀有度溢价"
+   },
+   "help": {
+    "en": "Items that drop rarely cost more at the AH bot (up to x2). Needs the AH bot's drop-rate rules.",
+    "fr": "Les objets qui tombent rarement coûtent plus cher chez le bot de l'hôtel des ventes (jusqu'à ×2). Demande les règles de taux de butin du bot.",
+    "ru": "Редко выпадающие предметы стоят у бота аукциона дороже (до ×2). Нужны правила шанса выпадения бота аукциона.",
+    "zh": "掉率低的物品在拍卖行机器人处更贵（最多 ×2）。需要拍卖行机器人的掉率规则。"
+   }
   }
  ],
  "packs": [

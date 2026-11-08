@@ -103,5 +103,5 @@ TRUNCATE, DROP, ALTER, CREATE) aimed at a database of the CoA realm or of anothe
 
 ### Still to deliver
 
-- `AiPlayerbot.CoaEconomy.LaunchCurve.Enable` in the manifest (CoA Economie), and the AH options shown once
+- The AH options (LaunchCurve included, in the manifest since 086ccbfc) shown once
   mod-ah-bot-plus has left the core.
