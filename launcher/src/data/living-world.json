@@ -656,6 +656,26 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaCombat.BlackwingLair.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-combat",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "label": {
+    "en": "Blackwing Lair: improved boss tactics",
+    "fr": "Repaire de l'Aile noire : tactiques de boss améliorées",
+    "ru": "Логово Крыла Тьмы: улучшенная тактика боссов",
+    "zh": "黑翼之巢：改进的首领战术"
+   },
+   "help": {
+    "en": "Off by default. On: tank swaps on Firemaw and Ebonroc, the raid behind Chromaggus with the Red affliction cured first, no area spells near Nefarian's Dominion clones.",
+    "fr": "Désactivé par défaut. Activé : changements de tank sur Gueule-de-feu et Rochébène, le raid derrière Chromaggus avec l'affliction rouge soignée en premier, aucun sort de zone près des clones de Domination de Nefarian.",
+    "ru": "Выключено по умолчанию. Включено: смена танков на Огнечреве и Черноскале, рейд за спиной Хромаггуса с первоочерёдным снятием красного недуга, никаких заклинаний по области рядом с клонами Господства Нефариана.",
+    "zh": "默认关闭。开启后：费尔默和埃博诺克战斗中换坦，团队站在克洛玛古斯身后并优先驱散红色痛苦，在奈法利安的支配克隆体附近不使用范围法术。"
+   }
+  },
+  {
    "file": "playerbots.conf",
    "group": "lw-population",
    "when": "reload",
@@ -1829,7 +1849,8 @@
     "AiPlayerbot.CoaLive.City.Enable": 1,
     "AiPlayerbot.CoaLive.Immersion.Enable": 1,
     "AiPlayerbot.CoaWorld.Density.Enable": 1,
-    "AiPlayerbot.EnablePeriodicOnlineOffline": 1
+    "AiPlayerbot.EnablePeriodicOnlineOffline": 1,
+    "AiPlayerbot.CoaCombat.BlackwingLair.Enable": 1
    }
   }
  ]
