@@ -632,6 +632,26 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaCombat.GearScore.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-combat",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "label": {
+    "en": "Set bonuses and raid tokens in gear choice",
+    "fr": "Bonus d'ensemble et jetons de raid dans le choix de l'équipement",
+    "ru": "Бонусы комплектов и рейдовые жетоны при выборе снаряжения",
+    "zh": "选择装备时考虑套装加成和团本代币"
+   },
+   "help": {
+    "en": "Off by default. On: a set piece counts the set bonus it unlocks (and swapping it out costs that bonus), and a bot rolls Need on a raid token only when one of the pieces it gives its class is an upgrade.",
+    "fr": "Désactivé par défaut. Activé : une pièce d'ensemble compte le bonus d'ensemble qu'elle débloque (et la retirer fait perdre ce bonus), et un bot ne joue Besoin sur un jeton de raid que si l'une des pièces qu'il donne à sa classe l'améliore.",
+    "ru": "Выключено по умолчанию. Включено: предмет комплекта учитывает бонус, который он открывает (и снять его — значит потерять бонус), а бот бросает «Нужно» на рейдовый жетон, только если одна из вещей, которые он даёт его классу, является улучшением.",
+    "zh": "默认关闭。开启后：套装部件会计入其解锁的套装加成（换下它会失去该加成），机器人只有在团本代币可兑换的本职业装备中有提升时才掷需求。"
+   }
+  },
+  {
    "key": "AiPlayerbot.LootNeedRollLevel",
    "file": "playerbots.conf",
    "group": "lw-loot",
