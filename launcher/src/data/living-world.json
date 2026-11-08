@@ -5,7 +5,9 @@
   "AiPlayerbot.CoaWorld.Invasions.Legion.Enable",
   "AiPlayerbot.CoaWorld.Invasions.AhnQiraj.Enable",
   "AiPlayerbot.CoaWorld.WorldPvp.Skirmish.Enable",
-  "AiPlayerbot.CoaWorld.WorldPvp.CapitalDefence.Enable"
+  "AiPlayerbot.CoaWorld.WorldPvp.CapitalDefence.Enable",
+  "AiPlayerbot.CoaWorld.Travel.Hearthstone",
+  "AiPlayerbot.CoaWorld.Guilds.Help"
  ],
  "groups": [
   {
@@ -809,6 +811,26 @@
   },
   {
    "file": "playerbots.conf",
+   "key": "AiPlayerbot.CoaWorld.ServerFirst.Enable",
+   "group": "lw-population",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "label": {
+    "en": "Server first announcements",
+    "fr": "Annonces « server first »",
+    "ru": "Объявления «первый на сервере»",
+    "zh": "服务器首杀公告"
+   },
+   "help": {
+    "en": "Off by default. On: the first character of each side to reach the top level, and the first kill of each raid boss, are told to the whole realm once. Meant for a new realm.",
+    "fr": "Désactivé par défaut. Activé : le premier personnage de chaque camp à atteindre le niveau maximum, et la première victoire sur chaque boss de raid, sont annoncés une fois à tout le royaume. Pensé pour un royaume neuf.",
+    "ru": "Выключено по умолчанию. Включено: первый персонаж каждой стороны, достигший максимального уровня, и первое убийство каждого рейдового босса объявляются всему миру один раз. Для нового мира.",
+    "zh": "默认关闭。开启后：每个阵营第一个达到最高等级的角色，以及每个团队首领的首杀，会向整个国度公告一次。适用于新国度。"
+   }
+  },
+  {
+   "file": "playerbots.conf",
    "when": "reload",
    "group": "lw-travellers",
    "key": "AiPlayerbot.CoaWorld.Travel.Enable",
@@ -825,6 +847,26 @@
     "fr": "Désactivé par défaut. Activé : les bots attendent aux tours des zeppelins et aux quais, montent au départ et descendent à l'arrivée.",
     "ru": "Выключено по умолчанию. Включено: боты ждут у башен дирижаблей и на пристанях, садятся при отправлении и сходят на другой стороне.",
     "zh": "默认关闭。开启后：机器人在飞艇塔和码头等候，出发时登上，到达后下来。"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "key": "AiPlayerbot.CoaWorld.Travel.Hearthstone",
+   "group": "lw-travellers",
+   "type": "bool",
+   "default": 1,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Travel.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Bots use their hearthstone when they change zone in sight of a player",
+    "fr": "Les bots utilisent leur pierre de foyer pour changer de zone sous les yeux d'un joueur",
+    "ru": "Боты используют камень возвращения, меняя зону на глазах у игрока",
+    "zh": "机器人在玩家视野中换区域时使用炉石"
    }
   },
   {
@@ -1285,6 +1327,68 @@
     "fr": "Les bots de ton groupe répondent à l'addon SquidBots Lite sur un canal d'addon caché : il sait qui est un bot sans le surnom « Bot ». Toujours actif quand le surnom n'est pas « Bot ».",
     "ru": "Боты вашей группы отвечают аддону SquidBots Lite по скрытому каналу аддонов, и он знает, кто бот, без фамилии «Bot». Всегда включено, если фамилия не «Bot».",
     "zh": "你队伍中的机器人通过隐藏的插件频道回应 SquidBots Lite 插件，使其无需“Bot”姓氏也能识别机器人。姓氏不是“Bot”时始终开启。"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "key": "AiPlayerbot.CoaWorld.Guilds.Enable",
+   "group": "lw-social",
+   "type": "bool",
+   "default": 0,
+   "when": "reload",
+   "label": {
+    "en": "Guilds of bots that live",
+    "fr": "Des guildes de bots vivantes",
+    "ru": "Живые гильдии ботов",
+    "zh": "鲜活的机器人公会"
+   },
+   "help": {
+    "en": "Off by default. On: bot guilds balanced between the sides, messages of the day, dings and drops in guild chat, recruiting in General, and a real player in a guild with bots greeted and now and then given potions.",
+    "fr": "Désactivé par défaut. Activé : des guildes de bots équilibrées entre les camps, des messages du jour, les niveaux et les butins annoncés dans le canal de guilde, du recrutement dans Général, et un vrai joueur dans une guilde de bots est accueilli et reçoit de temps en temps des potions.",
+    "ru": "Выключено по умолчанию. Включено: гильдии ботов, сбалансированные между сторонами, сообщения дня, уровни и добыча в чате гильдии, набор в канале «Общий», а живого игрока в гильдии с ботами приветствуют и время от времени дарят зелья.",
+    "zh": "默认关闭。开启后：两大阵营均衡的机器人公会、每日公告、公会频道中的升级和掉落消息、在综合频道招人，加入机器人公会的真实玩家会受到欢迎，并不时获赠药水。"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "key": "AiPlayerbot.CoaWorld.Guilds.RecruitMinutes",
+   "group": "lw-social",
+   "type": "int",
+   "default": 45,
+   "min": 0,
+   "max": 600,
+   "when": "reload",
+   "onlyWhen": {
+    "key": "AiPlayerbot.CoaWorld.Guilds.Enable",
+    "values": [
+     1
+    ]
+   },
+   "label": {
+    "en": "Minutes between two guild recruiting calls (0 never)",
+    "fr": "Minutes entre deux appels au recrutement (0 jamais)",
+    "ru": "Минут между призывами в гильдию (0 — никогда)",
+    "zh": "两次公会招募之间的分钟数（0 为从不）"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "key": "AiPlayerbot.CoaWorld.Guilds.Help",
+   "group": "lw-social",
+   "type": "bool",
+   "default": 1,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Guilds.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "The guild helps its real players (small gifts)",
+    "fr": "La guilde aide ses vrais joueurs (petits cadeaux)",
+    "ru": "Гильдия помогает своим живым игрокам (маленькие подарки)",
+    "zh": "公会帮助真实玩家（小礼物）"
    }
   },
   {
