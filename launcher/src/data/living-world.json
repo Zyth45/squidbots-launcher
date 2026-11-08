@@ -572,6 +572,26 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaCombat.Telegraph.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-combat",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "label": {
+    "en": "Dodge telegraphed strikes",
+    "fr": "Esquiver les coups annoncés",
+    "ru": "Уклоняться от обозначенных ударов",
+    "zh": "躲避有预警的重击"
+   },
+   "help": {
+    "en": "Off by default. On: the bots step out of a ground marker that announces a heavy hit (for example Targorr the Dread's leap in the Stockade), melee on the boss included, in and out of a Dungeon Clear run.",
+    "fr": "Désactivé par défaut. Activé : les bots sortent d'un marqueur au sol qui annonce un coup lourd (par exemple le bond de Targorr l'Effroyable dans la Prison), y compris les combattants au corps à corps sur le boss, pendant un run Dungeon Clear comme en dehors.",
+    "ru": "Выключено по умолчанию. Включено: боты выходят из метки на земле, предвещающей тяжёлый удар (например, прыжок Таргорра Ужасного в Тюрьме), включая бойцов ближнего боя у босса, в забеге Dungeon Clear и вне его.",
+    "zh": "默认关闭。开启后：机器人会离开预示重击的地面标记（例如监狱中可怕的塔格尔的跳跃），包括正在近战攻击首领的机器人，在 Dungeon Clear 内外均生效。"
+   }
+  },
+  {
    "key": "AiPlayerbot.LootNeedRollLevel",
    "file": "playerbots.conf",
    "group": "lw-loot",
