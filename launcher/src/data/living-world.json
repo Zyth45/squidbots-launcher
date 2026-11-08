@@ -256,6 +256,27 @@
     "ru": "Продавец и покупатель аукциона теперь работают внутри SquidBots, с теми же настройками (mod_ahbot.conf). Оставьте выключенным, пока старый mod-ah-bot-plus есть в ядре.",
     "zh": "拍卖行的系统卖家和买家现在在 SquidBots 内运行，设置相同（mod_ahbot.conf）。只要核心中还有旧的 mod-ah-bot-plus，就保持关闭。"
    }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.Filter.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-economy",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "hidden": true,
+   "label": {
+    "en": "Auction house: CoA sellable items only",
+    "fr": "Hôtel des ventes : seulement les objets vendables de CoA",
+    "ru": "Аукцион: только продаваемые предметы CoA",
+    "zh": "拍卖行：仅限 CoA 可出售物品"
+   },
+   "help": {
+    "en": "The auction house bot leaves out deprecated, Bloodforged (while Bloodforged is off), Worldforged and scaled copies of items.",
+    "fr": "Le bot de l'hôtel des ventes écarte les objets obsolètes, Bloodforged (tant que Bloodforged est désactivé), Worldforged et les copies d'objets à niveau ajusté.",
+    "ru": "Бот аукциона пропускает устаревшие предметы, Bloodforged (пока Bloodforged выключен), Worldforged и масштабированные копии предметов.",
+    "zh": "拍卖行机器人会排除已废弃、Bloodforged（Bloodforged 关闭时）、Worldforged 以及缩放副本物品。"
+   }
   }
  ],
  "packs": []

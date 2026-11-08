@@ -14,6 +14,7 @@ test('the living world manifest shipped with the launcher is valid and makes its
   assert.deepEqual(CATALOG.refused, []);
   // The built-in AH bot stays hidden while mod-ah-bot-plus is in the core (both at once double the auction house).
   assert.ok(CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.AHBot.Enable'));
+  assert.ok(CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.Filter.Enable'));
   assert.ok(!CATALOG.settings.some(setting => setting.key === 'AiPlayerbot.CoaEconomy.AHBot.Enable'));
   const living = CATALOG.settings.filter(setting => setting.living);
   assert.ok(living.length >= 1);
