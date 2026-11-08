@@ -32,7 +32,8 @@ function problem(option, groups, keys, onByDefault = new Set()) {
   if (option.help !== undefined && !text(option.help)) return 'help (en)';
   if (keys.has(`${option.file}\u0000${option.key}`)) return 'key already in the catalog';
   const value = asText(option.default);
-  if (value === '') return 'default';
+  // A text or a list may default to empty; every other type needs a value.
+  if (option.default === undefined || option.default === null || (value === '' && !['text', 'ids'].includes(option.type))) return 'default';
   if (option.type === 'bool' && !['0', '1'].includes(value)) return 'default (0 or 1)';
   if (['int', 'float'].includes(option.type)) {
     const number = Number(value);
@@ -63,7 +64,25 @@ function build(base = BASE, living = LIVING) {
     if (option.min !== undefined) setting.min = option.min;
     if (option.max !== undefined) setting.max = option.max;
     if (option.type === 'choice') setting.choices = option.choices.map(choice => ({ value: String(choice.value), label: text(choice.label) }));
+    if (option.onlyWhen !== undefined) setting.onlyWhen = option.onlyWhen;
     settings.push(setting);
+  }
+  // onlyWhen { key, values }: the option is shown only while that bool or choice setting holds one of the values. It
+  // becomes the catalog's offWhen (the other values), hidden rather than greyed.
+  for (const setting of [...settings]) {
+    const rule = setting.onlyWhen;
+    if (rule === undefined) continue;
+    delete setting.onlyWhen;
+    const other = [...base.settings, ...settings].find(item => item.key === rule?.key);
+    const all = other?.kind === 'bool' ? ['0', '1'] : other?.kind === 'choice' ? other.choices.map(choice => String(choice.value)) : null;
+    const values = Array.isArray(rule?.values) ? rule.values.map(asText) : [];
+    if (!all || !values.length || values.some(value => !all.includes(value))) {
+      refused.push(`${setting.key}: onlyWhen (a bool or choice key, and some of its values)`);
+      settings.splice(settings.indexOf(setting), 1);
+      continue;
+    }
+    setting.offWhen = { key: rule.key, values: all.filter(value => !values.includes(value)) };
+    setting.hideOff = true;
   }
   const used = groups.filter(group => settings.some(setting => setting.group === group.id));
   return {

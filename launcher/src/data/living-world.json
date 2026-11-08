@@ -133,6 +133,81 @@
     "ru": "«Не откажусь» (по умолчанию): боты бросают «Не откажусь» даже на улучшения и оставляют «Нужно» игрокам. «Нужно»: бот бросает «Нужно» на предмет, который действительно его улучшает (например, эпическое оружие в подземелье), и надевает его при выигрыше.",
     "zh": "贪婪（默认）：机器人即使遇到提升也只掷贪婪，把需求留给玩家。需求：物品确实能提升机器人时（例如副本中的史诗武器），机器人掷需求，赢得后装备。"
    }
+  },
+  {
+   "key": "AiPlayerbot.CoaBotSurname",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "choice",
+   "default": 1,
+   "when": "restart",
+   "choices": [
+    {
+     "value": 0,
+     "label": {
+      "en": "None",
+      "fr": "Aucun",
+      "ru": "Нет",
+      "zh": "无"
+     }
+    },
+    {
+     "value": 1,
+     "label": {
+      "en": "\"Bot\"",
+      "fr": "« Bot »",
+      "ru": "«Bot»",
+      "zh": "“Bot”"
+     }
+    },
+    {
+     "value": 2,
+     "label": {
+      "en": "Random family name",
+      "fr": "Nom de famille aléatoire",
+      "ru": "Случайная фамилия",
+      "zh": "随机姓氏"
+     }
+    }
+   ],
+   "label": {
+    "en": "Bot surname",
+    "fr": "Surnom des bots",
+    "ru": "Фамилия ботов",
+    "zh": "机器人姓氏"
+   },
+   "help": {
+    "en": "What the random bots carry after their name. \"Bot\" (\"Kegarink Bot\") tells them from players at a glance. Random family name: a surname drawn from the list below. Applied at the next start. Needs a client that shows two-word names (CoA client revision 8 or later).",
+    "fr": "Ce que les bots aléatoires portent après leur nom. « Bot » (« Kegarink Bot ») les distingue des joueurs d'un coup d'œil. Nom de famille aléatoire : un nom tiré de la liste ci-dessous. Appliqué au prochain démarrage. Demande un client qui affiche les noms en deux mots (client CoA révision 8 ou plus).",
+    "ru": "Что случайные боты носят после имени. «Bot» («Kegarink Bot») сразу отличает их от игроков. Случайная фамилия: берётся из списка ниже. Применяется при следующем запуске. Нужен клиент, показывающий имена из двух слов (клиент CoA версии 8 или новее).",
+    "zh": "随机机器人名字后面的称呼。“Bot”（“Kegarink Bot”）让人一眼分辨机器人和玩家。随机姓氏：从下方列表中抽取。下次启动时生效。需要能显示两段名字的客户端（CoA 客户端第 8 版或更高）。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaBotSurnameList",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "text",
+   "default": "",
+   "when": "restart",
+   "onlyWhen": {
+    "key": "AiPlayerbot.CoaBotSurname",
+    "values": [
+     2
+    ]
+   },
+   "label": {
+    "en": "Family names to draw from",
+    "fr": "Noms de famille à tirer",
+    "ru": "Фамилии для выбора",
+    "zh": "可抽取的姓氏"
+   },
+   "help": {
+    "en": "Separated by commas, for example: Ashford, Brightwood, Stormvale. Used only with \"Random family name\".",
+    "fr": "Séparés par des virgules, par exemple : Ashford, Brightwood, Stormvale. Utilisé seulement avec « Nom de famille aléatoire ».",
+    "ru": "Через запятую, например: Ashford, Brightwood, Stormvale. Используется только с «Случайная фамилия».",
+    "zh": "用逗号分隔，例如：Ashford, Brightwood, Stormvale。仅在“随机姓氏”时使用。"
+   }
   }
  ]
 }

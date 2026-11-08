@@ -86,3 +86,40 @@ test('a living world option shows the player\'s value or its default, writes not
     CATALOG.settings.splice(CATALOG.settings.length - built.settings.length);
   }
 });
+
+test('bot surname: the player\'s 0/1 is kept, 2 is a new choice, and the list shows only with it', async () => {
+  const root = await tempDir();
+  await fsp.cp(FIXTURE, root, { recursive: true });
+  const bots = path.join(root, 'CoA-Bots', 'Core', 'configs', 'modules', 'playerbots.conf');
+  const before = await fsp.readFile(bots, 'utf8');
+  assert.match(before, /^AiPlayerbot\.CoaBotSurname = 0\r?$/m);
+  const config = new ServerConfig(root);
+  const settings = (await config.overview()).settings;
+  const surname = settings.find(item => item.key === 'AiPlayerbot.CoaBotSurname');
+  assert.equal(surname.value, '0');
+  assert.deepEqual(surname.choices.map(choice => choice.value), ['0', '1', '2']);
+  const list = settings.find(item => item.key === 'AiPlayerbot.CoaBotSurnameList');
+  assert.equal(list.value, '');
+  assert.deepEqual([list.offWhen, list.hideOff], [{ key: 'AiPlayerbot.CoaBotSurname', values: ['0', '1'] }, true]);
+  assert.equal(await fsp.readFile(bots, 'utf8'), before);
+  await config.save([{ file: 'playerbots.conf', key: 'AiPlayerbot.CoaBotSurname', value: '2' }, { file: 'playerbots.conf', key: 'AiPlayerbot.CoaBotSurnameList', value: 'Ashford, Brightwood' }]);
+  const after = await fsp.readFile(bots, 'utf8');
+  assert.match(after, /^AiPlayerbot\.CoaBotSurname = 2\r?$/m);
+  assert.equal(after.match(/^AiPlayerbot\.CoaBotSurnameList = "Ashford, Brightwood"\r?$/gm).length, 1);
+  assert.equal(after.replace(/^AiPlayerbot\.CoaBotSurnameList = .*\r?\n/m, '').replace('AiPlayerbot.CoaBotSurname = 2', 'AiPlayerbot.CoaBotSurname = 0'), before);
+});
+
+test('onlyWhen must name a bool or choice setting and some of its values', () => {
+  const built = CATALOG.build({ ...require('../src/data/server-settings.json'), settings: [] }, {
+    groups: GROUPS,
+    options: [
+      { key: 'Living.Mode', file: 'mod_living.conf', group: 'lw-test', type: 'choice', default: 0, choices: [{ value: 0, label: 'A' }, { value: 1, label: 'B' }], label: 'Mode' },
+      { key: 'Living.Rate', file: 'mod_living.conf', group: 'lw-test', type: 'int', default: 1, label: 'Rate' },
+      { key: 'Living.Good', file: 'mod_living.conf', group: 'lw-test', type: 'text', default: '', onlyWhen: { key: 'Living.Mode', values: [1] }, label: 'x' },
+      { key: 'Living.NotChoice', file: 'mod_living.conf', group: 'lw-test', type: 'text', default: '', onlyWhen: { key: 'Living.Rate', values: [1] }, label: 'x' },
+      { key: 'Living.BadValue', file: 'mod_living.conf', group: 'lw-test', type: 'text', default: '', onlyWhen: { key: 'Living.Mode', values: [5] }, label: 'x' },
+    ],
+  });
+  assert.deepEqual(built.settings.find(item => item.key === 'Living.Good').offWhen, { key: 'Living.Mode', values: ['0'] });
+  assert.deepEqual(built.refused.map(line => line.split(':')[0]).sort(), ['Living.BadValue', 'Living.NotChoice']);
+});

@@ -86,9 +86,10 @@ Add a group only for a new family of features. The LLM options come with 3.1, no
 | `file` | yes | The name of the `.conf` file, for example `mod_living_world.conf` or `playerbots.conf`. The launcher finds it in `Core/configs/modules` or `CoA-Bots/Core/configs/modules`, as well as `worldserver.conf` and `coa.conf` (through their template). |
 | `group` | yes | The `id` of a group of this manifest. |
 | `type` | yes | `bool` (0/1, shown as a switch), `int`, `float`, `choice` (a list), `text` (written between quotes), `ids` (numbers separated by commas). |
-| `default` | yes | The value the module uses when the line is absent (the one in its `.conf.dist`). For `bool`, 0 or 1 (`false`/`true` are read as 0/1). For `choice`, one of the `choices`. Within `min`/`max`. |
+| `default` | yes | The value the module uses when the line is absent (the one in its `.conf.dist`). For `bool`, 0 or 1 (`false`/`true` are read as 0/1). `text` and `ids` may default to `""`. For `choice`, one of the `choices`. Within `min`/`max`. |
 | `min`, `max` | no | Bounds for `int` and `float`. The launcher refuses a value outside them. |
 | `choices` | for `choice` | `[{ "value": 1, "label": "Greed" }, …]`. |
+| `onlyWhen` | no | `{ "key": "…", "values": [2] }`: the option is shown only while that `bool` or `choice` setting holds one of these values (hidden otherwise). Example: the list of family names, shown only when the surname mode is 2. |
 | `when` | no | When the change applies: `restart` (default), `reload` (`.reload config`, no restart) or `new-bots` (only for bots made after the change). |
 | `label` | yes | The name of the option (see Texts below). Short, without a final period. |
 | `help` | no | The tooltip: what Off and On do, and what the default is. |
@@ -113,6 +114,26 @@ each change:
 ```
 node --test "test/*.test.cjs"
 ```
+
+## An existing key with new values
+
+A key already shipped in the published `.conf` files (for example `AiPlayerbot.CoaBotSurname`, 0/1 until 3.0, 0/1/2 in
+3.0) goes in the manifest with all its values. The player's 0 or 1 is shown and kept; the new value is one more
+choice. A key of the main catalog (`server-settings.json`) cannot be declared again here: move it out of the catalog
+into the manifest (the launcher reads the player's value either way).
+
+## Study: a "Living pack" button (not built yet)
+
+One click prepares a set of recommended values; nothing is written until the player saves, as for the
+"Ready-made settings" cards today (recipes: the values become pending changes, shown, then Save or Discard).
+
+- Manifest: `"packs": [{ "id": "living", "title": …, "summary": …, "changes": { "Living.Invasions.Enable": 1, … } }]`,
+  with the same checks as the options (every key in the manifest, every value valid).
+- Button at the top of the Living world tabs. It only lists the keys whose value would change.
+- Undo: when the pack is saved, the launcher keeps the previous value of each key it changed (or "absent") in
+  `.coa-launcher/living-pack-undo.json`; a "Go back" button prepares those values again (an absent key goes back to its
+  default). Saved like any change, so it can be checked first.
+- Never applied by itself: no pack on install, on update or on start.
 
 ## Who does what
 

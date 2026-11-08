@@ -577,6 +577,7 @@ label.switch input:checked + span::after, button.switch.on span::before { conten
 /* Solo self-found: the level settings do not apply, shown greyed under a note. */
 .self-found-note { display: flex; gap: 8px; align-items: flex-start; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); margin: 0 0 12px; }
 .conf-row.self-found-off, .conf-row.conf-off { opacity: .5; }
+.conf-row.conf-hide.conf-off { display: none; }
 .troubleshoot { margin-top: 16px; }
 .troubleshoot > summary { cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600; width: max-content; }
 .troubleshoot > summary svg { width: 16px; height: 16px; }
