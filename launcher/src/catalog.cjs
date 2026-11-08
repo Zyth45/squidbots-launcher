@@ -70,6 +70,7 @@ function build(base = BASE, living = LIVING) {
     if (option.max !== undefined) setting.max = option.max;
     if (option.type === 'choice') setting.choices = option.choices.map(choice => ({ value: String(choice.value), label: text(choice.label) }));
     for (const field of ['onlyWhen', 'idleWhen']) if (option[field] !== undefined) setting[field] = option[field];
+    if (option.classic === false) setting.notClassic = true;
     // hidden: checked and kept in the manifest, not shown to the players yet (a feature waiting for a decision).
     if (option.hidden === true) { hiddenSettings.push(setting); continue; }
     settings.push(setting);
@@ -150,7 +151,10 @@ const CLASSIC = {
 };
 
 function packsOf(living, settings, refused) {
-  const packs = settings.length ? [{ ...CLASSIC, builtin: true, changes: Object.fromEntries(settings.map(setting => [setting.key, setting.default])) }] : [];
+    // An option with "classic": false is left out of Classic (a value the player may have set before 3.0, that Classic must
+  // not reset).
+  const classic = settings.filter(setting => !setting.notClassic);
+  const packs = classic.length ? [{ ...CLASSIC, builtin: true, changes: Object.fromEntries(classic.map(setting => [setting.key, setting.default])) }] : [];
   for (const pack of living.packs || []) {
     if (!pack || typeof pack.id !== 'string' || !/^[a-z0-9-]+$/.test(pack.id) || !text(pack.title) || !pack.changes || typeof pack.changes !== 'object' || packs.some(item => item.id === pack.id)) {
       refused.push(`pack ${pack?.id || '?'}: id, title and changes`);

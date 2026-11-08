@@ -95,6 +95,7 @@ Add a group only for a new family of features. The LLM options come with 3.1, no
 | `choices` | for `choice` | `[{ "value": 1, "label": "Greed" }, …]`. |
 | `onlyWhen` | no | `{ "key": "…", "values": [2] }`: the option is shown only while that `bool` or `choice` setting holds one of these values (hidden otherwise). Example: the list of family names, shown only when the surname mode is 2. |
 | `idleWhen` | no | `{ "key": "…", "values": [0, 2] }`: the option has no effect while that `bool` or `choice` setting holds one of these values (shown greyed). Example: "Bots identify themselves", always on when the surname is not "Bot". One of `onlyWhen` / `idleWhen` per option. |
+| `classic` | no | `false`: the option is left out of the Classic pack (a value the player may have set before 3.0 that Classic must not reset, for example `AiPlayerbot.RefreshClearsInventory`). |
 | `hidden` | no | `true`: the option is checked but not shown to the players yet (a feature waiting for a decision, for example the built-in AH bot while mod-ah-bot-plus is in the core). Remove it to show the option. |
 | `when` | no | When the change applies: `restart` (default), `reload` (`.reload config`, no restart) or `new-bots` (only for bots made after the change). |
 | `label` | yes | The name of the option (see Texts below). Short, without a final period. |

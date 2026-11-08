@@ -7,7 +7,7 @@ itself: a card prepares values among the unsaved changes (Save or Discard), or a
 | Card | What it does | State |
 |---|---|---|
 | **Classic** | Every Living world option back to its default: the bots as before 3.0. Pack `classic`, made by the launcher from the manifest (never written in it), so a new option is in it at once. | Done |
-| **Living server** | Pack `living`: every Living world brick measured on the A/B bench, on the realm as it is (characters kept). Surname "None". | Announced (`soon`), values after the bench |
+| **Living server** | Pack `living`: every Living world brick measured on the A/B bench, on the realm as it is (characters kept). Surname "None"; bots keep their bags (`RefreshClearsInventory = 0`), so they have loot to sell (Classic does not touch that key). | Announced (`soon`), values after the bench |
 | **New living server** | A new realm beside the others, opening like an official server. Design below. | Announced, design |
 
 The choice window shows once (`livingChoice` in `public/js/core.js`). "Decide later" closes it; the cards stay in

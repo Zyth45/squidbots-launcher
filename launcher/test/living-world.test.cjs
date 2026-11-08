@@ -14,7 +14,10 @@ test('the living world manifest shipped with the launcher is valid and makes its
   assert.deepEqual(CATALOG.refused, []);
   // Classic: every shown option back to its default; Living server: announced, not preparable yet.
   const classic = CATALOG.packs.find(pack => pack.id === 'classic');
-  assert.deepEqual(classic.changes, Object.fromEntries(CATALOG.settings.filter(setting => setting.living).map(setting => [setting.key, setting.default])));
+  assert.deepEqual(classic.changes, Object.fromEntries(CATALOG.settings.filter(setting => setting.living && !setting.notClassic).map(setting => [setting.key, setting.default])));
+  // The bags of the bots: in the Living pack (kept), never reset by Classic.
+  assert.ok(!Object.hasOwn(classic.changes, 'AiPlayerbot.RefreshClearsInventory'));
+  assert.equal(CATALOG.packs.find(pack => pack.id === 'living').changes['AiPlayerbot.RefreshClearsInventory'], '0');
   assert.equal(CATALOG.packs.find(pack => pack.id === 'living').soon, true);
   assert.ok(CATALOG.build(require('../src/data/server-settings.json'), { groups: GROUPS, options: [{ key: 'Living.A', file: 'mod_living.conf', group: 'lw-test', type: 'bool', default: 0, label: 'x' }], packs: [{ id: 'classic', title: 'x', changes: { 'Living.A': 1 } }] }).refused.some(line => line.startsWith('pack classic:')));
   // The built-in AH bot stays hidden while mod-ah-bot-plus is in the core (both at once double the auction house).

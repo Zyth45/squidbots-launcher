@@ -1208,6 +1208,47 @@
    }
   },
   {
+   "key": "AiPlayerbot.RefreshClearsInventory",
+   "file": "playerbots.conf",
+   "group": "lw-economy",
+   "type": "choice",
+   "default": 1,
+   "when": "restart",
+   "classic": false,
+   "choices": [
+    {
+     "value": 1,
+     "label": {
+      "en": "Emptied at each refresh",
+      "fr": "Vidés à chaque rafraîchissement",
+      "ru": "Очищаются при каждом обновлении",
+      "zh": "每次刷新时清空"
+     }
+    },
+    {
+     "value": 0,
+     "label": {
+      "en": "Kept (bots keep their loot)",
+      "fr": "Gardés (les bots gardent leur butin)",
+      "ru": "Сохраняются (боты хранят добычу)",
+      "zh": "保留（机器人保留战利品）"
+     }
+    }
+   ],
+   "label": {
+    "en": "Random bots' bags",
+    "fr": "Sacs des bots aléatoires",
+    "ru": "Сумки случайных ботов",
+    "zh": "随机机器人的背包"
+   },
+   "help": {
+    "en": "Emptied (the module default): a random bot loses its bag contents when it is refreshed. Kept: bots keep their loot, so they have something to sell at vendors and at the auction house.",
+    "fr": "Vidés (le défaut du module) : un bot aléatoire perd le contenu de ses sacs quand il est rafraîchi. Gardés : les bots gardent leur butin, et ont donc de quoi vendre aux marchands et à l'hôtel des ventes.",
+    "ru": "Очищаются (по умолчанию в модуле): случайный бот теряет содержимое сумок при обновлении. Сохраняются: боты хранят добычу, и им есть что продать торговцам и на аукционе.",
+    "zh": "清空（模块默认）：随机机器人刷新时会失去背包中的物品。保留：机器人保留战利品，因此有东西可以卖给商人和拍卖行。"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaEconomy.AHBot.Enable",
    "file": "playerbots.conf",
    "group": "lw-economy",
@@ -1417,7 +1458,8 @@
     "zh": "在你现有的服务器上开启所有经测试台验证的鲜活世界功能（角色保留）。不加“Bot”姓氏。"
    },
    "changes": {
-    "AiPlayerbot.CoaBotSurname": 0
+    "AiPlayerbot.CoaBotSurname": 0,
+    "AiPlayerbot.RefreshClearsInventory": 0
    }
   }
  ]
