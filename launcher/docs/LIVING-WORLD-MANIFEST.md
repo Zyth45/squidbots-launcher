@@ -62,6 +62,7 @@ installed shows nothing.
 |---|---|---|
 | `id` | yes | Unique id. Prefix it with `lw-`. It must not be the id of an existing group. |
 | `label` | yes | A text (see Texts below). |
+| `section` | no | Where the tab goes: `living` (the Living world section, default) or `bots` (the Bots section, right after Dungeon Clear). Living world is for what makes the server alive; bot combat goes in `bots`. Another value leaves the group out. |
 | `icon` | no | One of the launcher icons: `swords`, `chat`, `map`, `home`, `coin`, `gift`, `trophy`, `globe`, `shield`, `star`, `bot`, `user`, `heart`, `cart`, `book`, `bell`… Default: `globe`. |
 
 The groups already declared, and what goes in them:
@@ -76,7 +77,7 @@ The groups already declared, and what goes in them:
 | `lw-crafting` | Crafting on order. |
 | `lw-population` | Population by time of day, density around the players, budget of borrowed bots (for example 10 %, at most 120). |
 | `lw-pvp` | World PvP, duels, defence of the capitals. |
-| `lw-combat` | Group combat of the bots in dungeons (fixes that Dungeon Clear always has, made available outside its runs). |
+| `lw-combat` | Group combat of the bots in dungeons (fixes that Dungeon Clear always has, made available outside its runs). Section `bots`: its tab is in Bots, after Dungeon Clear. |
 | `lw-loot` | Fine loot rules ("Bots need items" is the first one). |
 
 Add a group only for a new family of features. The LLM options come with 3.1, not before.

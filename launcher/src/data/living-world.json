@@ -89,6 +89,7 @@
   {
    "id": "lw-combat",
    "icon": "shield",
+   "section": "bots",
    "label": {
     "en": "Group combat",
     "fr": "Combat en groupe",

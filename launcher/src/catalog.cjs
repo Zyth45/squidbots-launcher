@@ -49,8 +49,11 @@ function problem(option, groups, keys, onByDefault = new Set()) {
 }
 
 function build(base = BASE, living = LIVING) {
-  const groups = (living.groups || []).filter(group => group && typeof group.id === 'string' && text(group.label) && !base.groups.some(item => item.id === group.id))
+  // section: where the group's tab goes, "living" (the Living world section, by default) or "bots" (the Bots section,
+  // after Dungeon Clear). A group with another section is left out, and so are its options.
+  const groups = (living.groups || []).filter(group => group && typeof group.id === 'string' && text(group.label) && !base.groups.some(item => item.id === group.id) && [undefined, 'living', 'bots'].includes(group.section))
     .map(group => ({ id: group.id, icon: group.icon || 'globe', label: text(group.label) }));
+  const sectionOf = Object.fromEntries((living.groups || []).filter(group => group && typeof group.id === 'string').map(group => [group.id, group.section || 'living']));
   const ids = new Set(groups.map(group => group.id));
   const keys = new Set(base.settings.map(setting => `${setting.file}\u0000${setting.key}`));
   const refused = [];
@@ -103,12 +106,20 @@ function build(base = BASE, living = LIVING) {
     }
   }
   for (const setting of [...settings, ...hiddenSettings]) delete setting.idleRule;
-  const used = groups.filter(group => settings.some(setting => setting.group === group.id));
+  const used = groups.filter(group => sectionOf[group.id] === 'living' && settings.some(setting => setting.group === group.id));
+  const inBots = groups.filter(group => sectionOf[group.id] === 'bots').map(group => group.id);
+  const baseSections = (base.sections || []).map(section => {
+    if (section.id !== 'bots' || !inBots.length) return section;
+    const at = section.groups.indexOf('dungeonclear');
+    const list = [...section.groups];
+    list.splice(at < 0 ? list.length : at + 1, 0, ...inBots);
+    return { ...section, groups: list };
+  });
   return {
     ...base,
     groups: [...base.groups, ...groups],
     settings: [...base.settings, ...settings],
-    sections: used.length ? [...(base.sections || []), { ...SECTION, groups: groups.map(group => group.id) }] : base.sections || [],
+    sections: used.length ? [...baseSections, { ...SECTION, groups: groups.filter(group => sectionOf[group.id] === 'living').map(group => group.id) }] : baseSections,
     packs: packsOf(living, settings, refused),
     refused,
     hidden: hiddenSettings.map(setting => setting.key),

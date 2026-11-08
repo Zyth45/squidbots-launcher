@@ -41,7 +41,16 @@ test('the living world manifest shipped with the launcher is valid and makes its
   }
   assert.deepEqual(living.filter(setting => /(^|.)Enabled?$/i.test(setting.key) && setting.default !== '0' && !allowed.includes(setting.key)).map(setting => setting.key), []);
   const section = CATALOG.sections.find(item => item.id === 'living');
-  assert.ok(section && living.every(setting => section.groups.includes(setting.group)));
+  // Every tab of the manifest is in one section: Living world, or Bots for Group combat (after Dungeon Clear).
+  const bots = CATALOG.sections.find(item => item.id === 'bots');
+  assert.ok(section && living.every(setting => section.groups.includes(setting.group) !== bots.groups.includes(setting.group)));
+  assert.equal(bots.groups[bots.groups.indexOf('dungeonclear') + 1], 'lw-combat');
+  assert.ok(!section.groups.includes('lw-combat'));
+  // A group with an unknown section is left out, and its options with it.
+  const odd = CATALOG.build(require('../src/data/server-settings.json'), { groups: [{ id: 'lw-odd', label: 'Odd', section: 'tools' }, { id: 'lw-b', label: 'B', section: 'bots' }], options: [{ key: 'Living.Odd', file: 'mod_living.conf', group: 'lw-odd', type: 'bool', default: 0, label: 'x' }, { key: 'Living.B', file: 'mod_living.conf', group: 'lw-b', type: 'bool', default: 0, label: 'x' }] });
+  assert.deepEqual([odd.groups.some(group => group.id === 'lw-odd'), odd.refused], [false, ['Living.Odd: group lw-odd']]);
+  assert.ok(odd.sections.find(item => item.id === 'bots').groups.includes('lw-b'));
+  assert.ok(!odd.sections.some(item => item.id === 'living'));
 });
 
 test('a manifest option is turned into a setting; a malformed one is refused, never guessed', () => {
