@@ -899,6 +899,27 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaLive.DataFile.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-population",
+   "type": "bool",
+   "default": 0,
+   "when": "reload",
+   "hidden": true,
+   "label": {
+    "en": "Living world data for the dashboard",
+    "fr": "Données du monde vivant pour le dashboard",
+    "ru": "Данные живого мира для панели",
+    "zh": "供仪表盘使用的鲜活世界数据"
+   },
+   "help": {
+    "en": "Writes world.json (bots online by zone, what they do, server tick) for the CoA Dashboard, only while the dashboard looks at it.",
+    "fr": "Écrit world.json (bots connectés par zone, ce qu'ils font, tick du serveur) pour le CoA Dashboard, seulement pendant que le dashboard le regarde.",
+    "ru": "Записывает world.json (боты онлайн по зонам, чем заняты, тик сервера) для CoA Dashboard, только пока панель его просматривает.",
+    "zh": "为 CoA 仪表盘写入 world.json（各区域在线机器人、它们在做什么、服务器 tick），仅在仪表盘查看时写入。"
+   }
+  },
+  {
    "file": "playerbots.conf",
    "when": "reload",
    "group": "lw-travellers",
