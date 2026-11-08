@@ -632,26 +632,6 @@
    }
   },
   {
-   "key": "AiPlayerbot.CoaCombat.GearScore.Enable",
-   "file": "playerbots.conf",
-   "group": "lw-combat",
-   "type": "bool",
-   "default": 0,
-   "when": "restart",
-   "label": {
-    "en": "Set bonuses and raid tokens in gear choice",
-    "fr": "Bonus d'ensemble et jetons de raid dans le choix de l'équipement",
-    "ru": "Бонусы комплектов и рейдовые жетоны при выборе снаряжения",
-    "zh": "选择装备时考虑套装加成和团本代币"
-   },
-   "help": {
-    "en": "Off by default. On: a set piece counts the set bonus it unlocks (and swapping it out costs that bonus), and a bot rolls Need on a raid token only when one of the pieces it gives its class is an upgrade.",
-    "fr": "Désactivé par défaut. Activé : une pièce d'ensemble compte le bonus d'ensemble qu'elle débloque (et la retirer fait perdre ce bonus), et un bot ne joue Besoin sur un jeton de raid que si l'une des pièces qu'il donne à sa classe l'améliore.",
-    "ru": "Выключено по умолчанию. Включено: предмет комплекта учитывает бонус, который он открывает (и снять его — значит потерять бонус), а бот бросает «Нужно» на рейдовый жетон, только если одна из вещей, которые он даёт его классу, является улучшением.",
-    "zh": "默认关闭。开启后：套装部件会计入其解锁的套装加成（换下它会失去该加成），机器人只有在团本代币可兑换的本职业装备中有提升时才掷需求。"
-   }
-  },
-  {
    "key": "AiPlayerbot.LootNeedRollLevel",
    "file": "playerbots.conf",
    "group": "lw-loot",
@@ -689,6 +669,26 @@
     "fr": "Cupidité (par défaut) : les bots jouent Cupidité même sur leurs améliorations et laissent le Besoin aux joueurs. Besoin : un bot joue Besoin sur un objet qui l'améliore vraiment (une arme épique en instance, par exemple) et l'équipe s'il le gagne.",
     "ru": "«Не откажусь» (по умолчанию): боты бросают «Не откажусь» даже на улучшения и оставляют «Нужно» игрокам. «Нужно»: бот бросает «Нужно» на предмет, который действительно его улучшает (например, эпическое оружие в подземелье), и надевает его при выигрыше.",
     "zh": "贪婪（默认）：机器人即使遇到提升也只掷贪婪，把需求留给玩家。需求：物品确实能提升机器人时（例如副本中的史诗武器），机器人掷需求，赢得后装备。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaCombat.GearScore.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-loot",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "label": {
+    "en": "Set bonuses and raid tokens in gear choice",
+    "fr": "Bonus d'ensemble et jetons de raid dans le choix de l'équipement",
+    "ru": "Бонусы комплектов и рейдовые жетоны при выборе снаряжения",
+    "zh": "选择装备时考虑套装加成和团本代币"
+   },
+   "help": {
+    "en": "Off by default. On: a set piece counts the set bonus it unlocks (and swapping it out costs that bonus), and a bot rolls Need on a raid token only when one of the pieces it gives its class is an upgrade. The raid token part needs \"Bots need items\" on Need: on Greed, bots roll Greed even on a token that upgrades them.",
+    "fr": "Désactivé par défaut. Activé : une pièce d'ensemble compte le bonus d'ensemble qu'elle débloque (et la retirer fait perdre ce bonus), et un bot ne joue Besoin sur un jeton de raid que si l'une des pièces qu'il donne à sa classe l'améliore. La partie jetons de raid demande « Les bots prennent Besoin » sur Besoin : sur Cupidité, les bots jouent Cupidité même sur un jeton qui les améliore.",
+    "ru": "Выключено по умолчанию. Включено: предмет комплекта учитывает бонус, который он открывает (и снять его — значит потерять бонус), а бот бросает «Нужно» на рейдовый жетон, только если одна из вещей, которые он даёт его классу, является улучшением. Часть про жетоны требует, чтобы «Боты бросают «Нужно»» было на «Нужно»: на «Не откажусь» боты бросают «Не откажусь» даже на улучшающий их жетон.",
+    "zh": "默认关闭。开启后：套装部件会计入其解锁的套装加成（换下它会失去该加成），机器人只有在团本代币可兑换的本职业装备中有提升时才掷需求。团本代币部分需要将“机器人需求物品”设为需求：设为贪婪时，机器人即使遇到能提升自己的代币也只掷贪婪。"
    }
   },
   {
