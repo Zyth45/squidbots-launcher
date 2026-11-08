@@ -157,6 +157,8 @@ contextBridge.exposeInMainWorld('launcher', Object.freeze({
   installBots: () => call('bots:install'),
   serverSettings: realm => call('srvconf:overview', realm || ''),
   saveServerSettings: (changes, realm) => call('srvconf:save', changes, realm || ''),
+  rememberPack: (id, previous, realm) => call('srvconf:packRemember', id, previous, realm || ''),
+  forgetPack: realm => call('srvconf:packForget', realm || ''),
   serverSettingsBackups: () => call('srvconf:backups'),
   serverSettingsIndex: () => call('srvconf:index'),
   exportProfile: () => call('srvconf:exportProfile'),

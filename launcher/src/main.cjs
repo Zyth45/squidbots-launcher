@@ -1654,6 +1654,8 @@ function registerIpc() {
     if (realmKey(realm)) return realms.saveSettings(serverPath(), realmKey(realm), changes.slice(0, 200).map(change => ({ file: text(change?.file, 80), key: text(change?.key, 100), value: text(change?.value, 400), reset: change?.reset === true })));
     return serverTools().config.save(changes.slice(0, 500).map(change => ({ file: text(change?.file, 80), key: text(change?.key, 100), value: text(change?.value, 400), kind: text(change?.kind, 10) })));
   });
+  handle('srvconf:packRemember', (id, previous, realm) => serverTools().config.rememberPack(realmKey(realm) || 'coa', text(id, 40), Array.isArray(previous) ? previous.slice(0, 200) : []));
+  handle('srvconf:packForget', realm => serverTools().config.forgetPack(realmKey(realm) || 'coa'));
   handle('srvconf:backups', () => serverTools().config.backups());
   handle('srvconf:index', () => serverTools().config.index());
   // A profile: the player's own values in a file, to keep, share or put on another server.

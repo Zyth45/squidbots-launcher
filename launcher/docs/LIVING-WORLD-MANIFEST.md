@@ -122,18 +122,31 @@ A key already shipped in the published `.conf` files (for example `AiPlayerbot.C
 choice. A key of the main catalog (`server-settings.json`) cannot be declared again here: move it out of the catalog
 into the manifest (the launcher reads the player's value either way).
 
-## Study: a "Living pack" button (not built yet)
+## Packs: recommended values in one click
 
-One click prepares a set of recommended values; nothing is written until the player saves, as for the
-"Ready-made settings" cards today (recipes: the values become pending changes, shown, then Save or Discard).
+A pack is a set of recommended values of the manifest's options. Its card shows at the top of the Living world tabs.
 
-- Manifest: `"packs": [{ "id": "living", "title": …, "summary": …, "changes": { "Living.Invasions.Enable": 1, … } }]`,
-  with the same checks as the options (every key in the manifest, every value valid).
-- Button at the top of the Living world tabs. It only lists the keys whose value would change.
-- Undo: when the pack is saved, the launcher keeps the previous value of each key it changed (or "absent") in
-  `.coa-launcher/living-pack-undo.json`; a "Go back" button prepares those values again (an absent key goes back to its
-  default). Saved like any change, so it can be checked first.
-- Never applied by itself: no pack on install, on update or on start.
+```json
+"packs": [
+ {
+  "id": "living",
+  "title": { "en": "Living world, recommended", "fr": "Monde vivant recommandé" },
+  "summary": "Invasions every two hours, travellers and city life on.",
+  "changes": { "Living.Invasions.Enable": 1, "Living.Invasions.IntervalMinutes": 120 }
+ }
+]
+```
+
+- `id`: lowercase letters, digits and `-`. `title` is required, `summary` optional (Texts as above).
+- `changes`: only keys of this manifest's options, each value fitting its option (0/1, one of the choices, within
+  min/max, no quotes). A pack with one wrong key or value is refused whole. A pack may turn features on: that is its
+  purpose, and the player chooses it.
+- **Prepare** puts the values among the unsaved changes, as the "Ready-made settings" cards do: the player sees them,
+  then saves or discards. Nothing is written before Save. A pack is never applied by itself (install, update, start).
+- **Go back**: when the pack is saved, the launcher keeps the value each key had before (in
+  `.coa-launcher/living-pack-undo.json`, per realm). "Go back" prepares those values again, saved the same way. Saving the
+  pack a second time keeps the values of the first time.
+- On a server without some of the keys, the pack shows with the keys it has; a pack with none of them is hidden.
 
 ## Who does what
 

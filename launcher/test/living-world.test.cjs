@@ -123,3 +123,60 @@ test('onlyWhen must name a bool or choice setting and some of its values', () =>
   assert.deepEqual(built.settings.find(item => item.key === 'Living.Good').offWhen, { key: 'Living.Mode', values: ['0'] });
   assert.deepEqual(built.refused.map(line => line.split(':')[0]).sort(), ['Living.BadValue', 'Living.NotChoice']);
 });
+
+test('a pack names options of the manifest with fitting values; a wrong one is refused whole', () => {
+  const built = CATALOG.build({ ...require('../src/data/server-settings.json'), settings: [] }, {
+    groups: GROUPS,
+    options: [
+      { key: 'Living.Invasions.Enable', file: 'mod_living.conf', group: 'lw-test', type: 'bool', default: 0, label: 'Invasions' },
+      { key: 'Living.Invasions.Rate', file: 'mod_living.conf', group: 'lw-test', type: 'int', default: 5, min: 1, max: 60, label: 'Rate' },
+    ],
+    packs: [
+      { id: 'living', title: 'Living world', summary: 'Recommended.', changes: { 'Living.Invasions.Enable': true, 'Living.Invasions.Rate': 20 } },
+      { id: 'too-fast', title: 'x', changes: { 'Living.Invasions.Rate': 99 } },
+      { id: 'foreign', title: 'x', changes: { 'AiPlayerbot.MaxRandomBots': 500 } },
+      { id: 'empty', title: 'x', changes: {} },
+    ],
+  });
+  assert.deepEqual(built.packs, [{ id: 'living', title: { en: 'Living world' }, summary: { en: 'Recommended.' }, changes: { 'Living.Invasions.Enable': '1', 'Living.Invasions.Rate': '20' } }]);
+  assert.deepEqual(built.refused.map(line => line.split(':')[0]).sort(), ['pack empty', 'pack foreign', 'pack too-fast']);
+});
+
+test('a pack is only offered: nothing is written until saved, and the values it replaced are kept to go back', async () => {
+  const root = await tempDir();
+  await fsp.cp(FIXTURE, root, { recursive: true });
+  const conf = path.join(root, 'CoA-Bots', 'Core', 'configs', 'modules', 'mod_living.conf');
+  await fsp.writeFile(conf, 'Living.Invasions.Rate = 7\r\n');
+  const built = CATALOG.build({ ...require('../src/data/server-settings.json'), settings: [] }, {
+    groups: GROUPS,
+    options: [
+      { key: 'Living.Invasions.Enable', file: 'mod_living.conf', group: 'lw-test', type: 'bool', default: 0, label: 'Invasions' },
+      { key: 'Living.Invasions.Rate', file: 'mod_living.conf', group: 'lw-test', type: 'int', default: 5, min: 1, max: 60, label: 'Rate' },
+    ],
+    packs: [{ id: 'living', title: 'Living world', changes: { 'Living.Invasions.Enable': 1, 'Living.Invasions.Rate': 20 } }],
+  });
+  CATALOG.settings.push(...built.settings);
+  CATALOG.packs.push(...built.packs);
+  try {
+    const config = new ServerConfig(root);
+    const overview = await config.overview();
+    assert.deepEqual(overview.packs.map(pack => pack.id), ['living']);
+    assert.deepEqual(overview.packUndo, {});
+    assert.equal(await fsp.readFile(conf, 'utf8'), 'Living.Invasions.Rate = 7\r\n');
+    // The player saves the pack; the interface then hands the values it replaced.
+    await config.save([{ file: 'mod_living.conf', key: 'Living.Invasions.Enable', value: '1' }, { file: 'mod_living.conf', key: 'Living.Invasions.Rate', value: '20' }]);
+    const previous = [{ file: 'mod_living.conf', key: 'Living.Invasions.Enable', value: '0' }, { file: 'mod_living.conf', key: 'Living.Invasions.Rate', value: '7' }, { file: 'playerbots.conf', key: 'AiPlayerbot.MaxRandomBots', value: '1' }];
+    await config.rememberPack('coa', 'living', previous);
+    // Saved again: the values of before stay those of the first time.
+    await config.rememberPack('coa', 'living', [{ file: 'mod_living.conf', key: 'Living.Invasions.Rate', value: '20' }]);
+    const undo = (await config.overview()).packUndo.coa;
+    assert.equal(undo.id, 'living');
+    assert.deepEqual(undo.previous, previous.slice(0, 2));
+    await assert.rejects(config.rememberPack('coa', 'nope', previous), /Unknown pack/);
+    await config.forgetPack('coa');
+    assert.deepEqual((await config.overview()).packUndo, {});
+  } finally {
+    CATALOG.settings.splice(CATALOG.settings.length - built.settings.length);
+    CATALOG.packs.splice(CATALOG.packs.length - built.packs.length);
+  }
+});

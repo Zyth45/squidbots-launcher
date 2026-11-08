@@ -90,8 +90,45 @@ function build(base = BASE, living = LIVING) {
     groups: [...base.groups, ...groups],
     settings: [...base.settings, ...settings],
     sections: used.length ? [...(base.sections || []), { ...SECTION, groups: groups.map(group => group.id) }] : base.sections || [],
+    packs: packsOf(living, settings, refused),
     refused,
   };
+}
+
+// The reason a value does not fit a setting, or null.
+function valueProblem(setting, value) {
+  if (/[\r\n"]/.test(value)) return 'no quotes or line breaks';
+  if (setting.kind === 'bool') return ['0', '1'].includes(value) ? null : 'expected 0 or 1';
+  if (setting.kind === 'choice') return setting.choices.some(choice => choice.value === value) ? null : 'not one of the choices';
+  if (['int', 'float'].includes(setting.kind)) {
+    const number = Number(value);
+    if (value === '' || !Number.isFinite(number) || (setting.kind === 'int' && !Number.isInteger(number))) return 'expected a number';
+    if ((setting.min !== undefined && number < setting.min) || (setting.max !== undefined && number > setting.max)) return 'out of min/max';
+  }
+  return null;
+}
+
+// Packs: a set of recommended values of the manifest's options, prepared by one click of the player (never applied by
+// itself). A pack with a key that is not an option of the manifest, or a value that does not fit, is refused whole.
+function packsOf(living, settings, refused) {
+  const packs = [];
+  for (const pack of living.packs || []) {
+    if (!pack || typeof pack.id !== 'string' || !/^[a-z0-9-]+$/.test(pack.id) || !text(pack.title) || !pack.changes || typeof pack.changes !== 'object' || packs.some(item => item.id === pack.id)) {
+      refused.push(`pack ${pack?.id || '?'}: id, title and changes`);
+      continue;
+    }
+    const changes = {};
+    let why = null;
+    for (const [key, raw] of Object.entries(pack.changes)) {
+      const setting = settings.find(item => item.key === key);
+      const bad = setting ? valueProblem(setting, asText(raw)) : 'not an option of the manifest';
+      if (bad) { why = `${key}: ${bad}`; break; }
+      changes[key] = asText(raw);
+    }
+    if (why || !Object.keys(changes).length) { refused.push(`pack ${pack.id}: ${why || 'no changes'}`); continue; }
+    packs.push({ id: pack.id, title: text(pack.title), summary: text(pack.summary) || { en: '' }, changes });
+  }
+  return packs;
 }
 
 module.exports = build();

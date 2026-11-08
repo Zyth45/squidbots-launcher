@@ -448,7 +448,7 @@ function settingsView() {
   const quick = conf.recipes.filter(recipe => ['coa-recommended', 'fresh-level-1', 'self-found-world', 'bots-around-my-level', 'rexxar-like'].includes(recipe.id))
     .filter(recipe => !recipe.soon || conf.recipes.some(item => item.id === 'self-found-world'));
   const recipes = quick.length ? `<div class="recipes">${quick.map(recipe => `<div class="recipe-cell"><button class="recipe${recipe.soon ? ' soon' : ''}" ${recipe.soon ? 'disabled aria-disabled="true"' : `data-action="conf-recipe" data-id="${esc(recipe.id)}"`}><strong>${esc(loc(recipe.title))}${recipe.soon ? `<span class="soon-tag">${esc(t('conf.soon', 'Coming soon'))}</span>` : ''}</strong><small>${esc(loc(recipe.summary))}</small></button></div>`).join('')}</div>` : '';
-  const body = groups.filter(group => group.id === App.state.confGroup).map(group => `<section class="conf-group"><h3>${icon(group.icon)}${esc(loc(group.label))}</h3>${group.id === 'presets' ? presetsView(recipes) : group.id === 'population' ? ramAdvice(conf) : group.id === 'damage' ? damageView() : group.id === 'progression' ? progressionView() : ''}${group.id === 'levels' && selfFoundOn() ? `<p class="status-line self-found-note">${icon('info')}${esc(t('conf.selfFoundLevels', 'Solo self-found is on: the bots only level up by playing (up to 59 without generated gear, geared as usual at 60). The level settings below do not apply, except the bots online around your level.'))}</p>` : ''}${conf.settings.filter(setting => setting.group === group.id && !DAMAGE_KEYS.includes(setting.key) && setting.key !== THREAT_KEY).map(settingRow).join('')}</section>`).join('');
+  const body = groups.filter(group => group.id === App.state.confGroup).map(group => `<section class="conf-group"><h3>${icon(group.icon)}${esc(loc(group.label))}</h3>${packCards(group)}${group.id === 'presets' ? presetsView(recipes) : group.id === 'population' ? ramAdvice(conf) : group.id === 'damage' ? damageView() : group.id === 'progression' ? progressionView() : ''}${group.id === 'levels' && selfFoundOn() ? `<p class="status-line self-found-note">${icon('info')}${esc(t('conf.selfFoundLevels', 'Solo self-found is on: the bots only level up by playing (up to 59 without generated gear, geared as usual at 60). The level settings below do not apply, except the bots online around your level.'))}</p>` : ''}${conf.settings.filter(setting => setting.group === group.id && !DAMAGE_KEYS.includes(setting.key) && setting.key !== THREAT_KEY).map(settingRow).join('')}</section>`).join('');
   const key = realmKey || 'coa';
   const others = createdRealms().length > 1;
   const banner = !others ? '' : realmBanner(key, realmKey
@@ -1010,7 +1010,29 @@ Object.assign(App.actions, {
   }, button),
   'conf-save': button => guard(() => saveConf(false), button),
   'conf-save-restart': button => guard(() => saveConf(true), button),
-  'conf-discard': () => { App.state.pending = {}; App.refresh('server'); },
+  'conf-discard': () => { App.state.pending = {}; App.state.packPrepared = null; App.state.packUndoPrepared = null; App.refresh('server'); },
+  // A Living world pack: its values are prepared like a recipe; nothing is written before Save.
+  'pack-prepare': button => {
+    const conf = App.state.conf;
+    const pack = conf.packs?.find(item => item.id === button.dataset.id);
+    if (!pack) return;
+    const previous = [];
+    for (const [key, value] of Object.entries(pack.changes)) {
+      const setting = conf.settings.find(item => item.key === key);
+      if (setting && String(setting.value).trim() !== value) previous.push({ file: setting.file, key, value: String(setting.value).trim() });
+    }
+    App.state.packPrepared = { id: pack.id, target: packTarget(), previous, changes: pack.changes };
+    App.state.packUndoPrepared = null;
+    prepareRecipe(pack);
+  },
+  // Back to the values the pack replaced, prepared the same way.
+  'pack-undo': () => {
+    const undo = App.state.conf.packUndo?.[packTarget()];
+    if (!undo) return;
+    App.state.packUndoPrepared = { target: packTarget(), previous: undo.previous };
+    App.state.packPrepared = null;
+    prepareRecipe({ title: { en: t('pack.undoTitle', 'The values before the pack') }, changes: Object.fromEntries(undo.previous.map(item => [item.key, item.value])) });
+  },
   'conf-history': button => guard(async () => {
     const list = await App.api.serverSettingsBackups();
     const when = id => { const m = /^(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})/.exec(id); return m ? formatDate(`${m[1]}-${m[2]}-${m[3]}T${m[4]}:${m[5]}:${m[6]}Z`, true) : id; };
@@ -1126,10 +1148,39 @@ App.actions['ahbot-save'] = button => guard(async () => {
   toast(result.reloaded ? t('ah.applied', 'Settings applied: the auction house uses them now.') : result.running ? t('ah.savedRestart', 'Settings saved: they apply at the next start (the world did not answer the reload).') : t('ah.saved', 'Settings saved: they apply at the next start of the server.'), 'success');
 }, button);
 
+// ---------------------------------------------------------------- Living world packs
+const packTarget = () => confRealm() || 'coa';
+
+// A card per pack at the top of the Living world tabs: Prepare, and Go back once a pack was saved.
+function packCards(group) {
+  const conf = App.state.conf;
+  if (!group.id.startsWith('lw-') || !conf.packs?.length) return '';
+  const undo = conf.packUndo?.[packTarget()];
+  return `<div class="preset-cards">${conf.packs.map(pack => `<div class="preset-card pack-card"><div><strong>${icon('star')}${esc(loc(pack.title))}</strong><p>${esc(loc(pack.summary))} ${esc(t('pack.count', '{n} setting(s), prepared for you to check, then Save.', { n: Object.keys(pack.changes).length }))}</p></div><div class="button-row"><button class="button primary" data-action="pack-prepare" data-id="${esc(pack.id)}">${icon('play')}${esc(t('pack.prepare', 'Prepare'))}</button>${undo?.id === pack.id ? `<button class="button ghost" data-action="pack-undo">${icon('refresh')}${esc(t('pack.undo', 'Go back'))}</button>` : ''}</div></div>`).join('')}</div>`;
+}
+
+// After a save: a pack saved keeps the values it replaced (to go back); going back saved forgets them.
+async function packAfterSave(changes, realm) {
+  const target = realm || 'coa';
+  const saved = (key, value) => changes.some(change => change.key === key && String(change.value).trim() === value);
+  const prepared = App.state.packPrepared;
+  if (prepared?.target === target) {
+    const replaced = prepared.previous.filter(item => saved(item.key, prepared.changes[item.key]));
+    if (replaced.length) await App.api.rememberPack(prepared.id, replaced, realm).catch(() => {});
+  }
+  const undo = App.state.packUndoPrepared;
+  if (undo?.target === target && undo.previous.every(item => saved(item.key, item.value) || String(App.state.conf.settings.find(setting => setting.key === item.key)?.value ?? '').trim() === item.value)) {
+    await App.api.forgetPack(realm).catch(() => {});
+  }
+  App.state.packPrepared = null;
+  App.state.packUndoPrepared = null;
+}
+
 async function saveConf(restart) {
   const realm = confRealm();
   const changes = Object.values(App.state.pending);
   const result = await App.api.saveServerSettings(changes, realm);
+  await packAfterSave(changes, realm);
   App.state.pending = {};
   toast(result.written.length ? t('conf.savedFiles', 'Saved in {files}.', { files: result.written.join(', ') }) : t('conf.nothing', 'Nothing changed.'), 'success');
   // Settings the world reads again with .reload config (bot damage, tank threat...): applied at once when it runs;

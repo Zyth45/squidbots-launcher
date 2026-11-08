@@ -25,6 +25,8 @@ const GENERATED = new Set(['coa_bugreport.conf']);
 const MAX_FILE = 4 * 1024 * 1024;
 const BACKUPS = '.coa-launcher/config-backups';
 const CHANGES = '.coa-launcher/config-changes.json';
+// The values a Living world pack replaced, per target (coa or a realm), to go back to them.
+const PACKS = '.coa-launcher/living-pack-undo.json';
 
 // 20260929-103512-123: sortable, and two saves in the same second never share a folder.
 let lastStamp = '';
@@ -232,9 +234,35 @@ class ServerConfig {
       // left out on an older package.
       recipes: CATALOG.recipes.filter(recipe => (recipe.needs || Object.keys(recipe.changes)).every(key => settings.some(setting => setting.key === key))),
       overrides: CATALOG.overrides,
+      // A pack shows with the keys this server has; one with none of them is left out.
+      packs: (CATALOG.packs || []).map(pack => ({ ...pack, changes: Object.fromEntries(Object.entries(pack.changes).filter(([key]) => settings.some(setting => setting.key === key))) })).filter(pack => Object.keys(pack.changes).length),
+      packUndo: (await readJson(this.resolve(PACKS))) || {},
       changed: Object.keys(changes).length,
       bots: this.exists('CoA-Bots/coa_bots.py'),
     };
+  }
+
+  // A Living world pack the player saved: the values it replaced, kept to go back to them. target is 'coa' or a realm
+  // key; previous is [{ file, key, value }]. A second save of the same pack keeps the first values (those of before).
+  async rememberPack(target, id, previous) {
+    const pack = (CATALOG.packs || []).find(item => item.id === id);
+    if (!pack || !/^[a-z0-9-]{1,40}$/.test(target)) throw new Error('Unknown pack.');
+    const list = (Array.isArray(previous) ? previous : []).filter(item => Object.hasOwn(pack.changes, item?.key) && typeof item.file === 'string' && typeof item.value === 'string')
+      .map(item => ({ file: item.file.slice(0, 80), key: item.key, value: item.value.slice(0, 400) }));
+    const all = (await readJson(this.resolve(PACKS))) || {};
+    if (all[target]?.id === id) return all[target];
+    if (!list.length) return null;
+    all[target] = { id, at: new Date().toISOString(), previous: list };
+    await atomicJson(this.resolve(PACKS), all);
+    return all[target];
+  }
+
+  // After the player saved the values of before: nothing left to go back to.
+  async forgetPack(target) {
+    const all = (await readJson(this.resolve(PACKS))) || {};
+    if (!all[target]) return;
+    delete all[target];
+    await atomicJson(this.resolve(PACKS), all);
   }
 
   // The player's own values (a profile to export): the keys of the module files that differ from their .dist, and the
