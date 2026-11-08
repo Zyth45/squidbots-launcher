@@ -640,6 +640,27 @@
     "ru": "Бот аукциона покупает как люди: не сразу замечает новые лоты, хватает выгодные предложения, иногда перебивает ставки игроков и никогда не платит больше самой низкой цены дома. Нужен покупатель бота аукциона.",
     "zh": "拍卖行机器人像真人一样购买：需要时间才注意到新拍卖，抢购便宜货，有时会抬价超过玩家，但绝不会付出高于系统最低价的价格。需要拍卖行机器人的买家功能。"
    }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.Market.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-economy",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "hidden": true,
+   "label": {
+    "en": "Market prices learned from real sales",
+    "fr": "Prix du marché appris des vraies ventes",
+    "ru": "Рыночные цены по реальным продажам",
+    "zh": "从真实成交学习市场价格"
+   },
+   "help": {
+    "en": "Prices are learned from auctions sold between players and SquidBots (never the AH bot itself), and the AH bot moves its prices toward them.",
+    "fr": "Les prix sont appris des enchères vendues entre joueurs et SquidBots (jamais du bot de l'hôtel des ventes lui-même), et le bot de l'hôtel des ventes rapproche ses prix de ceux-là.",
+    "ru": "Цены изучаются по лотам, проданным между игроками и SquidBots (никогда не по самому боту аукциона), и бот аукциона подтягивает свои цены к ним.",
+    "zh": "价格从玩家与 SquidBots 之间成交的拍卖中学习（绝不来自拍卖行机器人自身），拍卖行机器人会把自己的价格向其靠拢。"
+   }
   }
  ],
  "packs": [

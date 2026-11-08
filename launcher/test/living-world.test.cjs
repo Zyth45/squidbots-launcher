@@ -21,6 +21,7 @@ test('the living world manifest shipped with the launcher is valid and makes its
   assert.ok(CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.AHBot.Enable'));
   assert.ok(CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.Filter.Enable'));
   assert.ok(CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.Buyer.Enable'));
+  assert.ok(CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.Market.Enable'));
   // Shown one day: the hidden options must then be valid too (their rules included).
   const manifest = require('../src/data/living-world.json');
   const shown = CATALOG.build(require('../src/data/server-settings.json'), { ...manifest, options: manifest.options.map(({ hidden, ...option }) => option) });
