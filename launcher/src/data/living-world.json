@@ -357,6 +357,114 @@
    }
   },
   {
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "when": "reload",
+   "key": "AiPlayerbot.CoaLive.Enable",
+   "type": "bool",
+   "default": 0,
+   "label": {
+    "en": "Bots react like people (CoA Live)",
+    "fr": "Les bots réagissent comme des joueurs (CoA Live)",
+    "ru": "Боты реагируют как люди (CoA Live)",
+    "zh": "机器人像真人一样互动（CoA Live）"
+   },
+   "help": {
+    "en": "Random bots greet you, cheer your level up, bow after a duel, thank you for a rez, call boss pulls and answer your whispers with a human typing delay, from the CoA Live phrase bank (EN/FR). They only speak when a real player can hear.",
+    "fr": "Les bots aléatoires te saluent, fêtent ton niveau, s'inclinent après un duel, te remercient d'une résurrection, annoncent les pulls de boss et répondent à tes chuchotements avec un délai de frappe humain, tirés de la banque de phrases CoA Live (EN/FR). Ils ne parlent que si un vrai joueur peut les entendre.",
+    "ru": "Случайные боты здороваются, поздравляют с новым уровнем, кланяются после дуэли, благодарят за воскрешение, объявляют пулл босса и отвечают на шёпот с человеческой задержкой набора, из банка фраз CoA Live (EN/FR). Говорят, только если их может услышать живой игрок.",
+    "zh": "随机机器人会向你打招呼、祝贺你升级、决斗后鞠躬、感谢你的复活、喊出首领开怪，并以真人般的打字延迟回复你的密语，台词来自 CoA Live 语句库（英/法）。只有真实玩家能听到时才会说话。"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "when": "reload",
+   "key": "AiPlayerbot.CoaLive.TypoChance",
+   "type": "int",
+   "default": 4,
+   "min": 0,
+   "max": 100,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaLive.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Typo chance %",
+    "fr": "Chance de faute de frappe %",
+    "ru": "Шанс опечатки %",
+    "zh": "打错字几率 %"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "when": "reload",
+   "key": "AiPlayerbot.CoaLive.AbbrevChance",
+   "type": "int",
+   "default": 25,
+   "min": 0,
+   "max": 100,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaLive.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Slang chance %",
+    "fr": "Chance d'argot %",
+    "ru": "Шанс сленга %",
+    "zh": "使用俚语几率 %"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "when": "reload",
+   "key": "AiPlayerbot.CoaLive.RareChance",
+   "type": "int",
+   "default": 10,
+   "min": 0,
+   "max": 100,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaLive.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Rare joke lines %",
+    "fr": "Répliques drôles rares %",
+    "ru": "Редкие шутки %",
+    "zh": "稀有玩笑台词 %"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "when": "reload",
+   "key": "AiPlayerbot.CoaLive.GreetRange",
+   "type": "int",
+   "default": 15,
+   "min": 5,
+   "max": 40,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaLive.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Greet range (yd)",
+    "fr": "Distance de salut (m)",
+    "ru": "Дальность приветствия (ярды)",
+    "zh": "打招呼距离（码）"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaBotSurname",
    "file": "playerbots.conf",
    "group": "lw-social",
@@ -534,5 +642,25 @@
    }
   }
  ],
- "packs": []
+ "packs": [
+  {
+   "id": "living",
+   "soon": true,
+   "title": {
+    "en": "Living server",
+    "fr": "Serveur vivant",
+    "ru": "Живой сервер",
+    "zh": "鲜活服务器"
+   },
+   "summary": {
+    "en": "Every Living world feature measured on the test bench, on your realm as it is (your characters stay). No \"Bot\" surname.",
+    "fr": "Toutes les fonctions du Monde vivant mesurées au banc d'essai, sur ton royaume tel qu'il est (tes personnages restent). Pas de surnom « Bot ».",
+    "ru": "Все функции «Живого мира», проверенные на тестовом стенде, на вашем мире как он есть (персонажи остаются). Без фамилии «Bot».",
+    "zh": "在你现有的服务器上开启所有经测试台验证的鲜活世界功能（角色保留）。不加“Bot”姓氏。"
+   },
+   "changes": {
+    "AiPlayerbot.CoaBotSurname": 0
+   }
+  }
+ ]
 }

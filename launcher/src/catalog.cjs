@@ -130,13 +130,22 @@ function valueProblem(setting, value) {
 
 // Packs: a set of recommended values of the manifest's options, prepared by one click of the player (never applied by
 // itself). A pack with a key that is not an option of the manifest, or a value that does not fit, is refused whole.
+// Classic: the bots as before 3.0, every Living world option back to its default (made by the launcher, never written
+// in the manifest).
+const CLASSIC = {
+  id: 'classic',
+  title: { en: 'Classic', fr: 'Classique', ru: 'Классика', zh: '经典' },
+  summary: { en: 'The bots as you know them: every Living world feature off (the defaults).', fr: 'Les bots comme tu les connais : toutes les fonctions du Monde vivant coupées (les valeurs par défaut).', ru: 'Боты как прежде: все функции «Живого мира» выключены (значения по умолчанию).', zh: '你熟悉的机器人：所有鲜活世界功能关闭（默认值）。' },
+};
+
 function packsOf(living, settings, refused) {
-  const packs = [];
+  const packs = settings.length ? [{ ...CLASSIC, builtin: true, changes: Object.fromEntries(settings.map(setting => [setting.key, setting.default])) }] : [];
   for (const pack of living.packs || []) {
     if (!pack || typeof pack.id !== 'string' || !/^[a-z0-9-]+$/.test(pack.id) || !text(pack.title) || !pack.changes || typeof pack.changes !== 'object' || packs.some(item => item.id === pack.id)) {
       refused.push(`pack ${pack?.id || '?'}: id, title and changes`);
       continue;
     }
+    if (pack.id === CLASSIC.id) { refused.push('pack classic: made by the launcher'); continue; }
     const changes = {};
     let why = null;
     for (const [key, raw] of Object.entries(pack.changes)) {
@@ -145,8 +154,9 @@ function packsOf(living, settings, refused) {
       if (bad) { why = `${key}: ${bad}`; break; }
       changes[key] = asText(raw);
     }
-    if (why || !Object.keys(changes).length) { refused.push(`pack ${pack.id}: ${why || 'no changes'}`); continue; }
-    packs.push({ id: pack.id, title: text(pack.title), summary: text(pack.summary) || { en: '' }, changes });
+    // A pack announced for later (soon) shows greyed, may be empty, and cannot be prepared.
+    if (why || (!Object.keys(changes).length && pack.soon !== true)) { refused.push(`pack ${pack.id}: ${why || 'no changes'}`); continue; }
+    packs.push({ id: pack.id, title: text(pack.title), summary: text(pack.summary) || { en: '' }, changes, ...(pack.soon === true ? { soon: true } : {}) });
   }
   return packs;
 }

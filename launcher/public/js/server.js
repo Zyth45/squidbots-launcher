@@ -219,6 +219,7 @@ async function loadConf() {
   try { App.state.conf = await App.api.serverSettings(confRealm()); }
   catch (error) { App.state.conf = { error: translateError(error.message) }; }
   App.refresh('server');
+  if (App.state.conf?.packs?.length) livingChoiceDialog();
 }
 
 // The realm the settings page works on: '' is Conquest of Azeroth (the files of the repack).
@@ -464,7 +465,7 @@ function presetsView(recipes) {
   return `<div class="preset-cards">
     <div class="preset-card wizard"><div><strong>${icon('star')}${esc(t('wizard.cardTitle', 'Setup wizard'))}</strong><p>${esc(t('wizard.cardText', 'A few simple questions (type of server, level, bots, PvP...) with a recommendation for each, then a summary before anything changes.'))}</p></div><button class="button primary" data-action="setup-wizard">${icon('play')}${esc(t('wizard.open', 'Open the wizard'))}${isNew('wizard') ? newDot() : ''}</button></div>
     <div class="preset-card"><div><strong>${icon('download')}${esc(t('profile.title', 'Your settings profile'))}</strong><p>${esc(t('profile.text', 'Every value you changed, in one file: keep it, share it, or put it on another server. Importing shows the differences first.'))}</p></div><div class="button-row"><button class="button ghost" data-action="profile-export">${icon('download')}${esc(t('profile.export', 'Export'))}</button><button class="button ghost" data-action="profile-import">${icon('folder')}${esc(t('profile.import', 'Import'))}</button></div></div>
-  </div><h4 class="preset-head">${esc(t('conf.recipesTitle', 'Ready-made settings'))}</h4>${recipes}`;
+  </div><h4 class="preset-head">${esc(t('conf.recipesTitle', 'Ready-made settings'))}</h4>${recipes}${livingRecipes()}`;
 }
 
 // ---------------------------------------------------------------- bot damage by class and specialization
@@ -1152,11 +1153,56 @@ App.actions['ahbot-save'] = button => guard(async () => {
 const packTarget = () => confRealm() || 'coa';
 
 // A card per pack at the top of the Living world tabs: Prepare, and Go back once a pack was saved.
+// One pack: Prepare (and Go back once saved); a pack announced for later is greyed, with nothing to prepare.
+function packCard(pack, undo) {
+  const soon = pack.soon ? `<span class="soon-tag">${esc(t('conf.soon', 'Coming soon'))}</span>` : '';
+  const count = pack.soon ? '' : ` ${esc(t('pack.count', '{n} setting(s), prepared for you to check, then Save.', { n: Object.keys(pack.changes).length }))}`;
+  const prepare = `<button class="button primary" ${pack.soon ? 'disabled aria-disabled="true"' : `data-action="pack-prepare" data-id="${esc(pack.id)}"`}>${icon('play')}${esc(t('pack.prepare', 'Prepare'))}</button>`;
+  const back = undo?.id === pack.id ? `<button class="button ghost" data-action="pack-undo">${icon('refresh')}${esc(t('pack.undo', 'Go back'))}</button>` : '';
+  return `<div class="preset-card pack-card${pack.soon ? ' soon' : ''}"><div><strong>${icon('star')}${esc(loc(pack.title))}${soon}</strong><p>${esc(loc(pack.summary))}${count}</p></div><div class="button-row">${prepare}${back}</div></div>`;
+}
+
+// The three ready-made worlds of 3.0: Classic, Living server (the realm as it is), New living server (a new realm,
+// announced for later). Offered once at the first launch and kept in Ready-made settings. Nothing applies by itself.
+function livingWorlds() {
+  const packs = App.state.conf?.packs || [];
+  const classic = packs.find(pack => pack.id === 'classic');
+  if (!classic) return [];
+  const living = packs.find(pack => pack.id === 'living') || { id: 'living', soon: true, title: { en: t('pack.livingTitle', 'Living server') }, summary: { en: '' } };
+  const fresh = { id: 'new-living-realm', soon: true, title: { en: t('pack.newRealmTitle', 'New living server') }, summary: { en: t('pack.newRealmText', 'A new realm beside yours, its world opening like an official server: bots from level 1, solo self-found, an empty auction house, "server first" announcements. Your realms are not touched.') } };
+  return [classic, living, fresh];
+}
+
+function livingRecipes() {
+  const worlds = livingWorlds();
+  if (!worlds.length) return '';
+  return `<h4 class="preset-head">${esc(t('pack.worldsTitle', 'Living world'))}</h4><div class="recipes">${worlds.map(pack => `<div class="recipe-cell"><button class="recipe${pack.soon ? ' soon' : ''}" ${pack.soon ? 'disabled aria-disabled="true"' : `data-action="pack-prepare" data-id="${esc(pack.id)}"`}><strong>${esc(loc(pack.title))}${pack.soon ? `<span class="soon-tag">${esc(t('conf.soon', 'Coming soon'))}</span>` : ''}</strong><small>${esc(loc(pack.summary))}</small></button></div>`).join('')}</div>`;
+}
+
+// Once (first launch, or the first 3.0 launch): the three worlds, the player picks one or closes. Picking prepares its
+// values among the unsaved changes; nothing is written before Save.
+function livingChoiceDialog() {
+  const worlds = livingWorlds();
+  if (!worlds.length || !isNew('livingChoice') || $('#dialog')?.open) return;
+  markSeen('livingChoice');
+  dialog.open(`${dialog.header(t('pack.choiceTitle', 'What kind of world?'), t('pack.choiceSub', 'You can change your mind later, in Server settings > Ready-made settings.'))}<div class="dialog-content"><div class="recipes">${worlds.map(pack => `<div class="recipe-cell"><button class="recipe${pack.soon ? ' soon' : ''}" ${pack.soon ? 'disabled aria-disabled="true"' : `data-choice="${esc(pack.id)}"`}><strong>${esc(loc(pack.title))}${pack.soon ? `<span class="soon-tag">${esc(t('conf.soon', 'Coming soon'))}</span>` : ''}</strong><small>${esc(loc(pack.summary))}</small></button></div>`).join('')}</div></div><footer class="dialog-foot"><button class="button ghost" data-choice="later">${esc(t('pack.choiceLater', 'Decide later'))}</button></footer>`);
+  const element = $('#dialog');
+  const onClick = event => {
+    const choice = event.target.closest('[data-choice]')?.dataset.choice;
+    if (!choice) return;
+    element.removeEventListener('click', onClick);
+    dialog.close();
+    const pack = (App.state.conf?.packs || []).find(item => item.id === choice);
+    if (pack) { App.state.srvTab = 'settings'; App.state.confGroup = 'presets'; App.actions['pack-prepare']({ dataset: { id: pack.id } }); }
+  };
+  element.addEventListener('click', onClick);
+}
+
 function packCards(group) {
   const conf = App.state.conf;
   if (!group.id.startsWith('lw-') || !conf.packs?.length) return '';
   const undo = conf.packUndo?.[packTarget()];
-  return `<div class="preset-cards">${conf.packs.map(pack => `<div class="preset-card pack-card"><div><strong>${icon('star')}${esc(loc(pack.title))}</strong><p>${esc(loc(pack.summary))} ${esc(t('pack.count', '{n} setting(s), prepared for you to check, then Save.', { n: Object.keys(pack.changes).length }))}</p></div><div class="button-row"><button class="button primary" data-action="pack-prepare" data-id="${esc(pack.id)}">${icon('play')}${esc(t('pack.prepare', 'Prepare'))}</button>${undo?.id === pack.id ? `<button class="button ghost" data-action="pack-undo">${icon('refresh')}${esc(t('pack.undo', 'Go back'))}</button>` : ''}</div></div>`).join('')}</div>`;
+  return `<div class="preset-cards">${conf.packs.map(pack => packCard(pack, undo)).join('')}</div>`;
 }
 
 // After a save: a pack saved keeps the values it replaced (to go back); going back saved forgets them.

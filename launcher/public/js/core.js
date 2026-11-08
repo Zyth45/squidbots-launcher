@@ -9,9 +9,9 @@ const loc = value => (value && typeof value === 'object' ? value[I18N.lang] || v
 
 // What's new: a red dot on the places a launcher update changed, until the player has opened them once.
 // Raise a number when its place changes again in a later launcher.
-const NEW_SPOTS = { modules: 1, settings: 1, realms: 1, wizard: 2, damage: 1, progression: 1 };
+const NEW_SPOTS = { modules: 1, settings: 1, realms: 1, wizard: 2, damage: 1, progression: 1, livingChoice: 1 };
 // Shown even at the first launch, until the player opens it once.
-const FIRST_SPOTS = ['damage', 'progression'];
+const FIRST_SPOTS = ['damage', 'progression', 'livingChoice'];
 const seenSpots = () => {
   try {
     const saved = localStorage.getItem('seenSpots');

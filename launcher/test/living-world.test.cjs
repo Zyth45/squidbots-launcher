@@ -12,6 +12,11 @@ const GROUPS = [{ id: 'lw-test', icon: 'globe', label: 'Test group' }];
 
 test('the living world manifest shipped with the launcher is valid and makes its own section', () => {
   assert.deepEqual(CATALOG.refused, []);
+  // Classic: every shown option back to its default; Living server: announced, not preparable yet.
+  const classic = CATALOG.packs.find(pack => pack.id === 'classic');
+  assert.deepEqual(classic.changes, Object.fromEntries(CATALOG.settings.filter(setting => setting.living).map(setting => [setting.key, setting.default])));
+  assert.equal(CATALOG.packs.find(pack => pack.id === 'living').soon, true);
+  assert.ok(CATALOG.build(require('../src/data/server-settings.json'), { groups: GROUPS, options: [{ key: 'Living.A', file: 'mod_living.conf', group: 'lw-test', type: 'bool', default: 0, label: 'x' }], packs: [{ id: 'classic', title: 'x', changes: { 'Living.A': 1 } }] }).refused.some(line => line.startsWith('pack classic:')));
   // The built-in AH bot stays hidden while mod-ah-bot-plus is in the core (both at once double the auction house).
   assert.ok(CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.AHBot.Enable'));
   assert.ok(CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.Filter.Enable'));
@@ -167,7 +172,9 @@ test('a pack names options of the manifest with fitting values; a wrong one is r
       { id: 'empty', title: 'x', changes: {} },
     ],
   });
-  assert.deepEqual(built.packs, [{ id: 'living', title: { en: 'Living world' }, summary: { en: 'Recommended.' }, changes: { 'Living.Invasions.Enable': '1', 'Living.Invasions.Rate': '20' } }]);
+  // Classic comes first, made by the launcher: every option back to its default.
+  assert.deepEqual(built.packs[0].changes, { 'Living.Invasions.Enable': '0', 'Living.Invasions.Rate': '5' });
+  assert.deepEqual(built.packs.slice(1), [{ id: 'living', title: { en: 'Living world' }, summary: { en: 'Recommended.' }, changes: { 'Living.Invasions.Enable': '1', 'Living.Invasions.Rate': '20' } }]);
   assert.deepEqual(built.refused.map(line => line.split(':')[0]).sort(), ['pack empty', 'pack foreign', 'pack too-fast']);
 });
 
@@ -182,30 +189,33 @@ test('a pack is only offered: nothing is written until saved, and the values it 
       { key: 'Living.Invasions.Enable', file: 'mod_living.conf', group: 'lw-test', type: 'bool', default: 0, label: 'Invasions' },
       { key: 'Living.Invasions.Rate', file: 'mod_living.conf', group: 'lw-test', type: 'int', default: 5, min: 1, max: 60, label: 'Rate' },
     ],
-    packs: [{ id: 'living', title: 'Living world', changes: { 'Living.Invasions.Enable': 1, 'Living.Invasions.Rate': 20 } }],
+    packs: [{ id: 'test-pack', title: 'Living world', changes: { 'Living.Invasions.Enable': 1, 'Living.Invasions.Rate': 20 } }],
   });
   CATALOG.settings.push(...built.settings);
-  CATALOG.packs.push(...built.packs);
+  const added = built.packs.filter(pack => !pack.builtin);
+  CATALOG.packs.push(...added);
   try {
     const config = new ServerConfig(root);
     const overview = await config.overview();
-    assert.deepEqual(overview.packs.map(pack => pack.id), ['living']);
+    assert.ok(overview.packs.some(pack => pack.id === 'test-pack'));
+    assert.equal(overview.packs[0].id, 'classic');
+    assert.ok(overview.packs.find(pack => pack.id === 'living').soon);
     assert.deepEqual(overview.packUndo, {});
     assert.equal(await fsp.readFile(conf, 'utf8'), 'Living.Invasions.Rate = 7\r\n');
     // The player saves the pack; the interface then hands the values it replaced.
     await config.save([{ file: 'mod_living.conf', key: 'Living.Invasions.Enable', value: '1' }, { file: 'mod_living.conf', key: 'Living.Invasions.Rate', value: '20' }]);
     const previous = [{ file: 'mod_living.conf', key: 'Living.Invasions.Enable', value: '0' }, { file: 'mod_living.conf', key: 'Living.Invasions.Rate', value: '7' }, { file: 'playerbots.conf', key: 'AiPlayerbot.MaxRandomBots', value: '1' }];
-    await config.rememberPack('coa', 'living', previous);
+    await config.rememberPack('coa', 'test-pack', previous);
     // Saved again: the values of before stay those of the first time.
-    await config.rememberPack('coa', 'living', [{ file: 'mod_living.conf', key: 'Living.Invasions.Rate', value: '20' }]);
+    await config.rememberPack('coa', 'test-pack', [{ file: 'mod_living.conf', key: 'Living.Invasions.Rate', value: '20' }]);
     const undo = (await config.overview()).packUndo.coa;
-    assert.equal(undo.id, 'living');
+    assert.equal(undo.id, 'test-pack');
     assert.deepEqual(undo.previous, previous.slice(0, 2));
     await assert.rejects(config.rememberPack('coa', 'nope', previous), /Unknown pack/);
     await config.forgetPack('coa');
     assert.deepEqual((await config.overview()).packUndo, {});
   } finally {
     CATALOG.settings.splice(CATALOG.settings.length - built.settings.length);
-    CATALOG.packs.splice(CATALOG.packs.length - built.packs.length);
+    CATALOG.packs.splice(CATALOG.packs.length - added.length);
   }
 });

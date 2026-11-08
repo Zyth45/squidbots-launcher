@@ -235,7 +235,7 @@ class ServerConfig {
       recipes: CATALOG.recipes.filter(recipe => (recipe.needs || Object.keys(recipe.changes)).every(key => settings.some(setting => setting.key === key))),
       overrides: CATALOG.overrides,
       // A pack shows with the keys this server has; one with none of them is left out.
-      packs: (CATALOG.packs || []).map(pack => ({ ...pack, changes: Object.fromEntries(Object.entries(pack.changes).filter(([key]) => settings.some(setting => setting.key === key))) })).filter(pack => Object.keys(pack.changes).length),
+      packs: (CATALOG.packs || []).map(pack => ({ ...pack, changes: Object.fromEntries(Object.entries(pack.changes).filter(([key]) => settings.some(setting => setting.key === key))) })).filter(pack => pack.soon || Object.keys(pack.changes).length),
       packUndo: (await readJson(this.resolve(PACKS))) || {},
       changed: Object.keys(changes).length,
       bots: this.exists('CoA-Bots/coa_bots.py'),
