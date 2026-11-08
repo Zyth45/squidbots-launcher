@@ -612,6 +612,26 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaCombat.OffTank.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-combat",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "label": {
+    "en": "Automatic off-tank",
+    "fr": "Off-tank automatique",
+    "ru": "Автоматический второй танк",
+    "zh": "自动副坦"
+   },
+   "help": {
+    "en": "Off by default. On: in a group with two tanks, the one that is not the main tank picks up the loose adds (the one on the most endangered member first) and never taunts what another tank holds.",
+    "fr": "Désactivé par défaut. Activé : dans un groupe avec deux tanks, celui qui n'est pas le tank principal récupère les adds libres (d'abord celui qui menace le membre le plus en danger) et ne provoque jamais ce qu'un autre tank tient.",
+    "ru": "Выключено по умолчанию. Включено: в группе с двумя танками тот, кто не главный танк, подбирает свободных аддов (сначала того, кто бьёт самого уязвимого участника) и никогда не провоцирует то, что держит другой танк.",
+    "zh": "默认关闭。开启后：在有两名坦克的队伍中，非主坦会接住游离的小怪（优先处理威胁最危险队员的那只），并且绝不嘲讽另一名坦克正在拉住的目标。"
+   }
+  },
+  {
    "key": "AiPlayerbot.LootNeedRollLevel",
    "file": "playerbots.conf",
    "group": "lw-loot",
