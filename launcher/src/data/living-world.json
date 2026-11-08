@@ -1412,6 +1412,26 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaLive.Immersion.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-citylife",
+   "type": "bool",
+   "default": 0,
+   "when": "reload",
+   "label": {
+    "en": "Bots fish on the shores",
+    "fr": "Les bots pêchent au bord de l'eau",
+    "ru": "Боты рыбачат на берегу",
+    "zh": "机器人在岸边钓鱼"
+   },
+   "help": {
+    "en": "A bot idling near water now and then goes fishing for a few minutes, as players do between two quests.",
+    "fr": "Un bot inactif près de l'eau va de temps en temps pêcher quelques minutes, comme les joueurs entre deux quêtes.",
+    "ru": "Бот, бездельничающий у воды, время от времени рыбачит несколько минут, как игроки между заданиями.",
+    "zh": "在水边闲着的机器人会不时钓几分钟鱼，就像玩家在两个任务之间那样。"
+   }
+  },
+  {
    "key": "AiPlayerbot.RefreshClearsInventory",
    "file": "playerbots.conf",
    "group": "lw-economy",
@@ -1716,7 +1736,8 @@
     "AiPlayerbot.RefreshClearsInventory": 0,
     "AiPlayerbot.CoaEconomy.RpgSell.Enable": 1,
     "AiPlayerbot.CoaEconomy.BotAuctions.Enable": 1,
-    "AiPlayerbot.CoaLive.City.Enable": 1
+    "AiPlayerbot.CoaLive.City.Enable": 1,
+    "AiPlayerbot.CoaLive.Immersion.Enable": 1
    }
   }
  ]
