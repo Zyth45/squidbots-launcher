@@ -1072,6 +1072,32 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaLive.Social.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "bool",
+   "default": 0,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaLive.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Social bots",
+    "fr": "Bots sociables",
+    "ru": "Общительные боты",
+    "zh": "社交机器人"
+   },
+   "help": {
+    "en": "Bots passing you may raise you, help you in a fight you are losing, buff you, or (rarely) ask you to group when you are alone; they also thank you for a buff. Needs CoA Live above.",
+    "fr": "Les bots qui passent près de toi peuvent te ressusciter, t'aider dans un combat que tu perds, te donner un buff ou (rarement) te proposer de grouper quand tu es seul ; ils te remercient aussi d'un buff. Demande CoA Live ci-dessus.",
+    "ru": "Проходящие мимо боты могут воскресить вас, помочь в проигрываемом бою, наложить бафф или (редко) позвать в группу, когда вы один; они также благодарят за бафф. Нужен CoA Live выше.",
+    "zh": "路过的机器人可能会复活你、在你快输的战斗中帮忙、给你加增益，或（偶尔）在你独自一人时邀请你组队；你给它们加增益时也会道谢。需要开启上方的 CoA Live。"
+   }
+  },
+  {
    "file": "playerbots.conf",
    "group": "lw-social",
    "when": "reload",
