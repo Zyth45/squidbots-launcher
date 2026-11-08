@@ -203,10 +203,37 @@
     "zh": "可抽取的姓氏"
    },
    "help": {
-    "en": "Separated by commas, for example: Ashford, Brightwood, Stormvale. Used only with \"Random family name\".",
-    "fr": "Séparés par des virgules, par exemple : Ashford, Brightwood, Stormvale. Utilisé seulement avec « Nom de famille aléatoire ».",
-    "ru": "Через запятую, например: Ashford, Brightwood, Stormvale. Используется только с «Случайная фамилия».",
-    "zh": "用逗号分隔，例如：Ashford, Brightwood, Stormvale。仅在“随机姓氏”时使用。"
+    "en": "Separated by commas, for example: Ashford, Brightwood, Stormvale. Empty: the list built into the module. Used only with \"Random family name\".",
+    "fr": "Séparés par des virgules, par exemple : Ashford, Brightwood, Stormvale. Vide : la liste intégrée au module. Utilisé seulement avec « Nom de famille aléatoire ».",
+    "ru": "Через запятую, например: Ashford, Brightwood, Stormvale. Пусто: встроенный список модуля. Используется только с «Случайная фамилия».",
+    "zh": "用逗号分隔，例如：Ashford, Brightwood, Stormvale。留空：使用模块内置列表。仅在“随机姓氏”时使用。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaBotIdentify",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "bool",
+   "default": 0,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaBotSurname",
+    "values": [
+     0,
+     2
+    ]
+   },
+   "label": {
+    "en": "Bots identify themselves to the SquidBots addon",
+    "fr": "Les bots se signalent à l'addon SquidBots",
+    "ru": "Боты сообщают о себе аддону SquidBots",
+    "zh": "机器人向 SquidBots 插件表明身份"
+   },
+   "help": {
+    "en": "Bots of your group answer the SquidBots Lite addon on a hidden addon channel, so it knows who is a bot without the \"Bot\" surname. Always on when the surname is not \"Bot\".",
+    "fr": "Les bots de ton groupe répondent à l'addon SquidBots Lite sur un canal d'addon caché : il sait qui est un bot sans le surnom « Bot ». Toujours actif quand le surnom n'est pas « Bot ».",
+    "ru": "Боты вашей группы отвечают аддону SquidBots Lite по скрытому каналу аддонов, и он знает, кто бот, без фамилии «Bot». Всегда включено, если фамилия не «Bot».",
+    "zh": "你队伍中的机器人通过隐藏的插件频道回应 SquidBots Lite 插件，使其无需“Bot”姓氏也能识别机器人。姓氏不是“Bot”时始终开启。"
    }
   }
  ],

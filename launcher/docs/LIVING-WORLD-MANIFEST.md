@@ -90,6 +90,7 @@ Add a group only for a new family of features. The LLM options come with 3.1, no
 | `min`, `max` | no | Bounds for `int` and `float`. The launcher refuses a value outside them. |
 | `choices` | for `choice` | `[{ "value": 1, "label": "Greed" }, …]`. |
 | `onlyWhen` | no | `{ "key": "…", "values": [2] }`: the option is shown only while that `bool` or `choice` setting holds one of these values (hidden otherwise). Example: the list of family names, shown only when the surname mode is 2. |
+| `idleWhen` | no | `{ "key": "…", "values": [0, 2] }`: the option has no effect while that `bool` or `choice` setting holds one of these values (shown greyed). Example: "Bots identify themselves", always on when the surname is not "Bot". One of `onlyWhen` / `idleWhen` per option. |
 | `when` | no | When the change applies: `restart` (default), `reload` (`.reload config`, no restart) or `new-bots` (only for bots made after the change). |
 | `label` | yes | The name of the option (see Texts below). Short, without a final period. |
 | `help` | no | The tooltip: what Off and On do, and what the default is. |

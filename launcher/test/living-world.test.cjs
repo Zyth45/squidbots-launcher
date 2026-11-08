@@ -101,6 +101,9 @@ test('bot surname: the player\'s 0/1 is kept, 2 is a new choice, and the list sh
   const list = settings.find(item => item.key === 'AiPlayerbot.CoaBotSurnameList');
   assert.equal(list.value, '');
   assert.deepEqual([list.offWhen, list.hideOff], [{ key: 'AiPlayerbot.CoaBotSurname', values: ['0', '1'] }, true]);
+  // Identify: off by default, greyed (no effect) while the surname is not "Bot".
+  const identify = settings.find(item => item.key === 'AiPlayerbot.CoaBotIdentify');
+  assert.deepEqual([identify.value, identify.when, identify.offWhen, identify.hideOff], ['0', 'reload', { key: 'AiPlayerbot.CoaBotSurname', values: ['0', '2'] }, undefined]);
   assert.equal(await fsp.readFile(bots, 'utf8'), before);
   await config.save([{ file: 'playerbots.conf', key: 'AiPlayerbot.CoaBotSurname', value: '2' }, { file: 'playerbots.conf', key: 'AiPlayerbot.CoaBotSurnameList', value: 'Ashford, Brightwood' }]);
   const after = await fsp.readFile(bots, 'utf8');
@@ -118,10 +121,13 @@ test('onlyWhen must name a bool or choice setting and some of its values', () =>
       { key: 'Living.Good', file: 'mod_living.conf', group: 'lw-test', type: 'text', default: '', onlyWhen: { key: 'Living.Mode', values: [1] }, label: 'x' },
       { key: 'Living.NotChoice', file: 'mod_living.conf', group: 'lw-test', type: 'text', default: '', onlyWhen: { key: 'Living.Rate', values: [1] }, label: 'x' },
       { key: 'Living.BadValue', file: 'mod_living.conf', group: 'lw-test', type: 'text', default: '', onlyWhen: { key: 'Living.Mode', values: [5] }, label: 'x' },
+      { key: 'Living.Idle', file: 'mod_living.conf', group: 'lw-test', type: 'bool', default: 0, idleWhen: { key: 'Living.Mode', values: [0] }, label: 'x' },
+      { key: 'Living.TwoRules', file: 'mod_living.conf', group: 'lw-test', type: 'bool', default: 0, onlyWhen: { key: 'Living.Mode', values: [1] }, idleWhen: { key: 'Living.Mode', values: [0] }, label: 'x' },
     ],
   });
   assert.deepEqual(built.settings.find(item => item.key === 'Living.Good').offWhen, { key: 'Living.Mode', values: ['0'] });
-  assert.deepEqual(built.refused.map(line => line.split(':')[0]).sort(), ['Living.BadValue', 'Living.NotChoice']);
+  assert.deepEqual(built.settings.find(item => item.key === 'Living.Idle').offWhen, { key: 'Living.Mode', values: ['0'] });
+  assert.deepEqual(built.refused.map(line => line.split(':')[0]).sort(), ['Living.BadValue', 'Living.NotChoice', 'Living.TwoRules']);
 });
 
 test('a pack names options of the manifest with fitting values; a wrong one is refused whole', () => {
