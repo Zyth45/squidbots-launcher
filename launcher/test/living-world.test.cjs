@@ -22,6 +22,7 @@ test('the living world manifest shipped with the launcher is valid and makes its
   assert.ok(CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.Filter.Enable'));
   assert.ok(CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.Buyer.Enable'));
   assert.ok(CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.Market.Enable'));
+  assert.ok(CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.RpgSell.Enable') && CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.BotAuctions.Enable'));
   assert.ok(CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.LaunchCurve.Enable') && CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.Rarity.Enable'));
   // Shown one day: the hidden options must then be valid too (their rules included).
   const manifest = require('../src/data/living-world.json');

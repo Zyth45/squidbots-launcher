@@ -1356,6 +1356,48 @@
     "ru": "Редко выпадающие предметы стоят у бота аукциона дороже (до ×2). Нужны правила шанса выпадения бота аукциона.",
     "zh": "掉率低的物品在拍卖行机器人处更贵（最多 ×2）。需要拍卖行机器人的掉率规则。"
    }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-economy",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "hidden": true,
+   "key": "AiPlayerbot.CoaEconomy.RpgSell.Enable",
+   "label": {
+    "en": "Bots sell their loot at vendors",
+    "fr": "Les bots vendent leur butin aux marchands",
+    "ru": "Боты продают добычу торговцам",
+    "zh": "机器人向商人出售战利品"
+   },
+   "help": {
+    "en": "Random bots stop at vendors between quests to sell what they don't need and repair. Works best when bots keep their bags (AiPlayerbot.RefreshClearsInventory = 0 in playerbots.conf).",
+    "fr": "Entre deux quêtes, les bots aléatoires passent chez un marchand pour vendre ce dont ils n'ont pas besoin et réparer. Marche mieux quand les bots gardent leurs sacs (AiPlayerbot.RefreshClearsInventory = 0 dans playerbots.conf).",
+    "ru": "Между заданиями случайные боты заходят к торговцам, чтобы продать ненужное и починиться. Лучше всего работает, когда боты сохраняют сумки (AiPlayerbot.RefreshClearsInventory = 0 в playerbots.conf).",
+    "zh": "随机机器人在任务间隙会去商人处出售不需要的物品并修理装备。机器人保留背包时效果最好（playerbots.conf 中 AiPlayerbot.RefreshClearsInventory = 0）。"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-economy",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "hidden": true,
+   "key": "AiPlayerbot.CoaEconomy.BotAuctions.Enable",
+   "label": {
+    "en": "Bots use the auction house",
+    "fr": "Les bots utilisent l'hôtel des ventes",
+    "ru": "Боты пользуются аукционом",
+    "zh": "机器人使用拍卖行"
+   },
+   "help": {
+    "en": "Random bots list their loot at the auction house, collect their sales and buy upgrades or bags they can afford, each with its own thrift and patience.",
+    "fr": "Les bots aléatoires mettent leur butin en vente à l'hôtel des ventes, récupèrent leurs ventes et achètent les améliorations ou les sacs qu'ils peuvent se payer, chacun avec son sens de l'économie et sa patience.",
+    "ru": "Случайные боты выставляют добычу на аукцион, забирают выручку и покупают улучшения или сумки, которые могут себе позволить, каждый со своей бережливостью и терпением.",
+    "zh": "随机机器人会把战利品挂到拍卖行、领取收入，并购买负担得起的装备提升或背包，各自有不同的节俭程度和耐心。"
+   }
   }
  ],
  "packs": [
