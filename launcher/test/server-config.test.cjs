@@ -173,6 +173,7 @@ test('the 2.9.5 switches: shown at their default when an older conf lacks them, 
     assert.equal(setting.value, '0', key);
   }
   assert.equal(settings.find(item => item.key === 'CoA.DayNightSpeed').value, '1');
+  assert.equal(settings.find(item => item.key === 'AiPlayerbot.LootNeedRollLevel').value, '1');
   assert.equal(await fsp.readFile(dw, 'utf8'), dwBefore);
   assert.equal(await fsp.readFile(bots, 'utf8'), botsBefore);
   await config.save([{ file: 'destiny_weaver.conf', key: 'DestinyWeaver.Scaling.LfgOnly', value: '1' }]);
@@ -181,6 +182,10 @@ test('the 2.9.5 switches: shown at their default when an older conf lacks them, 
   assert.equal(after.match(/^DestinyWeaver\.Scaling\.LfgOnly = 1\r?$/gm).length, 1);
   assert.equal(await fsp.readFile(bots, 'utf8'), botsBefore);
   assert.equal(await fsp.readFile(coa, 'utf8'), coaBefore);
+  await config.save([{ file: 'playerbots.conf', key: 'AiPlayerbot.LootNeedRollLevel', value: '2' }]);
+  const botsAfter = await fsp.readFile(bots, 'utf8');
+  assert.equal(botsAfter, botsBefore.replace('AiPlayerbot.LootNeedRollLevel = 1', 'AiPlayerbot.LootNeedRollLevel = 2'));
+  assert.equal(botsAfter.match(/^AiPlayerbot\.LootNeedRollLevel = 2\r?$/gm).length, 1);
 });
 
 test('a UTF-8 BOM is removed from the .conf files only, bytes after it unchanged, a copy kept and logged', async () => {
