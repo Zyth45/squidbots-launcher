@@ -13,7 +13,21 @@ async function sha512(file) {
   return hash.digest('base64');
 }
 
-function createLauncherUpdates(app, { feedUrl, key, fetchImpl, retryDelay = 20000 }, notify, canRestart) {
+// A failure of the update host (nothing published, HTTP 4xx/5xx, timeout, no network) is not a problem on the
+// player's PC: it is only noted, and tried again later. A refused signature, a full disk or a file that cannot be
+// written stays an error.
+function hostUnavailable(error) {
+  if (!error || error.badSignature) return false;
+  if (error.status || error.statusCode) return true;
+  if (/^(ENOSPC|EPERM|EACCES|EBUSY|EROFS|EMFILE)$/.test(error.code || '')) return false;
+  if (['TimeoutError', 'AbortError'].includes(error.name)) return true;
+  const text = `${error.code || ''} ${error.message || ''} ${error.cause?.code || ''} ${error.cause?.message || ''}`;
+  return /HTTP ?\d{3}|HttpError|timed? ?out|timeout|aborted|ENOTFOUND|ECONN|ETIMEDOUT|EAI_AGAIN|ENETUNREACH|EHOSTUNREACH|ENETDOWN|net::ERR_|socket hang up|fetch failed|Nothing has been published|Cannot find (channel|latest)/i.test(text);
+}
+
+const UNAVAILABLE = 'The launcher update is not available right now. You can keep playing: it will be tried again later.';
+
+function createLauncherUpdates(app, { feedUrl, key, fetchImpl, retryDelay = 20000, retryLater = 10 * 60 * 1000, updater: injected, log = () => {} }, notify, canRestart) {
   const trustKey = key ? publicKey(key) : null;
   let status;
   if (!app.isPackaged) status = { phase: 'development', message: 'Launcher updates run in the installed version only.' };
@@ -25,6 +39,16 @@ function createLauncherUpdates(app, { feedUrl, key, fetchImpl, retryDelay = 2000
   let checking = false;
   let signed = null;
   let downloaded = null;
+  let later = null;
+  // Every failure is logged in full; a failure of the host only shows a neutral note and is tried again later.
+  const failed = (error, text) => {
+    log(`${text}: ${error?.stack || error?.message || error}`);
+    if (!hostUnavailable(error)) { set('error', `${text}: ${error?.message || error}`); return; }
+    set('unavailable', UNAVAILABLE, { detail: error?.message || String(error) });
+    clearTimeout(later);
+    later = setTimeout(() => { later = null; api.check().catch(() => {}); }, retryLater);
+    later.unref?.();
+  };
 
   // launcher.json, signed: the version and SHA-512 of the only installer the launcher accepts.
   async function readSigned() {
@@ -41,7 +65,7 @@ function createLauncherUpdates(app, { feedUrl, key, fetchImpl, retryDelay = 2000
   }
 
   if (status.phase === 'idle') {
-    updater = require('electron-updater').autoUpdater;
+    updater = injected || require('electron-updater').autoUpdater;
     updater.setFeedURL({ provider: 'generic', url: feedUrl });
     updater.autoDownload = true;
     updater.autoInstallOnAppQuit = false;
@@ -63,12 +87,12 @@ function createLauncherUpdates(app, { feedUrl, key, fetchImpl, retryDelay = 2000
         if (!ok) { downloaded = null; set('error', 'The new launcher does not match its signature. It was not installed.'); return; }
         downloaded = info;
         set('downloaded', `Launcher ${info.version} is ready. Restart to install it.`, { version: info.version });
-      }).catch(error => set('error', `Launcher update failed: ${error.message}`));
+      }).catch(error => failed(error, 'Launcher update failed'));
     });
-    updater.on('error', error => set('error', `Launcher update failed: ${error.message}`));
+    updater.on('error', error => failed(error, 'Launcher update failed'));
   }
 
-  return {
+  const api = {
     get status() { return status; },
     async check() {
       if (!updater || checking || ['downloading', 'downloaded'].includes(status.phase)) return status;
@@ -77,7 +101,7 @@ function createLauncherUpdates(app, { feedUrl, key, fetchImpl, retryDelay = 2000
         await readSigned();
         await updater.checkForUpdates();
       } catch (error) {
-        set('error', `The launcher update server is unavailable (${error.message}).`);
+        failed(error, 'The launcher update could not be checked');
       } finally { checking = false; }
       return status;
     },
@@ -89,6 +113,7 @@ function createLauncherUpdates(app, { feedUrl, key, fetchImpl, retryDelay = 2000
       updater.quitAndInstall(true, true);
     },
   };
+  return api;
 }
 
-module.exports = { createLauncherUpdates, sha512 };
+module.exports = { createLauncherUpdates, hostUnavailable, sha512 };

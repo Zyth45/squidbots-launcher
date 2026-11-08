@@ -674,7 +674,8 @@ function launcherBanner() {
   if (update?.phase === 'downloaded' && App.state.assembleProgress) return `<div class="update-banner"><i class="dot"></i><span>${esc(t('home.launcherReadyLater', 'A new version of the launcher ({version}) is ready: restart into it once the server is prepared.', { version: update.version || '' }))}</span></div>`;
   if (update?.phase === 'downloaded') return `<div class="update-banner"><i class="dot"></i><span>${esc(t('home.launcherReady', 'A new version of the launcher ({version}) is ready.', { version: update.version || '' }))}</span><button class="button primary small" data-action="launcher-install">${esc(t('home.launcherRestart', 'Restart and update'))}</button></div>`;
   if (update?.phase === 'downloading') return `<div class="update-banner"><i class="dot"></i><span>${esc(t('home.launcherDownloading', 'Downloading the new launcher… {percent}%', { percent: update.percent || 0 }))}</span></div>`;
-  // A failed launcher update says so (it used to leave the bar empty) and can be tried again.
+  // A failed launcher update says so (it used to leave the bar empty) and can be tried again. Only a real local
+  // problem lands here: an update host that does not answer is 'unavailable', shown nowhere on the home page.
   if (update?.phase === 'error') return `<div class="update-banner bad">${icon('warning')}<span>${esc(t('home.launcherFailed', 'The new launcher could not be prepared: {message}', { message: update.message || '' }))}</span><button class="button ghost small" data-action="launcher-check">${esc(t('common.retry', 'Try again'))}</button></div>`;
   return '';
 }
@@ -872,8 +873,8 @@ Object.assign(App.actions, {
     toast(t('settings.launcherChecking', 'Looking for a new launcher…'));
     const status = await App.api.checkLauncher();
     App.state.launcherUpdate = status;
-    const kind = status?.phase === 'error' ? 'error' : 'success';
-    toast(status?.phase === 'downloading' || status?.phase === 'downloaded' ? t('settings.launcherFound', 'A new launcher is being downloaded: the home page tells when it is ready.') : status?.phase === 'ready' ? t('settings.launcherUpToDateServer', 'Launcher {version}: up to date. The server has its own updates, on the home page.', { version: App.state.version }) : status?.message || t('settings.launcherUpToDate', 'Your launcher is up to date.'), kind);
+    const kind = status?.phase === 'error' ? 'error' : status?.phase === 'unavailable' ? 'info' : 'success';
+    toast(status?.phase === 'unavailable' ? t('settings.launcherUnavailable', 'The launcher update is not available right now. You can keep playing: it will be tried again later.') : status?.phase === 'downloading' || status?.phase === 'downloaded' ? t('settings.launcherFound', 'A new launcher is being downloaded: the home page tells when it is ready.') : status?.phase === 'ready' ? t('settings.launcherUpToDateServer', 'Launcher {version}: up to date. The server has its own updates, on the home page.', { version: App.state.version }) : status?.message || t('settings.launcherUpToDate', 'Your launcher is up to date.'), kind);
     // The server update card waits for this check: it is drawn again, and so is the About line.
     const line = $('#launcher-line');
     if (line) line.textContent = `${App.state.config.appName} · ${launcherLine(App.state.version, status)}`;

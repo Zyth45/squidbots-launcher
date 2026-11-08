@@ -259,6 +259,7 @@ function launcherLine(version, status) {
     case 'idle': case 'checking': return t('settings.launcherLineChecking', 'Launcher {version}: looking for a new version…', { version });
     case 'downloading': return t('settings.launcherLineDownloading', 'Launcher {version}: downloading {next}…', { version, next });
     case 'downloaded': return t('settings.launcherLineDownloaded', 'Launcher {version}: {next} is ready, restart to install it', { version, next });
+    case 'unavailable': return t('settings.launcherLineUnavailable', 'Launcher {version}: update not available right now, it will be tried again later', { version });
     default: return t('settings.launcherLine', 'Launcher {version}: {message}', { version, message: status?.message || t('settings.updatesAuto', 'Launcher updates are checked automatically.') });
   }
 }

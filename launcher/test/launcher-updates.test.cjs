@@ -79,3 +79,44 @@ test('a signature served stale by a cache is read once more past the cache, neve
   const forged = async url => (url.pathname.endsWith('.sig') ? reply(sign('other')) : reply(fresh));
   await assert.rejects(fetchSigned(new URL('https://example.org/r/update.json'), { key: pub, fetchImpl: forged, maxBytes: 65536 }), /signature is invalid/);
 });
+
+test('an update host that fails (404, 504, timeout, no network) gives a neutral note and a silent retry, never a red error', async () => {
+  const { createLauncherUpdates, hostUnavailable } = require('../src/launcher-updates.cjs');
+  const { EventEmitter } = require('node:events');
+  const { publicKey: pub } = crypto.generateKeyPairSync('ed25519');
+  const key = pub.export({ type: 'spki', format: 'der' }).subarray(12).toString('base64');
+  const failures = {
+    404: async () => new Response('', { status: 404 }),
+    504: async () => new Response('Gateway Time-out', { status: 504 }),
+    timeout: async () => { throw new DOMException('The operation was aborted due to timeout', 'TimeoutError'); },
+    network: async () => { throw new TypeError('fetch failed', { cause: Object.assign(new Error('connect ECONNREFUSED'), { code: 'ECONNREFUSED' }) }); },
+  };
+  for (const [name, fail] of Object.entries(failures)) {
+    let calls = 0;
+    const seen = [];
+    const logged = [];
+    const updater = Object.assign(new EventEmitter(), { setFeedURL() {}, checkForUpdates: async () => {} });
+    const updates = createLauncherUpdates({ isPackaged: true }, {
+      feedUrl: 'http://updates.test/launcher/', key, updater, retryLater: 30, log: line => logged.push(line),
+      fetchImpl: async (...args) => { calls += 1; return fail(...args); },
+    }, status => seen.push(status.phase), async () => {});
+    const status = await updates.check();
+    assert.strictEqual(status.phase, 'unavailable', name);
+    assert.match(status.message, /not available right now/);
+    assert.ok(status.detail, name);
+    assert.ok(!seen.includes('error'), name);
+    assert.strictEqual(logged.length, 1, name);
+    await new Promise(resolve => setTimeout(resolve, 120));
+    assert.ok(calls >= 2, `${name}: tried again later`);
+  }
+  // The same for a download that fails on the host (electron-updater HttpError).
+  const updater = Object.assign(new EventEmitter(), { setFeedURL() {}, checkForUpdates: async () => {} });
+  const updates = createLauncherUpdates({ isPackaged: true }, { feedUrl: 'http://updates.test/', key, updater, retryLater: 60000, fetchImpl: failures[504] }, () => {}, async () => {});
+  updater.emit('error', Object.assign(new Error('HttpError: 504 Gateway Time-out'), { statusCode: 504 }));
+  assert.strictEqual(updates.status.phase, 'unavailable');
+  // Real local problems stay errors.
+  updater.emit('error', Object.assign(new Error('ENOSPC: no space left on device, write'), { code: 'ENOSPC' }));
+  assert.strictEqual(updates.status.phase, 'error');
+  assert.strictEqual(hostUnavailable(Object.assign(new Error('The release signature is invalid.'), { badSignature: true })), false);
+  assert.strictEqual(hostUnavailable(new Error('The new launcher does not match its signature.')), false);
+});

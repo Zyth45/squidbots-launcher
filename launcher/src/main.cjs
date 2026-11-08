@@ -2482,7 +2482,7 @@ async function main() {
   // Windows shows notifications only for an app with its own id (the installer's appId; the exe itself when run from the sources).
   if (process.platform === 'win32') app.setAppUserModelId(app.isPackaged ? (config.edition === 'server' ? 'org.squidbots.server' : 'org.coa.launcher-lite') : process.execPath);
   createUpdaters();
-  launcherUpdates = createLauncherUpdates(app, { feedUrl: config.launcherUpdateUrl, key: config.launcherUpdateKey, fetchImpl: netFetch }, status => send('launcher:update', status), async () => {
+  launcherUpdates = createLauncherUpdates(app, { feedUrl: config.launcherUpdateUrl, key: config.launcherUpdateKey, fetchImpl: netFetch, log: line => fs.mkdir(path.join(app.getPath('userData'), 'logs'), { recursive: true }).then(() => fs.appendFile(path.join(app.getPath('userData'), 'logs', 'launcher-update.log'), `${new Date().toISOString()} ${line}\n`)).catch(() => {}) }, status => send('launcher:update', status), async () => {
     if (busyFiles || updater?.busy) throw new Error('Wait for the current operation to finish.');
     // Restarting would cut the preparation of the server in the middle (its database would start over).
     if (assembler.busy.size) throw new Error('The server is being prepared: restart the launcher when it is done.');

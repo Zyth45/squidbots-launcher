@@ -1569,6 +1569,8 @@
   "realms.ecoHint": "此服务器 10 分钟内没有玩家时，远离玩家的机器人进入休眠（活跃机器人：1 %）。一旦有玩家登录，即恢复你自己的数值。你的设置不会被更改。",
   "realms.ecoAsleep": "机器人休眠中",
   "settings.launcherLineReady": "启动器 {version}：已是最新",
+  "settings.launcherLineUnavailable": "启动器 {version}：暂时无法更新，稍后会重试",
+  "settings.launcherUnavailable": "启动器更新暂时不可用。你可以继续游戏，稍后会自动重试。",
   "settings.launcherLineChecking": "启动器 {version}：正在查找新版本…",
   "settings.launcherLineDownloading": "启动器 {version}：正在下载 {next}…",
   "settings.launcherLineDownloaded": "启动器 {version}：{next} 已就绪，重启以安装",

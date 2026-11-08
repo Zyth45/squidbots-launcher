@@ -1563,6 +1563,8 @@
   "realms.ecoHint": "Если в этом мире 10 минут нет игроков, боты вдали от игроков засыпают (активных ботов: 1 %). Ваше значение возвращается, как только входит игрок. Ваши настройки не меняются.",
   "realms.ecoAsleep": "Боты спят",
   "settings.launcherLineReady": "Лаунчер {version}: актуален",
+  "settings.launcherLineUnavailable": "Лаунчер {version}: обновление сейчас недоступно, попробуем позже",
+  "settings.launcherUnavailable": "Обновление лаунчера сейчас недоступно. Можно продолжать играть: попытка повторится позже.",
   "settings.launcherLineChecking": "Лаунчер {version}: поиск новой версии…",
   "settings.launcherLineDownloading": "Лаунчер {version}: загрузка {next}…",
   "settings.launcherLineDownloaded": "Лаунчер {version}: версия {next} готова, перезапустите для установки",
