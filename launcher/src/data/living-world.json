@@ -1,5 +1,6 @@
 {
  "schema": 1,
+ "onByDefault": [],
  "groups": [
   {
    "id": "lw-invasions",
@@ -59,6 +60,26 @@
     "fr": "Artisanat sur commande",
     "ru": "Ремесло на заказ",
     "zh": "定制制作"
+   }
+  },
+  {
+   "id": "lw-population",
+   "icon": "user",
+   "label": {
+    "en": "Population",
+    "fr": "Population",
+    "ru": "Население",
+    "zh": "人口"
+   }
+  },
+  {
+   "id": "lw-pvp",
+   "icon": "shield",
+   "label": {
+    "en": "World PvP",
+    "fr": "PvP du monde",
+    "ru": "PvP в мире",
+    "zh": "世界 PvP"
    }
   },
   {

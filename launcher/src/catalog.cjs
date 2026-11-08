@@ -16,7 +16,12 @@ const SECTION = { id: 'living', label: { en: 'Living world', fr: 'Monde vivant',
 const text = value => (typeof value === 'string' ? { en: value } : value && typeof value === 'object' && typeof value.en === 'string' ? value : null);
 
 // The reason an option is refused, or null.
-function problem(option, groups, keys) {
+// A switch of a new feature (a key ending in .Enable or .Enabled) ships off: a default that turns it on is refused,
+// unless the manifest names the key in onByDefault.
+const SWITCH = /(^|.)Enabled?$/i;
+const asText = value => (value === true ? '1' : value === false ? '0' : value === undefined || value === null ? '' : String(value));
+
+function problem(option, groups, keys, onByDefault = new Set()) {
   if (!option || typeof option !== 'object') return 'not an object';
   if (typeof option.key !== 'string' || !/^[A-Za-z0-9_.]+$/.test(option.key)) return 'key';
   if (typeof option.file !== 'string' || !/^[A-Za-z0-9_.-]+\.conf$/.test(option.file)) return 'file';
@@ -26,7 +31,7 @@ function problem(option, groups, keys) {
   if (!text(option.label)) return 'label (en)';
   if (option.help !== undefined && !text(option.help)) return 'help (en)';
   if (keys.has(`${option.file}\u0000${option.key}`)) return 'key already in the catalog';
-  const value = option.default === undefined || option.default === null ? '' : String(option.default);
+  const value = asText(option.default);
   if (value === '') return 'default';
   if (option.type === 'bool' && !['0', '1'].includes(value)) return 'default (0 or 1)';
   if (['int', 'float'].includes(option.type)) {
@@ -38,6 +43,7 @@ function problem(option, groups, keys) {
     if (!Array.isArray(option.choices) || !option.choices.length || option.choices.some(choice => choice?.value === undefined || !text(choice.label))) return 'choices';
     if (!option.choices.some(choice => String(choice.value) === value)) return 'default (not one of the choices)';
   }
+  if (SWITCH.test(option.key) && !['0', 'false'].includes(value.toLowerCase()) && !onByDefault.has(option.key)) return 'a new feature ships off (default 0), or is named in onByDefault';
   return null;
 }
 
@@ -49,10 +55,10 @@ function build(base = BASE, living = LIVING) {
   const refused = [];
   const settings = [];
   for (const option of living.options || []) {
-    const why = problem(option, ids, keys);
+    const why = problem(option, ids, keys, new Set(living.onByDefault || []));
     if (why) { refused.push(`${option?.key || '?'}: ${why}`); continue; }
     keys.add(`${option.file}\u0000${option.key}`);
-    const setting = { key: option.key, file: option.file, group: option.group, living: true, kind: TYPES[option.type], when: option.when || 'restart', default: String(option.default), label: text(option.label) };
+    const setting = { key: option.key, file: option.file, group: option.group, living: true, kind: TYPES[option.type], when: option.when || 'restart', default: asText(option.default), label: text(option.label) };
     if (option.help !== undefined) setting.help = text(option.help);
     if (option.min !== undefined) setting.min = option.min;
     if (option.max !== undefined) setting.max = option.max;

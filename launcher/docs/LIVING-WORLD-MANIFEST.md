@@ -15,13 +15,16 @@ installed shows nothing.
 - An option already in the player's `.conf` is shown at the player's value, whatever the default says.
 - A launcher update may add options. It never rewrites a value: changing a `default` in the manifest only changes what
   is shown for players who never set the option.
-- New living world features are **off by default**: `default` is the value that keeps the feature off.
+- New living world features are **off by default**: `default` is the value that keeps the feature off. The launcher
+  enforces it: an option whose key ends in `.Enable` or `.Enabled` with a default other than 0/false is refused,
+  unless its key is listed in `onByDefault` (an explicit, reviewed exception).
 
 ## Format
 
 ```json
 {
  "schema": 1,
+ "onByDefault": [],
  "groups": [
   { "id": "lw-invasions", "icon": "swords", "label": { "en": "Invasions", "fr": "Invasions" } }
  ],
@@ -59,8 +62,21 @@ installed shows nothing.
 | `label` | yes | A text (see Texts below). |
 | `icon` | no | One of the launcher icons: `swords`, `chat`, `map`, `home`, `coin`, `gift`, `trophy`, `globe`, `shield`, `star`, `bot`, `user`, `heart`, `cart`, `book`, `bell`… Default: `globe`. |
 
-The groups already declared are `lw-invasions`, `lw-social`, `lw-travellers`, `lw-citylife`, `lw-economy`,
-`lw-crafting` and `lw-loot`. Add a group only for a new family of features.
+The groups already declared, and what goes in them:
+
+| Group | Contents |
+|---|---|
+| `lw-invasions` | Invasions. |
+| `lw-social` | Social bots, and the bot souls of 3.0 (no LLM): the share of each of the 5 archetypes (20/40/20/10/10 by default). |
+| `lw-travellers` | Travellers. |
+| `lw-citylife` | City life. |
+| `lw-economy` | Economy and AHBot. |
+| `lw-crafting` | Crafting on order. |
+| `lw-population` | Population by time of day, density around the players, budget of borrowed bots (for example 10 %, at most 120). |
+| `lw-pvp` | World PvP, duels, defence of the capitals. |
+| `lw-loot` | Fine loot rules ("Bots need items" is the first one). |
+
+Add a group only for a new family of features. The LLM options come with 3.1, not before.
 
 ### Options
 
@@ -70,7 +86,7 @@ The groups already declared are `lw-invasions`, `lw-social`, `lw-travellers`, `l
 | `file` | yes | The name of the `.conf` file, for example `mod_living_world.conf` or `playerbots.conf`. The launcher finds it in `Core/configs/modules` or `CoA-Bots/Core/configs/modules`, as well as `worldserver.conf` and `coa.conf` (through their template). |
 | `group` | yes | The `id` of a group of this manifest. |
 | `type` | yes | `bool` (0/1, shown as a switch), `int`, `float`, `choice` (a list), `text` (written between quotes), `ids` (numbers separated by commas). |
-| `default` | yes | The value the module uses when the line is absent (the one in its `.conf.dist`). For `bool`, 0 or 1. For `choice`, one of the `choices`. Within `min`/`max`. |
+| `default` | yes | The value the module uses when the line is absent (the one in its `.conf.dist`). For `bool`, 0 or 1 (`false`/`true` are read as 0/1). For `choice`, one of the `choices`. Within `min`/`max`. |
 | `min`, `max` | no | Bounds for `int` and `float`. The launcher refuses a value outside them. |
 | `choices` | for `choice` | `[{ "value": 1, "label": "Greed" }, …]`. |
 | `when` | no | When the change applies: `restart` (default), `reload` (`.reload config`, no restart) or `new-bots` (only for bots made after the change). |
@@ -88,6 +104,7 @@ An option is left out (never guessed) when:
 
 - its `key`, `file`, `group`, `type` or `label` is missing or wrong;
 - it has no `default`, or a `default` outside its bounds or its choices;
+- it is a `.Enable`/`.Enabled` switch on by default and not listed in `onByDefault`;
 - its key is already in the catalog.
 
 The test `launcher/test/living-world.test.cjs` fails when an option of the shipped manifest is refused. Run it after
