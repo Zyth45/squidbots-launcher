@@ -910,6 +910,60 @@
    }
   },
   {
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "classic": false,
+   "key": "AiPlayerbot.CoaEconomy.Artisans.Enable",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.BotAuctions.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Artisan bots craft and sell",
+    "fr": "Les bots artisans fabriquent et vendent",
+    "ru": "Боты-ремесленники создают и продают",
+    "zh": "工匠机器人制作并出售"
+   },
+   "help": {
+    "en": "Bots with a profession craft from the recipes they know and sell the pieces worth more than their materials. Needs \"Bots use the auction house\".",
+    "fr": "Les bots qui ont un métier fabriquent à partir des recettes qu'ils connaissent et vendent les pièces qui valent plus que leurs composants. Demande « Les bots utilisent l'hôtel des ventes ».",
+    "ru": "Боты с профессией создают предметы по известным им рецептам и продают те, что стоят дороже материалов. Нужно «Боты пользуются аукционом».",
+    "zh": "有专业技能的机器人会按已知配方制作，并出售价值高于材料的成品。需要开启“机器人使用拍卖行”。"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "classic": false,
+   "key": "AiPlayerbot.CoaEconomy.CraftOrders.Enable",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.Artisans.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Craft on order",
+    "fr": "Fabrication sur commande",
+    "ru": "Изготовление на заказ",
+    "zh": "定制制作"
+   },
+   "help": {
+    "en": "Whisper an artisan bot \"can you make [item]?\": it quotes a price, crafts it and mails it cash on delivery. Artisans also advertise in Trade. Needs \"Artisan bots craft and sell\" and living chat (CoA Live, in Social bots).",
+    "fr": "Chuchote à un bot artisan « tu peux me faire [objet] ? » : il annonce un prix, le fabrique et te l'envoie par courrier contre remboursement. Les artisans font aussi leur publicité dans le canal Commerce. Demande « Les bots artisans fabriquent et vendent » et le chat vivant (CoA Live, dans Bots sociaux).",
+    "ru": "Шепните боту-ремесленнику «можешь сделать [предмет]?»: он назовёт цену, изготовит и пришлёт почтой с наложенным платежом. Ремесленники также рекламируют себя в канале Торговля. Нужны «Боты-ремесленники создают и продают» и живой чат (CoA Live, в «Общительных ботах»).",
+    "zh": "密语工匠机器人“你能做[物品]吗？”：它会报价、制作并以货到付款方式邮寄给你。工匠还会在交易频道打广告。需要开启“工匠机器人制作并出售”和鲜活聊天（CoA Live，位于社交机器人）。"
+   }
+  },
+  {
    "key": "AiPlayerbot.LootNeedRollLevel",
    "file": "playerbots.conf",
    "group": "lw-loot",
