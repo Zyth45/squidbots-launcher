@@ -76,6 +76,7 @@ The groups already declared, and what goes in them:
 | `lw-crafting` | Crafting on order. |
 | `lw-population` | Population by time of day, density around the players, budget of borrowed bots (for example 10 %, at most 120). |
 | `lw-pvp` | World PvP, duels, defence of the capitals. |
+| `lw-combat` | Group combat of the bots in dungeons (fixes that Dungeon Clear always has, made available outside its runs). |
 | `lw-loot` | Fine loot rules ("Bots need items" is the first one). |
 
 Add a group only for a new family of features. The LLM options come with 3.1, not before.

@@ -87,6 +87,16 @@
    }
   },
   {
+   "id": "lw-combat",
+   "icon": "shield",
+   "label": {
+    "en": "Group combat",
+    "fr": "Combat en groupe",
+    "ru": "Групповой бой",
+    "zh": "团队战斗"
+   }
+  },
+  {
    "id": "lw-loot",
    "icon": "trophy",
    "label": {
@@ -450,6 +460,114 @@
     "fr": "Nombre maximal de bots envoyés à une ruée",
     "ru": "Максимум ботов на лихорадку",
     "zh": "派往淘金热的机器人上限"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-combat",
+   "when": "restart",
+   "key": "AiPlayerbot.CoaCombat.BreathGuard.Enable",
+   "type": "bool",
+   "default": 0,
+   "label": {
+    "en": "Bots surface before drowning",
+    "fr": "Les bots remontent avant de se noyer",
+    "ru": "Боты всплывают, не утонув",
+    "zh": "机器人溺水前上浮"
+   },
+   "help": {
+    "en": "Off by default. On: outside a Dungeon Clear run too, a grouped bot in a dungeon, out of combat, under water for 90 s is brought back up beside its tank. Always on in a Dungeon Clear run.",
+    "fr": "Désactivé par défaut. Activé : même hors d'un run Dungeon Clear, un bot en groupe dans un donjon, hors combat, sous l'eau depuis 90 s est ramené à la surface près de son tank. Toujours actif pendant un run Dungeon Clear.",
+    "ru": "Выключено по умолчанию. Включено: и вне забега Dungeon Clear бот в группе в подземелье, вне боя, пробывший под водой 90 с, поднимается рядом со своим танком. Всегда включено в забеге Dungeon Clear.",
+    "zh": "默认关闭。开启后：即使不在 Dungeon Clear 中，副本里组队、脱战且在水下 90 秒的机器人会被拉回到坦克身边。Dungeon Clear 副本中始终开启。"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-combat",
+   "when": "restart",
+   "key": "AiPlayerbot.CoaCombat.StuckCombat.Enable",
+   "type": "bool",
+   "default": 0,
+   "label": {
+    "en": "Break phantom combat",
+    "fr": "Casser les combats fantômes",
+    "ru": "Прерывать фантомный бой",
+    "zh": "打破幽灵战斗"
+   },
+   "help": {
+    "en": "Off by default. On: outside a Dungeon Clear run too, a bot held in combat by nothing it can reach or that is coming for it has its combat cleared after the timeout. Never during a raid boss. Always on in a Dungeon Clear run.",
+    "fr": "Désactivé par défaut. Activé : même hors d'un run Dungeon Clear, un bot retenu en combat par rien qu'il puisse atteindre ou qui vienne vers lui sort du combat après le délai. Jamais pendant un boss de raid. Toujours actif pendant un run Dungeon Clear.",
+    "ru": "Выключено по умолчанию. Включено: и вне забега Dungeon Clear бот, удерживаемый в бою тем, до чего не может дотянуться и что к нему не идёт, выходит из боя после задержки. Никогда во время босса рейда. Всегда включено в забеге Dungeon Clear.",
+    "zh": "默认关闭。开启后：即使不在 Dungeon Clear 中，被够不着、也不会靠近的目标卡在战斗中的机器人会在超时后脱战。团队副本首领战中绝不触发。Dungeon Clear 副本中始终开启。"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-combat",
+   "when": "restart",
+   "key": "AiPlayerbot.CoaCombat.StuckCombat.TimeoutSeconds",
+   "type": "float",
+   "default": 15,
+   "min": 0,
+   "max": 120,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaCombat.StuckCombat.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Phantom combat timeout (seconds)",
+    "fr": "Délai avant de casser un combat fantôme (secondes)",
+    "ru": "Задержка фантомного боя (секунды)",
+    "zh": "幽灵战斗超时（秒）"
+   },
+   "help": {
+    "en": "How long a bot waits in a phantom combat before it is cleared. 0 turns the breaker off. An old DungeonClear.StuckCombatTimeout line, if still in your files, wins over this value.",
+    "fr": "Combien de temps un bot attend dans un combat fantôme avant d'en sortir. 0 coupe le disjoncteur. Une ancienne ligne DungeonClear.StuckCombatTimeout, si elle est encore dans tes fichiers, l'emporte sur cette valeur.",
+    "ru": "Сколько бот ждёт в фантомном бою, прежде чем выйти из него. 0 отключает. Старая строка DungeonClear.StuckCombatTimeout, если она ещё есть в ваших файлах, важнее этого значения.",
+    "zh": "机器人在幽灵战斗中等待多久后脱战。0 表示关闭。如果你的文件中仍有旧的 DungeonClear.StuckCombatTimeout 行，则以它为准。"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-combat",
+   "when": "restart",
+   "key": "AiPlayerbot.CoaCombat.CombatPurge.Enable",
+   "type": "bool",
+   "default": 0,
+   "label": {
+    "en": "Drop unwinnable combat",
+    "fr": "Abandonner les combats impossibles",
+    "ru": "Сбрасывать бой, который нельзя выиграть",
+    "zh": "放弃无法结束的战斗"
+   },
+   "help": {
+    "en": "Off by default. On: outside a Dungeon Clear run too, a known creature that holds the group in a combat it can never finish (Shadowfang Keep's Vial Bunny, Dire Maul's Crystal Totem) is dropped from it. Always on in a Dungeon Clear run.",
+    "fr": "Désactivé par défaut. Activé : même hors d'un run Dungeon Clear, une créature connue qui retient le groupe dans un combat impossible à finir (le Vial Bunny du donjon d'Ombrecroc, le Totem de cristal de Hache-Tripes) en est retirée. Toujours actif pendant un run Dungeon Clear.",
+    "ru": "Выключено по умолчанию. Включено: и вне забега Dungeon Clear известное существо, удерживающее группу в бою, который нельзя закончить (Vial Bunny в Крепости Темного Клыка, Кристальный тотем в Забытом Городе), исключается из боя. Всегда включено в забеге Dungeon Clear.",
+    "zh": "默认关闭。开启后：即使不在 Dungeon Clear 中，已知会让队伍卡在无法结束的战斗中的生物（影牙城堡的 Vial Bunny、厄运之槌的水晶图腾）会被移出战斗。Dungeon Clear 副本中始终开启。"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-combat",
+   "when": "restart",
+   "key": "AiPlayerbot.CoaCombat.SunkenTemple.Enable",
+   "type": "bool",
+   "default": 0,
+   "label": {
+    "en": "Sunken Temple: Avatar of Hakkar",
+    "fr": "Temple englouti : Avatar d'Hakkar",
+    "ru": "Затонувший храм: Аватара Хаккара",
+    "zh": "沉没的神庙：哈卡的化身"
+   },
+   "help": {
+    "en": "Off by default. On: outside a Dungeon Clear run too, the bots stop the Hakkari Suppressors, loot the Hakkari Blood and douse the four flames that bring the Avatar. Always on in a Dungeon Clear run.",
+    "fr": "Désactivé par défaut. Activé : même hors d'un run Dungeon Clear, les bots arrêtent les Suppresseurs hakkari, ramassent le Sang hakkari et éteignent les quatre flammes qui font venir l'Avatar. Toujours actif pendant un run Dungeon Clear.",
+    "ru": "Выключено по умолчанию. Включено: и вне забега Dungeon Clear боты останавливают подавителей Хаккари, подбирают кровь Хаккари и гасят четыре пламени, призывающих Аватару. Всегда включено в забеге Dungeon Clear.",
+    "zh": "默认关闭。开启后：即使不在 Dungeon Clear 中，机器人也会阻止哈卡莱抑制者、拾取哈卡莱之血并熄灭召唤化身的四团火焰。Dungeon Clear 副本中始终开启。"
    }
   },
   {
