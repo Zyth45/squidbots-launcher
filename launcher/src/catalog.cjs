@@ -1,0 +1,73 @@
+'use strict';
+// The settings catalog: the curated settings of server-settings.json, plus the options of the living world modules,
+// read from living-world.json (docs/LIVING-WORLD-MANIFEST.md). An option of that manifest becomes a setting of its
+// own tab, under the "Living world" section, with no change to the interface code.
+//
+// The player's values are never changed: every option has a default; an option missing from the player's .conf is
+// shown at that default and its line is written only when the player changes it. A malformed option is left out
+// (and said in the log of the tests), never guessed.
+const BASE = require('./data/server-settings.json');
+const LIVING = require('./data/living-world.json');
+
+const TYPES = { bool: 'bool', int: 'int', float: 'float', choice: 'choice', text: 'quoted', ids: 'ids' };
+const WHEN = new Set(Object.keys(BASE.when || {}));
+const SECTION = { id: 'living', label: { en: 'Living world', fr: 'Monde vivant', ru: 'Живой мир', zh: '鲜活世界' } };
+
+const text = value => (typeof value === 'string' ? { en: value } : value && typeof value === 'object' && typeof value.en === 'string' ? value : null);
+
+// The reason an option is refused, or null.
+function problem(option, groups, keys) {
+  if (!option || typeof option !== 'object') return 'not an object';
+  if (typeof option.key !== 'string' || !/^[A-Za-z0-9_.]+$/.test(option.key)) return 'key';
+  if (typeof option.file !== 'string' || !/^[A-Za-z0-9_.-]+\.conf$/.test(option.file)) return 'file';
+  if (!groups.has(option.group)) return `group ${option.group}`;
+  if (!TYPES[option.type]) return `type ${option.type}`;
+  if (option.when !== undefined && !WHEN.has(option.when)) return `when ${option.when}`;
+  if (!text(option.label)) return 'label (en)';
+  if (option.help !== undefined && !text(option.help)) return 'help (en)';
+  if (keys.has(`${option.file}\u0000${option.key}`)) return 'key already in the catalog';
+  const value = option.default === undefined || option.default === null ? '' : String(option.default);
+  if (value === '') return 'default';
+  if (option.type === 'bool' && !['0', '1'].includes(value)) return 'default (0 or 1)';
+  if (['int', 'float'].includes(option.type)) {
+    const number = Number(value);
+    if (!Number.isFinite(number) || (option.type === 'int' && !Number.isInteger(number))) return 'default (number)';
+    if ((option.min !== undefined && number < option.min) || (option.max !== undefined && number > option.max)) return 'default (out of min/max)';
+  }
+  if (option.type === 'choice') {
+    if (!Array.isArray(option.choices) || !option.choices.length || option.choices.some(choice => choice?.value === undefined || !text(choice.label))) return 'choices';
+    if (!option.choices.some(choice => String(choice.value) === value)) return 'default (not one of the choices)';
+  }
+  return null;
+}
+
+function build(base = BASE, living = LIVING) {
+  const groups = (living.groups || []).filter(group => group && typeof group.id === 'string' && text(group.label) && !base.groups.some(item => item.id === group.id))
+    .map(group => ({ id: group.id, icon: group.icon || 'globe', label: text(group.label) }));
+  const ids = new Set(groups.map(group => group.id));
+  const keys = new Set(base.settings.map(setting => `${setting.file}\u0000${setting.key}`));
+  const refused = [];
+  const settings = [];
+  for (const option of living.options || []) {
+    const why = problem(option, ids, keys);
+    if (why) { refused.push(`${option?.key || '?'}: ${why}`); continue; }
+    keys.add(`${option.file}\u0000${option.key}`);
+    const setting = { key: option.key, file: option.file, group: option.group, living: true, kind: TYPES[option.type], when: option.when || 'restart', default: String(option.default), label: text(option.label) };
+    if (option.help !== undefined) setting.help = text(option.help);
+    if (option.min !== undefined) setting.min = option.min;
+    if (option.max !== undefined) setting.max = option.max;
+    if (option.type === 'choice') setting.choices = option.choices.map(choice => ({ value: String(choice.value), label: text(choice.label) }));
+    settings.push(setting);
+  }
+  const used = groups.filter(group => settings.some(setting => setting.group === group.id));
+  return {
+    ...base,
+    groups: [...base.groups, ...groups],
+    settings: [...base.settings, ...settings],
+    sections: used.length ? [...(base.sections || []), { ...SECTION, groups: groups.map(group => group.id) }] : base.sections || [],
+    refused,
+  };
+}
+
+module.exports = build();
+module.exports.build = build;

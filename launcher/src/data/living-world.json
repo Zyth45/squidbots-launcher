@@ -1,0 +1,117 @@
+{
+ "schema": 1,
+ "groups": [
+  {
+   "id": "lw-invasions",
+   "icon": "swords",
+   "label": {
+    "en": "Invasions",
+    "fr": "Invasions",
+    "ru": "Вторжения",
+    "zh": "入侵"
+   }
+  },
+  {
+   "id": "lw-social",
+   "icon": "chat",
+   "label": {
+    "en": "Social bots",
+    "fr": "Bots sociaux",
+    "ru": "Общительные боты",
+    "zh": "社交机器人"
+   }
+  },
+  {
+   "id": "lw-travellers",
+   "icon": "map",
+   "label": {
+    "en": "Travellers",
+    "fr": "Voyageurs",
+    "ru": "Путешественники",
+    "zh": "旅行者"
+   }
+  },
+  {
+   "id": "lw-citylife",
+   "icon": "home",
+   "label": {
+    "en": "City life",
+    "fr": "Vie des villes",
+    "ru": "Жизнь городов",
+    "zh": "城市生活"
+   }
+  },
+  {
+   "id": "lw-economy",
+   "icon": "coin",
+   "label": {
+    "en": "Economy and auction house",
+    "fr": "Économie et hôtel des ventes",
+    "ru": "Экономика и аукцион",
+    "zh": "经济与拍卖行"
+   }
+  },
+  {
+   "id": "lw-crafting",
+   "icon": "gift",
+   "label": {
+    "en": "Crafting on order",
+    "fr": "Artisanat sur commande",
+    "ru": "Ремесло на заказ",
+    "zh": "定制制作"
+   }
+  },
+  {
+   "id": "lw-loot",
+   "icon": "trophy",
+   "label": {
+    "en": "Loot",
+    "fr": "Butin",
+    "ru": "Добыча",
+    "zh": "战利品"
+   }
+  }
+ ],
+ "options": [
+  {
+   "key": "AiPlayerbot.LootNeedRollLevel",
+   "file": "playerbots.conf",
+   "group": "lw-loot",
+   "type": "choice",
+   "default": "1",
+   "when": "restart",
+   "choices": [
+    {
+     "value": "1",
+     "label": {
+      "en": "Greed (polite)",
+      "fr": "Cupidité (poli)",
+      "ru": "Не откажусь (вежливо)",
+      "zh": "贪婪（礼让）"
+     }
+    },
+    {
+     "value": "2",
+     "label": {
+      "en": "Need on real upgrades",
+      "fr": "Besoin sur les vraies améliorations",
+      "ru": "Нужно на настоящие улучшения",
+      "zh": "真正提升时需求"
+     }
+    }
+   ],
+   "label": {
+    "en": "Bots need items",
+    "fr": "Les bots prennent Besoin",
+    "ru": "Боты бросают «Нужно»",
+    "zh": "机器人需求物品"
+   },
+   "help": {
+    "en": "Greed (default): bots roll Greed even on their upgrades and leave Need to players. Need: a bot rolls Need on an item that really upgrades it (an epic weapon in an instance, for example) and equips it if it wins.",
+    "fr": "Cupidité (par défaut) : les bots jouent Cupidité même sur leurs améliorations et laissent le Besoin aux joueurs. Besoin : un bot joue Besoin sur un objet qui l'améliore vraiment (une arme épique en instance, par exemple) et l'équipe s'il le gagne.",
+    "ru": "«Не откажусь» (по умолчанию): боты бросают «Не откажусь» даже на улучшения и оставляют «Нужно» игрокам. «Нужно»: бот бросает «Нужно» на предмет, который действительно его улучшает (например, эпическое оружие в подземелье), и надевает его при выигрыше.",
+    "zh": "贪婪（默认）：机器人即使遇到提升也只掷贪婪，把需求留给玩家。需求：物品确实能提升机器人时（例如副本中的史诗武器），机器人掷需求，赢得后装备。"
+   }
+  }
+ ]
+}

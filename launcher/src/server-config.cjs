@@ -15,7 +15,7 @@ const fs = require('node:fs');
 const fsp = require('node:fs/promises');
 const path = require('node:path');
 const { atomicJson, readJson } = require('./release-format.cjs');
-const CATALOG = require('./data/server-settings.json');
+const CATALOG = require('./catalog.cjs');
 
 const KEY = /^[A-Za-z][A-Za-z0-9_.-]{0,99}$/;
 const LINE = /^([ \t]*)([A-Za-z][A-Za-z0-9_.-]*)([ \t]*=[ \t]*)([^\r\n]*?)([ \t]*)$/;
@@ -313,6 +313,11 @@ class ServerConfig {
       const kind = curated?.kind || change.kind || inferKind(text);
       const problem = validate(['bool', 'int', 'float', 'ids', 'quoted', 'choice', 'text'].includes(kind) ? kind : 'text', text, curated?.choices);
       if (problem) { errors[change.key] = problem; continue; }
+      // The options of the living world manifest keep to their bounds.
+      if (curated?.living && ['int', 'float'].includes(kind) && ((curated.min !== undefined && Number(text) < curated.min) || (curated.max !== undefined && Number(text) > curated.max))) {
+        errors[change.key] = `Expected a value from ${curated.min ?? '…'} to ${curated.max ?? '…'}.`;
+        continue;
+      }
       if (!byFile.has(file.id)) byFile.set(file.id, { file, pairs: new Map() });
       byFile.get(file.id).pairs.set(change.key, kind === 'quoted' ? `"${text}"` : text);
     }
