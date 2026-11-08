@@ -3,7 +3,9 @@
  "onByDefault": [
   "AiPlayerbot.CoaWorld.Invasions.Scourge.Enable",
   "AiPlayerbot.CoaWorld.Invasions.Legion.Enable",
-  "AiPlayerbot.CoaWorld.Invasions.AhnQiraj.Enable"
+  "AiPlayerbot.CoaWorld.Invasions.AhnQiraj.Enable",
+  "AiPlayerbot.CoaWorld.WorldPvp.Skirmish.Enable",
+  "AiPlayerbot.CoaWorld.WorldPvp.CapitalDefence.Enable"
  ],
  "groups": [
   {
@@ -629,6 +631,170 @@
     "fr": "Désactivé par défaut. Activé : dans un groupe avec deux tanks, celui qui n'est pas le tank principal récupère les adds libres (d'abord celui qui menace le membre le plus en danger) et ne provoque jamais ce qu'un autre tank tient.",
     "ru": "Выключено по умолчанию. Включено: в группе с двумя танками тот, кто не главный танк, подбирает свободных аддов (сначала того, кто бьёт самого уязвимого участника) и никогда не провоцирует то, что держит другой танк.",
     "zh": "默认关闭。开启后：在有两名坦克的队伍中，非主坦会接住游离的小怪（优先处理威胁最危险队员的那只），并且绝不嘲讽另一名坦克正在拉住的目标。"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "when": "reload",
+   "group": "lw-population",
+   "key": "AiPlayerbot.CoaWorld.DungeonSim.Enable",
+   "type": "bool",
+   "default": 0,
+   "label": {
+    "en": "Bots run dungeons on their own",
+    "fr": "Les bots font des donjons entre eux",
+    "ru": "Боты сами ходят в подземелья",
+    "zh": "机器人自行组队下副本"
+   },
+   "help": {
+    "en": "Off by default. On: when no player is queued, groups of five bots call for a classic dungeon in LookingForGroup, gather at its entrance and go in, then come out later with real loot from its bosses.",
+    "fr": "Désactivé par défaut. Activé : quand aucun joueur n'est en file, des groupes de cinq bots cherchent un donjon classique dans le canal Recherche de groupe, se retrouvent à l'entrée et y entrent, puis en ressortent plus tard avec le vrai butin de ses boss.",
+    "ru": "Выключено по умолчанию. Включено: когда в очереди нет игроков, группы из пяти ботов ищут классическое подземелье в канале Поиска группы, собираются у входа и заходят, а позже выходят с настоящей добычей его боссов.",
+    "zh": "默认关闭。开启后：没有玩家排队时，五个机器人一组会在寻求组队频道招募经典副本，在入口集合后进入，之后带着首领的真实战利品出来。"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "when": "reload",
+   "group": "lw-population",
+   "key": "AiPlayerbot.CoaWorld.DungeonSim.GroupsPerFaction",
+   "type": "int",
+   "default": 2,
+   "min": 1,
+   "max": 10,
+   "onlyWhen": {
+    "key": "AiPlayerbot.CoaWorld.DungeonSim.Enable",
+    "values": [
+     1
+    ]
+   },
+   "label": {
+    "en": "Bot dungeon groups at once, per side",
+    "fr": "Groupes de bots en donjon en même temps, par camp",
+    "ru": "Групп ботов в подземельях одновременно, на сторону",
+    "zh": "每个阵营同时进行副本的机器人队伍数"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "when": "reload",
+   "group": "lw-population",
+   "key": "AiPlayerbot.CoaWorld.Recovery.Enable",
+   "type": "bool",
+   "default": 0,
+   "label": {
+    "en": "Stuck bots find their way again",
+    "fr": "Les bots coincés retrouvent leur chemin",
+    "ru": "Застрявшие боты находят дорогу",
+    "zh": "卡住的机器人重新找到路"
+   },
+   "help": {
+    "en": "Off by default. On: a bot standing still, going round in circles or dying over and over drops what it was doing, or uses its hearthstone home.",
+    "fr": "Désactivé par défaut. Activé : un bot immobile, qui tourne en rond ou qui meurt sans cesse abandonne ce qu'il faisait, ou utilise sa pierre de foyer pour rentrer.",
+    "ru": "Выключено по умолчанию. Включено: бот, который стоит на месте, ходит по кругу или раз за разом умирает, бросает своё занятие или возвращается домой камнем возвращения.",
+    "zh": "默认关闭。开启后：原地不动、绕圈或反复死亡的机器人会放弃当前行为，或用炉石回家。"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "when": "reload",
+   "group": "lw-travellers",
+   "key": "AiPlayerbot.CoaWorld.Travel.Enable",
+   "type": "bool",
+   "default": 0,
+   "label": {
+    "en": "Bots take the zeppelins and boats",
+    "fr": "Les bots prennent les zeppelins et les bateaux",
+    "ru": "Боты садятся на дирижабли и корабли",
+    "zh": "机器人乘坐飞艇和船只"
+   },
+   "help": {
+    "en": "Off by default. On: bots wait at the zeppelin towers and docks, board when it leaves and step off at the other end.",
+    "fr": "Désactivé par défaut. Activé : les bots attendent aux tours des zeppelins et aux quais, montent au départ et descendent à l'arrivée.",
+    "ru": "Выключено по умолчанию. Включено: боты ждут у башен дирижаблей и на пристанях, садятся при отправлении и сходят на другой стороне.",
+    "zh": "默认关闭。开启后：机器人在飞艇塔和码头等候，出发时登上，到达后下来。"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "when": "reload",
+   "group": "lw-pvp",
+   "key": "AiPlayerbot.CoaWorld.WorldPvp.Enable",
+   "type": "bool",
+   "default": 0,
+   "label": {
+    "en": "World PvP of the bots",
+    "fr": "PvP sauvage des bots",
+    "ru": "PvP ботов в открытом мире",
+    "zh": "机器人的野外 PvP"
+   },
+   "help": {
+    "en": "Off by default. On: skirmishes between the posts of contested zones (Southshore and Tarren Mill...), and bots rally to defend a capital that players of the other side attack.",
+    "fr": "Désactivé par défaut. Activé : escarmouches entre les postes des zones contestées (Austrivage et Moulin-de-Tarren…), et les bots se rassemblent pour défendre une capitale attaquée par des joueurs du camp adverse.",
+    "ru": "Выключено по умолчанию. Включено: стычки между заставами спорных территорий (Южнобережье и Мельница Таррен…), и боты собираются защищать столицу, на которую нападают игроки другой стороны.",
+    "zh": "默认关闭。开启后：争夺区域的据点之间会发生冲突（南海镇与塔伦米尔……），当敌对阵营玩家进攻主城时，机器人会集结防守。"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "when": "reload",
+   "group": "lw-pvp",
+   "key": "AiPlayerbot.CoaWorld.WorldPvp.Skirmish.Enable",
+   "type": "bool",
+   "default": 1,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.WorldPvp.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Skirmishes in contested zones",
+    "fr": "Escarmouches dans les zones contestées",
+    "ru": "Стычки на спорных территориях",
+    "zh": "争夺区域的冲突"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "when": "reload",
+   "group": "lw-pvp",
+   "key": "AiPlayerbot.CoaWorld.WorldPvp.CapitalDefence.Enable",
+   "type": "bool",
+   "default": 1,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.WorldPvp.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Bots defend the capitals",
+    "fr": "Les bots défendent les capitales",
+    "ru": "Боты защищают столицы",
+    "zh": "机器人保卫主城"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "when": "reload",
+   "group": "lw-pvp",
+   "key": "AiPlayerbot.CoaWorld.WorldPvp.CapitalDefence.MinAttackers",
+   "type": "int",
+   "default": 3,
+   "min": 1,
+   "max": 40,
+   "onlyWhen": {
+    "key": "AiPlayerbot.CoaWorld.WorldPvp.Enable",
+    "values": [
+     1
+    ]
+   },
+   "label": {
+    "en": "Attackers in a capital before it rallies",
+    "fr": "Attaquants dans une capitale avant le rassemblement",
+    "ru": "Нападающих в столице до сбора защитников",
+    "zh": "主城集结防守前的进攻者人数"
    }
   },
   {
