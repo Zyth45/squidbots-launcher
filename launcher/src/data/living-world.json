@@ -655,6 +655,98 @@
   },
   {
    "file": "playerbots.conf",
+   "group": "lw-population",
+   "when": "reload",
+   "key": "AiPlayerbot.CoaLive.Sessions.Enable",
+   "type": "bool",
+   "default": 0,
+   "label": {
+    "en": "Bots come and go like players",
+    "fr": "Les bots vont et viennent comme des joueurs",
+    "ru": "Боты приходят и уходят как игроки",
+    "zh": "机器人像玩家一样上下线"
+   },
+   "help": {
+    "en": "The number of bots online follows the hour of the day (quiet nights, busy evenings, weekend bonus), and each bot plays sessions of a believable length. Less CPU at quiet hours.",
+    "fr": "Le nombre de bots connectés suit l'heure de la journée (nuits calmes, soirées animées, bonus le week-end), et chaque bot joue des sessions d'une durée crédible. Moins de CPU aux heures creuses.",
+    "ru": "Число ботов онлайн следует времени суток (тихие ночи, оживлённые вечера, бонус в выходные), и каждый бот играет сессии правдоподобной длины. Меньше нагрузки на процессор в тихие часы.",
+    "zh": "在线机器人数量随一天中的时间变化（夜晚冷清、晚上热闹、周末加成），每个机器人的游戏时长也很真实。空闲时段占用更少 CPU。"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-population",
+   "when": "reload",
+   "key": "AiPlayerbot.CoaLive.Sessions.WeekendBonus",
+   "type": "int",
+   "default": 10,
+   "min": 0,
+   "max": 100,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaLive.Sessions.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Weekend bonus %",
+    "fr": "Bonus du week-end %",
+    "ru": "Бонус выходных %",
+    "zh": "周末加成 %"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-population",
+   "when": "reload",
+   "key": "AiPlayerbot.CoaLive.Sessions.MinPercent",
+   "type": "int",
+   "default": 20,
+   "min": 0,
+   "max": 100,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaLive.Sessions.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Minimum bots online %",
+    "fr": "Minimum de bots connectés %",
+    "ru": "Минимум ботов онлайн %",
+    "zh": "最少在线机器人 %"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-population",
+   "when": "reload",
+   "key": "AiPlayerbot.CoaLive.Sessions.HourShift",
+   "type": "int",
+   "default": 0,
+   "min": -23,
+   "max": 23,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaLive.Sessions.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Hour shift",
+    "fr": "Décalage horaire",
+    "ru": "Сдвиг часов",
+    "zh": "时间偏移"
+   },
+   "help": {
+    "en": "Moves the busy hours earlier or later, in hours, for a realm whose players live in another time zone than the server's clock.",
+    "fr": "Avance ou retarde les heures animées, en heures, pour un royaume dont les joueurs vivent dans un autre fuseau horaire que l'horloge du serveur.",
+    "ru": "Сдвигает оживлённые часы раньше или позже (в часах) для мира, игроки которого живут в другом часовом поясе, чем часы сервера.",
+    "zh": "将热闹时段提前或推后（单位：小时），适用于玩家所在时区与服务器时钟不同的国度。"
+   }
+  },
+  {
+   "file": "playerbots.conf",
    "when": "reload",
    "group": "lw-population",
    "key": "AiPlayerbot.CoaWorld.DungeonSim.Enable",
