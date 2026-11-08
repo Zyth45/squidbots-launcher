@@ -68,7 +68,7 @@ The groups already declared, and what goes in them:
 
 | Group | Contents |
 |---|---|
-| `lw-invasions` | Invasions. |
+| `lw-invasions` | World events (tab "World events"): invasions, gold rushes. |
 | `lw-social` | Social bots, and the bot souls of 3.0 (no LLM): the share of each of the 5 archetypes (20/40/20/10/10 by default). |
 | `lw-travellers` | Travellers. |
 | `lw-citylife` | City life. |

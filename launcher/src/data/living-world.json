@@ -10,10 +10,10 @@
    "id": "lw-invasions",
    "icon": "swords",
    "label": {
-    "en": "Invasions",
-    "fr": "Invasions",
-    "ru": "Вторжения",
-    "zh": "入侵"
+    "en": "World events",
+    "fr": "Événements du monde",
+    "ru": "События мира",
+    "zh": "世界事件"
    }
   },
   {
@@ -314,6 +314,142 @@
     "fr": "Portes d'Ahn'Qiraj (niveau 55+)",
     "ru": "Врата Ан'Киража (уровень 55+)",
     "zh": "安其拉之门（55 级以上）"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "when": "reload",
+   "key": "AiPlayerbot.CoaWorld.ResourceRush.Enable",
+   "type": "bool",
+   "default": 0,
+   "label": {
+    "en": "Gold rushes",
+    "fr": "Ruées vers l'or",
+    "ru": "Золотые лихорадки",
+    "zh": "淘金热"
+   },
+   "help": {
+    "en": "Off by default. On: now and then, rich veins and rare herbs of your level appear in the open world near a player, the realm is told, and bots of both sides run there to grab them.",
+    "fr": "Désactivé par défaut. Activé : de temps en temps, de riches filons et des herbes rares de ton niveau apparaissent dans le monde près d'un joueur, le royaume est prévenu, et les bots des deux camps y courent pour les récolter.",
+    "ru": "Выключено по умолчанию. Включено: время от времени рядом с игроком в открытом мире появляются богатые жилы и редкие травы вашего уровня, мир получает объявление, и боты обеих сторон бегут их собирать.",
+    "zh": "默认关闭。开启后：不时会在玩家附近的野外出现与你等级相符的富矿和稀有草药，全服会收到通知，双方阵营的机器人都会赶去采集。"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "when": "reload",
+   "key": "AiPlayerbot.CoaWorld.ResourceRush.IntervalMin",
+   "type": "int",
+   "default": 60,
+   "min": 10,
+   "max": 1440,
+   "onlyWhen": {
+    "key": "AiPlayerbot.CoaWorld.ResourceRush.Enable",
+    "values": [
+     1
+    ]
+   },
+   "label": {
+    "en": "Minutes between two gold rushes (least)",
+    "fr": "Minutes entre deux ruées (au moins)",
+    "ru": "Минут между лихорадками (минимум)",
+    "zh": "两次淘金热间隔分钟（最少）"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "when": "reload",
+   "key": "AiPlayerbot.CoaWorld.ResourceRush.IntervalMax",
+   "type": "int",
+   "default": 120,
+   "min": 10,
+   "max": 1440,
+   "onlyWhen": {
+    "key": "AiPlayerbot.CoaWorld.ResourceRush.Enable",
+    "values": [
+     1
+    ]
+   },
+   "label": {
+    "en": "Minutes between two gold rushes (most)",
+    "fr": "Minutes entre deux ruées (au plus)",
+    "ru": "Минут между лихорадками (максимум)",
+    "zh": "两次淘金热间隔分钟（最多）"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "when": "reload",
+   "key": "AiPlayerbot.CoaWorld.ResourceRush.DurationMinutes",
+   "type": "int",
+   "default": 20,
+   "min": 5,
+   "max": 120,
+   "onlyWhen": {
+    "key": "AiPlayerbot.CoaWorld.ResourceRush.Enable",
+    "values": [
+     1
+    ]
+   },
+   "label": {
+    "en": "How long a gold rush lasts (minutes)",
+    "fr": "Durée d'une ruée (minutes)",
+    "ru": "Длительность лихорадки (минуты)",
+    "zh": "淘金热持续时间（分钟）"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "when": "reload",
+   "key": "AiPlayerbot.CoaWorld.ResourceRush.BotsPct",
+   "type": "int",
+   "default": 5,
+   "min": 0,
+   "max": 50,
+   "onlyWhen": {
+    "key": "AiPlayerbot.CoaWorld.ResourceRush.Enable",
+    "values": [
+     1
+    ]
+   },
+   "label": {
+    "en": "Bots sent to a gold rush (% of random bots online)",
+    "fr": "Bots envoyés à une ruée (% des bots aléatoires connectés)",
+    "ru": "Боты на лихорадку (% случайных ботов онлайн)",
+    "zh": "派往淘金热的机器人（在线随机机器人的 %）"
+   },
+   "help": {
+    "en": "0 sends none. At most the number below.",
+    "fr": "0 n'en envoie aucun. Au plus le nombre ci-dessous.",
+    "ru": "0: никого. Не больше числа ниже.",
+    "zh": "0 表示不派。最多为下方的数量。"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "when": "reload",
+   "key": "AiPlayerbot.CoaWorld.ResourceRush.BotsMax",
+   "type": "int",
+   "default": 40,
+   "min": 0,
+   "max": 200,
+   "onlyWhen": {
+    "key": "AiPlayerbot.CoaWorld.ResourceRush.Enable",
+    "values": [
+     1
+    ]
+   },
+   "label": {
+    "en": "Most bots sent to a gold rush",
+    "fr": "Nombre maximal de bots envoyés à une ruée",
+    "ru": "Максимум ботов на лихорадку",
+    "zh": "派往淘金热的机器人上限"
    }
   },
   {
