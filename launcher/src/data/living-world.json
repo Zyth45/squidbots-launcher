@@ -676,6 +676,26 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaCombat.ZulGurub.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-combat",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "label": {
+    "en": "Zul'Gurub: improved boss tactics",
+    "fr": "Zul'Gurub : tactiques de boss améliorées",
+    "ru": "Зул'Гуруб: улучшенная тактика боссов",
+    "zh": "祖尔格拉布：改进的首领战术"
+   },
+   "help": {
+    "en": "Off by default. On: Mandokir's gaze respected, Hakkar's heart and poison pools during Blood Siphon, kill orders on Thekal's zealots and Jin'do's totems, Gri'lek's prey runs.",
+    "fr": "Désactivé par défaut. Activé : le regard de Mandokir respecté, le cœur d'Hakkar et les flaques de poison pendant Siphon de sang, ordre d'élimination des fanatiques de Thekal et des totems de Jin'do, la proie de Gri'lek qui s'enfuit.",
+    "ru": "Выключено по умолчанию. Включено: взгляд Мандокира соблюдается, сердце Хаккара и ядовитые лужи во время Вытягивания крови, порядок убийства фанатиков Текала и тотемов Джин'до, жертва Гри'лека убегает.",
+    "zh": "默认关闭。开启后：遵守曼多基尔的凝视，在血液虹吸期间处理哈卡之心和毒池，按顺序击杀塞卡尔的狂热者和金度的图腾，被格里雷克盯上的人会逃跑。"
+   }
+  },
+  {
    "file": "playerbots.conf",
    "group": "lw-population",
    "when": "reload",
@@ -1897,7 +1917,8 @@
     "AiPlayerbot.CoaWorld.Density.Enable": 1,
     "AiPlayerbot.EnablePeriodicOnlineOffline": 1,
     "AiPlayerbot.CoaCombat.BlackwingLair.Enable": 1,
-    "AiPlayerbot.CoaSoul.Enable": 1
+    "AiPlayerbot.CoaSoul.Enable": 1,
+    "AiPlayerbot.CoaCombat.ZulGurub.Enable": 1
    }
   }
  ]
