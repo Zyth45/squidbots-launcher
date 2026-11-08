@@ -249,3 +249,17 @@ test('a pack is only offered: nothing is written until saved, and the values it 
     CATALOG.packs.splice(CATALOG.packs.length - added.length);
   }
 });
+
+test('the Living pack never applies by itself: the player\'s online rotation stays as it is until the pack is chosen and saved', async () => {
+  const root = await tempDir();
+  await fsp.cp(FIXTURE, root, { recursive: true });
+  const bots = path.join(root, 'CoA-Bots', 'Core', 'configs', 'modules', 'playerbots.conf');
+  const before = await fsp.readFile(bots, 'utf8');
+  assert.match(before, /^AiPlayerbot\.EnablePeriodicOnlineOffline = 0\r?$/m);
+  const config = new ServerConfig(root);
+  const overview = await config.overview();
+  assert.equal(overview.packs.find(pack => pack.id === 'living').changes['AiPlayerbot.EnablePeriodicOnlineOffline'], '1');
+  assert.equal(overview.settings.find(setting => setting.key === 'AiPlayerbot.EnablePeriodicOnlineOffline').value, '0');
+  assert.deepEqual(overview.packUndo, {});
+  assert.equal(await fsp.readFile(bots, 'utf8'), before);
+});
