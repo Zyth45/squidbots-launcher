@@ -692,6 +692,34 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaCombat.LootNeedWaitSeconds",
+   "file": "playerbots.conf",
+   "group": "lw-loot",
+   "type": "int",
+   "default": 20,
+   "min": 0,
+   "max": 50,
+   "when": "restart",
+   "idleWhen": {
+    "key": "AiPlayerbot.LootNeedRollLevel",
+    "values": [
+     1
+    ]
+   },
+   "label": {
+    "en": "Bots wait for players before Need (seconds)",
+    "fr": "Les bots attendent les joueurs avant Besoin (secondes)",
+    "ru": "Боты ждут игроков перед «Нужно» (секунды)",
+    "zh": "机器人掷需求前等待玩家（秒）"
+   },
+   "help": {
+    "en": "Only when \"Bots need items\" is set to Need. A bot that wants an item waits for the players who may roll on it to vote first, up to this many seconds, and never rolls Need against a player's Need. Their rolls may appear a little later. 0: no wait.",
+    "fr": "Seulement quand « Les bots prennent Besoin » est sur Besoin. Un bot qui veut un objet attend que les joueurs qui peuvent le jouer aient voté, jusqu'à ce nombre de secondes, et ne joue jamais Besoin contre le Besoin d'un joueur. Ses jets peuvent apparaître un peu plus tard. 0 : pas d'attente.",
+    "ru": "Только если «Боты бросают «Нужно»» стоит на «Нужно». Бот, которому нужен предмет, ждёт, пока проголосуют игроки, которые могут на него бросить, не дольше этого числа секунд, и никогда не бросает «Нужно» против «Нужно» игрока. Его броски могут появиться чуть позже. 0: без ожидания.",
+    "zh": "仅当“机器人需求物品”设为需求时生效。想要某物品的机器人会先等可掷骰的玩家投票，最多等待此秒数，且绝不与玩家的需求竞争。它的掷骰可能稍晚出现。0：不等待。"
+   }
+  },
+  {
    "file": "playerbots.conf",
    "group": "lw-social",
    "when": "reload",
