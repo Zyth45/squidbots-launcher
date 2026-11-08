@@ -1458,7 +1458,7 @@ function registerIpc() {
   const cardIds = async root => ({ coa: 1, ...Object.fromEntries((await realms.status(root, { live: false }).catch(() => ({ realms: [] }))).realms.filter(realm => realm.state !== 'absent' && realm.id).map(realm => [realm.key, realm.id])) });
   // The names follow the cards: the extra realms in realm.json (and the list), CoA through the network choice.
   const applyCardNames = async (root, cards) => {
-    for (const key of ['wildcard', 'reborn', 'dawnrise']) if (cards.realms[key]?.name) await realms.setRealmName(root, key, realmCards.listName(cards.realms[key])).catch(() => {});
+    for (const key of ['wildcard', 'reborn', 'dawnrise', 'living']) if (cards.realms[key]?.name) await realms.setRealmName(root, key, realmCards.listName(cards.realms[key])).catch(() => {});
     if (cards.realms.coa) {
       const current = await network.readNetwork(root);
       // Name left empty: the name chosen in Who can join, without an earlier subtitle (" - …").

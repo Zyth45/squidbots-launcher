@@ -338,6 +338,8 @@ test('the new living server: its own databases only, the launch mode imposed, it
   assert.strictEqual(value(pb, 'AiPlayerbot.CoaFreshStart.Enable'), '1');
   assert.strictEqual(value(pb, 'AiPlayerbot.CoaEconomy.LaunchCurve.Enable'), '1');
   assert.strictEqual(value(pb, 'AiPlayerbot.RandomBotAccountPrefix'), '"rndlv"');
+  // The old AH bot stays off there while mod-ah-bot-plus is in the core (no epics on day 1).
+  assert.strictEqual(value(path.join(root, 'Royaumes', 'living', 'configs', 'modules', 'mod_ahbot.conf'), 'AuctionHouseBot.Enable'), '0');
   // CoA's own files are untouched.
   assert.strictEqual(snapshot(path.join(root, 'CoA-Bots')), coa);
 });

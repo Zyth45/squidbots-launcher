@@ -180,6 +180,9 @@ function imposed(key, saved) {
     out['manastorm-endless.conf'] = { 'Manastorm.Enable': '0' };
   }
   out['coa_custom_races.conf'] = { 'CoACustomRaces.Enable': '0', 'CoACustomRaces.BotsEnable': '0' };
+  // The new living server: while mod-ah-bot-plus is in the core (the merged AH bot still hidden in the manifest), its old
+  // AH bot stays off there, or it would fill the auction house with epics on day 1. The merged one comes with livingOwn().
+  if (key === 'living' && CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.AHBot.Enable')) out['mod_ahbot.conf'] = { ...out['mod_ahbot.conf'], 'AuctionHouseBot.Enable': '0' };
   // CoA tells its random bots from alts by this prefix: it must be the realm's bot prefix (else its bots count as alts).
   out['coa.conf'] = { ...out['coa.conf'], 'CoA.RandomBotAccountPrefix': `"${m.prefix}"` };
   out['playerbots.conf'] = { ...out['playerbots.conf'], 'AiPlayerbot.RandomBotAccountPrefix': `"${m.prefix}"`, 'AiPlayerbot.CoaStatusFile': '"Logs/bot-status.json"', 'AiPlayerbot.CommandServerPort': '0' };

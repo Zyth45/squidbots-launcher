@@ -38,6 +38,7 @@ const DEFAULTS = {
     wildcard: { mode: 6, image: 'Darkmoon', description: 13977904, name: 'Darkmoon', subtitle: '' },
     reborn: { mode: 12, image: 'Bronzebeard', description: 1397607, name: 'Bronzebeard', subtitle: 'Warcraft Reborn' },
     dawnrise: { mode: 9, image: 'Dawnrise', description: 13977920, name: 'Dawnrise', subtitle: 'Free Pick' },
+    living: { mode: 11, image: 'Thrall1', description: 13977864, name: '', subtitle: 'New server' },
   },
 };
 const NAME = /^[\w '().]{0,24}$/;
