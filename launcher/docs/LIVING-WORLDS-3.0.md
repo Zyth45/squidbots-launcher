@@ -7,7 +7,7 @@ itself: a card prepares values among the unsaved changes (Save or Discard), or a
 | Card | What it does | State |
 |---|---|---|
 | **Classic** | Every Living world option back to its default: the bots as before 3.0. Pack `classic`, made by the launcher from the manifest (never written in it), so a new option is in it at once. | Done |
-| **Living server** | Pack `living`: every Living world brick measured on the A/B bench, on the realm as it is (characters kept). Surname "None"; bots keep their bags (`RefreshClearsInventory = 0`), so they have loot to sell (Classic does not touch that key). | Announced (`soon`), values after the bench |
+| **Living server** | Pack `living`: every shown switch of the manifest on (live, world, economy, artisans and craft orders, group combat), bots keep their bags (`RefreshClearsInventory = 0`), surname "None", Need on real upgrades (`LootNeedRollLevel = 2`); numbers stay at their defaults. Not in it: the merged AH bot and its options (hidden while mod-ah-bot-plus is in the core) and Server first (meant for a new realm). User's decision, 08/11: "we put EVERYTHING in for now", trimmed only if the consumption measure demands it. Classic does not touch the bags. | Done |
 | **New living server** | A new realm beside the others, opening like an official server. Design below. | Announced, design |
 
 The choice window shows once (`livingChoice` in `public/js/core.js`). "Decide later" closes it; the cards stay in
@@ -60,6 +60,7 @@ living: {
 
 1. The CoA bot server's settings of the moment (never changed by the realm).
 2. The realm's own values, written once at creation and changed later by the player like any realm setting:
+   - `AiPlayerbot.CoaWorld.ServerFirst.Enable = 1` (server first announcements, made for a new realm);
    - the **Solo self-found (1-59)** preset as it is (recipe `self-found-world`: CoaSelfFound, its max level, its share
      of bots, the XP rate, Dungeon Clear's self-found groups). Nothing is made again;
    - the values of the **Living server** pack (`living`);

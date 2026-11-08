@@ -1628,7 +1628,6 @@
  "packs": [
   {
    "id": "living",
-   "soon": true,
    "title": {
     "en": "Living server",
     "fr": "Serveur vivant",
@@ -1636,13 +1635,43 @@
     "zh": "鲜活服务器"
    },
    "summary": {
-    "en": "Every Living world feature measured on the test bench, on your realm as it is (your characters stay). No \"Bot\" surname.",
-    "fr": "Toutes les fonctions du Monde vivant mesurées au banc d'essai, sur ton royaume tel qu'il est (tes personnages restent). Pas de surnom « Bot ».",
-    "ru": "Все функции «Живого мира», проверенные на тестовом стенде, на вашем мире как он есть (персонажи остаются). Без фамилии «Bot».",
-    "zh": "在你现有的服务器上开启所有经测试台验证的鲜活世界功能（角色保留）。不加“Bot”姓氏。"
+    "en": "Every Living world feature on, on your realm as it is (your characters stay): bots that live, talk, travel, trade and fight better, world events. No \"Bot\" surname.",
+    "fr": "Toutes les fonctions du Monde vivant activées, sur ton royaume tel qu'il est (tes personnages restent) : des bots qui vivent, parlent, voyagent, commercent et combattent mieux, des événements dans le monde. Pas de surnom « Bot ».",
+    "ru": "Все функции «Живого мира» включены, на вашем мире как он есть (персонажи остаются): боты живут, общаются, путешествуют, торгуют и лучше сражаются, события в мире. Без фамилии «Bot».",
+    "zh": "在你现有的服务器上开启所有鲜活世界功能（角色保留）：机器人会生活、聊天、旅行、交易并更会战斗，还有世界事件。不加“Bot”姓氏。"
    },
    "changes": {
+    "AiPlayerbot.CoaWorld.Invasions.Enable": 1,
+    "AiPlayerbot.CoaWorld.Invasions.Scourge.Enable": 1,
+    "AiPlayerbot.CoaWorld.Invasions.Legion.Enable": 1,
+    "AiPlayerbot.CoaWorld.Invasions.AhnQiraj.Enable": 1,
+    "AiPlayerbot.CoaWorld.ResourceRush.Enable": 1,
+    "AiPlayerbot.CoaCombat.BreathGuard.Enable": 1,
+    "AiPlayerbot.CoaCombat.StuckCombat.Enable": 1,
+    "AiPlayerbot.CoaCombat.CombatPurge.Enable": 1,
+    "AiPlayerbot.CoaCombat.SunkenTemple.Enable": 1,
+    "AiPlayerbot.CoaCombat.Telegraph.Enable": 1,
+    "AiPlayerbot.CoaCombat.PursuitStop.Enable": 1,
+    "AiPlayerbot.CoaCombat.OffTank.Enable": 1,
+    "AiPlayerbot.CoaCombat.MoltenCore.Enable": 1,
+    "AiPlayerbot.CoaLive.Sessions.Enable": 1,
+    "AiPlayerbot.CoaWorld.DungeonSim.Enable": 1,
+    "AiPlayerbot.CoaWorld.Recovery.Enable": 1,
+    "AiPlayerbot.CoaWorld.Travel.Enable": 1,
+    "AiPlayerbot.CoaWorld.Travel.Hearthstone": 1,
+    "AiPlayerbot.CoaWorld.WorldPvp.Enable": 1,
+    "AiPlayerbot.CoaWorld.WorldPvp.Skirmish.Enable": 1,
+    "AiPlayerbot.CoaWorld.WorldPvp.CapitalDefence.Enable": 1,
+    "AiPlayerbot.CoaEconomy.Artisans.Enable": 1,
+    "AiPlayerbot.CoaEconomy.CraftOrders.Enable": 1,
+    "AiPlayerbot.LootNeedRollLevel": 2,
+    "AiPlayerbot.CoaCombat.GearScore.Enable": 1,
+    "AiPlayerbot.CoaLive.Enable": 1,
+    "AiPlayerbot.CoaLive.Social.Enable": 1,
     "AiPlayerbot.CoaBotSurname": 0,
+    "AiPlayerbot.CoaBotIdentify": 1,
+    "AiPlayerbot.CoaWorld.Guilds.Enable": 1,
+    "AiPlayerbot.CoaWorld.Guilds.Help": 1,
     "AiPlayerbot.RefreshClearsInventory": 0,
     "AiPlayerbot.CoaEconomy.RpgSell.Enable": 1,
     "AiPlayerbot.CoaEconomy.BotAuctions.Enable": 1
