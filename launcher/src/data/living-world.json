@@ -235,6 +235,27 @@
     "ru": "Боты вашей группы отвечают аддону SquidBots Lite по скрытому каналу аддонов, и он знает, кто бот, без фамилии «Bot». Всегда включено, если фамилия не «Bot».",
     "zh": "你队伍中的机器人通过隐藏的插件频道回应 SquidBots Lite 插件，使其无需“Bot”姓氏也能识别机器人。姓氏不是“Bot”时始终开启。"
    }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.AHBot.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-economy",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "hidden": true,
+   "label": {
+    "en": "Auction house bot built into SquidBots",
+    "fr": "Bot d'hôtel des ventes intégré à SquidBots",
+    "ru": "Бот аукциона, встроенный в SquidBots",
+    "zh": "SquidBots 内置拍卖行机器人"
+   },
+   "help": {
+    "en": "The house seller and buyer of the auction house now run inside SquidBots, with the same settings (mod_ahbot.conf). Keep off while the old mod-ah-bot-plus is in the core.",
+    "fr": "Le vendeur et l'acheteur de la maison de l'hôtel des ventes tournent maintenant dans SquidBots, avec les mêmes réglages (mod_ahbot.conf). Laisse désactivé tant que l'ancien mod-ah-bot-plus est dans le cœur.",
+    "ru": "Продавец и покупатель аукциона теперь работают внутри SquidBots, с теми же настройками (mod_ahbot.conf). Оставьте выключенным, пока старый mod-ah-bot-plus есть в ядре.",
+    "zh": "拍卖行的系统卖家和买家现在在 SquidBots 内运行，设置相同（mod_ahbot.conf）。只要核心中还有旧的 mod-ah-bot-plus，就保持关闭。"
+   }
   }
  ],
  "packs": []

@@ -54,6 +54,7 @@ function build(base = BASE, living = LIVING) {
   const ids = new Set(groups.map(group => group.id));
   const keys = new Set(base.settings.map(setting => `${setting.file}\u0000${setting.key}`));
   const refused = [];
+  const hidden = [];
   const settings = [];
   for (const option of living.options || []) {
     const why = problem(option, ids, keys, new Set(living.onByDefault || []));
@@ -65,6 +66,8 @@ function build(base = BASE, living = LIVING) {
     if (option.max !== undefined) setting.max = option.max;
     if (option.type === 'choice') setting.choices = option.choices.map(choice => ({ value: String(choice.value), label: text(choice.label) }));
     for (const field of ['onlyWhen', 'idleWhen']) if (option[field] !== undefined) setting[field] = option[field];
+    // hidden: checked and kept in the manifest, not shown to the players yet (a feature waiting for a decision).
+    if (option.hidden === true) { hidden.push(option.key); continue; }
     settings.push(setting);
   }
   // onlyWhen { key, values }: the option is shown only while that bool or choice setting holds one of the values (hidden
@@ -95,6 +98,7 @@ function build(base = BASE, living = LIVING) {
     sections: used.length ? [...(base.sections || []), { ...SECTION, groups: groups.map(group => group.id) }] : base.sections || [],
     packs: packsOf(living, settings, refused),
     refused,
+    hidden,
   };
 }
 
