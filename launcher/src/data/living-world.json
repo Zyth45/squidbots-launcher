@@ -203,10 +203,10 @@
     "zh": "可抽取的姓氏"
    },
    "help": {
-    "en": "Separated by commas, for example: Ashford, Brightwood, Stormvale. Empty: the list built into the module. Used only with \"Random family name\".",
-    "fr": "Séparés par des virgules, par exemple : Ashford, Brightwood, Stormvale. Vide : la liste intégrée au module. Utilisé seulement avec « Nom de famille aléatoire ».",
-    "ru": "Через запятую, например: Ashford, Brightwood, Stormvale. Пусто: встроенный список модуля. Используется только с «Случайная фамилия».",
-    "zh": "用逗号分隔，例如：Ashford, Brightwood, Stormvale。留空：使用模块内置列表。仅在“随机姓氏”时使用。"
+    "en": "Family names for \"Random family name\", separated by commas, for example: Ashford, Brightwood, Stormvale. Each bot always gets the same one. Empty: the 64 names built into the module. Words of 2 to 12 letters only (others are left out and logged). Applied at the next start.",
+    "fr": "Noms de famille pour « Nom de famille aléatoire », séparés par des virgules, par exemple : Ashford, Brightwood, Stormvale. Chaque bot garde toujours le même. Vide : les 64 noms intégrés au module. Mots de 2 à 12 lettres seulement (les autres sont écartés et notés dans le journal). Appliqué au prochain démarrage.",
+    "ru": "Фамилии для режима «Случайная фамилия», через запятую, например: Ashford, Brightwood, Stormvale. Каждый бот всегда получает одну и ту же. Пусто: 64 встроенные фамилии модуля. Только слова из 2–12 букв (остальные отбрасываются и записываются в журнал). Применяется при следующем запуске.",
+    "zh": "用于“随机姓氏”的姓氏，用逗号分隔，例如：Ashford, Brightwood, Stormvale。每个机器人始终使用同一个。留空：使用模块内置的 64 个姓氏。仅限 2 到 12 个字母的单词（其他会被忽略并记录日志）。下次启动时生效。"
    }
   },
   {
