@@ -2441,6 +2441,32 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaWorld.Guilds.Catalog",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Guilds.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Guild catalogue in the addon",
+    "fr": "Catalogue de la guilde dans l'addon",
+    "ru": "Каталог гильдии в аддоне",
+    "zh": "插件中的公会目录"
+   },
+   "help": {
+    "en": "The SquidBots Lite addon searches what the guild's online bots can send (in their bags, or crafted at the materials' cost) and orders it in one click. Needs guild item requests and guild orders from the addon.",
+    "fr": "L'addon SquidBots Lite cherche ce que les bots connectés de la guilde peuvent envoyer (dans leurs sacs, ou fabriqué au prix des matériaux) et le commande en un clic. Demande les demandes d'objets à la guilde et les commandes à la guilde depuis l'addon.",
+    "ru": "Аддон SquidBots Lite ищет, что могут прислать боты гильдии в сети (из сумок или изготовив по цене материалов), и заказывает это в один клик. Нужны запросы предметов у гильдии и заказы гильдии из аддона.",
+    "zh": "SquidBots Lite 插件会搜索公会在线机器人能寄送的物品（背包中的，或以材料成本制作的），并一键下单。需要开启公会物品请求和从插件发出公会订单。"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaWorld.Guilds.Charters",
    "file": "playerbots.conf",
    "group": "lw-social",
@@ -3220,7 +3246,8 @@
     "AiPlayerbot.CoaWorld.Guilds.Greetings": 1,
     "AiPlayerbot.CoaEconomy.CraftOrders.AdvertiseMinutes": 8,
     "AiPlayerbot.CoaLive.TradeMessagesPerMinute": 1,
-    "AiPlayerbot.CoaWorld.Guilds.GearAsk": 1
+    "AiPlayerbot.CoaWorld.Guilds.GearAsk": 1,
+    "AiPlayerbot.CoaWorld.Guilds.Catalog": 1
    }
   }
  ]
