@@ -1172,6 +1172,60 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaCombat.LootNeedMinUpgradePct",
+   "file": "playerbots.conf",
+   "group": "lw-loot",
+   "type": "float",
+   "default": 0,
+   "min": 0,
+   "max": 100,
+   "when": "restart",
+   "idleWhen": {
+    "key": "AiPlayerbot.LootNeedRollLevel",
+    "values": [
+     1
+    ]
+   },
+   "label": {
+    "en": "Bots Need only on a real upgrade (%)",
+    "fr": "Les bots ne prennent Besoin que pour une vraie amélioration (%)",
+    "ru": "Боты бросают «Нужно» только на заметное улучшение (%)",
+    "zh": "机器人仅对真正的提升掷需求（%）"
+   },
+   "help": {
+    "en": "A bot keeps its Need on a weapon or armor piece only if it beats the piece it wears by at least this percentage; otherwise it rolls Greed. 0: any upgrade.",
+    "fr": "Un bot ne garde Besoin sur une arme ou une pièce d'armure que si elle dépasse celle qu'il porte d'au moins ce pourcentage ; sinon il joue Cupidité. 0 : toute amélioration.",
+    "ru": "Бот оставляет «Нужно» на оружие или доспех, только если предмет лучше надетого хотя бы на этот процент; иначе он бросает «Не откажусь». 0: любое улучшение.",
+    "zh": "仅当武器或护甲比机器人身上的装备至少高出此百分比时，它才保留需求；否则掷贪婪。0：任何提升均可。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaCombat.LootNeedEpicOnly",
+   "file": "playerbots.conf",
+   "group": "lw-loot",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "idleWhen": {
+    "key": "AiPlayerbot.LootNeedRollLevel",
+    "values": [
+     1
+    ]
+   },
+   "label": {
+    "en": "Bots Need only on epic items",
+    "fr": "Les bots ne prennent Besoin que sur les objets épiques",
+    "ru": "Боты бросают «Нужно» только на эпические предметы",
+    "zh": "机器人仅对史诗物品掷需求"
+   },
+   "help": {
+    "en": "Bots roll Need only on epic or better items; anything below is rolled Greed.",
+    "fr": "Les bots ne jouent Besoin que sur les objets épiques ou mieux ; le reste est joué en Cupidité.",
+    "ru": "Боты бросают «Нужно» только на эпические и лучшие предметы; на всё остальное — «Не откажусь».",
+    "zh": "机器人仅对史诗及以上物品掷需求；其余物品掷贪婪。"
+   }
+  },
+  {
    "file": "playerbots.conf",
    "group": "lw-social",
    "when": "reload",
@@ -1923,7 +1977,8 @@
     "AiPlayerbot.CoaCombat.BlackwingLair.Enable": 1,
     "AiPlayerbot.CoaSoul.Enable": 1,
     "AiPlayerbot.CoaCombat.ZulGurub.Enable": 1,
-    "AiPlayerbot.CoaCombat.AhnQiraj.Enable": 1
+    "AiPlayerbot.CoaCombat.AhnQiraj.Enable": 1,
+    "AiPlayerbot.CoaCombat.LootNeedEpicOnly": 1
    }
   }
  ]
