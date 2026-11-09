@@ -2989,6 +2989,26 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaLive.MaintenanceSpread",
+   "file": "playerbots.conf",
+   "group": "lw-performance",
+   "type": "bool",
+   "default": 0,
+   "when": "reload",
+   "label": {
+    "en": "Bot level-up upkeep done a step a second",
+    "fr": "Entretien des bots au passage de niveau, une étape par seconde",
+    "ru": "Обслуживание бота при повышении уровня — по шагу в секунду",
+    "zh": "机器人升级维护每秒执行一步"
+   },
+   "help": {
+    "en": "A bot's level-up upkeep (spells, gear, supplies) is done one step a second instead of all at once.",
+    "fr": "L'entretien d'un bot quand il monte de niveau (sorts, équipement, fournitures) se fait une étape par seconde au lieu de tout d'un coup.",
+    "ru": "Обслуживание бота при повышении уровня (заклинания, снаряжение, припасы) выполняется по шагу в секунду, а не всё сразу.",
+    "zh": "机器人升级时的维护（法术、装备、补给）每秒执行一步，而不是一次全部完成。"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaWorld.SlowIdleTriggers",
    "file": "playerbots.conf",
    "group": "lw-performance",
