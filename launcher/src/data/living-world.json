@@ -479,6 +479,26 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaWorld.Events.Addon",
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "label": {
+    "en": "World events in the SquidBots Lite addon",
+    "fr": "Les événements du monde dans l'addon SquidBots Lite",
+    "ru": "События мира в аддоне SquidBots Lite",
+    "zh": "SquidBots Lite 插件中的世界事件"
+   },
+   "help": {
+    "en": "The invasions, gold rushes and server firsts you can see, in the addon's World panel. Needs one of them on.",
+    "fr": "Les invasions, ruées et « server first » que tu peux voir, dans le panneau Monde de l'addon. Demande qu'au moins l'un d'eux soit activé.",
+    "ru": "Вторжения, «золотые лихорадки» и «первые на сервере», которые вы можете видеть, на панели «Мир» аддона. Нужно, чтобы хотя бы одно из них было включено.",
+    "zh": "在插件的世界面板中显示你可见的入侵、淘金热和服务器首杀。需要至少开启其中一项。"
+   }
+  },
+  {
    "file": "playerbots.conf",
    "group": "lw-combat",
    "when": "restart",
@@ -2160,6 +2180,32 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaWorld.Guilds.Addon",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Guilds.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Guild orders from the SquidBots Lite addon",
+    "fr": "Commandes à la guilde depuis l'addon SquidBots Lite",
+    "ru": "Заказы гильдии из аддона SquidBots Lite",
+    "zh": "从 SquidBots Lite 插件发出公会订单"
+   },
+   "help": {
+    "en": "Ask the guild for an item and see your orders and gifts in the addon's World panel. Needs the guild item requests on.",
+    "fr": "Demande un objet à la guilde et vois tes commandes et cadeaux dans le panneau Monde de l'addon. Demande que les demandes d'objets à la guilde soient activées.",
+    "ru": "Запрашивайте предмет у гильдии и смотрите свои заказы и подарки на панели «Мир» аддона. Нужны включённые запросы предметов у гильдии.",
+    "zh": "在插件的世界面板中向公会请求物品，并查看你的订单和礼物。需要开启公会物品请求。"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaLive.City.Enable",
    "file": "playerbots.conf",
    "group": "lw-citylife",
@@ -2739,7 +2785,9 @@
     "AiPlayerbot.CoaWorld.Guilds.Gear": 1,
     "AiPlayerbot.CoaLive.NightBank.Enable": 1,
     "AiPlayerbot.CoaSoul.Addon": 1,
-    "AiPlayerbot.CoaEconomy.Artisans.Addon": 1
+    "AiPlayerbot.CoaEconomy.Artisans.Addon": 1,
+    "AiPlayerbot.CoaWorld.Guilds.Addon": 1,
+    "AiPlayerbot.CoaWorld.Events.Addon": 1
    }
   }
  ]
