@@ -885,7 +885,7 @@
   "verify.crashesArchived": "{n} fichier(s) de crash rangé(s) dans Crashes\\archive.",
   "home.runningAt": "Votre serveur tourne. Les joueurs se connectent sur {address}.",
   "modules.ahbotText2": "Gavelgrin, un commissaire-priseur avec son propre compte, garde environ 3000 annonces d'objets qu'on peut obtenir en jeu (jusqu'au niveau 60, rien de TBC ni de WotLK) et achète ce que vendent les joueurs. Son compte n'est jamais supprimé quand les bots sont recréés.",
-  "modules.ahbotSquid": "Le bot de l'hôtel des ventes fait maintenant partie de SquidBots : Gavelgrin anime l'hôtel des ventes et achète ce que vendent les joueurs, avec les mêmes réglages qu'avant (mod_ahbot.conf). Il remplace mod-ah-bot-plus, sorti du cœur dans CoA Bots 3.0. Ses options fines sont dans Réglages du serveur > Monde vivant > Économie et hôtel des ventes.",
+  "modules.ahbotSquid": "Le bot de l'hôtel des ventes fait maintenant partie de SquidBots : Gavelgrin anime l'hôtel des ventes et achète ce que vendent les joueurs, avec nos réglages recommandés. Il remplace l'ancien module d'hôtel des ventes (mod-ah-bot-plus), retiré de CoA Bots en 3.0. Ses options fines sont dans Réglages du serveur > Monde vivant > Économie et hôtel des ventes.",
   "modules.ahbotOn2": "Activé.",
   "modules.ahbotEmpty": "Vider l'hôtel des ventes",
   "modules.ahbotEmptyStopped": "Démarrez le serveur pour vider l'hôtel des ventes.",

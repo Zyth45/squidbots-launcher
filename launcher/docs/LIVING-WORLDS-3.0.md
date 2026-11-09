@@ -132,3 +132,7 @@ TRUNCATE, DROP, ALTER, CREATE) aimed at a database of the CoA realm or of anothe
 
 - Done 09/11: the AH options are shown (SquidBots-AH), the Modules tab card is SquidBots-AH on a core without
   mod-ah-bot-plus.
+- User's decision, 09/11 ("we drop it from the launcher = our recommendations"): the old mod-ah-bot-plus has no card nor
+  realm switch any more. At the 3.0 update the old mod_ahbot.conf goes into the update backup (coa_update.py, Builder;
+  Undo possible), so SquidBots-AH starts from the recommended mod_ahbot.conf.dist. Changelog line: "the old AH bot
+  module is replaced by SquidBots-AH, with our recommended settings".

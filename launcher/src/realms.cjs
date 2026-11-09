@@ -348,7 +348,10 @@ const MODULE_KEYS = {
 const AH_SWITCH = 'AiPlayerbot.CoaEconomy.AHBot.Enable';
 const AH_MERGED = { file: 'playerbots.conf', key: AH_SWITCH, on: { [AH_SWITCH]: '1' }, off: { [AH_SWITCH]: '0' }, also: { file: 'mod_ahbot.conf', on: { 'AuctionHouseBot.Enable': 'true' } } };
 async function moduleKeysOf(root) {
-  return (await require('./modules.cjs').ahbotKind(root)) === 'squidbots' ? { ...MODULE_KEYS, ahbot: AH_MERGED } : MODULE_KEYS;
+  // The old mod-ah-bot-plus is no longer shown by the launcher (user's decision, 09/11): only SquidBots-AH has a switch.
+  if ((await require('./modules.cjs').ahbotKind(root)) === 'squidbots') return { ...MODULE_KEYS, ahbot: AH_MERGED };
+  const { ahbot, ...rest } = MODULE_KEYS;
+  return rest;
 }
 
 async function coaModuleText(root, fileId) {

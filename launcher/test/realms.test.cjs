@@ -125,7 +125,12 @@ test('modules of a realm: as CoA, own on/off, back to CoA; what the mode has not
   fs.writeFileSync(path.join(modules, 'coa_custom_races.conf'), 'CoACustomRaces.Enable = 1\nCoACustomRaces.BotsEnable = 1\n');
   realmFolder(root, 'wildcard');
   const byId = list => Object.fromEntries(list.map(module => [module.id, `${module.origin}:${module.on ? 'on' : 'off'}`]));
-  assert.deepStrictEqual(byId(await realms.modulesOf(root, 'wildcard')), { bots: 'coa:on', ahbot: 'coa:on', manastorm: 'coa:on', rotation: 'mode:off', multirace: 'mode:off' });
+  // The old mod-ah-bot-plus has no switch any more (user's decision, 09/11): only SquidBots-AH, on a core that has it.
+  assert.deepStrictEqual(byId(await realms.modulesOf(root, 'wildcard')), { bots: 'coa:on', manastorm: 'coa:on', rotation: 'mode:off', multirace: 'mode:off' });
+  await assert.rejects(realms.setModule(root, 'wildcard', 'ahbot', 'off'), /Unknown module/);
+  fs.writeFileSync(path.join(root, 'CoA-Bots', 'Core', 'worldserver.exe'), 'MZ...AiPlayerbot.CoaEconomy.AHBot.Enable...');
+  fs.appendFileSync(path.join(modules, 'playerbots.conf'), 'AiPlayerbot.CoaEconomy.AHBot.Enable = 1\n');
+  assert.strictEqual(byId(await realms.modulesOf(root, 'wildcard')).ahbot, 'coa:on');
   await realms.setModule(root, 'wildcard', 'ahbot', 'off');
   await realms.setModule(root, 'wildcard', 'bots', 'off');
   assert.deepStrictEqual(byId(await realms.modulesOf(root, 'wildcard')).ahbot, 'own:off');
@@ -133,7 +138,7 @@ test('modules of a realm: as CoA, own on/off, back to CoA; what the mode has not
   const saved = JSON.parse(fs.readFileSync(path.join(root, 'Royaumes', 'wildcard', 'realm.json'), 'utf8'));
   await realms.writeConfigs(root, 'wildcard', saved);
   const conf = rel => path.join(root, 'Royaumes', 'wildcard', 'configs', 'modules', rel);
-  assert.strictEqual(value(conf('mod_ahbot.conf'), 'AuctionHouseBot.Enable'), 'false');
+  assert.strictEqual(value(conf('playerbots.conf'), 'AiPlayerbot.CoaEconomy.AHBot.Enable'), '0');
   assert.strictEqual(value(conf('playerbots.conf'), 'AiPlayerbot.Enabled'), '0');
   assert.strictEqual(value(conf('coa.conf'), 'CoA.RotationAssist.Enable'), '0');
   assert.strictEqual(value(conf('coa_custom_races.conf'), 'CoACustomRaces.Enable'), '0');

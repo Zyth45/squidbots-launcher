@@ -249,7 +249,10 @@ async function setAhbot(root, on) {
   // off asks for it again by this click). Off: only its switch, mod_ahbot.conf stays as the player left it.
   if ((await ahbotKind(root)) === 'squidbots') {
     await setModuleKeys(root, 'playerbots.conf', { [AH_SWITCH]: on ? '1' : '0' }, 'SquidBots-AH comes with CoA Bots 3.0.');
-    if (on) await setModuleKeys(root, AHBOT, { 'AuctionHouseBot.Enable': 'true' }, 'SquidBots-AH comes with CoA Bots 3.0.');
+    // It also needs its seller or its buyer on (CoaAuctionHouseBot IsModuleEnabled): the seller, if neither is.
+    const conf = await moduleConf(root, AHBOT);
+    const selling = isOn(confValue(conf, 'AuctionHouseBot.EnableSeller')) || isOn(confValue(conf, 'AuctionHouseBot.Buyer.Enabled'));
+    if (on) await setModuleKeys(root, AHBOT, { 'AuctionHouseBot.Enable': 'true', ...(selling ? {} : { 'AuctionHouseBot.EnableSeller': 'true' }) }, 'SquidBots-AH comes with CoA Bots 3.0.');
     return ahbotStatus(root);
   }
   await setModuleKeys(root, AHBOT, { 'AuctionHouseBot.Enable': on ? 'true' : 'false' }, 'The auction house bot comes with CoA Bots 2.5.');

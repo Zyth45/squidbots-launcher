@@ -2849,10 +2849,10 @@
     "zh": "SquidBots-AH：拍卖行机器人"
    },
    "help": {
-    "en": "The house seller and buyer of the auction house, built into SquidBots: it replaces mod-ah-bot-plus and keeps its settings (mod_ahbot.conf). Also in the Modules tab.",
-    "fr": "Le vendeur et l'acheteur de la maison de l'hôtel des ventes, intégrés à SquidBots : ils remplacent mod-ah-bot-plus et gardent ses réglages (mod_ahbot.conf). Aussi dans l'onglet Modules.",
-    "ru": "Продавец и покупатель аукциона, встроенные в SquidBots: они заменяют mod-ah-bot-plus и сохраняют его настройки (mod_ahbot.conf). Также во вкладке «Модули».",
-    "zh": "内置于 SquidBots 的拍卖行系统卖家和买家：取代 mod-ah-bot-plus 并保留其设置（mod_ahbot.conf）。也可在“模块”标签页中设置。"
+    "en": "The house seller and buyer of the auction house, built into SquidBots, with our recommended settings (mod_ahbot.conf). It replaces the old auction house module (mod-ah-bot-plus). Also in the Modules tab.",
+    "fr": "Le vendeur et l'acheteur de la maison de l'hôtel des ventes, intégrés à SquidBots, avec nos réglages recommandés (mod_ahbot.conf). Ils remplacent l'ancien module d'hôtel des ventes (mod-ah-bot-plus). Aussi dans l'onglet Modules.",
+    "ru": "Продавец и покупатель аукциона, встроенные в SquidBots, с нашими рекомендуемыми настройками (mod_ahbot.conf). Они заменяют старый модуль аукциона (mod-ah-bot-plus). Также во вкладке «Модули».",
+    "zh": "内置于 SquidBots 的拍卖行系统卖家和买家，采用我们推荐的设置（mod_ahbot.conf）。取代旧的拍卖行模块（mod-ah-bot-plus）。也可在“模块”标签页中设置。"
    }
   },
   {
