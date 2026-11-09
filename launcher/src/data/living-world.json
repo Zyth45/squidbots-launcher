@@ -2889,7 +2889,6 @@
     "AiPlayerbot.CoaCombat.StuckCombat.Enable": 1,
     "AiPlayerbot.CoaCombat.CombatPurge.Enable": 1,
     "AiPlayerbot.CoaCombat.SunkenTemple.Enable": 1,
-    "AiPlayerbot.CoaCombat.OffTank.Enable": 1,
     "AiPlayerbot.CoaCombat.MoltenCore.Enable": 1,
     "AiPlayerbot.CoaLive.Sessions.Enable": 1,
     "AiPlayerbot.CoaWorld.DungeonSim.Enable": 1,

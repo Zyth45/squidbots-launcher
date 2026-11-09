@@ -10,6 +10,16 @@ itself: a card prepares values among the unsaved changes (Save or Discard), or a
 | **Living server** | Pack `living`: every shown switch of the manifest on (live, world, economy, artisans and craft orders, group combat), bots keep their bags (`RefreshClearsInventory = 0`), surname "None", Need on real upgrades (`LootNeedRollLevel = 2`); numbers stay at their defaults. Not in it: the merged AH bot and its options (hidden while mod-ah-bot-plus is in the core) and Server first (meant for a new realm). User's decision, 08/11: "we put EVERYTHING in for now", trimmed only if the consumption measure demands it. Classic does not touch the bags. | Done |
 | **New living server** | A new realm beside the others, opening like an official server: mode `living` of src/realms.cjs, its own values from `livingOwn()`. Offered once the update tool of CoA Bots knows its databases. | Coded (local), waiting for the Builder's part |
 
+### What the Living pack leaves out, and what is provisional (Pilote, 09/11)
+
+- Left out: Need on epics only (user's decision: Need on a real upgrade, `LootNeedMinUpgradePct = 10`), the
+  *Performance (many bots)* switches (technical, until their A/B bench), Pursuit stop and Telegraph (worse dungeon runs
+  on the NUC bench: SFK 4/6 with 11 deaths instead of 6/6, Stockade mythic 3/6 instead of 5/6), Off-tank (two bot
+  tanks fight over a monster without a Main Tank bar).
+- In it, provisional until the Dungeon Clear raid bench: Breath guard, Stuck combat, Combat purge, Sunken Temple,
+  Molten Core (11/11 so far), Blackwing Lair, Zul'Gurub, Ahn'Qiraj, Call of the Grave, Player led. They did no worse so
+  far. Before the release the Pilote reviews the pack with the raid bench numbers; those not proven are taken out.
+
 The choice window shows once (`livingChoice` in `public/js/core.js`). "Decide later" closes it; the cards stay in
 Ready-made settings. A pack saved can be undone with "Go back" (see LIVING-WORLD-MANIFEST.md).
 
