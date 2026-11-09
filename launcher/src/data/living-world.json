@@ -2358,6 +2358,130 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaWorld.Guilds.Charters",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Guilds.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Bots sign and found guild charters",
+    "fr": "Les bots signent et fondent des chartes de guilde",
+    "ru": "Боты подписывают и создают уставы гильдий",
+    "zh": "机器人签署并创建公会章程"
+   },
+   "help": {
+    "en": "A guildless bot signs a real player's charter after a few seconds (now and then it refuses); asking aloud for signatures brings the guildless bots around. Now and then a guildless bot in a capital buys a charter, gathers signatures and founds its own guild.",
+    "fr": "Un bot sans guilde signe la charte d'un vrai joueur au bout de quelques secondes (il refuse parfois) ; demander des signatures à voix haute attire les bots sans guilde alentour. De temps en temps, un bot sans guilde dans une capitale achète une charte, rassemble des signatures et fonde sa propre guilde.",
+    "ru": "Бот без гильдии через несколько секунд подписывает устав настоящего игрока (иногда отказывается); просьба о подписях вслух собирает ботов без гильдии поблизости. Время от времени бот без гильдии в столице покупает устав, собирает подписи и основывает свою гильдию.",
+    "zh": "没有公会的机器人会在几秒后签署真实玩家的章程（偶尔拒绝）；大声请求签名会吸引附近无公会的机器人。无公会的机器人偶尔会在主城购买章程、收集签名并创建自己的公会。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.Guilds.UnguildedPercent",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "int",
+   "default": 30,
+   "when": "restart",
+   "min": 0,
+   "max": 90,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Guilds.Charters",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Share of bots kept without a guild (%)",
+    "fr": "Part de bots gardés sans guilde (%)",
+    "ru": "Доля ботов без гильдии (%)",
+    "zh": "保持无公会的机器人比例（%）"
+   },
+   "help": {
+    "en": "No bot charter and no bot joining a bot guild while the guildless bots would fall under this share. Signing a real player's charter is always allowed.",
+    "fr": "Pas de charte de bot ni d'entrée dans une guilde de bots tant que les bots sans guilde passeraient sous cette part. Signer la charte d'un vrai joueur reste toujours permis.",
+    "ru": "Боты не создают уставы и не вступают в гильдии ботов, пока доля ботов без гильдии опустилась бы ниже этой. Подписать устав настоящего игрока можно всегда.",
+    "zh": "若无公会机器人会低于此比例，则机器人不创建章程也不加入机器人公会。签署真实玩家的章程始终允许。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.Guilds.CharterMinutes",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "int",
+   "default": 60,
+   "when": "restart",
+   "min": 5,
+   "max": 1440,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Guilds.Charters",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Minutes between two bot charters of a side",
+    "fr": "Minutes entre deux chartes de bots d'une faction",
+    "ru": "Минут между двумя уставами ботов одной стороны",
+    "zh": "同一阵营两次机器人章程之间的分钟数"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.Guilds.PlayerGuildOnline",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Guilds.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Your guild's bots online with you",
+    "fr": "Les bots de ta guilde en ligne avec toi",
+    "ru": "Боты вашей гильдии онлайн вместе с вами",
+    "zh": "你的公会机器人与你同时在线"
+   },
+   "help": {
+    "en": "With the online/offline rotation: while a real member of a guild is online, its bot members log in first and log out last.",
+    "fr": "Avec la rotation en ligne / hors ligne : tant qu'un vrai membre d'une guilde est connecté, les bots de cette guilde se connectent en premier et se déconnectent en dernier.",
+    "ru": "При ротации онлайн/офлайн: пока настоящий член гильдии в сети, боты этой гильдии входят первыми и выходят последними.",
+    "zh": "启用上下线轮换时：公会的真实成员在线期间，该公会的机器人成员优先上线、最后下线。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.Guilds.PlayerGuildOnlinePercent",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "int",
+   "default": 40,
+   "when": "restart",
+   "min": 0,
+   "max": 100,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Guilds.PlayerGuildOnline",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Share of your guild's bots online with you (%)",
+    "fr": "Part des bots de ta guilde en ligne avec toi (%)",
+    "ru": "Доля ботов вашей гильдии онлайн с вами (%)",
+    "zh": "与你同时在线的公会机器人比例（%）"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaLive.City.Enable",
    "file": "playerbots.conf",
    "group": "lw-citylife",
@@ -2939,7 +3063,9 @@
     "AiPlayerbot.CoaWorld.Events.Addon": 1,
     "AiPlayerbot.CoaWorld.BgSim.ReplaceAutoJoin": 0,
     "AiPlayerbot.CoaWorld.BgSim.Shop": 1,
-    "AiPlayerbot.CoaWorld.BgSim.Announce": 1
+    "AiPlayerbot.CoaWorld.BgSim.Announce": 1,
+    "AiPlayerbot.CoaWorld.Guilds.Charters": 1,
+    "AiPlayerbot.CoaWorld.Guilds.PlayerGuildOnline": 1
    }
   }
  ]
