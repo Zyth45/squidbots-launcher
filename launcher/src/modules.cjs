@@ -151,8 +151,23 @@ const isOn = value => /^(1|true)$/i.test(value || '');
 // The auction house bot (from CoA Bots 2.5, on by default): one key, a restart, nothing to purge. Its own account
 // (AHBOT) is not a random bot account, so purges never touch it.
 const AHBOT = 'mod_ahbot.conf';
+// SquidBots-AH (CoA Bots 3.0): the auction house bot merged into SquidBots replaces mod-ah-bot-plus, which leaves the
+// core. Its switch is AiPlayerbot.CoaEconomy.AHBot.Enable (playerbots.conf); its settings stay the AuctionHouseBot.* keys
+// of mod_ahbot.conf (same file, same values: what the player set before carries over). Told apart by the worldserver:
+// mod-ah-bot-plus registers AHBot_WorldScript. A core that still has it keeps the old card, so the two never run at once.
+const AH_SWITCH = 'AiPlayerbot.CoaEconomy.AHBot.Enable';
+const AH_LEGACY_MARK = 'AHBot_WorldScript';
+async function ahbotKind(root) {
+  const exe = path.join(root, 'CoA-Bots', 'Core', 'worldserver.exe');
+  if (await coreSupports(exe, AH_LEGACY_MARK).catch(() => false)) return 'legacy';
+  return (await coreSupports(exe, AH_SWITCH).catch(() => false)) ? 'squidbots' : 'legacy';
+}
 async function ahbotStatus(root) {
   const conf = await moduleConf(root, AHBOT);
+  if ((await ahbotKind(root)) === 'squidbots') {
+    const bots = await moduleConf(root, 'playerbots.conf');
+    return { kind: 'squidbots', available: conf !== null && bots !== null, enabled: isOn(confValue(bots, AH_SWITCH)) && isOn(confValue(conf, 'AuctionHouseBot.Enable')) };
+  }
   return { available: conf !== null, enabled: isOn(confValue(conf, 'AuctionHouseBot.Enable')) };
 }
 // The instant payout exists from CoA Bots 2.8: shown only when the installed .dist knows its key.
@@ -230,6 +245,13 @@ async function setEnchanterCost(root, tier, gold) {
   return enchanterStatus(root);
 }
 async function setAhbot(root, on) {
+  // SquidBots-AH: its own switch, and the master key of mod_ahbot.conf on with it (a player who had switched the old bot
+  // off asks for it again by this click). Off: only its switch, mod_ahbot.conf stays as the player left it.
+  if ((await ahbotKind(root)) === 'squidbots') {
+    await setModuleKeys(root, 'playerbots.conf', { [AH_SWITCH]: on ? '1' : '0' }, 'SquidBots-AH comes with CoA Bots 3.0.');
+    if (on) await setModuleKeys(root, AHBOT, { 'AuctionHouseBot.Enable': 'true' }, 'SquidBots-AH comes with CoA Bots 3.0.');
+    return ahbotStatus(root);
+  }
   await setModuleKeys(root, AHBOT, { 'AuctionHouseBot.Enable': on ? 'true' : 'false' }, 'The auction house bot comes with CoA Bots 2.5.');
   return ahbotStatus(root);
 }
@@ -308,4 +330,4 @@ function runScript(root, command, apply) {
   }));
 }
 
-module.exports = { dungeonStatus, setDungeon, setDungeonDifficulties, enchanterStatus, setEnchanter, setEnchanterTiers, setEnchanterCost, ahbotStatus, setAhbot, ahbotSettings, setAhbotSettings, ahbotInstantKnown, manastormStatus, setManastorm, mythicPlusStatus, setMythicPlus, rotationStatus, setRotation, keepRotationOff, hasScript, runScript, status, setMultirace, setClientPatch, clientPatch, coreSupports, multiraceBlockers, RACES_CONF, RACES_DBC_COUNT };
+module.exports = { dungeonStatus, setDungeon, setDungeonDifficulties, enchanterStatus, setEnchanter, setEnchanterTiers, setEnchanterCost, ahbotStatus, ahbotKind, setAhbot, ahbotSettings, setAhbotSettings, ahbotInstantKnown, manastormStatus, setManastorm, mythicPlusStatus, setMythicPlus, rotationStatus, setRotation, keepRotationOff, hasScript, runScript, status, setMultirace, setClientPatch, clientPatch, coreSupports, multiraceBlockers, RACES_CONF, RACES_DBC_COUNT };

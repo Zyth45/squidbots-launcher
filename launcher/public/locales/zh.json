@@ -743,6 +743,7 @@
   "modules.ahbotSoon": "CoA Bots 2.5 起可用。",
   "modules.ahbotText": "拍卖师会在拍卖行上架可购买的物品，并买下你出售的物品。它有独立账号，重新生成机器人时绝不会被删除。",
   "modules.ahbotText2": "拍卖师 Gavelgrin 拥有自己的账号，维持约 3000 件游戏内可获得物品的拍卖（最高 60 级，不含 TBC 或 WotLK 内容），并收购玩家出售的物品。重新生成机器人时绝不会删除它的账号。",
+  "modules.ahbotSquid": "拍卖行机器人现在是 SquidBots 的一部分：Gavelgrin 让拍卖行保持热闹并收购玩家出售的物品，设置与以前相同（mod_ahbot.conf）。它取代了在 CoA Bots 3.0 中移出核心的 mod-ah-bot-plus。更细的选项在“服务器设置 > 鲜活世界 > 经济与拍卖行”中。",
   "modules.by": "作者：{author}",
   "modules.clientDisabled": "你游戏中的种族补丁已关闭（.disabled）。",
   "modules.clientNo": "你的游戏没有种族补丁。",

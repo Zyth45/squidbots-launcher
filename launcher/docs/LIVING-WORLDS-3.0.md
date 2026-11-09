@@ -7,7 +7,7 @@ itself: a card prepares values among the unsaved changes (Save or Discard), or a
 | Card | What it does | State |
 |---|---|---|
 | **Classic** | Every Living world option back to its default: the bots as before 3.0. Pack `classic`, made by the launcher from the manifest (never written in it), so a new option is in it at once. | Done |
-| **Living server** | Pack `living`: every shown switch of the manifest on (live, world, economy, artisans and craft orders, group combat), bots keep their bags (`RefreshClearsInventory = 0`), surname "None", Need on real upgrades (`LootNeedRollLevel = 2`); numbers stay at their defaults. Not in it: the merged AH bot and its options (hidden while mod-ah-bot-plus is in the core) and Server first (meant for a new realm). User's decision, 08/11: "we put EVERYTHING in for now", trimmed only if the consumption measure demands it. Classic does not touch the bags. | Done |
+| **Living server** | Pack `living`: every shown switch of the manifest on (live, world, economy, artisans and craft orders, group combat), bots keep their bags (`RefreshClearsInventory = 0`), surname "None", Need on real upgrades (`LootNeedRollLevel = 2`); numbers stay at their defaults. SquidBots-AH (the merged AH bot) and its options are in it since mod-ah-bot-plus left the 3.0 core; not in it: the launch curve and Server first (meant for a new realm). User's decision, 08/11: "we put EVERYTHING in for now", trimmed only if the consumption measure demands it. Classic does not touch the bags. | Done |
 | **New living server** | A new realm beside the others, opening like an official server: mode `living` of src/realms.cjs, its own values from `livingOwn()`. Offered once the update tool of CoA Bots knows its databases. | Coded (local), waiting for the Builder's part |
 
 ### What the Living pack leaves out, and what is provisional (Pilote, 09/11)
@@ -87,8 +87,9 @@ living: {
      - `mod_ahbot.conf`: `AuctionHouseBot.Enable = 1`, `AuctionHouseBot.EnableSeller = 1`,
        `AuctionHouseBot.Buyer.Enabled = 1`; MinItems/MaxItems as in the CoA preset (the launch curve scales them).
 3. Imposed by the mode: `CoaFreshStart.Enable = 1`, the launch curve (`CoaEconomy.LaunchCurve.Enable = 1`), the
-   databases, ports and bot prefix. The merged AH bot (`CoaEconomy.AHBot.Enable = 1`) joins only once mod-ah-bot-plus
-   is out of the core (the Pilote's call): both at once would double the auction house.
+   databases, ports and bot prefix. SquidBots-AH (`CoaEconomy.AHBot.Enable = 1`) is written only on a core without mod-ah-bot-plus
+   (`ahbotKind()` of src/modules.cjs: the worldserver has no `AHBot_WorldScript`). On a core that still has it, the realm
+   keeps `AuctionHouseBot.Enable = 0` imposed (`imposedNow()`), or the old bot would list epics on day 1.
 
 The number of bots is not a new default: the realm takes what the Solo self-found preset gives (the preset does not
 set a count today, so the usual realm count of `create()` applies). It will be adjusted with the A/B bench figures
@@ -129,5 +130,5 @@ TRUNCATE, DROP, ALTER, CREATE) aimed at a database of the CoA realm or of anothe
 
 ### Still to deliver
 
-- The AH options (LaunchCurve included, in the manifest since 086ccbfc) shown once
-  mod-ah-bot-plus has left the core.
+- Done 09/11: the AH options are shown (SquidBots-AH), the Modules tab card is SquidBots-AH on a core without
+  mod-ah-bot-plus.

@@ -344,6 +344,32 @@ test('the new living server: its own databases only, the launch mode imposed, it
   assert.strictEqual(snapshot(path.join(root, 'CoA-Bots')), coa);
 });
 
+test('SquidBots-AH: the new living server takes the merged AH bot, and a realm switches it in playerbots.conf', async () => {
+  const root = repack();
+  fs.writeFileSync(path.join(root, 'CoA-Bots', 'coa_common.py'), 'MYSQL_DATA_KNOWN = {"acore_characters_living", "acore_playerbots_living"}\n');
+  // A core without mod-ah-bot-plus: the merged bot's key, not AHBot_WorldScript.
+  fs.writeFileSync(path.join(root, 'CoA-Bots', 'Core', 'worldserver.exe'), 'MZ...AiPlayerbot.CoaEconomy.AHBot.Enable...');
+  const modules = path.join(root, 'CoA-Bots', 'Core', 'configs', 'modules');
+  fs.writeFileSync(path.join(modules, 'mod_ahbot.conf'), 'AuctionHouseBot.Enable = false\n');
+  await realms.create(root, 'living', { name: 'Azeroth Reborn', db: fakeMysql().db });
+  const own = JSON.parse(fs.readFileSync(path.join(root, 'Royaumes', 'living', 'settings.json'), 'utf8'));
+  assert.strictEqual(own['playerbots.conf']['AiPlayerbot.CoaEconomy.AHBot.Enable'], '1');
+  assert.strictEqual(own['mod_ahbot.conf']['AuctionHouseBot.Enable'], '1');
+  // Nothing forced to 0 any more: that master key also drives the merged bot.
+  assert.strictEqual(value(path.join(root, 'Royaumes', 'living', 'configs', 'modules', 'mod_ahbot.conf'), 'AuctionHouseBot.Enable'), '1');
+  // A realm's AH module: its switch in playerbots.conf, the master key of mod_ahbot.conf on with it, CoA's files untouched.
+  realmFolder(root, 'wildcard');
+  await realms.setModule(root, 'wildcard', 'ahbot', 'on');
+  const wild = JSON.parse(fs.readFileSync(path.join(root, 'Royaumes', 'wildcard', 'settings.json'), 'utf8'));
+  assert.strictEqual(wild['playerbots.conf']['AiPlayerbot.CoaEconomy.AHBot.Enable'], '1');
+  assert.strictEqual(wild['mod_ahbot.conf']['AuctionHouseBot.Enable'], 'true');
+  await realms.setModule(root, 'wildcard', 'ahbot', 'coa');
+  const back = JSON.parse(fs.readFileSync(path.join(root, 'Royaumes', 'wildcard', 'settings.json'), 'utf8'));
+  assert.strictEqual(back['playerbots.conf']?.['AiPlayerbot.CoaEconomy.AHBot.Enable'], undefined);
+  assert.strictEqual(back['mod_ahbot.conf']?.['AuctionHouseBot.Enable'], undefined);
+  assert.strictEqual(value(path.join(modules, 'mod_ahbot.conf'), 'AuctionHouseBot.Enable'), 'false');
+});
+
 test('the new living server is only offered when the update tool of CoA Bots knows its databases', async () => {
   const root = repack();
   fs.writeFileSync(path.join(root, 'CoA-Bots', 'coa_common.py'), 'MYSQL_DATA_KNOWN = {"acore_characters_wildcard", "acore_characters_reborn", "acore_characters_dawnrise"}\n');

@@ -25,7 +25,7 @@ test('the living world manifest shipped with the launcher is valid and makes its
   // The performance switches are technical, not game features: left out until the A/B bench (Pilote, 09/11). Pursuit stop and
   // Telegraph made the dungeon runs worse on the bench (Pilote, 09/11): the pack turns on only the combat options benched. Off-tank out too (two bot tanks fight over a monster). Real
   // battlegrounds of bots kept, no simulated ones (user, 09/11: "BGs are comfort and keep the world alive without players").
-  const switches = CATALOG.settings.filter(setting => setting.living && setting.kind === 'bool' && setting.group !== 'lw-performance' && !['AiPlayerbot.CoaWorld.ServerFirst.Enable', 'AiPlayerbot.CoaCombat.LootNeedEpicOnly', 'AiPlayerbot.CoaCombat.PursuitStop.Enable', 'AiPlayerbot.CoaCombat.Telegraph.Enable', 'AiPlayerbot.CoaCombat.OffTank.Enable', 'AiPlayerbot.CoaWorld.BgSim.Enable', 'AiPlayerbot.CoaWorld.BgSim.ReplaceAutoJoin'].includes(setting.key));
+  const switches = CATALOG.settings.filter(setting => setting.living && setting.kind === 'bool' && setting.group !== 'lw-performance' && !['AiPlayerbot.CoaWorld.ServerFirst.Enable', 'AiPlayerbot.CoaCombat.LootNeedEpicOnly', 'AiPlayerbot.CoaCombat.PursuitStop.Enable', 'AiPlayerbot.CoaCombat.Telegraph.Enable', 'AiPlayerbot.CoaCombat.OffTank.Enable', 'AiPlayerbot.CoaWorld.BgSim.Enable', 'AiPlayerbot.CoaWorld.BgSim.ReplaceAutoJoin', 'AiPlayerbot.CoaEconomy.LaunchCurve.Enable'].includes(setting.key));
   assert.ok(!Object.keys(livingPack.changes).some(key => CATALOG.settings.find(setting => setting.key === key)?.group === 'lw-performance'));
   assert.deepEqual(switches.filter(setting => livingPack.changes[setting.key] !== '1').map(setting => setting.key), []);
   assert.deepEqual([livingPack.changes['AiPlayerbot.CoaBotSurname'], livingPack.changes['AiPlayerbot.RefreshClearsInventory'], livingPack.changes['AiPlayerbot.LootNeedRollLevel']], ['0', '0', '2']);
@@ -37,24 +37,27 @@ test('the living world manifest shipped with the launcher is valid and makes its
   // The data files of the dashboard are driven by the dashboard: hidden.
   for (const key of ['AiPlayerbot.CoaWorld.Events.Enable', 'AiPlayerbot.CoaEconomy.DataFile.Enable', 'AiPlayerbot.CoaLive.DataFile.Enable']) assert.ok(CATALOG.hidden.includes(key), key);
   assert.ok(CATALOG.build(require('../src/data/server-settings.json'), { groups: GROUPS, options: [{ key: 'Living.A', file: 'mod_living.conf', group: 'lw-test', type: 'bool', default: 0, label: 'x' }], packs: [{ id: 'classic', title: 'x', changes: { 'Living.A': 1 } }] }).refused.some(line => line.startsWith('pack classic:')));
-  // The built-in AH bot stays hidden while mod-ah-bot-plus is in the core (both at once double the auction house).
-  assert.ok(CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.AHBot.Enable'));
-  assert.ok(CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.Filter.Enable'));
-  assert.ok(CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.Buyer.Enable'));
-  assert.ok(CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.Market.Enable'));
+  // SquidBots-AH (mod-ah-bot-plus out of the 3.0 core): shown with its options, in the Living pack; the launch curve
+  // is for a new realm only (like Server first), so the pack leaves it.
+  for (const part of ['AHBot', 'Filter', 'Buyer', 'Market', 'Rarity']) {
+    const key = `AiPlayerbot.CoaEconomy.${part}.Enable`;
+    assert.ok(!CATALOG.hidden.includes(key) && CATALOG.settings.some(setting => setting.key === key), key);
+    assert.equal(livingPack.changes[key], '1', key);
+  }
+  assert.ok(!Object.hasOwn(livingPack.changes, 'AiPlayerbot.CoaEconomy.LaunchCurve.Enable'));
   // Bots selling and buying by themselves are not an AH bot: shown, in the Living pack, out of Classic.
   for (const key of ['AiPlayerbot.CoaEconomy.RpgSell.Enable', 'AiPlayerbot.CoaEconomy.BotAuctions.Enable']) {
     assert.ok(!CATALOG.hidden.includes(key) && CATALOG.settings.some(setting => setting.key === key), key);
     assert.equal(CATALOG.packs.find(pack => pack.id === 'living').changes[key], '1');
     assert.ok(!Object.hasOwn(CATALOG.packs.find(pack => pack.id === 'classic').changes, key));
   }
-  assert.ok(CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.LaunchCurve.Enable') && CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.Rarity.Enable'));
+  assert.ok(!CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.LaunchCurve.Enable') && !CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.Rarity.Enable'));
   // Shown one day: the hidden options must then be valid too (their rules included).
   const manifest = require('../src/data/living-world.json');
   const shown = CATALOG.build(require('../src/data/server-settings.json'), { ...manifest, options: manifest.options.map(({ hidden, ...option }) => option) });
   assert.deepEqual([shown.refused, shown.hidden], [[], []]);
   assert.deepEqual(shown.settings.find(setting => setting.key === 'AiPlayerbot.CoaEconomy.Filter.Enable').offWhen, { key: 'AiPlayerbot.CoaEconomy.AHBot.Enable', values: ['0'] });
-  assert.ok(!CATALOG.settings.some(setting => setting.key === 'AiPlayerbot.CoaEconomy.AHBot.Enable'));
+  assert.deepEqual(CATALOG.settings.find(setting => setting.key === 'AiPlayerbot.CoaEconomy.Filter.Enable').offWhen, { key: 'AiPlayerbot.CoaEconomy.AHBot.Enable', values: ['0'] });
   const living = CATALOG.settings.filter(setting => setting.living);
   assert.ok(living.length >= 1);
   assert.ok(living.every(setting => setting.default !== undefined && setting.label.en));

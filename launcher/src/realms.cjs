@@ -164,6 +164,15 @@ async function processOf(root, key) {
   return state?.pid && pidAlive(state.pid) ? Number(state.pid) : 0;
 }
 
+// What the realm imposes, with what depends on the installed core: on a core that still has mod-ah-bot-plus, the new
+// living server keeps the old AH bot off (it would fill the auction house with epics on day 1). On a core with
+// SquidBots-AH nothing is forced: that master key also drives the merged bot.
+async function imposedNow(root, key, saved) {
+  const out = imposed(key, saved);
+  if (key === 'living' && (await require('./modules.cjs').ahbotKind(root)) !== 'squidbots') out['mod_ahbot.conf'] = { ...out['mod_ahbot.conf'], 'AuctionHouseBot.Enable': '0' };
+  return out;
+}
+
 // What the realm imposes (layer 3), by settings file: the keys of its mode and those that make it a realm of its own.
 function imposed(key, saved) {
   const m = mode(key);
@@ -180,9 +189,6 @@ function imposed(key, saved) {
     out['manastorm-endless.conf'] = { 'Manastorm.Enable': '0' };
   }
   out['coa_custom_races.conf'] = { 'CoACustomRaces.Enable': '0', 'CoACustomRaces.BotsEnable': '0' };
-  // The new living server: while mod-ah-bot-plus is in the core (the merged AH bot still hidden in the manifest), its old
-  // AH bot stays off there, or it would fill the auction house with epics on day 1. The merged one comes with livingOwn().
-  if (key === 'living' && CATALOG.hidden.includes('AiPlayerbot.CoaEconomy.AHBot.Enable')) out['mod_ahbot.conf'] = { ...out['mod_ahbot.conf'], 'AuctionHouseBot.Enable': '0' };
   // CoA tells its random bots from alts by this prefix: it must be the realm's bot prefix (else its bots count as alts).
   out['coa.conf'] = { ...out['coa.conf'], 'CoA.RandomBotAccountPrefix': `"${m.prefix}"` };
   out['playerbots.conf'] = { ...out['playerbots.conf'], 'AiPlayerbot.RandomBotAccountPrefix': `"${m.prefix}"`, 'AiPlayerbot.CoaStatusFile': '"Logs/bot-status.json"', 'AiPlayerbot.CommandServerPort': '0' };
@@ -258,7 +264,7 @@ async function writeConfigs(root, key, saved) {
   const edits = new Map();
   const add = (fileId, keys) => edits.set(fileId, { ...edits.get(fileId), ...keys });
   for (const [fileId, keys] of Object.entries(await ownSettings(root, key))) add(fileId, keys);
-  for (const [fileId, keys] of Object.entries(imposed(key, saved))) add(fileId, keys);
+  for (const [fileId, keys] of Object.entries(await imposedNow(root, key, saved))) add(fileId, keys);
   const ws = await fsp.readFile(path.join(target, 'worldserver.conf'), 'utf8');
   const chars = confValue(ws, 'CharacterDatabaseInfo') || '';
   if (chars.split(';').length < 5) throw new Error('CharacterDatabaseInfo cannot be read in worldserver.conf.');
@@ -289,7 +295,7 @@ async function settingsOf(root, key, overview) {
   const saved = await realmFile(root, key);
   if (!saved) throw new Error('Create the realm first.');
   const own = await ownSettings(root, key);
-  const lock = imposed(key, saved);
+  const lock = await imposedNow(root, key, saved);
   const unquote = (setting, value) => (setting.kind === 'quoted' ? String(value).replace(/^"|"$/g, '') : String(value));
   const settings = overview.settings.map(setting => {
     const locked = lock[setting.file]?.[setting.key];
@@ -307,7 +313,7 @@ async function saveSettings(root, key, changes) {
   if (!saved) throw new Error('Create the realm first.');
   if (!Array.isArray(changes) || !changes.length || changes.length > 200) throw new Error('Nothing to save.');
   const own = await ownSettings(root, key);
-  const lock = imposed(key, saved);
+  const lock = await imposedNow(root, key, saved);
   const errors = {};
   for (const change of changes) {
     if (lock[change?.file]?.[change?.key] !== undefined) { errors[change.key] = 'Set by the game mode of this realm.'; continue; }
@@ -337,6 +343,13 @@ const MODULE_KEYS = {
   rotation: { file: 'coa.conf', key: 'CoA.RotationAssist.Enable', on: { 'CoA.RotationAssist.Enable': '1' }, off: { 'CoA.RotationAssist.Enable': '0' } },
   multirace: { file: 'coa_custom_races.conf', key: 'CoACustomRaces.Enable', on: { 'CoACustomRaces.Enable': '1' }, off: { 'CoACustomRaces.Enable': '0', 'CoACustomRaces.BotsEnable': '0' } },
 };
+// SquidBots-AH (CoA Bots 3.0, mod-ah-bot-plus out of the core): its own switch in playerbots.conf, and the master key of
+// mod_ahbot.conf put on with it (`also`), since the merged bot still reads it.
+const AH_SWITCH = 'AiPlayerbot.CoaEconomy.AHBot.Enable';
+const AH_MERGED = { file: 'playerbots.conf', key: AH_SWITCH, on: { [AH_SWITCH]: '1' }, off: { [AH_SWITCH]: '0' }, also: { file: 'mod_ahbot.conf', on: { 'AuctionHouseBot.Enable': 'true' } } };
+async function moduleKeysOf(root) {
+  return (await require('./modules.cjs').ahbotKind(root)) === 'squidbots' ? { ...MODULE_KEYS, ahbot: AH_MERGED } : MODULE_KEYS;
+}
 
 async function coaModuleText(root, fileId) {
   const file = path.join(BOTS_CONFIGS(root), relOf(fileId));
@@ -347,9 +360,9 @@ async function modulesOf(root, key) {
   const saved = await realmFile(root, key);
   if (!saved) throw new Error('Create the realm first.');
   const own = await ownSettings(root, key);
-  const lock = imposed(key, saved);
+  const lock = await imposedNow(root, key, saved);
   const list = [];
-  for (const [id, module] of Object.entries(MODULE_KEYS)) {
+  for (const [id, module] of Object.entries(await moduleKeysOf(root))) {
     const text = await coaModuleText(root, module.file);
     if (text === null) continue;
     const coaOn = isOn(confValue(text, module.key));
@@ -364,17 +377,22 @@ async function modulesOf(root, key) {
 
 // state: 'on', 'off', or 'coa' (follow Conquest of Azeroth again). The realm must be stopped: modules are read at start.
 async function setModule(root, key, id, state) {
-  const module = MODULE_KEYS[id];
+  const module = (await moduleKeysOf(root))[id];
   if (!module || !['on', 'off', 'coa'].includes(state)) throw new Error('Unknown module.');
   const saved = await realmFile(root, key);
   if (!saved) throw new Error('Create the realm first.');
-  if (imposed(key, saved)[module.file]?.[module.key] !== undefined) throw new Error('Set by the game mode of this realm.');
+  if ((await imposedNow(root, key, saved))[module.file]?.[module.key] !== undefined) throw new Error('Set by the game mode of this realm.');
   if (await portOpen(saved.worldPort) || await processOf(root, key)) throw new Error('Stop this realm first: its modules are read when it starts.');
   const own = await ownSettings(root, key);
   const keys = { ...module.on, ...module.off };
   own[module.file] = { ...own[module.file] };
   for (const name of Object.keys(keys)) delete own[module.file][name];
   if (state !== 'coa') Object.assign(own[module.file], module[state]);
+  if (module.also) {
+    own[module.also.file] = { ...own[module.also.file] };
+    for (const name of Object.keys(module.also.on)) delete own[module.also.file][name];
+    if (state === 'on') Object.assign(own[module.also.file], module.also.on);
+  }
   await writeOwn(root, key, own);
   return modulesOf(root, key);
 }
@@ -482,7 +500,8 @@ async function create(root, key, { bots = DEFAULT_BOTS, notify = () => {}, name,
   }
   // The new living server: its own values written once (a value the player already set for this realm stays).
   if (key === 'living') {
-    for (const [file, keys] of Object.entries(livingOwn())) own[file] = { ...keys, ...own[file] };
+    const ahMerged = (await require('./modules.cjs').ahbotKind(root)) === 'squidbots';
+    for (const [file, keys] of Object.entries(livingOwn({ ahMerged }))) own[file] = { ...keys, ...own[file] };
     changed = true;
   }
   if (changed) await writeOwn(root, key, own);
@@ -493,21 +512,21 @@ async function create(root, key, { bots = DEFAULT_BOTS, notify = () => {}, name,
 // The own values of the new living server (docs/LIVING-WORLDS-3.0.md), written once at its creation; the player changes
 // them later like any realm setting. Solo self-found as it is, the Living pack, the server firsts, and the economy of
 // CoA Economie: an auction house that fills up gradually from the start, never empty, with no epics at first.
-function livingOwn() {
+function livingOwn({ ahMerged = true } = {}) {
   const own = {};
   const fileOf = key => CATALOG.settings.find(setting => setting.key === key)?.file;
   const put = (file, key, value) => { if (file) own[file] = { ...own[file], [key]: String(value) }; };
   for (const [key, value] of Object.entries(CATALOG.recipes.find(recipe => recipe.id === 'self-found-world')?.changes || {})) put(fileOf(key), key, value);
-  for (const [key, value] of Object.entries(CATALOG.packs.find(pack => pack.id === 'living')?.changes || {})) put(fileOf(key), key, value);
+  for (const [key, value] of Object.entries(CATALOG.packs.find(pack => pack.id === 'living')?.changes || {})) if (ahMerged || key !== 'AiPlayerbot.CoaEconomy.AHBot.Enable') put(fileOf(key), key, value);
   const E = 'AiPlayerbot.CoaEconomy.';
   put('playerbots.conf', 'AiPlayerbot.CoaWorld.ServerFirst.Enable', 1);
   for (const part of ['Filter', 'Buyer', 'Market', 'Rarity']) put('playerbots.conf', `${E}${part}.Enable`, 1);
   put('playerbots.conf', `${E}LaunchCurve.LevelMargin`, 5);
   put('playerbots.conf', `${E}LaunchCurve.StartStockPercent`, 15);
   put('playerbots.conf', `${E}LaunchCurve.LaunchPremiumPercent`, 100);
-  // The merged AH bot only once mod-ah-bot-plus has left the core (its option is then shown in the manifest): both at
-  // once would double the auction house.
-  if (!CATALOG.hidden.includes(`${E}AHBot.Enable`)) {
+  // SquidBots-AH, only on a core without mod-ah-bot-plus: on a core that still has it, the master key of mod_ahbot.conf
+  // would start the old bot too (an auction house full of epics on day 1). Nothing of the AH is written there.
+  if (ahMerged) {
     put('playerbots.conf', `${E}AHBot.Enable`, 1);
     for (const key of ['AuctionHouseBot.Enable', 'AuctionHouseBot.EnableSeller', 'AuctionHouseBot.Buyer.Enabled']) put('mod_ahbot.conf', key, 1);
   }

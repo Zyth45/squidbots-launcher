@@ -2842,18 +2842,17 @@
    "type": "bool",
    "default": 0,
    "when": "restart",
-   "hidden": true,
    "label": {
-    "en": "Auction house bot built into SquidBots",
-    "fr": "Bot d'hôtel des ventes intégré à SquidBots",
-    "ru": "Бот аукциона, встроенный в SquidBots",
-    "zh": "SquidBots 内置拍卖行机器人"
+    "en": "SquidBots-AH: the auction house bot",
+    "fr": "SquidBots-AH : le bot de l'hôtel des ventes",
+    "ru": "SquidBots-AH: бот аукциона",
+    "zh": "SquidBots-AH：拍卖行机器人"
    },
    "help": {
-    "en": "The house seller and buyer of the auction house now run inside SquidBots, with the same settings (mod_ahbot.conf). Keep off while the old mod-ah-bot-plus is in the core.",
-    "fr": "Le vendeur et l'acheteur de la maison de l'hôtel des ventes tournent maintenant dans SquidBots, avec les mêmes réglages (mod_ahbot.conf). Laisse désactivé tant que l'ancien mod-ah-bot-plus est dans le cœur.",
-    "ru": "Продавец и покупатель аукциона теперь работают внутри SquidBots, с теми же настройками (mod_ahbot.conf). Оставьте выключенным, пока старый mod-ah-bot-plus есть в ядре.",
-    "zh": "拍卖行的系统卖家和买家现在在 SquidBots 内运行，设置相同（mod_ahbot.conf）。只要核心中还有旧的 mod-ah-bot-plus，就保持关闭。"
+    "en": "The house seller and buyer of the auction house, built into SquidBots: it replaces mod-ah-bot-plus and keeps its settings (mod_ahbot.conf). Also in the Modules tab.",
+    "fr": "Le vendeur et l'acheteur de la maison de l'hôtel des ventes, intégrés à SquidBots : ils remplacent mod-ah-bot-plus et gardent ses réglages (mod_ahbot.conf). Aussi dans l'onglet Modules.",
+    "ru": "Продавец и покупатель аукциона, встроенные в SquidBots: они заменяют mod-ah-bot-plus и сохраняют его настройки (mod_ahbot.conf). Также во вкладке «Модули».",
+    "zh": "内置于 SquidBots 的拍卖行系统卖家和买家：取代 mod-ah-bot-plus 并保留其设置（mod_ahbot.conf）。也可在“模块”标签页中设置。"
    }
   },
   {
@@ -2863,7 +2862,6 @@
    "type": "bool",
    "default": 0,
    "when": "reload",
-   "hidden": true,
    "label": {
     "en": "Auction house: CoA sellable items only",
     "fr": "Hôtel des ventes : seulement les objets vendables de CoA",
@@ -2890,7 +2888,6 @@
    "type": "bool",
    "default": 0,
    "when": "reload",
-   "hidden": true,
    "idleWhen": {
     "key": "AiPlayerbot.CoaEconomy.AHBot.Enable",
     "values": [
@@ -2917,7 +2914,6 @@
    "type": "bool",
    "default": 0,
    "when": "restart",
-   "hidden": true,
    "label": {
     "en": "Market prices learned from real sales",
     "fr": "Prix du marché appris des vraies ventes",
@@ -2938,7 +2934,6 @@
    "type": "bool",
    "default": 0,
    "when": "restart",
-   "hidden": true,
    "idleWhen": {
     "key": "AiPlayerbot.CoaEconomy.AHBot.Enable",
     "values": [
@@ -2965,7 +2960,6 @@
    "type": "bool",
    "default": 0,
    "when": "reload",
-   "hidden": true,
    "idleWhen": {
     "key": "AiPlayerbot.CoaEconomy.AHBot.Enable",
     "values": [
@@ -3318,7 +3312,12 @@
     "AiPlayerbot.CoaLive.TradeMessagesPerMinute": 1,
     "AiPlayerbot.CoaWorld.Guilds.GearAsk": 1,
     "AiPlayerbot.CoaWorld.Guilds.Catalog": 1,
-    "AiPlayerbot.CoaWorld.Guilds.Activities": 1
+    "AiPlayerbot.CoaWorld.Guilds.Activities": 1,
+    "AiPlayerbot.CoaEconomy.AHBot.Enable": 1,
+    "AiPlayerbot.CoaEconomy.Filter.Enable": 1,
+    "AiPlayerbot.CoaEconomy.Buyer.Enable": 1,
+    "AiPlayerbot.CoaEconomy.Market.Enable": 1,
+    "AiPlayerbot.CoaEconomy.Rarity.Enable": 1
    }
   }
  ]

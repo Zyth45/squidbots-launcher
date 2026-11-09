@@ -54,6 +54,29 @@ test('auction house bot: greyed until the package has it, then switched with a .
   assert.match(text, /^AuctionHouseBot.Account = 0$/m);
 });
 
+test('SquidBots-AH: on a core without mod-ah-bot-plus, its switch is in playerbots.conf and mod_ahbot.conf keeps its values', async () => {
+  const root = await repack();
+  await write(root, {
+    'CoA-Bots/Core/worldserver.exe': 'MZ...AiPlayerbot.CoaEconomy.AHBot.Enable...CoaAhBotWorldHooks...',
+    'CoA-Bots/Core/configs/modules/mod_ahbot.conf': 'AuctionHouseBot.Enable = false\nAuctionHouseBot.Alliance.MaxItems = 777\n',
+    'CoA-Bots/Core/configs/modules/playerbots.conf.dist': 'AiPlayerbot.Enabled = 1\nAiPlayerbot.CoaEconomy.AHBot.Enable = 0\n',
+  });
+  assert.deepEqual(await modules.ahbotStatus(root), { kind: 'squidbots', available: true, enabled: false });
+  // On: its switch, and the master key of mod_ahbot.conf with it; the player's other values stay.
+  assert.equal((await modules.setAhbot(root, true)).enabled, true);
+  const bots = fs.readFileSync(path.join(root, 'CoA-Bots/Core/configs/modules/playerbots.conf'), 'utf8');
+  const ah = () => fs.readFileSync(path.join(root, 'CoA-Bots/Core/configs/modules/mod_ahbot.conf'), 'utf8');
+  assert.match(bots, /^AiPlayerbot.CoaEconomy.AHBot.Enable = 1$/m);
+  assert.match(ah(), /^AuctionHouseBot.Enable = true$/m);
+  assert.match(ah(), /^AuctionHouseBot.Alliance.MaxItems = 777$/m);
+  // Off: only its switch; mod_ahbot.conf stays as it is.
+  assert.equal((await modules.setAhbot(root, false)).enabled, false);
+  assert.match(ah(), /^AuctionHouseBot.Enable = true$/m);
+  // A core that still has mod-ah-bot-plus keeps the old card (never both at once).
+  await write(root, { 'CoA-Bots/Core/worldserver.exe': 'MZ...AiPlayerbot.CoaEconomy.AHBot.Enable...AHBot_WorldScript......' });
+  assert.equal((await modules.ahbotStatus(root)).kind, undefined);
+});
+
 test('client patch: detected, switched off to .disabled and back', async () => {
   const client = await tempDir();
   const files = { 'Ascension.exe': '', 'dinput8.dll': '', 'EsteriaAppearance.dll': '', 'Data/patch-T.MPQ': '', 'Data/patch-Z.MPQ': '', 'Data/common.MPQ': '' };
