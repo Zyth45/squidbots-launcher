@@ -479,6 +479,222 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaWorld.CapitalRaid.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "type": "bool",
+   "default": 0,
+   "when": "reload",
+   "label": {
+    "en": "Capital raids (Horde on Stormwind, Alliance on Orgrimmar)",
+    "fr": "Raids sur les capitales (la Horde sur Hurlevent, l'Alliance sur Orgrimmar)",
+    "ru": "Рейды на столицы (Орда на Штормград, Альянс на Оргриммар)",
+    "zh": "主城突袭（部落攻暴风城，联盟攻奥格瑞玛）"
+   },
+   "help": {
+    "en": "About 60 bots march on the enemy capital to kill its king; guards, defending bots and players can stop them. Started by a GM, or by itself with Auto.",
+    "fr": "Environ 60 bots marchent sur la capitale ennemie pour tuer son roi ; les gardes, des bots défenseurs et les joueurs peuvent les arrêter. Lancé par un MJ, ou tout seul avec l'option automatique.",
+    "ru": "Около 60 ботов идут на вражескую столицу, чтобы убить её короля; стража, боты-защитники и игроки могут их остановить. Запускается ГМ или сам по себе с автозапуском.",
+    "zh": "约 60 名机器人进军敌方主城刺杀其国王；卫兵、防守机器人和玩家可以阻止他们。由 GM 发起，或开启自动后自行发起。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.CapitalRaid.Auto",
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "type": "bool",
+   "default": 0,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.CapitalRaid.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Capital raids start by themselves (rare)",
+    "fr": "Les raids sur les capitales démarrent tout seuls (rares)",
+    "ru": "Рейды на столицы начинаются сами (редко)",
+    "zh": "主城突袭自动发起（罕见）"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.CapitalRaid.AutoHours",
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "type": "int",
+   "default": 24,
+   "min": 1,
+   "max": 336,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.CapitalRaid.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Hours between automatic raids (about)",
+    "fr": "Heures entre deux raids automatiques (environ)",
+    "ru": "Часов между автоматическими рейдами (примерно)",
+    "zh": "自动突袭间隔小时数（约）"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.CapitalRaid.Attackers",
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "type": "int",
+   "default": 60,
+   "min": 5,
+   "max": 120,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.CapitalRaid.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Attacking bots",
+    "fr": "Bots attaquants",
+    "ru": "Атакующих ботов",
+    "zh": "进攻机器人数"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.CapitalRaid.Defenders",
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "type": "int",
+   "default": 20,
+   "min": 0,
+   "max": 80,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.CapitalRaid.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Defending bots",
+    "fr": "Bots défenseurs",
+    "ru": "Ботов-защитников",
+    "zh": "防守机器人数"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.CapitalRaid.Minutes",
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "type": "int",
+   "default": 30,
+   "min": 5,
+   "max": 120,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.CapitalRaid.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Assault time limit (min)",
+    "fr": "Durée maximale de l'assaut (min)",
+    "ru": "Лимит времени штурма (мин)",
+    "zh": "突袭时限（分钟）"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.CapitalRaid.GatherSeconds",
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "type": "int",
+   "default": 180,
+   "min": 30,
+   "max": 1800,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.CapitalRaid.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Gathering before the assault (s)",
+    "fr": "Rassemblement avant l'assaut (s)",
+    "ru": "Сбор перед штурмом (с)",
+    "zh": "突袭前集结时间（秒）"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.CapitalRaid.KingHealthPct",
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "type": "int",
+   "default": 25,
+   "min": 1,
+   "max": 100,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.CapitalRaid.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "King's health during a raid (%)",
+    "fr": "Vie du roi pendant un raid (%)",
+    "ru": "Здоровье короля во время рейда (%)",
+    "zh": "突袭期间国王的生命值（%）"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.CapitalRaid.MinLevel",
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "type": "int",
+   "default": 55,
+   "min": 1,
+   "max": 80,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.CapitalRaid.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Bots' minimum level (60 on a fresh-start realm)",
+    "fr": "Niveau minimum des bots (60 sur un royaume neuf)",
+    "ru": "Минимальный уровень ботов (60 на новом мире)",
+    "zh": "机器人最低等级（新开服国度为 60）"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.CapitalRaid.RewardSilverPerLevel",
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "type": "int",
+   "default": 50,
+   "min": 0,
+   "max": 1000,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.CapitalRaid.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Reward for the winners near the throne (silver per level)",
+    "fr": "Récompense des vainqueurs près du trône (argent par niveau)",
+    "ru": "Награда победителям у трона (серебро за уровень)",
+    "zh": "王座附近胜利者的奖励（每级银币）"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaWorld.Events.Addon",
    "file": "playerbots.conf",
    "group": "lw-invasions",
@@ -3367,7 +3583,9 @@
     "AiPlayerbot.CoaEconomy.Buyer.Enable": 1,
     "AiPlayerbot.CoaEconomy.Market.Enable": 1,
     "AiPlayerbot.CoaEconomy.Rarity.Enable": 1,
-    "AiPlayerbot.CoaEconomy.BotAuctions.RealHousePrices": 1
+    "AiPlayerbot.CoaEconomy.BotAuctions.RealHousePrices": 1,
+    "AiPlayerbot.CoaWorld.CapitalRaid.Enable": 1,
+    "AiPlayerbot.CoaWorld.CapitalRaid.Auto": 1
    }
   }
  ]
