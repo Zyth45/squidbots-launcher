@@ -716,6 +716,46 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaCombat.CallOfTheGrave.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-combat",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "label": {
+    "en": "Dire Maul: Call of the Grave handled",
+    "fr": "Hache-Tripes : Appel de la tombe géré",
+    "ru": "Забытый город: «Зов могилы» под контролем",
+    "zh": "厄运之槌：处理坟墓的召唤"
+   },
+   "help": {
+    "en": "Bots remove the Eldreth Spectres' and Phantasms' curse first, and melee keep out of its 5 yd reach (deadly in mythic).",
+    "fr": "Les bots retirent en priorité la malédiction des Spectres et Fantasmes eldreth, et les combattants au corps à corps restent hors de sa portée de 5 m (mortelle en mythique).",
+    "ru": "Боты в первую очередь снимают проклятие эльдретских призраков и фантомов, а бойцы ближнего боя держатся вне его радиуса 5 м (смертельно в эпохальном режиме).",
+    "zh": "机器人优先驱散艾德雷斯幽灵和幻影的诅咒，近战保持在其 5 码范围之外（史诗难度下致命）。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaCombat.PlayerLed.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-combat",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "label": {
+    "en": "Bots follow your lead (Main Tank bar)",
+    "fr": "Les bots suivent ta conduite (barre Tank principal)",
+    "ru": "Боты следуют за вами (панель главного танка)",
+    "zh": "机器人听从你的指挥（主坦克栏）"
+   },
+   "help": {
+    "en": "When you lead bots without Dungeon Clear: the player with the Main Tank bar open is the main tank for every raid strategy, and bots stand down on bosses by their boss flags.",
+    "fr": "Quand tu mènes des bots sans Dungeon Clear : le joueur qui a la barre Tank principal ouverte est le tank principal pour toutes les stratégies de raid, et les bots s'arrêtent sur les boss selon leurs marqueurs de boss.",
+    "ru": "Когда вы ведёте ботов без Dungeon Clear: игрок с открытой панелью главного танка считается главным танком во всех рейдовых стратегиях, а боты отступают на боссах по их флагам боссов.",
+    "zh": "在没有 Dungeon Clear 的情况下由你带领机器人时：打开主坦克栏的玩家在所有团队策略中都是主坦克，机器人会根据首领标记在首领战中待命。"
+   }
+  },
+  {
    "file": "playerbots.conf",
    "group": "lw-population",
    "when": "reload",
@@ -2209,7 +2249,9 @@
     "AiPlayerbot.CoaEconomy.Materials.Enable": 1,
     "AiPlayerbot.CoaEconomy.AuctionClock.Enable": 1,
     "AiPlayerbot.CoaLive.Sheath.Enable": 1,
-    "AiPlayerbot.CoaLive.CleanWorld.Enable": 1
+    "AiPlayerbot.CoaLive.CleanWorld.Enable": 1,
+    "AiPlayerbot.CoaCombat.CallOfTheGrave.Enable": 1,
+    "AiPlayerbot.CoaCombat.PlayerLed.Enable": 1
    }
   }
  ]
