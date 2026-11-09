@@ -1645,6 +1645,32 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaSoul.Addon",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "bool",
+   "default": 0,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaSoul.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "SquidBots Lite shows the soul of your bots",
+    "fr": "SquidBots Lite affiche l'âme de tes bots",
+    "ru": "SquidBots Lite показывает душу ваших ботов",
+    "zh": "SquidBots Lite 显示你的机器人的灵魂"
+   },
+   "help": {
+    "en": "The SquidBots Lite addon shows the soul of your group's bots and your alts.",
+    "fr": "L'addon SquidBots Lite affiche l'âme des bots de ton groupe et de tes alts.",
+    "ru": "Аддон SquidBots Lite показывает душу ботов вашей группы и ваших альтов.",
+    "zh": "SquidBots Lite 插件会显示你队伍中机器人和你的小号的灵魂。"
+   }
+  },
+  {
    "file": "playerbots.conf",
    "group": "lw-social",
    "when": "reload",
@@ -2684,7 +2710,8 @@
     "AiPlayerbot.CoaWorld.Leveling.Enable": 1,
     "AiPlayerbot.CoaWorld.Guilds.Orders": 1,
     "AiPlayerbot.CoaWorld.Guilds.Gear": 1,
-    "AiPlayerbot.CoaLive.NightBank.Enable": 1
+    "AiPlayerbot.CoaLive.NightBank.Enable": 1,
+    "AiPlayerbot.CoaSoul.Addon": 1
    }
   }
  ]
