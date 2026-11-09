@@ -1547,6 +1547,32 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaLive.NightBank.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "bool",
+   "default": 0,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaLive.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Night bank: livelier bot chatter",
+    "fr": "Banque de nuit : bots plus bavards",
+    "ru": "Ночной банк: боты болтают больше",
+    "zh": "夜间语库：机器人更爱聊天"
+   },
+   "help": {
+    "en": "More chatter in the zone and world channels, short conversations between bots, and dungeon-group lines (EN/FR).",
+    "fr": "Plus de messages dans les canaux de zone et monde, de courtes conversations entre bots, et des répliques en groupe de donjon (EN/FR).",
+    "ru": "Больше сообщений в каналах зоны и мира, короткие разговоры между ботами и реплики в группах подземелий (EN/FR).",
+    "zh": "区域和世界频道里更多聊天，机器人之间的简短对话，以及地下城队伍中的台词（英/法）。"
+   }
+  },
+  {
    "file": "playerbots.conf",
    "group": "lw-social",
    "when": "reload",
@@ -2507,7 +2533,8 @@
     "AiPlayerbot.CoaCombat.LootNeedMinUpgradePct": 10,
     "AiPlayerbot.CoaWorld.Leveling.Enable": 1,
     "AiPlayerbot.CoaWorld.Guilds.Orders": 1,
-    "AiPlayerbot.CoaWorld.Guilds.Gear": 1
+    "AiPlayerbot.CoaWorld.Guilds.Gear": 1,
+    "AiPlayerbot.CoaLive.NightBank.Enable": 1
    }
   }
  ]
