@@ -1827,6 +1827,34 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaLive.TradeMessagesPerMinute",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "int",
+   "default": 0,
+   "min": 0,
+   "max": 6,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaLive.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Trade channel: lines a minute while you are in a capital",
+    "fr": "Canal Commerce : messages par minute quand tu es en capitale",
+    "ru": "Канал торговли: сообщений в минуту, пока вы в столице",
+    "zh": "交易频道：你在主城时每分钟的消息数"
+   },
+   "help": {
+    "en": "At least this many lines a minute in Trade while you are in a capital. 0: natural pace.",
+    "fr": "Au moins ce nombre de messages par minute en Commerce quand tu es dans une capitale. 0 : rythme naturel.",
+    "ru": "Не меньше стольких сообщений в минуту в канале торговли, пока вы в столице. 0: естественный темп.",
+    "zh": "你在主城时，交易频道每分钟至少有这么多条消息。0：自然节奏。"
+   }
+  },
+  {
    "file": "playerbots.conf",
    "group": "lw-social",
    "when": "reload",
