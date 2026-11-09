@@ -1022,6 +1022,21 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaWorld.StateFile.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-population",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "hidden": true,
+   "label": {
+    "en": "Living world state file for the dashboard (monde.json)",
+    "fr": "Fichier d'état du monde vivant pour le tableau de bord (monde.json)",
+    "ru": "Файл состояния живого мира для панели (monde.json)",
+    "zh": "用于仪表盘的鲜活世界状态文件（monde.json）"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaLive.DataFile.Enable",
    "file": "playerbots.conf",
    "group": "lw-population",
