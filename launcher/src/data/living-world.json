@@ -1266,7 +1266,7 @@
    "file": "playerbots.conf",
    "group": "lw-pvp",
    "type": "bool",
-   "default": 1,
+   "default": 0,
    "when": "restart",
    "label": {
     "en": "No battlegrounds of bots only (bots fill player queues)",
@@ -2740,26 +2740,6 @@
    }
   },
   {
-   "key": "AiPlayerbot.CoaWorld.BotPacketsInMapThread",
-   "file": "playerbots.conf",
-   "group": "lw-performance",
-   "type": "bool",
-   "default": 0,
-   "when": "restart",
-   "label": {
-    "en": "Handle bot packets in their map thread",
-    "fr": "Traiter les paquets des bots dans le fil de leur carte",
-    "ru": "Обрабатывать пакеты ботов в потоке их карты",
-    "zh": "在机器人所在地图线程中处理其数据包"
-   },
-   "help": {
-    "en": "The bots' thread-safe packets are handled in their map's thread, as a real player's are, instead of all in the world thread. Lighter world thread with many bots.",
-    "fr": "Les paquets des bots sûrs pour les fils sont traités dans le fil de leur carte, comme ceux d'un vrai joueur, au lieu de tous passer par le fil du monde. Fil du monde allégé avec beaucoup de bots.",
-    "ru": "Потокобезопасные пакеты ботов обрабатываются в потоке их карты, как у настоящего игрока, а не все в потоке мира. Поток мира разгружается при большом числе ботов.",
-    "zh": "机器人的线程安全数据包在其地图线程中处理，与真实玩家相同，而不是全部在世界线程中处理。机器人很多时世界线程更轻。"
-   }
-  },
-  {
    "key": "AiPlayerbot.CoaLive.TalentsPerUpdate",
    "file": "playerbots.conf",
    "group": "lw-performance",
@@ -2799,6 +2779,26 @@
     "fr": "Quand les bots sont reconstruits, la liste de sorts de chaque maître est lue une seule fois au lieu de pour chaque bot. Les mêmes sorts sont appris.",
     "ru": "При перестройке ботов список заклинаний каждого учителя читается один раз, а не для каждого бота. Изучаются те же заклинания.",
     "zh": "重建机器人时，每位训练师的法术列表只读取一次，而不是每个机器人都读一次。学到的法术相同。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.SlowIdleTriggers",
+   "file": "playerbots.conf",
+   "group": "lw-performance",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "label": {
+    "en": "Slower idle checks for bots far from players",
+    "fr": "Vérifications au repos ralenties pour les bots loin des joueurs",
+    "ru": "Замедленные проверки в простое для ботов вдали от игроков",
+    "zh": "远离玩家的机器人降低空闲检查频率"
+   },
+   "help": {
+    "en": "Out of combat, a bot that nothing keeps active (no real player near, no group with a player, no queue, not in an instance) checks its minor triggers once a second instead of on every AI pass. Combat and bots near players are not touched.",
+    "fr": "Hors combat, un bot que rien ne garde actif (pas de vrai joueur proche, pas de groupe avec un joueur, pas de file, pas en instance) vérifie ses déclencheurs secondaires une fois par seconde au lieu de chaque passage d'IA. Le combat et les bots proches des joueurs ne sont pas touchés.",
+    "ru": "Вне боя бот, которого ничто не держит активным (нет игрока рядом, нет группы с игроком, нет очереди, не в подземелье), проверяет второстепенные триггеры раз в секунду, а не на каждом проходе ИИ. Бой и боты рядом с игроками не затрагиваются.",
+    "zh": "战斗外，没有任何原因保持活跃的机器人（附近无真实玩家、未与玩家组队、未排队、不在副本中）每秒检查一次次要触发器，而不是每次 AI 循环都检查。战斗和玩家附近的机器人不受影响。"
    }
   },
   {
