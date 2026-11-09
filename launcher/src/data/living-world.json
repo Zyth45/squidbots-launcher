@@ -2628,6 +2628,26 @@
     "ru": "Бот класса CoA, перестроенный на новом уровне, берёт не больше стольких талантов сразу, а остальные — по несколько в секунду: в итоге те же таланты, без паузы мира при каждой перестройке. 0 = все сразу, как раньше.",
     "zh": "在新等级重建的 CoA 职业机器人一次最多学习这么多天赋，其余每秒学几个：最终天赋相同，但每次重建不会让世界停顿。0 = 一次全部学完，与以前相同。"
    }
+  },
+  {
+   "key": "AiPlayerbot.CoaLive.TrainerDedup",
+   "file": "playerbots.conf",
+   "group": "lw-performance",
+   "type": "bool",
+   "default": 0,
+   "when": "reload",
+   "label": {
+    "en": "Read each trainer's spell list once on bot rebuilds",
+    "fr": "Lire une seule fois la liste de sorts de chaque maître à la reconstruction des bots",
+    "ru": "Читать список заклинаний каждого учителя один раз при перестройке ботов",
+    "zh": "重建机器人时每位训练师的法术列表只读取一次"
+   },
+   "help": {
+    "en": "When bots are rebuilt, each trainer's spell list is read once instead of for every bot. The same spells are learned.",
+    "fr": "Quand les bots sont reconstruits, la liste de sorts de chaque maître est lue une seule fois au lieu de pour chaque bot. Les mêmes sorts sont appris.",
+    "ru": "При перестройке ботов список заклинаний каждого учителя читается один раз, а не для каждого бота. Изучаются те же заклинания.",
+    "zh": "重建机器人时，每位训练师的法术列表只读取一次，而不是每个机器人都读一次。学到的法术相同。"
+   }
   }
  ],
  "packs": [
