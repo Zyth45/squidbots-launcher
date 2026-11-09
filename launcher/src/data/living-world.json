@@ -1357,6 +1357,33 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaEconomy.Artisans.Addon",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.Artisans.Enable",
+    "values": [
+     0
+    ]
+   },
+   "classic": false,
+   "label": {
+    "en": "Artisans in the SquidBots Lite addon",
+    "fr": "Les artisans dans l'addon SquidBots Lite",
+    "ru": "Ремесленники в аддоне SquidBots Lite",
+    "zh": "SquidBots Lite 插件中的工匠"
+   },
+   "help": {
+    "en": "Browse artisan bots and recipes, get quotes and place cash-on-delivery orders from the SquidBots Lite window. Quotes and orders also need craft orders.",
+    "fr": "Parcours les bots artisans et leurs recettes, demande des devis et passe des commandes contre remboursement depuis la fenêtre SquidBots Lite. Devis et commandes demandent aussi les commandes de fabrication.",
+    "ru": "Просматривайте ботов-ремесленников и рецепты, запрашивайте цену и делайте заказы с наложенным платежом из окна SquidBots Lite. Для цен и заказов нужны также заказы на изготовление.",
+    "zh": "在 SquidBots Lite 窗口中浏览工匠机器人和配方、获取报价并下货到付款订单。报价和订单还需要开启制作订单。"
+   }
+  },
+  {
    "key": "AiPlayerbot.LootNeedRollLevel",
    "file": "playerbots.conf",
    "group": "lw-loot",
@@ -2711,7 +2738,8 @@
     "AiPlayerbot.CoaWorld.Guilds.Orders": 1,
     "AiPlayerbot.CoaWorld.Guilds.Gear": 1,
     "AiPlayerbot.CoaLive.NightBank.Enable": 1,
-    "AiPlayerbot.CoaSoul.Addon": 1
+    "AiPlayerbot.CoaSoul.Addon": 1,
+    "AiPlayerbot.CoaEconomy.Artisans.Addon": 1
    }
   }
  ]
