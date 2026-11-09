@@ -798,6 +798,90 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaWorld.Recovery.NoProgressSeconds",
+   "file": "playerbots.conf",
+   "group": "lw-population",
+   "type": "int",
+   "default": 30,
+   "min": 0,
+   "max": 1800,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Recovery.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Bots pacing back and forth pick a new destination after (seconds)",
+    "fr": "Les bots qui font les cent pas changent de destination après (secondes)",
+    "ru": "Боты, ходящие туда-сюда, выбирают новую цель через (секунд)",
+    "zh": "来回踱步的机器人在（秒）后选择新目的地"
+   },
+   "help": {
+    "en": "A travelling bot that walks without getting nearer its destination for this long picks another one. 0: never; under 30 counts as 30.",
+    "fr": "Un bot en route qui marche sans se rapprocher de sa destination pendant ce temps en choisit une autre. 0 : jamais ; moins de 30 compte pour 30.",
+    "ru": "Бот в пути, который столько времени идёт, не приближаясь к цели, выбирает другую. 0: никогда; меньше 30 считается как 30.",
+    "zh": "行进中的机器人若在这段时间内没有接近目的地，就会另选一个。0：从不；小于 30 按 30 计。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.Recovery.OutOfRangeMinutes",
+   "file": "playerbots.conf",
+   "group": "lw-population",
+   "type": "int",
+   "default": 5,
+   "min": 0,
+   "max": 120,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Recovery.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "High level bots leave low level zones after (minutes)",
+    "fr": "Les bots de haut niveau quittent les zones de bas niveau après (minutes)",
+    "ru": "Боты высокого уровня покидают зоны низкого уровня через (минут)",
+    "zh": "高等级机器人在（分钟）后离开低等级区域"
+   },
+   "help": {
+    "en": "A bot far above a zone's level is sent to a place of its level, out of the players' sight. Capitals are never concerned. 0: never.",
+    "fr": "Un bot bien au-dessus du niveau d'une zone est envoyé dans un lieu de son niveau, hors de la vue des joueurs. Les capitales ne sont jamais concernées. 0 : jamais.",
+    "ru": "Бот намного выше уровня зоны отправляется в место своего уровня, вне поля зрения игроков. Столицы не затрагиваются. 0: никогда.",
+    "zh": "远高于区域等级的机器人会被送往符合其等级的地方，避开玩家视线。主城不受影响。0：从不。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.Recovery.OutOfRangeLevels",
+   "file": "playerbots.conf",
+   "group": "lw-population",
+   "type": "int",
+   "default": 8,
+   "min": 3,
+   "max": 40,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Recovery.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Levels above a zone's range that count as out of range",
+    "fr": "Niveaux au-dessus de la tranche d'une zone qui comptent comme hors tranche",
+    "ru": "На сколько уровней выше диапазона зоны бот считается вне диапазона",
+    "zh": "高出区域等级范围多少级视为超出范围"
+   },
+   "help": {
+    "en": "How many levels above the top of a zone's range a bot must be to count as far above it.",
+    "fr": "De combien de niveaux un bot doit dépasser le haut de la tranche d'une zone pour compter comme bien au-dessus.",
+    "ru": "На сколько уровней бот должен превышать верх диапазона зоны, чтобы считаться намного выше.",
+    "zh": "机器人需高出区域等级上限多少级才算远高于该区域。"
+   }
+  },
+  {
    "file": "playerbots.conf",
    "key": "AiPlayerbot.CoaWorld.ServerFirst.Enable",
    "group": "lw-population",
