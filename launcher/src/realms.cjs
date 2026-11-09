@@ -665,6 +665,10 @@ function logsSize(root, key) {
   try { return fs.readdirSync(dir).reduce((sum, name) => { try { return sum + fs.statSync(path.join(dir, name)).size; } catch { return sum; } }, 0); } catch { return 0; }
 }
 
+// The launcher's NUMA pinning (src/numa.cjs), set by main.cjs: a realm's world joins the node of the others.
+let pinWorld = null;
+function setPinner(fn) { pinWorld = typeof fn === 'function' ? fn : null; }
+
 function launch(root, key, why, env) {
   const dir = dirOf(root, key);
   fs.mkdirSync(path.join(dir, 'Logs'), { recursive: true });
@@ -677,6 +681,7 @@ function launch(root, key, why, env) {
   const child = spawn(worldExe(root), ['-c', 'configs\\worldserver.conf'], { cwd: dir, windowsHide: true, detached: !env, stdio: ['ignore', log, log], env: { ...process.env, ...env, TEMP: tmp, TMP: tmp } });
   fs.closeSync(log);
   fs.writeFileSync(path.join(dir, '.state.json'), JSON.stringify({ pid: child.pid, exe: worldExe(root), started: new Date().toISOString() }));
+  pinWorld?.(child.pid, `worldserver (${key})`).catch(() => {});
   if (!env) child.unref();
   return child;
 }
@@ -840,4 +845,4 @@ async function clearOffline(root, { coa = false } = {}) {
   if (ids.length) await sql(root, `UPDATE acore_auth.realmlist SET flag = flag & ~2 WHERE id IN (${ids.join(',')})`);
   return ids;
 }
-module.exports = { livingOwn, clearOffline, setRealmName, ahbotSettingsOf, setAhbotSettingsOf, onlineRunning, shippedTables, syncShippedTables, MODES, queueMarked, memoryFor, neededMb, botsOnline, setDisabled, versionReady, modulesOf, setModule, coaAutostart, setCoaAutostart, skipCoaAtStart, anotherStarting, refreshBotConfigs, status, create, start, stop, stopAll, startMarked, setOptions, settingsOf, saveSettings, purgeBots, writeConfigs, setKey };
+module.exports = { setPinner, livingOwn, clearOffline, setRealmName, ahbotSettingsOf, setAhbotSettingsOf, onlineRunning, shippedTables, syncShippedTables, MODES, queueMarked, memoryFor, neededMb, botsOnline, setDisabled, versionReady, modulesOf, setModule, coaAutostart, setCoaAutostart, skipCoaAtStart, anotherStarting, refreshBotConfigs, status, create, start, stop, stopAll, startMarked, setOptions, settingsOf, saveSettings, purgeBots, writeConfigs, setKey };

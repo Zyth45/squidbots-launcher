@@ -38,6 +38,7 @@ const tweaks = require('./repack-tweaks.cjs');
 const live = require('./live.cjs');
 const modules = require('./modules.cjs');
 const realms = require('./realms.cjs');
+const { createNuma } = require('./numa.cjs');
 const eco = require('./eco.cjs');
 const { mysqlLender } = require('./mysql-lender.cjs');
 const { fixManage } = require('./manage-fix.cjs');
@@ -132,7 +133,7 @@ function serverControl() {
   const services = config.server.services.map(service => ({ ...service, port: ports[service.id] || service.port }));
   const key = `${path.resolve(serverPath())}|${services.map(service => service.port).join(',')}`;
   if (!control || control.key !== key) {
-    control = new ServerControl({ root: serverPath(), services, commands: config.server.commands, notify: status => send('repack:services', status), onAuthStarted: () => realms.onlineRunning(serverPath()) });
+    control = new ServerControl({ root: serverPath(), services, commands: config.server.commands, notify: status => send('repack:services', status), onAuthStarted: () => realms.onlineRunning(serverPath()), pin: pinNuma });
     control.key = key;
   }
   control.withBots = settings.modules?.squidbots !== false;
@@ -398,7 +399,13 @@ function handle(channel, action) {
   });
 }
 
+// NUMA (src/numa.cjs): on a several-node machine the world and MySQL stay on one node; a line in logs\launcher.log.
+const numa = createNuma({ log: line => fs.mkdir(path.join(app.getPath('userData'), 'logs'), { recursive: true }).then(() => fs.appendFile(path.join(app.getPath('userData'), 'logs', 'launcher.log'), `${new Date().toISOString()} ${line}\n`)).catch(() => {}) });
+const pinNuma = (id, root, since) => numa.pinNew(id === 'mysql' ? 'mysqld' : 'worldserver', root, since, settings.numaNode);
+realms.setPinner((pid, name) => numa.pin(pid, name, settings.numaNode));
+
 function registerIpc() {
+  handle('numa:nodes', () => numa.nodes());
   handle('bootstrap', async () => ({ config: publicConfig(), settings, client: await clientInfo(), version: app.getVersion(), launcherUpdate: launcherUpdates.status, smoke: !!smokeDir, whatsNew: whatsNew() }));
   handle('whatsnew:seen', async () => { await persist({ ...settings, lastSeenVersion: app.getVersion() }); return true; });
   handle('window', action => {
@@ -409,7 +416,7 @@ function registerIpc() {
   handle('settings:save', async patch => {
     if (!patch || typeof patch !== 'object') throw new Error('Invalid settings.');
     const next = { ...settings };
-    for (const key of ['language', 'theme', 'channel', 'startPage', 'realmlist', 'minimizeOnLaunch', 'reduceMotion', 'autoCheckAddons', 'betaUpdates', 'hideCloseNotice', 'trayOnClose', 'notifications', 'startWithWindows', 'startServerOnOpen', 'restartWorldOnCrash', 'dailyBackup']) if (Object.hasOwn(patch, key)) next[key] = patch[key];
+    for (const key of ['language', 'theme', 'channel', 'startPage', 'realmlist', 'minimizeOnLaunch', 'reduceMotion', 'autoCheckAddons', 'betaUpdates', 'hideCloseNotice', 'trayOnClose', 'notifications', 'startWithWindows', 'startServerOnOpen', 'restartWorldOnCrash', 'dailyBackup', 'numaNode']) if (Object.hasOwn(patch, key)) next[key] = patch[key];
     // Start with Windows: the launcher opens in the background (in the notification area) at logon.
     if (Object.hasOwn(patch, 'startWithWindows') && app.isPackaged) app.setLoginItemSettings({ openAtLogin: patch.startWithWindows === true, args: ['--hidden'] });
     const switching = Object.hasOwn(patch, 'channel') && patch.channel !== settings.channel;

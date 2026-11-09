@@ -302,7 +302,9 @@ document.addEventListener('change', event => {
   const key = event.target.dataset?.setting;
   // The launcher settings shown in a page (Services, Backups) are saved the same way.
   if (!key || !(event.target.closest('#dialog') || event.target.dataset.pageSetting)) return;
-  const value = event.target.type === 'checkbox' ? (event.target.dataset.invert ? !event.target.checked : event.target.checked) : event.target.value;
+  const raw = event.target.type === 'checkbox' ? (event.target.dataset.invert ? !event.target.checked : event.target.checked) : event.target.value;
+  // A numeric choice (the NUMA node) is saved as a number, its 'auto' as it is.
+  const value = event.target.dataset.numeric && raw !== 'auto' ? Number(raw) : raw;
   guard(async () => {
     App.state.settings = await App.api.saveSettings({ [key]: value });
     if (key === 'language') { await loadLocale(value); App.render(); showSettings(); }

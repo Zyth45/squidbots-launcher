@@ -61,8 +61,10 @@ const PIPE_GONE = new Set(['EPIPE', 'ERR_STREAM_DESTROYED', 'ERR_STREAM_WRITE_AF
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 class ServerControl {
-  constructor({ root, services, commands = {}, notify = () => {}, onAuthStarted = null }) {
+  constructor({ root, services, commands = {}, notify = () => {}, onAuthStarted = null, pin = null }) {
     this.onAuthStarted = onAuthStarted;
+    // On a several-node NUMA machine, keeps the world and MySQL on one node (src/numa.cjs); nothing on one node.
+    this.pin = pin;
     this.root = path.resolve(root);
     probe.setRoot(this.root);
     this.services = services;
@@ -240,6 +242,8 @@ class ServerControl {
       stdio: [service.console ? 'pipe' : 'ignore', log, log], env: tmp ? { ...process.env, TEMP: tmp, TMP: tmp } : process.env,
     });
     fs.closeSync(log);
+    // The world and MySQL are started by the repack's script: the program itself is pinned once it appears.
+    if (this.pin && (id === 'world' || id === 'mysql')) this.pin(id, this.root, Date.now()).catch(() => {});
     this.children.set(id, child);
     this.states.set(id, 'starting');
     // Writing to a program that has just ended fails on its pipe: an unhandled pipe error would crash the launcher.

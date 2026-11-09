@@ -48,7 +48,12 @@ function servicesView(info) {
       ${service.state === 'running' ? `<button class="button ghost small" data-action="service-stop" data-id="${esc(service.id)}">${esc(t('server.stop', 'Stop'))}</button>` : `<button class="button ghost small" data-action="service-start" data-id="${esc(service.id)}" ${info.installed && service.state === 'stopped' ? '' : 'disabled'}>${esc(t('server.start', 'Start'))}</button>`}</div>`;
   }).join('');
   const restart = `<label class="check page-option"><input type="checkbox" data-setting="restartWorldOnCrash" data-page-setting="1" ${App.state.settings.restartWorldOnCrash ? 'checked' : ''}><span>${esc(t('settings.restartOnCrash', 'Start the world again after a crash (3 times an hour at most)'))}</span></label>`;
-  return `${restart}<div class="grid-2">
+  // A machine with several NUMA nodes (two-socket servers): the world and MySQL kept on one node, chosen here or by
+  // the launcher (most free memory). Not shown on a one-node machine.
+  if (App.state.numaNodes === undefined) { App.state.numaNodes = null; App.api.numaNodes().then(nodes => { App.state.numaNodes = nodes || []; if (nodes?.length > 1) App.refresh(App.state.tab); }).catch(() => { App.state.numaNodes = []; }); }
+  const nodes = App.state.numaNodes || [];
+  const numa = nodes.length > 1 ? `<label class="field page-option"><span>${esc(t('settings.numaNode', 'Processor node (NUMA) of the world and MySQL'))}</span><select data-setting="numaNode" data-page-setting="1" data-numeric="1"><option value="auto" ${App.state.settings.numaNode === 'auto' ? 'selected' : ''}>${esc(t('settings.numaAuto', 'Automatic (the node with the most free memory)'))}</option>${nodes.map(node => `<option value="${node.node}" ${App.state.settings.numaNode === node.node ? 'selected' : ''}>${esc(t('settings.numaNodeN', 'Node {n} ({free} free)', { n: node.node, free: formatBytes(node.free) }))}</option>`).join('')}</select><small class="muted">${esc(t('settings.numaHint', 'Applied at the next start of the world.'))}</small></label>` : '';
+  return `${restart}${numa}<div class="grid-2">
     <section class="panel" id="srv-services"><header><h2>${icon('layers')}${esc(t('server.services', 'Services'))}</h2><div class="button-row"><button class="button primary small" data-action="service-start-all" ${info.installed ? '' : 'disabled'}>${icon('play')}${esc(t('server.startAll', 'Start all'))}</button><button class="button ghost small" data-action="service-stop-all" ${any ? '' : 'disabled'}>${icon('pause')}${esc(t('server.stopAll', 'Stop all'))}</button></div></header>
       ${summary}<div class="service-list">${list}</div></section>
     <section class="panel"><header><h2>${icon('user')}${esc(t('server.account', 'Game account'))}</h2></header>
