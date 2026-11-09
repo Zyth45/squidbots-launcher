@@ -1566,10 +1566,10 @@
     "zh": "夜间语库：机器人更爱聊天"
    },
    "help": {
-    "en": "More chatter in the zone and world channels, short conversations between bots, and dungeon-group lines (EN/FR).",
-    "fr": "Plus de messages dans les canaux de zone et monde, de courtes conversations entre bots, et des répliques en groupe de donjon (EN/FR).",
-    "ru": "Больше сообщений в каналах зоны и мира, короткие разговоры между ботами и реплики в группах подземелий (EN/FR).",
-    "zh": "区域和世界频道里更多聊天，机器人之间的简短对话，以及地下城队伍中的台词（英/法）。"
+    "en": "More chatter in the zone and world channels, short conversations between bots, and the dungeon group's moments: entering, praise, fine loot, wipe, leaving, chats between bots (EN/FR).",
+    "fr": "Plus de messages dans les canaux de zone et monde, de courtes conversations entre bots, et les moments du groupe de donjon : entrée, félicitations, beau butin, wipe, départ, discussions entre bots (EN/FR).",
+    "ru": "Больше сообщений в каналах зоны и мира, короткие разговоры между ботами и моменты группы в подземелье: вход, похвала, хорошая добыча, вайп, уход, разговоры ботов (EN/FR).",
+    "zh": "区域和世界频道里更多聊天，机器人之间的简短对话，以及地下城队伍的各个时刻：进入、称赞、好战利品、团灭、离开、机器人之间的闲聊（英/法）。"
    }
   },
   {
