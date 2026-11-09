@@ -2537,6 +2537,34 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaWorld.Guilds.GatherBringSeconds",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "int",
+   "default": 30,
+   "min": 0,
+   "max": 600,
+   "when": "restart",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Guilds.Activities",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Rally: far guildmates arrive after (s)",
+    "fr": "Rassemblement : les membres éloignés arrivent après (s)",
+    "ru": "Сбор: дальние согильдийцы прибывают через (с)",
+    "zh": "集合：远处的公会成员在（秒）后到达"
+   },
+   "help": {
+    "en": "Seconds after a guild rally before far guildmates appear out of sight nearby and walk over; 0 = only nearby bots come.",
+    "fr": "Secondes après un rassemblement de guilde avant que les membres éloignés apparaissent hors de vue tout près et viennent à pied ; 0 = seuls les bots proches viennent.",
+    "ru": "Через сколько секунд после сбора гильдии дальние согильдийцы появляются вне поля зрения рядом и подходят; 0 = приходят только ближайшие боты.",
+    "zh": "公会集合后多少秒，远处的公会成员会在附近视线外出现并走过来；0 = 只有附近的机器人会来。"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaWorld.Guilds.Charters",
    "file": "playerbots.conf",
    "group": "lw-social",
