@@ -1218,6 +1218,34 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaLive.Social.InviteCooldownMinutes",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "int",
+   "default": 60,
+   "min": 1,
+   "max": 1440,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaLive.Social.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Bot group invites: at most one per (minutes)",
+    "fr": "Invitations de groupe des bots : une au plus toutes les (minutes)",
+    "ru": "Приглашения ботов в группу: не чаще одного раза в (минут)",
+    "zh": "机器人组队邀请：每（分钟）最多一次"
+   },
+   "help": {
+    "en": "A bot asks you to group at most once in this time, all bots together, and only out in the wild: never in a city, a village, an inn or a sanctuary.",
+    "fr": "Un bot te propose de grouper au plus une fois dans ce délai, tous bots confondus, et seulement en pleine nature : jamais dans une ville, un village, une auberge ou un sanctuaire.",
+    "ru": "Бот предлагает вам вступить в группу не чаще одного раза за это время (считая всех ботов вместе) и только на открытой местности: никогда в городе, деревне, таверне или святилище.",
+    "zh": "在这段时间内，所有机器人合计最多邀请你组队一次，且只在野外：绝不会在城市、村庄、旅店或安全区。"
+   }
+  },
+  {
    "file": "playerbots.conf",
    "group": "lw-social",
    "when": "reload",
