@@ -1776,10 +1776,10 @@
     "zh": "城市生活"
    },
    "help": {
-    "en": "Bots visiting a capital sit at the inn, talk at the bank and the auction house, hammer at the forge and train on dummies, a few minutes each, so capitals look full.",
-    "fr": "Les bots de passage dans une capitale s'assoient à l'auberge, discutent à la banque et à l'hôtel des ventes, martèlent à la forge et s'entraînent sur les mannequins, quelques minutes chaque fois : les capitales ont l'air pleines.",
-    "ru": "Боты в столице сидят в таверне, беседуют у банка и аукциона, стучат молотом в кузнице и тренируются на манекенах, по несколько минут, чтобы столицы выглядели оживлёнными.",
-    "zh": "来到主城的机器人会在旅店坐下、在银行和拍卖行聊天、在锻造炉敲打、在训练假人上练习，每样几分钟，让主城显得热闹。"
+    "en": "Bots visiting a capital sit at the inn, talk at the bank and the auction house, hammer at the forge and train on dummies, a few minutes each; beggars, buyers and residents walk the streets, so capitals look full.",
+    "fr": "Les bots de passage dans une capitale s'assoient à l'auberge, discutent à la banque et à l'hôtel des ventes, martèlent à la forge et s'entraînent sur les mannequins, quelques minutes chaque fois ; mendiants, acheteurs et habitants peuplent les rues : les capitales ont l'air pleines.",
+    "ru": "Боты в столице сидят в таверне, беседуют у банка и аукциона, стучат молотом в кузнице и тренируются на манекенах, по несколько минут; по улицам ходят нищие, покупатели и жители, чтобы столицы выглядели оживлёнными.",
+    "zh": "来到主城的机器人会在旅店坐下、在银行和拍卖行聊天、在锻造炉敲打、在训练假人上练习，每样几分钟；乞丐、买家和居民穿行街头，让主城显得热闹。"
    }
   },
   {
@@ -1796,10 +1796,10 @@
     "zh": "机器人在岸边钓鱼"
    },
    "help": {
-    "en": "A bot idling near water now and then goes fishing for a few minutes, as players do between two quests.",
-    "fr": "Un bot inactif près de l'eau va de temps en temps pêcher quelques minutes, comme les joueurs entre deux quêtes.",
-    "ru": "Бот, бездельничающий у воды, время от времени рыбачит несколько минут, как игроки между заданиями.",
-    "zh": "在水边闲着的机器人会不时钓几分钟鱼，就像玩家在两个任务之间那样。"
+    "en": "A bot idling near water now and then goes fishing for a few minutes, as players do between two quests; herbalists and miners walk to nearby nodes.",
+    "fr": "Un bot inactif près de l'eau va de temps en temps pêcher quelques minutes, comme les joueurs entre deux quêtes ; herboristes et mineurs vont jusqu'aux gisements et plantes proches.",
+    "ru": "Бот, бездельничающий у воды, время от времени рыбачит несколько минут, как игроки между заданиями; травники и шахтёры ходят к ближайшим залежам и травам.",
+    "zh": "在水边闲着的机器人会不时钓几分钟鱼，就像玩家在两个任务之间那样；草药师和矿工会走向附近的采集点。"
    }
   },
   {
@@ -1828,6 +1828,46 @@
     "fr": "Au plus ce nombre de bots pêchent en même temps pour 1000 bots connectés (25 par défaut).",
     "ru": "Не больше стольких ботов рыбачат одновременно на каждую 1000 ботов онлайн (по умолчанию 25).",
     "zh": "每 1000 名在线机器人中，同时钓鱼的机器人最多为此数量（默认 25）。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaLive.Sheath.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-citylife",
+   "type": "bool",
+   "default": 0,
+   "when": "reload",
+   "label": {
+    "en": "Bots sheathe their weapons out of combat",
+    "fr": "Les bots rengainent leurs armes hors combat",
+    "ru": "Боты убирают оружие вне боя",
+    "zh": "机器人在战斗外收起武器"
+   },
+   "help": {
+    "en": "Bots draw their weapon in a fight and put it away out of it, on a mount and in flight, as a player's client does. Every bot, random or yours.",
+    "fr": "Les bots sortent leur arme au combat et la rangent en dehors, à cheval et en vol, comme le client d'un joueur. Tous les bots, aléatoires ou les tiens.",
+    "ru": "Боты достают оружие в бою и убирают его вне боя, верхом и в полёте, как клиент игрока. Все боты, случайные и ваши.",
+    "zh": "机器人在战斗中拔出武器，战斗外、骑乘和飞行时收起，与玩家客户端一致。适用于所有机器人，随机的或你的。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaLive.CleanWorld.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-citylife",
+   "type": "bool",
+   "default": 0,
+   "when": "reload",
+   "label": {
+    "en": "Bots revive away from monsters and leave the water",
+    "fr": "Les bots ressuscitent loin des monstres et sortent de l'eau",
+    "ru": "Боты воскресают вдали от монстров и выходят из воды",
+    "zh": "机器人远离怪物复活并离开水中"
+   },
+   "help": {
+    "en": "A random bot's ghost revives at a safe spot nearby, or at the spirit healer, not among the monsters that killed it; a bot idling in the water swims to the nearest shore.",
+    "fr": "Le fantôme d'un bot aléatoire ressuscite à un endroit sûr tout près, ou auprès du gardien des âmes, pas au milieu des monstres qui l'ont tué ; un bot inactif dans l'eau nage jusqu'à la rive la plus proche.",
+    "ru": "Призрак случайного бота воскресает в безопасном месте рядом или у целителя душ, а не среди убивших его монстров; бот, бездельничающий в воде, плывёт к ближайшему берегу.",
+    "zh": "随机机器人的灵魂会在附近的安全地点或灵魂医者处复活，而不是在杀死它的怪物中间；在水中闲着的机器人会游向最近的岸边。"
    }
   },
   {
@@ -2167,7 +2207,9 @@
     "AiPlayerbot.CoaEconomy.Artisans.RecursiveCost.Enable": 1,
     "AiPlayerbot.CoaEconomy.Artisans.Stock.Enable": 1,
     "AiPlayerbot.CoaEconomy.Materials.Enable": 1,
-    "AiPlayerbot.CoaEconomy.AuctionClock.Enable": 1
+    "AiPlayerbot.CoaEconomy.AuctionClock.Enable": 1,
+    "AiPlayerbot.CoaLive.Sheath.Enable": 1,
+    "AiPlayerbot.CoaLive.CleanWorld.Enable": 1
    }
   }
  ]
