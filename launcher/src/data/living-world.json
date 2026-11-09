@@ -3069,6 +3069,28 @@
     "ru": "Интервал ИИ на полях боя только с ботами (мс)",
     "zh": "纯机器人战场 AI 间隔（毫秒）"
    }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.AiBudgetMs",
+   "file": "playerbots.conf",
+   "group": "lw-performance",
+   "type": "int",
+   "default": 0,
+   "min": 0,
+   "max": 1000,
+   "when": "restart",
+   "label": {
+    "en": "AI time budget per map tick (ms)",
+    "fr": "Budget de temps d'IA par tick de carte (ms)",
+    "ru": "Бюджет времени ИИ на тик карты (мс)",
+    "zh": "每个地图 tick 的 AI 时间预算（毫秒）"
+   },
+   "help": {
+    "en": "Once a map's bots have spent this time in a tick, the next ones think on the next tick (none waits two in a row). Never skipped: a bot in combat, grouped with a player or within 100 yards of one. Cuts the peaks of a continent with many bots. 0: off.",
+    "fr": "Une fois ce temps dépensé par les bots d'une carte dans un tick, les suivants réfléchissent au tick d'après (aucun n'attend deux fois de suite). Jamais sautés : un bot en combat, groupé avec un joueur ou à moins de 100 mètres de lui. Écrête les pics d'un continent chargé en bots. 0 : désactivé.",
+    "ru": "Когда боты карты израсходовали это время за тик, следующие думают на следующем тике (никто не ждёт два раза подряд). Никогда не пропускаются: бот в бою, в группе с игроком или в пределах 100 м от него. Сглаживает пики на континенте с множеством ботов. 0: выключено.",
+    "zh": "某地图的机器人在一个 tick 中用完此时间后，其余机器人改到下一个 tick 思考（不会连续等待两次）。战斗中、与玩家组队或距玩家 100 码内的机器人从不跳过。可削减机器人众多的大陆上的峰值。0：关闭。"
+   }
   }
  ],
  "packs": [
@@ -3150,7 +3172,8 @@
     "AiPlayerbot.CoaWorld.Guilds.Charters": 1,
     "AiPlayerbot.CoaWorld.Guilds.PlayerGuildOnline": 1,
     "AiPlayerbot.CoaWorld.Guilds.Greetings": 1,
-    "AiPlayerbot.CoaEconomy.CraftOrders.AdvertiseMinutes": 8
+    "AiPlayerbot.CoaEconomy.CraftOrders.AdvertiseMinutes": 8,
+    "AiPlayerbot.CoaLive.TradeMessagesPerMinute": 1
    }
   }
  ]
