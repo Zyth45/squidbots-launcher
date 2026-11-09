@@ -16,7 +16,8 @@ itself: a card prepares values among the unsaved changes (Save or Discard), or a
   *Performance (many bots)* switches (technical, until their A/B bench), Pursuit stop and Telegraph (worse dungeon runs
   on the NUC bench: SFK 4/6 with 11 deaths instead of 6/6, Stockade mythic 3/6 instead of 5/6), Off-tank (two bot
   tanks fight over a monster without a Main Tank bar), simulated battlegrounds (user's decision, 09/11: real
-  battlegrounds of bots kept, `BgSim.ReplaceAutoJoin = 0` in the pack).
+  battlegrounds of bots kept, `BgSim.ReplaceAutoJoin = 0` in the pack), automatic capital raids (`CapitalRaid.Auto`, until a bench raid has checked
+  the path to the throne; Monde, 09/11: the Pilote decides when it goes on).
 - In it, provisional until the Dungeon Clear raid bench: Breath guard, Stuck combat, Combat purge, Sunken Temple,
   Molten Core (11/11 so far), Blackwing Lair, Zul'Gurub, Ahn'Qiraj, Call of the Grave, Player led. They did no worse so
   far. Before the release the Pilote reviews the pack with the raid bench numbers; those not proven are taken out.

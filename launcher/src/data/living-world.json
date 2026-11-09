@@ -3584,8 +3584,7 @@
     "AiPlayerbot.CoaEconomy.Market.Enable": 1,
     "AiPlayerbot.CoaEconomy.Rarity.Enable": 1,
     "AiPlayerbot.CoaEconomy.BotAuctions.RealHousePrices": 1,
-    "AiPlayerbot.CoaWorld.CapitalRaid.Enable": 1,
-    "AiPlayerbot.CoaWorld.CapitalRaid.Auto": 1
+    "AiPlayerbot.CoaWorld.CapitalRaid.Enable": 1
    }
   }
  ]
