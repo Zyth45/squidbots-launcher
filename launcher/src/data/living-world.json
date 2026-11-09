@@ -2243,7 +2243,7 @@
     "AiPlayerbot.CoaSoul.Enable": 1,
     "AiPlayerbot.CoaCombat.ZulGurub.Enable": 1,
     "AiPlayerbot.CoaCombat.AhnQiraj.Enable": 1,
-    "AiPlayerbot.CoaCombat.LootNeedEpicOnly": 1,
+    "AiPlayerbot.CoaCombat.LootNeedEpicOnly": 0,
     "AiPlayerbot.CoaEconomy.Artisans.RecursiveCost.Enable": 1,
     "AiPlayerbot.CoaEconomy.Artisans.Stock.Enable": 1,
     "AiPlayerbot.CoaEconomy.Materials.Enable": 1,
@@ -2251,7 +2251,8 @@
     "AiPlayerbot.CoaLive.Sheath.Enable": 1,
     "AiPlayerbot.CoaLive.CleanWorld.Enable": 1,
     "AiPlayerbot.CoaCombat.CallOfTheGrave.Enable": 1,
-    "AiPlayerbot.CoaCombat.PlayerLed.Enable": 1
+    "AiPlayerbot.CoaCombat.PlayerLed.Enable": 1,
+    "AiPlayerbot.CoaCombat.LootNeedMinUpgradePct": 10
    }
   }
  ]

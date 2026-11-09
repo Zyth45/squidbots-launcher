@@ -21,9 +21,11 @@ test('the living world manifest shipped with the launcher is valid and makes its
   // Living server (user's decision, 08/11): every shown switch of the manifest on, bags kept, no surname, Need on upgrades.
   const livingPack = CATALOG.packs.find(pack => pack.id === 'living');
   assert.equal(livingPack.soon, undefined);
-  const switches = CATALOG.settings.filter(setting => setting.living && setting.kind === 'bool' && setting.key !== 'AiPlayerbot.CoaWorld.ServerFirst.Enable');
+  // Need on epics only stays off (user's decision, 09/11: "a blue really better, Need possible"): Need on a real upgrade instead.
+  const switches = CATALOG.settings.filter(setting => setting.living && setting.kind === 'bool' && !['AiPlayerbot.CoaWorld.ServerFirst.Enable', 'AiPlayerbot.CoaCombat.LootNeedEpicOnly'].includes(setting.key));
   assert.deepEqual(switches.filter(setting => livingPack.changes[setting.key] !== '1').map(setting => setting.key), []);
   assert.deepEqual([livingPack.changes['AiPlayerbot.CoaBotSurname'], livingPack.changes['AiPlayerbot.RefreshClearsInventory'], livingPack.changes['AiPlayerbot.LootNeedRollLevel']], ['0', '0', '2']);
+  assert.deepEqual([livingPack.changes['AiPlayerbot.CoaCombat.LootNeedEpicOnly'], livingPack.changes['AiPlayerbot.CoaCombat.LootNeedMinUpgradePct']], ['0', '10']);
   assert.ok(!Object.keys(livingPack.changes).some(key => CATALOG.hidden.includes(key)));
   // The density needs the bots' online rotation, a key of the main catalog: the pack turns it on, Classic never.
   assert.equal(livingPack.changes['AiPlayerbot.EnablePeriodicOnlineOffline'], '1');
