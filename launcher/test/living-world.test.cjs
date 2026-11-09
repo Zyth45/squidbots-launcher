@@ -22,8 +22,9 @@ test('the living world manifest shipped with the launcher is valid and makes its
   const livingPack = CATALOG.packs.find(pack => pack.id === 'living');
   assert.equal(livingPack.soon, undefined);
   // Need on epics only stays off (user's decision, 09/11: "a blue really better, Need possible"): Need on a real upgrade instead.
-  // The performance switches are technical, not game features: left out until the A/B bench (Pilote, 09/11).
-  const switches = CATALOG.settings.filter(setting => setting.living && setting.kind === 'bool' && setting.group !== 'lw-performance' && !['AiPlayerbot.CoaWorld.ServerFirst.Enable', 'AiPlayerbot.CoaCombat.LootNeedEpicOnly'].includes(setting.key));
+  // The performance switches are technical, not game features: left out until the A/B bench (Pilote, 09/11). Pursuit stop and
+  // Telegraph made the dungeon runs worse on the bench (Pilote, 09/11): the pack turns on only the combat options benched.
+  const switches = CATALOG.settings.filter(setting => setting.living && setting.kind === 'bool' && setting.group !== 'lw-performance' && !['AiPlayerbot.CoaWorld.ServerFirst.Enable', 'AiPlayerbot.CoaCombat.LootNeedEpicOnly', 'AiPlayerbot.CoaCombat.PursuitStop.Enable', 'AiPlayerbot.CoaCombat.Telegraph.Enable'].includes(setting.key));
   assert.ok(!Object.keys(livingPack.changes).some(key => CATALOG.settings.find(setting => setting.key === key)?.group === 'lw-performance'));
   assert.deepEqual(switches.filter(setting => livingPack.changes[setting.key] !== '1').map(setting => setting.key), []);
   assert.deepEqual([livingPack.changes['AiPlayerbot.CoaBotSurname'], livingPack.changes['AiPlayerbot.RefreshClearsInventory'], livingPack.changes['AiPlayerbot.LootNeedRollLevel']], ['0', '0', '2']);
