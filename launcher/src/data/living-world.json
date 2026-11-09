@@ -2648,6 +2648,68 @@
     "ru": "При перестройке ботов список заклинаний каждого учителя читается один раз, а не для каждого бота. Изучаются те же заклинания.",
     "zh": "重建机器人时，每位训练师的法术列表只读取一次，而不是每个机器人都读一次。学到的法术相同。"
    }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.DpsTargetCache",
+   "file": "playerbots.conf",
+   "group": "lw-performance",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "label": {
+    "en": "Keep the bots' DPS target for one AI pass",
+    "fr": "Garder la cible DPS des bots pendant un passage d'IA",
+    "ru": "Сохранять цель урона ботов на один проход ИИ",
+    "zh": "在一次 AI 循环内保留机器人的输出目标"
+   },
+   "help": {
+    "en": "The enemy a damage dealer picks is kept for 100 ms instead of being searched again on every call; a target that dies or leaves is searched again at once.",
+    "fr": "L'ennemi choisi par un bot DPS est gardé 100 ms au lieu d'être recherché à chaque appel ; une cible qui meurt ou s'en va est recherchée aussitôt.",
+    "ru": "Выбранный бойцом враг сохраняется 100 мс, а не ищется заново при каждом вызове; если цель погибла или ушла, поиск сразу повторяется.",
+    "zh": "输出职业选中的敌人会保留 100 毫秒，而不是每次调用都重新搜索；目标死亡或离开时立即重新搜索。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.BotOnlyBgPace.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-performance",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "label": {
+    "en": "Slower AI in battlegrounds with only bots",
+    "fr": "IA ralentie dans les champs de bataille sans joueur",
+    "ru": "Замедленный ИИ на полях боя только с ботами",
+    "zh": "只有机器人的战场中降低 AI 频率"
+   },
+   "help": {
+    "en": "In a battleground or arena with no real player in it or queued for it, bots run their AI at the interval below instead of every tick. Back to normal within a second when a player enters or queues. Dungeons are not touched.",
+    "fr": "Dans un champ de bataille ou une arène sans vrai joueur, ni dedans ni en file, les bots font tourner leur IA à l'intervalle ci-dessous au lieu de chaque tick. Retour à la normale en moins d'une seconde quand un joueur entre ou s'inscrit. Les donjons ne sont pas touchés.",
+    "ru": "На поле боя или арене без настоящих игроков внутри и в очереди боты запускают ИИ с интервалом ниже, а не каждый тик. Всё возвращается в норму меньше чем за секунду, когда игрок входит или встаёт в очередь. Подземелья не затрагиваются.",
+    "zh": "在没有真实玩家（场内或排队中）的战场或竞技场中，机器人按下方间隔运行 AI，而不是每个 tick。玩家进入或排队后一秒内恢复正常。不影响地下城。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.BotOnlyBgPace.IntervalMs",
+   "file": "playerbots.conf",
+   "group": "lw-performance",
+   "type": "int",
+   "default": 500,
+   "when": "restart",
+   "min": 100,
+   "max": 5000,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.BotOnlyBgPace.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Bot-only battleground AI interval (ms)",
+    "fr": "Intervalle de l'IA des champs de bataille sans joueur (ms)",
+    "ru": "Интервал ИИ на полях боя только с ботами (мс)",
+    "zh": "纯机器人战场 AI 间隔（毫秒）"
+   }
   }
  ],
  "packs": [
