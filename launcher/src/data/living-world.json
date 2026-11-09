@@ -2937,8 +2937,7 @@
     "AiPlayerbot.CoaEconomy.Artisans.Addon": 1,
     "AiPlayerbot.CoaWorld.Guilds.Addon": 1,
     "AiPlayerbot.CoaWorld.Events.Addon": 1,
-    "AiPlayerbot.CoaWorld.BgSim.Enable": 1,
-    "AiPlayerbot.CoaWorld.BgSim.ReplaceAutoJoin": 1,
+    "AiPlayerbot.CoaWorld.BgSim.ReplaceAutoJoin": 0,
     "AiPlayerbot.CoaWorld.BgSim.Shop": 1,
     "AiPlayerbot.CoaWorld.BgSim.Announce": 1
    }
