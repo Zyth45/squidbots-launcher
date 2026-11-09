@@ -2612,7 +2612,7 @@
    "file": "playerbots.conf",
    "group": "lw-performance",
    "type": "int",
-   "default": 0,
+   "default": 2,
    "min": 0,
    "max": 50,
    "when": "reload",
@@ -2623,10 +2623,10 @@
     "zh": "机器人重建后每次更新学习的 CoA 天赋数"
    },
    "help": {
-    "en": "A bot of a CoA class rebuilt at a new level takes at most this many talent entries at once, then the rest a few a second: the same talents in the end, without a pause of the world for each rebuild. 0: all at once. 2 is suggested.",
-    "fr": "Un bot d'une classe CoA reconstruit à un nouveau niveau prend au plus ce nombre de talents d'un coup, puis le reste quelques-uns par seconde : les mêmes talents au final, sans pause du monde à chaque reconstruction. 0 : tout d'un coup. 2 est conseillé.",
-    "ru": "Бот класса CoA, перестроенный на новом уровне, берёт не больше стольких талантов сразу, а остальные — по несколько в секунду: в итоге те же таланты, без паузы мира при каждой перестройке. 0: все сразу. Рекомендуется 2.",
-    "zh": "在新等级重建的 CoA 职业机器人一次最多学习这么多天赋，其余每秒学几个：最终天赋相同，但每次重建不会让世界停顿。0：一次全部学完。建议值为 2。"
+    "en": "A bot of a CoA class rebuilt at a new level takes at most this many talent entries at once, then the rest a few a second: the same talents in the end, without a pause of the world for each rebuild. 0 = all at once, as before.",
+    "fr": "Un bot d'une classe CoA reconstruit à un nouveau niveau prend au plus ce nombre de talents d'un coup, puis le reste quelques-uns par seconde : les mêmes talents au final, sans pause du monde à chaque reconstruction. 0 = tout d'un coup, comme avant.",
+    "ru": "Бот класса CoA, перестроенный на новом уровне, берёт не больше стольких талантов сразу, а остальные — по несколько в секунду: в итоге те же таланты, без паузы мира при каждой перестройке. 0 = все сразу, как раньше.",
+    "zh": "在新等级重建的 CoA 职业机器人一次最多学习这么多天赋，其余每秒学几个：最终天赋相同，但每次重建不会让世界停顿。0 = 一次全部学完，与以前相同。"
    }
   }
  ],
