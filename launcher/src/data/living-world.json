@@ -1084,6 +1084,87 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaEconomy.Artisans.RecursiveCost.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.Artisans.Enable",
+    "values": [
+     0
+    ]
+   },
+   "classic": false,
+   "label": {
+    "en": "Recursive craft prices",
+    "fr": "Prix de fabrication en cascade",
+    "ru": "Цены крафта по цепочке",
+    "zh": "递归制作价格"
+   },
+   "help": {
+    "en": "Artisans price reagents at the cheaper of buying or crafting them, from learned market prices.",
+    "fr": "Les artisans comptent chaque composant au moins cher entre l'acheter et le fabriquer, d'après les prix du marché appris.",
+    "ru": "Ремесленники оценивают реагенты по меньшей из цен: купить или изготовить, по изученным рыночным ценам.",
+    "zh": "工匠根据已掌握的市场价格，按购买或自制中较便宜者计算材料成本。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.Artisans.Stock.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.Artisans.Enable",
+    "values": [
+     0
+    ]
+   },
+   "classic": false,
+   "label": {
+    "en": "Artisan material stock",
+    "fr": "Réserve de matériaux des artisans",
+    "ru": "Запас материалов ремесленников",
+    "zh": "工匠材料储备"
+   },
+   "help": {
+    "en": "Artisans keep their recipes' reagents and buy them cheap at the auction house.",
+    "fr": "Les artisans gardent les composants de leurs recettes et les achètent à bas prix à l'hôtel des ventes.",
+    "ru": "Ремесленники хранят реагенты своих рецептов и дёшево покупают их на аукционе.",
+    "zh": "工匠保留其配方所需的材料，并在拍卖行低价购入。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.Materials.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.BotAuctions.Enable",
+    "values": [
+     0
+    ]
+   },
+   "classic": false,
+   "label": {
+    "en": "Smelting, prospecting, disenchanting",
+    "fr": "Fonte, prospection, désenchantement",
+    "ru": "Плавка, просеивание, распыление",
+    "zh": "熔炼、选矿、分解"
+   },
+   "help": {
+    "en": "Bots with the profession smelt ore, prospect ore and disenchant gear they would sell, when the output is worth more.",
+    "fr": "Les bots qui ont le métier fondent le minerai, le prospectent et désenchantent l'équipement qu'ils auraient vendu, quand le résultat vaut plus.",
+    "ru": "Боты с нужной профессией переплавляют и просеивают руду и распыляют снаряжение, которое продали бы, если результат стоит дороже.",
+    "zh": "拥有相应专业的机器人会熔炼矿石、选矿，并分解本要出售的装备，前提是产出更值钱。"
+   }
+  },
+  {
    "key": "AiPlayerbot.LootNeedRollLevel",
    "file": "playerbots.conf",
    "group": "lw-loot",
@@ -1918,6 +1999,26 @@
     "ru": "Записывает economy.json для панели SquidBots, только пока открыта её «живая» страница.",
     "zh": "仅在 SquidBots 仪表盘的鲜活页面打开时写入 economy.json。"
    }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.AuctionClock.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-economy",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "label": {
+    "en": "Auctions pause while the server is off",
+    "fr": "Les enchères s'arrêtent quand le serveur est éteint",
+    "ru": "Аукционы на паузе, пока сервер выключен",
+    "zh": "服务器关闭时拍卖暂停"
+   },
+   "help": {
+    "en": "Auction timers run on game time: downtime is added back at start-up, for players' auctions too.",
+    "fr": "La durée des enchères suit le temps de jeu : le temps où le serveur était éteint est rendu au démarrage, enchères des joueurs comprises.",
+    "ru": "Таймеры аукционов идут по игровому времени: время простоя возвращается при запуске, включая лоты игроков.",
+    "zh": "拍卖计时按游戏时间进行：启动时会补回停机时间，玩家的拍卖也一样。"
+   }
   }
  ],
  "packs": [
@@ -1978,7 +2079,11 @@
     "AiPlayerbot.CoaSoul.Enable": 1,
     "AiPlayerbot.CoaCombat.ZulGurub.Enable": 1,
     "AiPlayerbot.CoaCombat.AhnQiraj.Enable": 1,
-    "AiPlayerbot.CoaCombat.LootNeedEpicOnly": 1
+    "AiPlayerbot.CoaCombat.LootNeedEpicOnly": 1,
+    "AiPlayerbot.CoaEconomy.Artisans.RecursiveCost.Enable": 1,
+    "AiPlayerbot.CoaEconomy.Artisans.Stock.Enable": 1,
+    "AiPlayerbot.CoaEconomy.Materials.Enable": 1,
+    "AiPlayerbot.CoaEconomy.AuctionClock.Enable": 1
    }
   }
  ]
