@@ -3121,7 +3121,8 @@
     "AiPlayerbot.CoaWorld.BgSim.Announce": 1,
     "AiPlayerbot.CoaWorld.Guilds.Charters": 1,
     "AiPlayerbot.CoaWorld.Guilds.PlayerGuildOnline": 1,
-    "AiPlayerbot.CoaWorld.Guilds.Greetings": 1
+    "AiPlayerbot.CoaWorld.Guilds.Greetings": 1,
+    "AiPlayerbot.CoaEconomy.CraftOrders.AdvertiseMinutes": 8
    }
   }
  ]
