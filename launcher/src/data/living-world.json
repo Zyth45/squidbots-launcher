@@ -1448,6 +1448,35 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaEconomy.CraftOrders.AdvertiseMinutes",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "type": "int",
+   "default": 0,
+   "min": 0,
+   "max": 1440,
+   "when": "reload",
+   "classic": false,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.CraftOrders.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Artisans advertise in Trade every (minutes)",
+    "fr": "Les artisans font leur annonce en Commerce toutes les (minutes)",
+    "ru": "Ремесленники дают объявление в канал торговли каждые (минут)",
+    "zh": "工匠每隔（分钟）在交易频道招揽生意"
+   },
+   "help": {
+    "en": "In each capital where a real player is, an artisan of that player's faction says in Trade that it takes orders, with its profession and recipe links; another one each time. Needs CoA Live. 0: off.",
+    "fr": "Dans chaque capitale où se trouve un vrai joueur, un artisan de sa faction annonce en Commerce qu'il prend des commandes, avec son métier et des liens de recettes ; un autre à chaque fois. Demande CoA Live. 0 : désactivé.",
+    "ru": "В каждой столице, где есть настоящий игрок, ремесленник его фракции объявляет в канале торговли, что принимает заказы, с профессией и ссылками на рецепты; каждый раз другой. Нужен CoA Live. 0: выключено.",
+    "zh": "在每个有真实玩家的主城，该玩家阵营的一名工匠会在交易频道宣布接受订单，并附上专业和配方链接；每次换一个人。需要 CoA Live。0：关闭。"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaEconomy.Artisans.RecursiveCost.Enable",
    "file": "playerbots.conf",
    "group": "lw-crafting",
