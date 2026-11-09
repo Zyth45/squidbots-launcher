@@ -2647,11 +2647,7 @@
     "AiPlayerbot.CoaWorld.Leveling.Enable": 1,
     "AiPlayerbot.CoaWorld.Guilds.Orders": 1,
     "AiPlayerbot.CoaWorld.Guilds.Gear": 1,
-    "AiPlayerbot.CoaLive.NightBank.Enable": 1,
-    "AiPlayerbot.CoaWorld.BotPacketsInMapThread": 1,
-    "AiPlayerbot.CoaWorld.ActiveZones.Enable": 1,
-    "AiPlayerbot.CoaWorld.IdleBotAI.Enable": 1,
-    "AiPlayerbot.CoaWorld.SmartScaleAverage.Enable": 1
+    "AiPlayerbot.CoaLive.NightBank.Enable": 1
    }
   }
  ]
