@@ -1584,6 +1584,34 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaLive.Immersion.FishingPerThousand",
+   "file": "playerbots.conf",
+   "group": "lw-citylife",
+   "type": "int",
+   "default": 25,
+   "min": 0,
+   "max": 1000,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaLive.Immersion.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Bots fishing per 1000 online",
+    "fr": "Bots qui pêchent pour 1000 connectés",
+    "ru": "Ботов на рыбалке на 1000 онлайн",
+    "zh": "每 1000 名在线机器人中钓鱼的数量"
+   },
+   "help": {
+    "en": "At most this many bots fish at once for every 1000 bots online (25 by default).",
+    "fr": "Au plus ce nombre de bots pêchent en même temps pour 1000 bots connectés (25 par défaut).",
+    "ru": "Не больше стольких ботов рыбачат одновременно на каждую 1000 ботов онлайн (по умолчанию 25).",
+    "zh": "每 1000 名在线机器人中，同时钓鱼的机器人最多为此数量（默认 25）。"
+   }
+  },
+  {
    "key": "AiPlayerbot.RefreshClearsInventory",
    "file": "playerbots.conf",
    "group": "lw-economy",
