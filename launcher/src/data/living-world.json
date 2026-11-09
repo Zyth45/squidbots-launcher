@@ -696,6 +696,26 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaCombat.AhnQiraj.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-combat",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "label": {
+    "en": "Ahn'Qiraj: improved boss tactics",
+    "fr": "Ahn'Qiraj : tactiques de boss améliorées",
+    "ru": "Ан'Кираж: улучшенная тактика против боссов",
+    "zh": "安其拉：改进的首领战术"
+   },
+   "help": {
+    "en": "AQ20 and AQ40: out of Buru's Devastate, shelter at Ossirian's active obelisks, Sartura's Phantom Dancers killed first and kept at a distance.",
+    "fr": "AQ20 et AQ40 : hors de la Dévastation de Buru, abri près des obélisques actifs d'Ossirian, les Danseurs fantômes de Sartura tués en premier et tenus à distance.",
+    "ru": "AQ20 и AQ40: уход от «Опустошения» Буру, укрытие у активных обелисков Оссириана, призрачные танцоры Сартуры убиваются первыми и держатся на расстоянии.",
+    "zh": "AQ20 与 AQ40：躲开布鲁的毁灭打击，在奥斯里安的激活方尖碑旁躲避，优先击杀沙尔图拉的幻影舞者并保持距离。"
+   }
+  },
+  {
    "file": "playerbots.conf",
    "group": "lw-population",
    "when": "reload",
@@ -709,82 +729,10 @@
     "zh": "机器人像玩家一样上下线"
    },
    "help": {
-    "en": "The number of bots online follows the hour of the day (quiet nights, busy evenings, weekend bonus), and each bot plays sessions of a believable length. Less CPU at quiet hours.",
-    "fr": "Le nombre de bots connectés suit l'heure de la journée (nuits calmes, soirées animées, bonus le week-end), et chaque bot joue des sessions d'une durée crédible. Moins de CPU aux heures creuses.",
-    "ru": "Число ботов онлайн следует времени суток (тихие ночи, оживлённые вечера, бонус в выходные), и каждый бот играет сессии правдоподобной длины. Меньше нагрузки на процессор в тихие часы.",
-    "zh": "在线机器人数量随一天中的时间变化（夜晚冷清、晚上热闹、周末加成），每个机器人的游戏时长也很真实。空闲时段占用更少 CPU。"
-   }
-  },
-  {
-   "file": "playerbots.conf",
-   "group": "lw-population",
-   "when": "reload",
-   "key": "AiPlayerbot.CoaLive.Sessions.WeekendBonus",
-   "type": "int",
-   "default": 10,
-   "min": 0,
-   "max": 100,
-   "idleWhen": {
-    "key": "AiPlayerbot.CoaLive.Sessions.Enable",
-    "values": [
-     0
-    ]
-   },
-   "label": {
-    "en": "Weekend bonus %",
-    "fr": "Bonus du week-end %",
-    "ru": "Бонус выходных %",
-    "zh": "周末加成 %"
-   }
-  },
-  {
-   "file": "playerbots.conf",
-   "group": "lw-population",
-   "when": "reload",
-   "key": "AiPlayerbot.CoaLive.Sessions.MinPercent",
-   "type": "int",
-   "default": 20,
-   "min": 0,
-   "max": 100,
-   "idleWhen": {
-    "key": "AiPlayerbot.CoaLive.Sessions.Enable",
-    "values": [
-     0
-    ]
-   },
-   "label": {
-    "en": "Minimum bots online %",
-    "fr": "Minimum de bots connectés %",
-    "ru": "Минимум ботов онлайн %",
-    "zh": "最少在线机器人 %"
-   }
-  },
-  {
-   "file": "playerbots.conf",
-   "group": "lw-population",
-   "when": "reload",
-   "key": "AiPlayerbot.CoaLive.Sessions.HourShift",
-   "type": "int",
-   "default": 0,
-   "min": -23,
-   "max": 23,
-   "idleWhen": {
-    "key": "AiPlayerbot.CoaLive.Sessions.Enable",
-    "values": [
-     0
-    ]
-   },
-   "label": {
-    "en": "Hour shift",
-    "fr": "Décalage horaire",
-    "ru": "Сдвиг часов",
-    "zh": "时间偏移"
-   },
-   "help": {
-    "en": "Moves the busy hours earlier or later, in hours, for a realm whose players live in another time zone than the server's clock.",
-    "fr": "Avance ou retarde les heures animées, en heures, pour un royaume dont les joueurs vivent dans un autre fuseau horaire que l'horloge du serveur.",
-    "ru": "Сдвигает оживлённые часы раньше или позже (в часах) для мира, игроки которого живут в другом часовом поясе, чем часы сервера.",
-    "zh": "将热闹时段提前或推后（单位：小时），适用于玩家所在时区与服务器时钟不同的国度。"
+    "en": "Bots come and go like players: each stays for a session of a believable length, then another one takes its place. The number of bots online stays the number you set.",
+    "fr": "Les bots vont et viennent comme des joueurs : chacun reste le temps d'une session de durée crédible, puis un autre prend sa place. Le nombre de bots connectés reste celui que tu as réglé.",
+    "ru": "Боты приходят и уходят как игроки: каждый остаётся на сессию правдоподобной длины, затем его место занимает другой. Число ботов онлайн остаётся таким, как вы задали.",
+    "zh": "机器人像玩家一样上下线：每个机器人在线一段真实长度的时间，然后由另一个机器人接替。在线机器人数量保持你设定的数值。"
    }
   },
   {
@@ -1918,7 +1866,8 @@
     "AiPlayerbot.EnablePeriodicOnlineOffline": 1,
     "AiPlayerbot.CoaCombat.BlackwingLair.Enable": 1,
     "AiPlayerbot.CoaSoul.Enable": 1,
-    "AiPlayerbot.CoaCombat.ZulGurub.Enable": 1
+    "AiPlayerbot.CoaCombat.ZulGurub.Enable": 1,
+    "AiPlayerbot.CoaCombat.AhnQiraj.Enable": 1
    }
   }
  ]
