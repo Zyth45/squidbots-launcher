@@ -110,6 +110,17 @@
     "ru": "Добыча",
     "zh": "战利品"
    }
+  },
+  {
+   "id": "lw-performance",
+   "icon": "chart",
+   "section": "bots",
+   "label": {
+    "en": "Performance (many bots)",
+    "fr": "Performances (beaucoup de bots)",
+    "ru": "Производительность (много ботов)",
+    "zh": "性能（大量机器人）"
+   }
   }
  ],
  "options": [
@@ -2461,6 +2472,108 @@
     "ru": "Таймеры аукционов идут по игровому времени: время простоя возвращается при запуске, включая лоты игроков.",
     "zh": "拍卖计时按游戏时间进行：启动时会补回停机时间，玩家的拍卖也一样。"
    }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.BotPacketsInMapThread",
+   "file": "playerbots.conf",
+   "group": "lw-performance",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "label": {
+    "en": "Handle bot packets in their map thread",
+    "fr": "Traiter les paquets des bots dans le fil de leur carte",
+    "ru": "Обрабатывать пакеты ботов в потоке их карты",
+    "zh": "在机器人所在地图线程中处理其数据包"
+   },
+   "help": {
+    "en": "The bots' thread-safe packets are handled in their map's thread, as a real player's are, instead of all in the world thread. Lighter world thread with many bots.",
+    "fr": "Les paquets des bots sûrs pour les fils sont traités dans le fil de leur carte, comme ceux d'un vrai joueur, au lieu de tous passer par le fil du monde. Fil du monde allégé avec beaucoup de bots.",
+    "ru": "Потокобезопасные пакеты ботов обрабатываются в потоке их карты, как у настоящего игрока, а не все в потоке мира. Поток мира разгружается при большом числе ботов.",
+    "zh": "机器人的线程安全数据包在其地图线程中处理，与真实玩家相同，而不是全部在世界线程中处理。机器人很多时世界线程更轻。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.ActiveZones.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-performance",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "label": {
+    "en": "Cache the zones with a real player",
+    "fr": "Mémoriser les zones où se trouve un vrai joueur",
+    "ru": "Кэшировать зоны с настоящим игроком",
+    "zh": "缓存有真实玩家的区域"
+   },
+   "help": {
+    "en": "The maps and zones with a real player are found every 10 seconds instead of each bot checking every player. A player entering a zone wakes its bots up to 10 seconds later.",
+    "fr": "Les cartes et zones où se trouve un vrai joueur sont repérées toutes les 10 secondes, au lieu que chaque bot vérifie chaque joueur. Un joueur qui entre dans une zone réveille ses bots jusqu'à 10 secondes plus tard.",
+    "ru": "Карты и зоны с настоящим игроком определяются раз в 10 секунд, вместо того чтобы каждый бот проверял каждого игрока. Боты зоны просыпаются до 10 секунд спустя после входа игрока.",
+    "zh": "每 10 秒找出有真实玩家的地图和区域，而不是每个机器人检查每个玩家。玩家进入区域后，最多 10 秒后才唤醒该区域的机器人。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.IdleBotAI.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-performance",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "label": {
+    "en": "Slower AI for idle bots far from players",
+    "fr": "IA ralentie pour les bots inactifs loin des joueurs",
+    "ru": "Замедленный ИИ для бездействующих ботов вдали от игроков",
+    "zh": "远离玩家的空闲机器人降低 AI 频率"
+   },
+   "help": {
+    "en": "A sleeping bot, out of combat, with no real player in its zone, runs its AI at the interval below instead of every server tick. It wakes at once when attacked.",
+    "fr": "Un bot endormi, hors combat, sans vrai joueur dans sa zone, fait tourner son IA à l'intervalle ci-dessous au lieu de chaque tick du serveur. Il se réveille aussitôt s'il est attaqué.",
+    "ru": "Спящий бот вне боя и без настоящего игрока в зоне запускает ИИ с интервалом ниже, а не каждый тик сервера. При атаке он сразу просыпается.",
+    "zh": "处于休眠、未战斗且区域内无真实玩家的机器人，按下方间隔运行 AI，而不是每个服务器 tick。被攻击时立即唤醒。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.IdleBotAI.IntervalMs",
+   "file": "playerbots.conf",
+   "group": "lw-performance",
+   "type": "int",
+   "default": 2000,
+   "when": "restart",
+   "min": 100,
+   "max": 10000,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.IdleBotAI.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Idle bot AI interval (ms)",
+    "fr": "Intervalle de l'IA des bots inactifs (ms)",
+    "ru": "Интервал ИИ бездействующих ботов (мс)",
+    "zh": "空闲机器人 AI 间隔（毫秒）"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.SmartScaleAverage.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-performance",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "label": {
+    "en": "SmartScale on average tick time",
+    "fr": "SmartScale sur le temps de tick moyen",
+    "ru": "SmartScale по среднему времени тика",
+    "zh": "SmartScale 按平均 tick 时间"
+   },
+   "help": {
+    "en": "SmartScale follows the average of recent server update times instead of the slowest one: fewer bots fall asleep after a single slow tick.",
+    "fr": "SmartScale suit la moyenne des derniers temps de mise à jour du serveur au lieu du plus lent : moins de bots s'endorment après un seul tick lent.",
+    "ru": "SmartScale ориентируется на среднее время недавних обновлений сервера, а не на самое долгое: меньше ботов засыпает после одного медленного тика.",
+    "zh": "SmartScale 依据最近服务器更新时间的平均值而非最慢值：单次慢 tick 后入睡的机器人更少。"
+   }
   }
  ],
  "packs": [
@@ -2534,7 +2647,11 @@
     "AiPlayerbot.CoaWorld.Leveling.Enable": 1,
     "AiPlayerbot.CoaWorld.Guilds.Orders": 1,
     "AiPlayerbot.CoaWorld.Guilds.Gear": 1,
-    "AiPlayerbot.CoaLive.NightBank.Enable": 1
+    "AiPlayerbot.CoaLive.NightBank.Enable": 1,
+    "AiPlayerbot.CoaWorld.BotPacketsInMapThread": 1,
+    "AiPlayerbot.CoaWorld.ActiveZones.Enable": 1,
+    "AiPlayerbot.CoaWorld.IdleBotAI.Enable": 1,
+    "AiPlayerbot.CoaWorld.SmartScaleAverage.Enable": 1
    }
   }
  ]
