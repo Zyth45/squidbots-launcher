@@ -1072,6 +1072,48 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaWorld.Leveling.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-travellers",
+   "type": "bool",
+   "default": 0,
+   "when": "reload",
+   "label": {
+    "en": "Bots level along credible routes",
+    "fr": "Les bots montent de niveau par des itinéraires crédibles",
+    "ru": "Боты качаются по правдоподобным маршрутам",
+    "zh": "机器人沿合理路线升级"
+   },
+   "help": {
+    "en": "A bot moving on to a place of its level goes to a zone its faction levels in at that level, mostly on its continent.",
+    "fr": "Un bot qui part vers un lieu de son niveau va dans une zone où sa faction monte à ce niveau, le plus souvent sur son continent.",
+    "ru": "Бот, переходящий в место своего уровня, идёт в зону, где его фракция качается на этом уровне, чаще всего на своём континенте.",
+    "zh": "前往符合自身等级地点的机器人，会去其阵营在该等级练级的区域，多数在本大陆。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.Leveling.SameContinentPct",
+   "file": "playerbots.conf",
+   "group": "lw-travellers",
+   "type": "int",
+   "default": 70,
+   "when": "reload",
+   "min": 0,
+   "max": 100,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Leveling.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Chance the next zone is on the same continent (%)",
+    "fr": "Chance que la zone suivante soit sur le même continent (%)",
+    "ru": "Шанс, что следующая зона на том же континенте (%)",
+    "zh": "下一个区域在同一大陆的几率（%）"
+   }
+  },
+  {
    "file": "playerbots.conf",
    "when": "reload",
    "group": "lw-pvp",
@@ -1803,6 +1845,216 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaWorld.Guilds.Orders",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "bool",
+   "default": 1,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Guilds.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Guildmates answer item requests in guild chat",
+    "fr": "Les membres de la guilde répondent aux demandes d'objets dans le canal de guilde",
+    "ru": "Согильдийцы отвечают на запросы предметов в чате гильдии",
+    "zh": "公会成员回应公会聊天中的物品请求"
+   },
+   "help": {
+    "en": "They share it, craft it at material cost or buy it at the auction house.",
+    "fr": "Ils le donnent, le fabriquent au prix des matériaux ou l'achètent à l'hôtel des ventes.",
+    "ru": "Они делятся им, изготавливают по цене материалов или покупают на аукционе.",
+    "zh": "他们会分享、以材料成本制作或在拍卖行购买。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.Guilds.OrdersPerDay",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "int",
+   "default": 3,
+   "when": "reload",
+   "min": 0,
+   "max": 50,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Guilds.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Guild requests per player per day",
+    "fr": "Demandes à la guilde par joueur et par jour",
+    "ru": "Запросов к гильдии на игрока в день",
+    "zh": "每名玩家每天的公会请求数"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.Guilds.OrderMaxQuality",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "choice",
+   "default": 3,
+   "when": "reload",
+   "choices": [
+    {
+     "value": 1,
+     "label": {
+      "en": "Common",
+      "fr": "Commune",
+      "ru": "Обычное",
+      "zh": "普通"
+     }
+    },
+    {
+     "value": 2,
+     "label": {
+      "en": "Uncommon",
+      "fr": "Inhabituelle",
+      "ru": "Необычное",
+      "zh": "优秀"
+     }
+    },
+    {
+     "value": 3,
+     "label": {
+      "en": "Rare",
+      "fr": "Rare",
+      "ru": "Редкое",
+      "zh": "精良"
+     }
+    },
+    {
+     "value": 4,
+     "label": {
+      "en": "Epic",
+      "fr": "Épique",
+      "ru": "Эпическое",
+      "zh": "史诗"
+     }
+    }
+   ],
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Guilds.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Best quality a guild request may ask for",
+    "fr": "Meilleure qualité qu'une demande à la guilde peut viser",
+    "ru": "Лучшее качество, которое можно запросить у гильдии",
+    "zh": "公会请求可要求的最高品质"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.Guilds.OrderAuctionMaxGold",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "int",
+   "default": 50,
+   "when": "reload",
+   "min": 0,
+   "max": 10000,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Guilds.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Highest auction price a guildmate pays for a request (gold)",
+    "fr": "Prix maximal qu'un membre de la guilde paie à l'hôtel des ventes pour une demande (or)",
+    "ru": "Наибольшая цена на аукционе, которую согильдиец платит за запрос (золото)",
+    "zh": "公会成员为请求支付的最高拍卖价（金）"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.Guilds.Gear",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "bool",
+   "default": 1,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Guilds.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "The guild mails you gear upgrades of your level",
+    "fr": "La guilde t'envoie par courrier de l'équipement meilleur, de ton niveau",
+    "ru": "Гильдия присылает вам почтой улучшения снаряжения вашего уровня",
+    "zh": "公会会邮寄给你符合等级的装备升级"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.Guilds.GearDays",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "int",
+   "default": 3,
+   "when": "reload",
+   "min": 1,
+   "max": 60,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Guilds.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Days between two gear gifts",
+    "fr": "Jours entre deux cadeaux d'équipement",
+    "ru": "Дней между подарками снаряжения",
+    "zh": "两次赠送装备的间隔天数"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.Guilds.GearQuality",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "choice",
+   "default": 2,
+   "when": "reload",
+   "choices": [
+    {
+     "value": 2,
+     "label": {
+      "en": "Uncommon",
+      "fr": "Inhabituelle",
+      "ru": "Необычное",
+      "zh": "优秀"
+     }
+    },
+    {
+     "value": 3,
+     "label": {
+      "en": "Rare",
+      "fr": "Rare",
+      "ru": "Редкое",
+      "zh": "精良"
+     }
+    }
+   ],
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Guilds.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Best quality of gifted gear",
+    "fr": "Meilleure qualité de l'équipement offert",
+    "ru": "Лучшее качество подаренного снаряжения",
+    "zh": "赠送装备的最高品质"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaLive.City.Enable",
    "file": "playerbots.conf",
    "group": "lw-citylife",
@@ -2252,7 +2504,10 @@
     "AiPlayerbot.CoaLive.CleanWorld.Enable": 1,
     "AiPlayerbot.CoaCombat.CallOfTheGrave.Enable": 1,
     "AiPlayerbot.CoaCombat.PlayerLed.Enable": 1,
-    "AiPlayerbot.CoaCombat.LootNeedMinUpgradePct": 10
+    "AiPlayerbot.CoaCombat.LootNeedMinUpgradePct": 10,
+    "AiPlayerbot.CoaWorld.Leveling.Enable": 1,
+    "AiPlayerbot.CoaWorld.Guilds.Orders": 1,
+    "AiPlayerbot.CoaWorld.Guilds.Gear": 1
    }
   }
  ]
