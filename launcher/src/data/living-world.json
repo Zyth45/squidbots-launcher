@@ -2467,6 +2467,76 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaWorld.Guilds.Activities",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Guilds.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Guild activities in the addon (gather, party, raid)",
+    "fr": "Activités de guilde dans l'addon (rassemblement, groupe, raid)",
+    "ru": "Занятия гильдии в аддоне (сбор, группа, рейд)",
+    "zh": "插件中的公会活动（集合、小队、团队）"
+   },
+   "help": {
+    "en": "From the SquidBots Lite addon: a few free bots of your guild come to you (gather), a tank, a healer and damage dealers join you for a dungeon, or a raid of 10, 15 or 25 is built. One activity at a time, then a cooldown. Needs guild orders from the addon.",
+    "fr": "Depuis l'addon SquidBots Lite : quelques bots libres de ta guilde viennent à toi (rassemblement), un tank, un soigneur et des DPS te rejoignent pour un donjon, ou un raid de 10, 15 ou 25 est formé. Une activité à la fois, puis un délai. Demande les commandes à la guilde depuis l'addon.",
+    "ru": "Из аддона SquidBots Lite: несколько свободных ботов вашей гильдии приходят к вам (сбор), танк, лекарь и бойцы присоединяются к вам в подземелье, или собирается рейд на 10, 15 или 25. Одно занятие за раз, затем перерыв. Нужны заказы гильдии из аддона.",
+    "zh": "在 SquidBots Lite 插件中：公会的几名空闲机器人来到你身边（集合），坦克、治疗和输出加入你一起下地下城，或组建 10、15 或 25 人团队。一次一项活动，之后有冷却。需要开启从插件发出公会订单。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.Guilds.ActivityCooldownMinutes",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "int",
+   "default": 10,
+   "when": "restart",
+   "min": 0,
+   "max": 1440,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Guilds.Activities",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Minutes between two guild activities",
+    "fr": "Minutes entre deux activités de guilde",
+    "ru": "Минут между двумя занятиями гильдии",
+    "zh": "两次公会活动之间的分钟数"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.Guilds.GatherMinutes",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "int",
+   "default": 15,
+   "when": "restart",
+   "min": 1,
+   "max": 120,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Guilds.Activities",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Minutes the gathered bots stay",
+    "fr": "Minutes de présence des bots rassemblés",
+    "ru": "Сколько минут остаются собранные боты",
+    "zh": "集合的机器人停留分钟数"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaWorld.Guilds.Charters",
    "file": "playerbots.conf",
    "group": "lw-social",
@@ -3247,7 +3317,8 @@
     "AiPlayerbot.CoaEconomy.CraftOrders.AdvertiseMinutes": 8,
     "AiPlayerbot.CoaLive.TradeMessagesPerMinute": 1,
     "AiPlayerbot.CoaWorld.Guilds.GearAsk": 1,
-    "AiPlayerbot.CoaWorld.Guilds.Catalog": 1
+    "AiPlayerbot.CoaWorld.Guilds.Catalog": 1,
+    "AiPlayerbot.CoaWorld.Guilds.Activities": 1
    }
   }
  ]
