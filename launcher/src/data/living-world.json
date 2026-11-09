@@ -2389,6 +2389,32 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaWorld.Guilds.GearAsk",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Guilds.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Guild gifts: ask before sending",
+    "fr": "Cadeaux de la guilde : demander avant d'envoyer",
+    "ru": "Подарки гильдии: спрашивать перед отправкой",
+    "zh": "公会礼物：发送前先询问"
+   },
+   "help": {
+    "en": "The guild's gear gift is offered first (a whisper, and the addon's Gifts view) and mailed only if you accept. An offer lasts 24 hours; a refused item is not offered again for 30 days. Off: mailed at once.",
+    "fr": "Le cadeau d'équipement de la guilde est d'abord proposé (un chuchotement, et la vue Cadeaux de l'addon) et envoyé seulement si tu acceptes. Une offre dure 24 heures ; un objet refusé n'est pas reproposé avant 30 jours. Désactivé : envoyé aussitôt.",
+    "ru": "Подарок снаряжения от гильдии сначала предлагается (шёпотом и в разделе «Подарки» аддона) и отправляется, только если вы согласны. Предложение действует 24 часа; отклонённый предмет не предлагается снова 30 дней. Выключено: отправляется сразу.",
+    "zh": "公会的装备礼物会先提出（悄悄话和插件的礼物视图），只有你接受后才会邮寄。报价有效 24 小时；被拒绝的物品 30 天内不会再提供。关闭：立即邮寄。"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaWorld.Guilds.Addon",
    "file": "playerbots.conf",
    "group": "lw-social",
@@ -3193,7 +3219,8 @@
     "AiPlayerbot.CoaWorld.Guilds.PlayerGuildOnline": 1,
     "AiPlayerbot.CoaWorld.Guilds.Greetings": 1,
     "AiPlayerbot.CoaEconomy.CraftOrders.AdvertiseMinutes": 8,
-    "AiPlayerbot.CoaLive.TradeMessagesPerMinute": 1
+    "AiPlayerbot.CoaLive.TradeMessagesPerMinute": 1,
+    "AiPlayerbot.CoaWorld.Guilds.GearAsk": 1
    }
   }
  ]
