@@ -3050,6 +3050,27 @@
    "classic": false
   },
   {
+   "key": "AiPlayerbot.CoaEconomy.BotAuctions.RealHousePrices",
+   "file": "playerbots.conf",
+   "group": "lw-economy",
+   "type": "bool",
+   "default": 0,
+   "when": "reload",
+   "classic": false,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.BotAuctions.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Bots price their auctions from the real CoA auction house",
+    "fr": "Les bots fixent leurs prix d'après le vrai hôtel des ventes de CoA",
+    "ru": "Боты назначают цены по настоящему аукциону CoA",
+    "zh": "机器人参照真实 CoA 拍卖行为拍卖定价"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaEconomy.DataFile.Enable",
    "file": "playerbots.conf",
    "group": "lw-economy",
@@ -3345,7 +3366,8 @@
     "AiPlayerbot.CoaEconomy.Filter.Enable": 1,
     "AiPlayerbot.CoaEconomy.Buyer.Enable": 1,
     "AiPlayerbot.CoaEconomy.Market.Enable": 1,
-    "AiPlayerbot.CoaEconomy.Rarity.Enable": 1
+    "AiPlayerbot.CoaEconomy.Rarity.Enable": 1,
+    "AiPlayerbot.CoaEconomy.BotAuctions.RealHousePrices": 1
    }
   }
  ]
