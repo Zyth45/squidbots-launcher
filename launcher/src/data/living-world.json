@@ -1242,6 +1242,158 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaWorld.BgSim.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-pvp",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "label": {
+    "en": "Simulated battlegrounds for bots (honor)",
+    "fr": "Champs de bataille simulés pour les bots (honneur)",
+    "ru": "Симулированные поля боя для ботов (честь)",
+    "zh": "机器人模拟战场（荣誉）"
+   },
+   "help": {
+    "en": "While no real player is queued, bots of one level bracket queue for Warsong Gulch or Arathi Basin, Alliance against Horde, and come back 10 to 25 minutes later with a win or a loss and the honor it gives. No instance is loaded meanwhile.",
+    "fr": "Tant qu'aucun vrai joueur n'est en file, des bots d'une même tranche de niveau s'inscrivent au Goulet des Chanteguerres ou au Bassin Arathi, Alliance contre Horde, et reviennent 10 à 25 minutes plus tard avec une victoire ou une défaite et l'honneur qu'elle rapporte. Aucune instance n'est chargée pendant ce temps.",
+    "ru": "Пока ни один настоящий игрок не стоит в очереди, боты одного диапазона уровней записываются в Ущелье Песни Войны или Низину Арати, Альянс против Орды, и через 10–25 минут возвращаются с победой или поражением и полученной честью. Подземелье при этом не загружается.",
+    "zh": "没有真实玩家排队时，同一等级段的机器人会以联盟对部落的形式排入战歌峡谷或阿拉希盆地，10 到 25 分钟后带着胜负和相应荣誉返回。期间不会加载副本。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.BgSim.ReplaceAutoJoin",
+   "file": "playerbots.conf",
+   "group": "lw-pvp",
+   "type": "bool",
+   "default": 1,
+   "when": "restart",
+   "label": {
+    "en": "No battlegrounds of bots only (bots fill player queues)",
+    "fr": "Pas de champs de bataille entre bots seuls (les bots complètent les files des joueurs)",
+    "ru": "Никаких полей боя только из ботов (боты заполняют очереди игроков)",
+    "zh": "不开纯机器人战场（机器人填补玩家队列）"
+   },
+   "help": {
+    "en": "Bots no longer start battlegrounds and arenas on their own; real battles start for real players, whose queues the bots fill at once. Off: as before.",
+    "fr": "Les bots ne lancent plus seuls des champs de bataille et des arènes ; les vraies batailles démarrent pour les vrais joueurs, dont les bots complètent aussitôt les files. Désactivé : comme avant.",
+    "ru": "Боты больше не запускают поля боя и арены сами; настоящие сражения начинаются для настоящих игроков, чьи очереди боты сразу заполняют. Выключено: как раньше.",
+    "zh": "机器人不再自行开启战场和竞技场；真实战斗为真实玩家开启，机器人会立即填补他们的队列。关闭：与以前相同。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.BgSim.Matches",
+   "file": "playerbots.conf",
+   "group": "lw-pvp",
+   "type": "int",
+   "default": 2,
+   "when": "restart",
+   "min": 1,
+   "max": 10,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.BgSim.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Simulated battlegrounds at the same time",
+    "fr": "Champs de bataille simulés en même temps",
+    "ru": "Одновременных симулированных полей боя",
+    "zh": "同时进行的模拟战场数"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.BgSim.IntervalSeconds",
+   "file": "playerbots.conf",
+   "group": "lw-pvp",
+   "type": "int",
+   "default": 300,
+   "when": "restart",
+   "min": 60,
+   "max": 3600,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.BgSim.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Seconds between two starts",
+    "fr": "Secondes entre deux départs",
+    "ru": "Секунд между двумя запусками",
+    "zh": "两次开始之间的秒数"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.BgSim.BotCooldownMinutes",
+   "file": "playerbots.conf",
+   "group": "lw-pvp",
+   "type": "int",
+   "default": 60,
+   "when": "restart",
+   "min": 0,
+   "max": 1440,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.BgSim.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Minutes before a bot goes again",
+    "fr": "Minutes avant qu'un bot y retourne",
+    "ru": "Минут до повторного участия бота",
+    "zh": "机器人再次参加前的分钟数"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.BgSim.Shop",
+   "file": "playerbots.conf",
+   "group": "lw-pvp",
+   "type": "bool",
+   "default": 1,
+   "when": "restart",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.BgSim.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Bots buy PvP pieces with their honor",
+    "fr": "Les bots achètent des pièces JcJ avec leur honneur",
+    "ru": "Боты покупают PvP-снаряжение за честь",
+    "zh": "机器人用荣誉购买 PvP 装备"
+   },
+   "help": {
+    "en": "Only a piece that improves its gear, from a vendor in the world that sells it for honor.",
+    "fr": "Seulement une pièce qui améliore son équipement, chez un vendeur du monde qui la vend contre de l'honneur.",
+    "ru": "Только предмет, улучшающий снаряжение, у торговца в мире, продающего его за честь.",
+    "zh": "只购买能提升装备的部件，且来自世界中以荣誉出售的商人。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.BgSim.Announce",
+   "file": "playerbots.conf",
+   "group": "lw-pvp",
+   "type": "bool",
+   "default": 1,
+   "when": "restart",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.BgSim.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "A word when they go",
+    "fr": "Un mot quand ils partent",
+    "ru": "Сообщение, когда они уходят",
+    "zh": "出发时说一句"
+   }
+  },
+  {
    "file": "playerbots.conf",
    "group": "lw-crafting",
    "type": "bool",
@@ -2787,7 +2939,11 @@
     "AiPlayerbot.CoaSoul.Addon": 1,
     "AiPlayerbot.CoaEconomy.Artisans.Addon": 1,
     "AiPlayerbot.CoaWorld.Guilds.Addon": 1,
-    "AiPlayerbot.CoaWorld.Events.Addon": 1
+    "AiPlayerbot.CoaWorld.Events.Addon": 1,
+    "AiPlayerbot.CoaWorld.BgSim.Enable": 1,
+    "AiPlayerbot.CoaWorld.BgSim.ReplaceAutoJoin": 1,
+    "AiPlayerbot.CoaWorld.BgSim.Shop": 1,
+    "AiPlayerbot.CoaWorld.BgSim.Announce": 1
    }
   }
  ]
