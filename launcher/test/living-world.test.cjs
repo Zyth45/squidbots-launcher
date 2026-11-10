@@ -26,7 +26,8 @@ test('the living world manifest shipped with the launcher is valid and makes its
   // Telegraph made the dungeon runs worse on the bench (Pilote, 09/11): the pack turns on only the combat options benched. Off-tank out too (two bot tanks fight over a monster). Real
   // battlegrounds of bots kept, no simulated ones (user, 09/11: "BGs are comfort and keep the world alive without players").
   const switches = CATALOG.settings.filter(setting => setting.living && setting.kind === 'bool' && setting.group !== 'lw-performance' && !['AiPlayerbot.CoaWorld.ServerFirst.Enable', 'AiPlayerbot.CoaCombat.LootNeedEpicOnly', 'AiPlayerbot.CoaCombat.PursuitStop.Enable', 'AiPlayerbot.CoaCombat.Telegraph.Enable', 'AiPlayerbot.CoaCombat.OffTank.Enable', 'AiPlayerbot.CoaWorld.BgSim.Enable', 'AiPlayerbot.CoaWorld.BgSim.ReplaceAutoJoin', 'AiPlayerbot.CoaEconomy.LaunchCurve.Enable', 'AiPlayerbot.CoaWorld.CapitalRaid.Auto'].includes(setting.key));
-  assert.ok(!Object.keys(livingPack.changes).some(key => CATALOG.settings.find(setting => setting.key === key)?.group === 'lw-performance'));
+  // Only the performance switches the bench validated (user's decision, 10/11): slower idle checks, upkeep spread.
+  assert.deepEqual(Object.keys(livingPack.changes).filter(key => CATALOG.settings.find(setting => setting.key === key)?.group === 'lw-performance').sort(), ['AiPlayerbot.CoaLive.MaintenanceSpread', 'AiPlayerbot.CoaWorld.SlowIdleTriggers']);
   assert.deepEqual(switches.filter(setting => livingPack.changes[setting.key] !== '1').map(setting => setting.key), []);
   assert.deepEqual([livingPack.changes['AiPlayerbot.CoaBotSurname'], livingPack.changes['AiPlayerbot.RefreshClearsInventory'], livingPack.changes['AiPlayerbot.LootNeedRollLevel']], ['0', '0', '2']);
   assert.deepEqual([livingPack.changes['AiPlayerbot.CoaCombat.LootNeedEpicOnly'], livingPack.changes['AiPlayerbot.CoaCombat.LootNeedMinUpgradePct']], ['0', '10']);
