@@ -3390,6 +3390,28 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaLive.HeavyRefreshPerTick",
+   "file": "playerbots.conf",
+   "group": "lw-performance",
+   "type": "int",
+   "default": 0,
+   "min": 0,
+   "max": 10,
+   "when": "reload",
+   "label": {
+    "en": "Bot rebuilds per server tick, at most",
+    "fr": "Reconstructions de bots par tick du serveur, au plus",
+    "ru": "Перестроек ботов за тик сервера, не больше",
+    "zh": "每个服务器 tick 最多重建机器人数"
+   },
+   "help": {
+    "en": "At most this many bot rebuilds per server tick; the others wait for the next ticks. 0 = no limit. 1 is suggested.",
+    "fr": "Au plus ce nombre de reconstructions de bots par tick du serveur ; les autres attendent les ticks suivants. 0 = sans limite. 1 est conseillé.",
+    "ru": "Не больше стольких перестроек ботов за тик сервера; остальные ждут следующих тиков. 0 = без ограничений. Рекомендуется 1.",
+    "zh": "每个服务器 tick 最多重建这么多机器人；其余的等待后续 tick。0 = 不限制。建议值为 1。"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaWorld.SlowIdleTriggers",
    "file": "playerbots.conf",
    "group": "lw-performance",
