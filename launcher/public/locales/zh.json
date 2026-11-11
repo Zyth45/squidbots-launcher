@@ -1630,5 +1630,6 @@
   "offer.later": "稍后",
   "realms.livingText2": "一个像官方服务器开服的全新 CoA 国度：1000 名机器人从 1 级开始，自给拾取，逐渐充实的拍卖行，服务器首杀。",
   "realms.quickNext": "在此国度下次启动时生效。",
-  "realms.selflootLocked": "在 Living World 国度中始终开启。"
+  "realms.selflootLocked": "在 Living World 国度中始终开启。",
+  "realms.selflootHelp": "自给拾取持续到 59 级；60 级时机器人照常获得装备。"
 }

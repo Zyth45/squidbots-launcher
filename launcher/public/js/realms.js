@@ -166,7 +166,8 @@ function realmQuick(realm) {
   const row = (action, on, disabled, title, hint) => `<div class="realm-quick-row"><span title="${esc(hint)}">${esc(title)}</span>${moduleSwitch(action, on, disabled).replace('<button', `<button data-key="${esc(target)}"`)}</div>`;
   const chat = q.hasChat ? row('realm-chat', CHAT_READY && q.chat === '1', !CHAT_READY, t('lw.chat', 'Bot chat'), CHAT_READY ? t('lw.chatText', 'Bots talk in the chat channels, greet and answer (off also stops their group invites near you). Everything else of the living world stays on.') : t('lw.chatSoon', 'Coming with the next bots build.')) : '';
   const loot = q.hasLoot ? row('realm-selfloot', locked || q.selfloot === '1', locked, t('gear.selfloot', 'Self-loot'), locked ? t('realms.selflootLocked', 'Always on for the Living World realm.') : t('gear.note', 'Your bots keep their level and what they wear today: only what comes next changes. Then Save.')) : '';
-  return chat || loot ? `<div class="realm-quick">${chat}${loot}<small class="muted">${esc(t('realms.quickNext', 'Applied at the next start of this realm.'))}</small></div>` : '';
+  const help = loot && !locked ? ` ${t('realms.selflootHelp', 'Self-loot until level 59; at 60 bots are geared as usual.')}` : '';
+  return chat || loot ? `<div class="realm-quick">${chat}${loot}<small class="muted">${esc(t('realms.quickNext', 'Applied at the next start of this realm.') + help)}</small></div>` : '';
 }
 async function realmQuickSet(target, key, on) {
   await App.api.saveServerSettings([{ file: 'playerbots.conf', key, value: on ? '1' : '0' }], target);
