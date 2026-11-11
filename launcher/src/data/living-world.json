@@ -7,7 +7,8 @@
   "AiPlayerbot.CoaWorld.WorldPvp.Skirmish.Enable",
   "AiPlayerbot.CoaWorld.WorldPvp.CapitalDefence.Enable",
   "AiPlayerbot.CoaWorld.Travel.Hearthstone",
-  "AiPlayerbot.CoaWorld.Guilds.Help"
+  "AiPlayerbot.CoaWorld.Guilds.Help",
+  "AiPlayerbot.CoaLive.Chat.Enable"
  ],
  "groups": [
   {
@@ -2069,6 +2070,32 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaLive.Chat.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "bool",
+   "default": 1,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaLive.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Bot chat: bots write in the chat channels",
+    "fr": "Chat des bots : les bots écrivent dans les canaux",
+    "ru": "Чат ботов: боты пишут в каналах",
+    "zh": "机器人聊天：机器人在频道中发言"
+   },
+   "help": {
+    "en": "Off: they stay silent, everything else goes on.",
+    "fr": "Coupé : ils se taisent, tout le reste continue.",
+    "ru": "Выключено: они молчат, всё остальное продолжается.",
+    "zh": "关闭：它们保持沉默，其他一切照常。"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaLive.Social.Enable",
    "file": "playerbots.conf",
    "group": "lw-social",
@@ -3759,7 +3786,8 @@
     "AiPlayerbot.CoaLive.MaintenanceSpread": 1,
     "AiPlayerbot.CoaWorld.Leveling.AreaGuard": 1,
     "AiPlayerbot.CoaLive.NoAwayFlag": 1,
-    "AiPlayerbot.CoaWorld.Invasions.OneAtATime": 1
+    "AiPlayerbot.CoaWorld.Invasions.OneAtATime": 1,
+    "AiPlayerbot.CoaLive.Chat.Enable": 1
    }
   }
  ]

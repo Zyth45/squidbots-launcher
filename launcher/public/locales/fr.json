@@ -1620,7 +1620,7 @@
   "gear.missing": "Ce serveur n'a pas le réglage Self-loot (il arrive avec CoA Bots 2.9).",
   "lw.title": "Monde vivant",
   "lw.chat": "Chat des bots",
-  "lw.chatText": "Les bots parlent dans les canaux, saluent et répondent (coupé, ils ne t'invitent plus non plus en groupe). Tout le reste du monde vivant reste actif.",
+  "lw.chatText": "Les bots parlent dans les canaux, saluent et répondent. Coupé : ils se taisent, tout le reste continue.",
   "lw.chatSoon": "Arrive avec le prochain build des bots.",
   "lw.count": "{n} réglage(s)",
   "lw.base": "Le monde vivant est la base de SquidBots 3.0 : actif par défaut, appliqué en couche sur ton serveur (niveaux et équipement intacts). Chaque réglage reste modifiable.",
