@@ -58,10 +58,13 @@ function build(base = BASE, living = LIVING) {
   const keys = new Set(base.settings.map(setting => `${setting.file}\u0000${setting.key}`));
   const refused = [];
   const onByDefault = new Set(living.onByDefault || []);
+  // onInCore: switches the core itself turns on (its code and conf.dist say 1). The manifest only shows that default; no
+  // master is asked, as the launcher writes nothing for them.
+  const onInCore = new Set(living.onInCore || []);
   const hiddenSettings = [];
   const settings = [];
   for (const option of living.options || []) {
-    const why = problem(option, ids, keys, onByDefault);
+    const why = problem(option, ids, keys, new Set([...onByDefault, ...onInCore]));
     if (why) { refused.push(`${option?.key || '?'}: ${why}`); continue; }
     keys.add(`${option.file}\u0000${option.key}`);
     const setting = { key: option.key, file: option.file, group: option.group, living: true, kind: TYPES[option.type], when: option.when || 'restart', default: asText(option.default), label: text(option.label) };

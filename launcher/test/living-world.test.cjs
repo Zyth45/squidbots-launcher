@@ -69,7 +69,11 @@ test('the living world manifest shipped with the launcher is valid and makes its
     const master = setting && CATALOG.settings.find(item => item.key === setting.offWhen?.key);
     assert.ok(master && master.default === '0' && setting.offWhen.values.includes('0') && !setting.hideOff, `${key}: idleWhen on a master off by default`);
   }
-  assert.deepEqual(living.filter(setting => /(^|.)Enabled?$/i.test(setting.key) && setting.default !== '0' && !allowed.includes(setting.key)).map(setting => setting.key), []);
+  // onInCore: on in the core's own code, shown on with no master (Molten Core, 3.0).
+  const inCore = require('../src/data/living-world.json').onInCore || [];
+  assert.ok(inCore.includes('AiPlayerbot.CoaCombat.MoltenCore.Enable'));
+  for (const key of inCore) assert.equal(living.find(item => item.key === key)?.default, '1', key);
+  assert.deepEqual(living.filter(setting => /(^|.)Enabled?$/i.test(setting.key) && setting.default !== '0' && !allowed.includes(setting.key) && !inCore.includes(setting.key)).map(setting => setting.key), []);
   const section = CATALOG.sections.find(item => item.id === 'living');
   // Every tab of the manifest is in one section: Living world, or Bots for Group combat (after Dungeon Clear).
   const bots = CATALOG.sections.find(item => item.id === 'bots');
