@@ -416,7 +416,7 @@ function registerIpc() {
   handle('settings:save', async patch => {
     if (!patch || typeof patch !== 'object') throw new Error('Invalid settings.');
     const next = { ...settings };
-    for (const key of ['language', 'theme', 'channel', 'startPage', 'realmlist', 'minimizeOnLaunch', 'reduceMotion', 'autoCheckAddons', 'betaUpdates', 'hideCloseNotice', 'trayOnClose', 'notifications', 'startWithWindows', 'startServerOnOpen', 'restartWorldOnCrash', 'dailyBackup', 'numaNode']) if (Object.hasOwn(patch, key)) next[key] = patch[key];
+    for (const key of ['language', 'theme', 'channel', 'startPage', 'realmlist', 'minimizeOnLaunch', 'reduceMotion', 'autoCheckAddons', 'betaUpdates', 'hideCloseNotice', 'trayOnClose', 'notifications', 'startWithWindows', 'startServerOnOpen', 'restartWorldOnCrash', 'dailyBackup', 'numaNode', 'advancedSettings']) if (Object.hasOwn(patch, key)) next[key] = patch[key];
     // Start with Windows: the launcher opens in the background (in the notification area) at logon.
     if (Object.hasOwn(patch, 'startWithWindows') && app.isPackaged) app.setLoginItemSettings({ openAtLogin: patch.startWithWindows === true, args: ['--hidden'] });
     const switching = Object.hasOwn(patch, 'channel') && patch.channel !== settings.channel;

@@ -224,7 +224,6 @@ async function loadConf() {
   try { App.state.conf = await App.api.serverSettings(confRealm()); }
   catch (error) { App.state.conf = { error: translateError(error.message) }; }
   App.refresh('server');
-  if (App.state.conf?.packs?.length) livingChoiceDialog();
 }
 
 // The realm the settings page works on: '' is Conquest of Azeroth (the files of the repack).
@@ -443,19 +442,25 @@ function settingsView() {
   const purge = realmKey ? `<button class="button ghost small" data-action="realm-purge" data-key="${realmKey}" ${realmOn || purging ? 'disabled' : ''}>${icon(purging ? 'refresh' : 'bot')}${esc(purging ? t('realms.purging', 'Recreating its bots…') : t('realms.purge', 'Recreate its bots'))}</button>` : info.bots?.installed && info.canPurgeBots ? `<button class="button ghost small" data-action="purge-bots" ${worldRunning(info) ? `disabled title="${esc(t('server.purgeStop', 'Stop the server first.'))}"` : `title="${esc(t('conf.purgeHint', 'Recreate the random bots (after changing their number, classes or levels): your characters stay. The server must be stopped.'))}"`}>${icon('bot')}${esc(t('server.purge', 'Recreate the bots'))}</button>` : '';
   const logs = `<button class="button ghost small" data-action="open-logs" title="${esc(t('conf.logsHint', 'The server logs (Server.log, errors, bots): the console scrolls too fast, these files keep everything.'))}">${icon('book')}${esc(t('conf.openLogs', 'Open the logs'))}</button>`;
   const bar = `<div class="conf-bar${count ? ' dirty' : ''}" id="conf-bar"><span>${esc(count ? t('conf.pending', '{n} unsaved change(s)', { n: count }) : t('conf.savedShort', 'All saved.'))}</span><span class="spacer"></span>${count ? `<button class="button ghost small" data-action="conf-discard">${esc(t('conf.discard', 'Discard'))}</button><button class="button primary small" data-action="conf-save">${esc(t('common.save', 'Save'))}</button>${(realmKey ? realmOn : worldRunning(App.state.server)) ? `<button class="button primary small" data-action="conf-save-restart">${esc(t('conf.saveRestart', 'Save and restart'))}</button>` : ''}` : realmKey ? `<button class="button ghost small" data-action="realm-logs" data-key="${realmKey}">${icon('book')}${esc(t('conf.openLogs', 'Open the logs'))}</button>${purge}` : `${logs}${purge}<button class="button ghost small" data-action="conf-history" title="${esc(t('conf.saved', 'Saved. A copy of each file is kept before any change.'))}">${icon('refresh')}${esc(t('conf.history', 'History'))}</button>`}</div>`;
-  const tabs = groups.map(group => ({ id: group.id, icon: group.icon, label: loc(group.label) }));
-  if (!tabs.some(tab => tab.id === App.state.confGroup)) App.state.confGroup = tabs[0]?.id;
+  const advanced = !!App.state.settings?.advancedSettings;
+  const allTabs = groups.map(group => ({ id: group.id, icon: group.icon, label: loc(group.label) }));
+  // Essentials (default): a few entries a player understands; Advanced shows every tab as before. A tab opened from
+  // the Living world page stays open even when its entry is not in the column.
+  const tabs = advanced ? allTabs : essentialTabs(allTabs);
+  if (!tabs.some(tab => tab.id === App.state.confGroup) && !(App.state.confGroup && allTabs.some(tab => tab.id === App.state.confGroup))) App.state.confGroup = tabs[0]?.id;
   const changedIn = id => conf.settings.filter(setting => setting.group === id && App.state.pending[pendingKey(setting.file, setting.key)] !== undefined).length;
   const tabButton = tab => `<button class="conf-tab${App.state.confGroup === tab.id && !confSearching() ? ' active' : ''}" data-action="conf-group" data-id="${esc(tab.id)}">${icon(tab.icon)}<span>${esc(tab.label)}</span>${changedIn(tab.id) ? `<em>${changedIn(tab.id)}</em>` : ''}${(tab.id === 'presets' && isNew('wizard')) || (tab.id === 'damage' && isNew('damage')) || (tab.id === 'progression' && isNew('progression')) ? newDot() : ''}</button>`;
   // The tabs in sections (Start, Bots, World, Tools); a tab of no section goes at the end of the list.
   const placed = new Set((conf.sections || []).flatMap(section => section.groups));
-  const sections = [...(conf.sections || []).map(section => ({ label: loc(section.label), tabs: section.groups.map(id => tabs.find(tab => tab.id === id)).filter(Boolean) })), { label: '', tabs: tabs.filter(tab => !placed.has(tab.id)) }].filter(section => section.tabs.length);
-  const nav = `<nav class="conf-nav" id="conf-nav">${sections.map(section => `${section.label ? `<div class="conf-section">${esc(section.label)}</div>` : ''}${section.tabs.map(tabButton).join('')}`).join('')}</nav>`;
+  const sections = advanced ? [...(conf.sections || []).map(section => ({ label: loc(section.label), tabs: section.groups.map(id => tabs.find(tab => tab.id === id)).filter(Boolean) })), { label: '', tabs: tabs.filter(tab => !placed.has(tab.id)) }].filter(section => section.tabs.length) : [{ label: '', tabs }];
+  const switchAdvanced = `<label class="check conf-advanced"><input type="checkbox" data-setting="advancedSettings" data-page-setting="1" ${advanced ? 'checked' : ''}><span>${esc(t('conf.advanced', 'Advanced settings'))}</span></label>`;
+  const nav = `<nav class="conf-nav" id="conf-nav">${sections.map(section => `${section.label ? `<div class="conf-section">${esc(section.label)}</div>` : ''}${section.tabs.map(tabButton).join('')}`).join('')}${switchAdvanced}</nav>`;
   // A card announced for later (soon) shows greyed out, next to the recipe it belongs to, and writes nothing.
-  const quick = conf.recipes.filter(recipe => ['coa-recommended', 'fresh-level-1', 'self-found-world', 'bots-around-my-level', 'rexxar-like'].includes(recipe.id))
+  const quick = conf.recipes.filter(recipe => App.state.settings?.advancedSettings && ['coa-recommended', 'fresh-level-1', 'self-found-world', 'bots-around-my-level', 'rexxar-like'].includes(recipe.id))
     .filter(recipe => !recipe.soon || conf.recipes.some(item => item.id === 'self-found-world'));
   const recipes = quick.length ? `<div class="recipes">${quick.map(recipe => `<div class="recipe-cell"><button class="recipe${recipe.soon ? ' soon' : ''}" ${recipe.soon ? 'disabled aria-disabled="true"' : `data-action="conf-recipe" data-id="${esc(recipe.id)}"`}><strong>${esc(loc(recipe.title))}${recipe.soon ? `<span class="soon-tag">${esc(t('conf.soon', 'Coming soon'))}</span>` : ''}</strong><small>${esc(loc(recipe.summary))}</small></button></div>`).join('')}</div>` : '';
-  const body = groups.filter(group => group.id === App.state.confGroup).map(group => `<section class="conf-group"><h3>${icon(group.icon)}${esc(loc(group.label))}</h3>${packCards(group)}${group.id === 'presets' ? presetsView(recipes) : group.id === 'population' ? ramAdvice(conf) : group.id === 'damage' ? damageView() : group.id === 'progression' ? progressionView() : ''}${group.id === 'levels' && selfFoundOn() ? `<p class="status-line self-found-note">${icon('info')}${esc(t('conf.selfFoundLevels', 'Solo self-found is on: the bots only level up by playing (up to 59 without generated gear, geared as usual at 60). The level settings below do not apply, except the bots online around your level.'))}</p>` : ''}${conf.settings.filter(setting => setting.group === group.id && !DAMAGE_KEYS.includes(setting.key) && setting.key !== THREAT_KEY).map(settingRow).join('')}</section>`).join('');
+  const virtual = VIRTUAL_TABS[App.state.confGroup];
+  const body = virtual ? `<section class="conf-group"><h3>${icon(virtual.icon)}${esc(virtual.label())}</h3>${virtual.view()}</section>` : groups.filter(group => group.id === App.state.confGroup).map(group => `<section class="conf-group"><h3>${icon(group.icon)}${esc(loc(group.label))}</h3>${group.id === 'presets' ? presetsView(recipes) : group.id === 'population' ? ramAdvice(conf) : group.id === 'damage' ? damageView() : group.id === 'progression' ? progressionView() : ''}${group.id === 'levels' && selfFoundOn() ? `<p class="status-line self-found-note">${icon('info')}${esc(t('conf.selfFoundLevels', 'Solo self-found is on: the bots only level up by playing (up to 59 without generated gear, geared as usual at 60). The level settings below do not apply, except the bots online around your level.'))}</p>` : ''}${conf.settings.filter(setting => setting.group === group.id && !DAMAGE_KEYS.includes(setting.key) && setting.key !== THREAT_KEY).map(settingRow).join('')}</section>`).join('');
   const key = realmKey || 'coa';
   const others = createdRealms().length > 1;
   const banner = !others ? '' : realmBanner(key, realmKey
@@ -471,7 +476,7 @@ function presetsView(recipes) {
   return `<div class="preset-cards">
     <div class="preset-card wizard"><div><strong>${icon('star')}${esc(t('wizard.cardTitle', 'Setup wizard'))}</strong><p>${esc(t('wizard.cardText', 'A few simple questions (type of server, level, bots, PvP...) with a recommendation for each, then a summary before anything changes.'))}</p></div><button class="button primary" data-action="setup-wizard">${icon('play')}${esc(t('wizard.open', 'Open the wizard'))}${isNew('wizard') ? newDot() : ''}</button></div>
     <div class="preset-card"><div><strong>${icon('download')}${esc(t('profile.title', 'Your settings profile'))}</strong><p>${esc(t('profile.text', 'Every value you changed, in one file: keep it, share it, or put it on another server. Importing shows the differences first.'))}</p></div><div class="button-row"><button class="button ghost" data-action="profile-export">${icon('download')}${esc(t('profile.export', 'Export'))}</button><button class="button ghost" data-action="profile-import">${icon('folder')}${esc(t('profile.import', 'Import'))}</button></div></div>
-  </div><h4 class="preset-head">${esc(t('conf.recipesTitle', 'Ready-made settings'))}</h4>${recipes}${livingRecipes()}`;
+  </div><h4 class="preset-head">${esc(t('conf.recipesTitle', 'Ready-made settings'))}</h4>${recipes}`;
 }
 
 // ---------------------------------------------------------------- bot damage by class and specialization
@@ -1238,13 +1243,89 @@ function livingChoiceDialog() {
   element.addEventListener('click', onClick);
 }
 
-function packCards(group) {
-  const conf = App.state.conf;
-  // Only the tabs of the Living world section (Group combat, under Bots, has no pack).
-  if (!conf.sections?.find(section => section.id === 'living')?.groups.includes(group.id) || !conf.packs?.length) return '';
-  const undo = conf.packUndo?.[packTarget()];
-  return `<div class="preset-cards">${conf.packs.map(pack => packCard(pack, undo)).join('')}</div>`;
+// Once, at the first launch where the realm can be made: the Living World realm (1000 bots, self-loot). "Later" keeps
+// it in the Realms tab. Nothing is made without "Create it".
+function livingOfferDialog() {
+  const r = App.state.realms;
+  const realm = r?.realms?.find(item => item.key === 'living');
+  if (!r?.supported || !realm?.ready || realm.state !== 'absent' || !isNew('livingOffer') || $('#dialog')?.open) return;
+  markSeen('livingOffer');
+  dialog.open(`${dialog.header(t('offer.title', 'New: Living World realm'))}<div class="dialog-content"><p>${esc(t('offer.text', 'A fresh realm beside yours, opening like an official server: 1000 bots from level 1, self-loot, a growing auction house. Your realm is not touched.'))}</p></div><footer class="dialog-foot"><button class="button ghost" data-choice="later">${esc(t('offer.later', 'Later'))}</button><button class="button primary" data-choice="create">${icon('play')}${esc(t('offer.create', 'Create it'))}</button></footer>`);
+  const element = $('#dialog');
+  const onClick = event => {
+    const choice = event.target.closest('[data-choice]')?.dataset.choice;
+    if (!choice) return;
+    element.removeEventListener('click', onClick);
+    dialog.close();
+    if (choice === 'create') App.actions['living-realm']({});
+  };
+  element.addEventListener('click', onClick);
 }
+
+// ---------------------------------------------------------------- Essentials
+// The entries of the left column without "Advanced settings": the wizard and profile, the bots, their gear, the living
+// world, the realm and its rates, the dashboard. Two of them are pages of the launcher (VIRTUAL_TABS), not .conf groups.
+const ESSENTIALS = ['presets', 'population', 'lw-home', 'realm', 'rates', 'dashboard'];
+function essentialTabs(all) {
+  const conf = App.state.conf;
+  const living = conf.sections?.find(section => section.id === 'living')?.groups || [];
+  const virtual = { 'bot-gear': VIRTUAL_TABS['bot-gear'], 'lw-home': living.length ? VIRTUAL_TABS['lw-home'] : null };
+  return ESSENTIALS.map(id => virtual[id] ? { id, icon: virtual[id].icon, label: virtual[id].label() } : all.find(tab => tab.id === id)).filter(Boolean);
+}
+const settingOf = key => App.state.conf?.settings.find(setting => setting.key === key);
+const pendingOr = setting => App.state.pending[pendingKey(setting.file, setting.key)] ?? String(setting.value ?? '').trim();
+const VIRTUAL_TABS = {
+  // The bots' gear: Classic (generated for their level) or Self-loot (only what they loot or craft). One setting, no
+  // recreation: on an existing server the bots keep their level and what they wear; only the future changes.
+  'bot-gear': {
+    icon: 'shield', label: () => t('gear.title', 'Bot gear'),
+    view() {
+      const setting = settingOf('AiPlayerbot.CoaSelfFound');
+      if (!setting) return `<p class="muted">${esc(t('gear.missing', 'This server has no Self-loot setting (it comes with CoA Bots 2.9).'))}</p>`;
+      const selfloot = pendingOr(setting) === '1';
+      const card = (value, on, title, text) => `<div class="recipe-cell"><button class="recipe${on ? ' selected' : ''}" data-action="gear-pick" data-value="${value}"><strong>${on ? icon('check') : ''}${esc(title)}</strong><small>${esc(text)}</small></button></div>`;
+      return `<div class="recipes">${card('0', !selfloot, t('gear.classic', 'Classic'), t('gear.classicText', 'Bots get gear made for their level (our item level rules).'))}${card('1', selfloot, t('gear.selfloot', 'Self-loot'), t('gear.selflootText', 'Bots only wear what they loot or craft; nothing is generated.'))}</div>
+        <p class="status-line">${icon('info')}${esc(t('gear.note', 'Your bots keep their level and what they wear today: only what comes next changes. Then Save.'))}</p>`;
+    },
+  },
+  // The living world in one page: the bot chat switch first, then one line per theme with the way to its settings.
+  'lw-home': {
+    icon: 'globe', label: () => t('lw.title', 'Living world'),
+    view() {
+      const conf = App.state.conf;
+      const groups = conf.sections?.find(section => section.id === 'living')?.groups || [];
+      const chat = settingOf(CHAT_KEY);
+      const chatOn = chat && CHAT_READY && pendingOr(chat) === '1';
+      const banner = `<div class="preset-card chat-card"><div><strong>${icon('chat')}${esc(t('lw.chat', 'Bot chat'))}</strong><p>${esc(t('lw.chatText', 'Bots talk in the chat channels, greet and answer. Everything else of the living world stays on.'))}${CHAT_READY ? '' : ` <em>${esc(t('lw.chatSoon', 'Coming with the next bots build.'))}</em>`}</p></div>${moduleSwitch('chat-switch', chatOn, !CHAT_READY || !chat)}</div>`;
+      const lines = groups.map(id => conf.groups.find(group => group.id === id)).filter(Boolean).map(group => {
+        const count = conf.settings.filter(setting => setting.group === group.id).length;
+        return `<button class="line-action lw-line" data-action="conf-group" data-id="${esc(group.id)}">${icon(group.icon)}<span>${esc(loc(group.label))}</span><small class="muted">${esc(t('lw.count', '{n} setting(s)', { n: count }))}</small>${icon('arrow')}</button>`;
+      }).join('');
+      return `${banner}<p class="muted">${esc(t('lw.base', 'The living world is the base of SquidBots 3.0: on by default, applied as a layer on your server (levels and gear untouched). Every setting stays yours to change.'))}</p><div class="lw-lines">${lines}</div>`;
+    },
+  },
+};
+// The bot chat switch: wired once the bots' own "chat only" key is confirmed (CoA SquidBot); until then shown off.
+const CHAT_KEY = 'AiPlayerbot.CoaLive.Enable';
+const CHAT_READY = false;
+Object.assign(App.actions, {
+  'gear-pick': button => {
+    const setting = settingOf('AiPlayerbot.CoaSelfFound');
+    if (!setting) return;
+    const value = button.dataset.value;
+    const k = pendingKey(setting.file, setting.key);
+    if (String(setting.value ?? '').trim() === value) delete App.state.pending[k]; else App.state.pending[k] = value;
+    App.refresh('server');
+  },
+  'chat-switch': button => {
+    const setting = settingOf(CHAT_KEY);
+    if (!setting || !CHAT_READY) return;
+    const value = button.dataset.on === '1' ? '0' : '1';
+    const k = pendingKey(setting.file, setting.key);
+    if (String(setting.value ?? '').trim() === value) delete App.state.pending[k]; else App.state.pending[k] = value;
+    App.refresh('server');
+  },
+});
 
 // After a save: a pack saved keeps the values it replaced (to go back); going back saved forgets them.
 async function packAfterSave(changes, realm) {

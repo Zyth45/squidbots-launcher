@@ -309,6 +309,7 @@ document.addEventListener('change', event => {
     App.state.settings = await App.api.saveSettings({ [key]: value });
     if (key === 'language') { await loadLocale(value); App.render(); showSettings(); }
     if (key === 'reduceMotion') Ocean.setStill(value);
+    if (key === 'advancedSettings') App.refresh('server');
     // The beta list is read (or left) at once: the home page shows what this changes.
     if (key === 'betaUpdates') App.api.updateRefresh().then(state => { if (state) App.state.update.state = state; }).catch(() => {});
     if (key === 'theme') { applyTheme(value); Ocean.setStill(App.state.settings.reduceMotion); App.render(); if (value === 'classic' && !App.state.news) loadNews(); }

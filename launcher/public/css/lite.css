@@ -429,3 +429,5 @@ summary.damage-row::-webkit-details-marker { display: none; }
 @media (max-width: 640px) { .damage-row { grid-template-columns: minmax(0, 1fr) 4.5em auto; } .damage-row input[type="range"] { grid-column: 1 / -1; grid-row: 2; } }
 .damage-class > summary > span > svg:first-child { width: 14px; height: 14px; margin-right: 6px; vertical-align: -2px; transform: rotate(-90deg); transition: transform .15s; }
 .damage-class[open] > summary > span > svg:first-child { transform: none; }
+
+.realm-quick{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;margin:8px 0 2px}.realm-quick-row{display:flex;align-items:center;gap:8px}.realm-quick small{flex-basis:100%}.conf-advanced{margin:14px 10px 4px;font-size:12px}.lw-lines{display:grid;gap:6px;margin-top:10px}.lw-line{width:100%;justify-content:flex-start;text-align:left}.lw-line small{margin-left:auto}

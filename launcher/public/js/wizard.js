@@ -28,7 +28,8 @@ const WIZARD_ART = {
 function wizardInitial() {
   const conf = App.state.conf;
   const value = key => String(conf.settings.find(setting => setting.key === key)?.value ?? '').trim();
-  const style = value('AiPlayerbot.CoaSelfFound') === '1' ? 'selffound' : value('AiPlayerbot.DisableRandomLevels') === '1' && value('AiPlayerbot.LevelBrackets.Enabled') === '0' ? 'fresh' : 'living';
+  // The bots' gear (user's decision, 11/11): Classic (generated) or Self-loot; the levels are never touched here.
+  const style = value('AiPlayerbot.CoaSelfFound') === '1' ? 'selfloot' : 'classic';
   const ruleset = value('AiPlayerbot.CoaRulesetForBots');
   const pvp = ruleset === '0' ? 'pve' : Number(value('AiPlayerbot.CoaRulesetHighRiskPct')) >= 50 ? 'lots' : 'some';
   const created = new Set(createdRealms().map(realm => realm.key));
@@ -59,7 +60,7 @@ function wizardInitial() {
     money: String(Number(value('StartPlayerMoney')) || 0),
     wear: value('DurabilityLoss.OnDeath') !== '0',
     realms: new Set(created), created,
-    reset: true, start: true,
+    reset: false, start: true,
   };
 }
 const wizardStart = () => { const w = wizardInitial(); w.initial = { ...w }; return w; };
@@ -74,9 +75,8 @@ function wizardChanges(w) {
   const conf = App.state.conf;
   const recipe = id => conf.recipes.find(item => item.id === id)?.changes || {};
   const want = {};
-  if (w.style === 'living') Object.assign(want, recipe('coa-recommended'), { 'AiPlayerbot.CoaSelfFound': '0' });
-  if (w.style === 'selffound') Object.assign(want, recipe('self-found-world'));
-  if (w.style === 'fresh') Object.assign(want, recipe('fresh-level-1'), { 'AiPlayerbot.CoaSelfFound': '0' });
+  // One setting: the bots keep their level and what they wear; only what comes next is self-loot or generated.
+  want['AiPlayerbot.CoaSelfFound'] = w.style === 'selfloot' ? '1' : '0';
   Object.assign(want, { 'AiPlayerbot.MinRandomBots': String(w.bots), 'AiPlayerbot.MaxRandomBots': String(w.bots) });
   if (w.around) Object.assign(want, { 'AiPlayerbot.EnablePeriodicOnlineOffline': '1', 'AiPlayerbot.OnlineSelection.FollowPlayerLevels': '1', 'AiPlayerbot.OnlineSelection.LevelWindow': '5' });
   else want['AiPlayerbot.OnlineSelection.FollowPlayerLevels'] = '0';
@@ -91,7 +91,7 @@ function wizardChanges(w) {
   Object.assign(want, w.bgMode === 'auto' ? { 'AiPlayerbot.RandomBotAutoJoinBGWSCount': '1', 'AiPlayerbot.RandomBotAutoJoinBGABCount': '1' } : { 'AiPlayerbot.RandomBotAutoJoinBGWSCount': '0', 'AiPlayerbot.RandomBotAutoJoinBGABCount': '0' });
   Object.assign(want, w.arenaMode === 'auto' && w.bgMode !== 'off' ? { 'AiPlayerbot.RandomBotAutoJoinBGRatedArena2v2Count': '1', 'AiPlayerbot.RandomBotAutoJoinBGRatedArena3v3Count': '1' } : { 'AiPlayerbot.RandomBotAutoJoinBGRatedArena2v2Count': '0', 'AiPlayerbot.RandomBotAutoJoinBGRatedArena3v3Count': '0' });
   // The self-found preset sets its own share; elsewhere the wizard's choice.
-  if (w.style !== 'selffound') want['AiPlayerbot.CoaSelfFoundBotsPercent'] = String(w.sfDungeons);
+  want['AiPlayerbot.CoaSelfFoundBotsPercent'] = String(w.sfDungeons);
   want['AiPlayerbot.RandomBotJoinLfg'] = w.lfg ? '1' : '0';
   want['AiPlayerbot.Missions.Enable'] = w.missions ? '1' : '0';
   if (w.missions) want['AiPlayerbot.Missions.MaxPerPlayer'] = String(w.missionCount);
@@ -146,7 +146,8 @@ function wizardUnavailable(w) {
 }
 
 // A new world style that starts the bots from level 1 needs them made again (after a backup).
-const wizardNeedsReset = w => (['selffound', 'fresh'].includes(w.style) && w.style !== w.from.style) || w.reset;
+// No choice of the wizard forces the bots to be made again any more (Bot gear changes nothing in place).
+const wizardNeedsReset = w => w.reset;
 
 function choiceCard(field, value, art, title, text, { advised = false, badge = '', facts = [] } = {}) {
   const selected = String(App.state.wizard[field]) === String(value);
@@ -183,12 +184,11 @@ function wizardStepView(id) {
     return `<p class="wiz-lead">${esc(t('wizard.realmsLead', 'Several realms can run at once on the same server, with the same game accounts. Each one has its own characters and bots, and needs some more memory.'))}</p><div class="wiz-realms">${rows}</div>`;
   }
   if (id === 'style') {
-    const start = t('wizard.factStart', 'Start'), gear = t('wizard.factGear', 'Gear'), dungeons = t('wizard.factDungeons', 'Dungeons');
-    return `<p class="wiz-lead">${esc(t('wizard.styleLead', 'How do the bots live in your world?'))}</p><div class="wiz-grid three">
-    ${choiceCard('style', 'living', 'living', t('wizard.livingTitle', 'A living world'), t('wizard.livingText2', 'Bots of every level everywhere from day one: towns, quests, dungeons and battlegrounds are busy right away.'), { advised: true, facts: [[start, t('wizard.factEveryLevel', 'Every level, 1 to 60')], [gear, t('wizard.factGiven', 'Given by the server, at their level'), 'good'], [dungeons, t('wizard.factWithYou', 'With you and your group')]] })}
-    ${choiceCard('style', 'selffound', 'selffound', t('wizard.sfTitle', 'Solo self-found'), t('wizard.sfText2', 'The hardcore way: the bots grow up like you, starting from nothing. At 60 they are geared for the endgame.'), { facts: [[start, t('wizard.factLevel1', 'Level 1')], [gear, t('wizard.factLooted', 'Never given: only what they loot, quest or get from you'), 'hard'], [dungeons, t('wizard.factSfParties', '20 % of them clear dungeons in parties of 5')]] })}
-    ${choiceCard('style', 'fresh', 'fresh', t('wizard.freshTitle2', 'Fresh start, geared'), t('wizard.freshText2', 'The bots grow up with you from level 1, but the server keeps giving them gear of their level: an easy start, a young world.'), { facts: [[start, t('wizard.factLevel1', 'Level 1')], [gear, t('wizard.factGiven', 'Given by the server, at their level'), 'good'], [dungeons, t('wizard.factWithYou', 'With you and your group')]] })}
-  </div>${wizardNeedsReset(w) && w.style !== w.from.style ? `<p class="wiz-note">${icon('info')}<span>${esc(t('wizard.resetNote', 'This style starts the bots again from level 1: at the end, the random bots are deleted and made again (a backup is made first). Your characters and alts stay.'))}</span></p>` : ''}`;
+    const gear = t('wizard.factGear', 'Gear');
+    return `<p class="wiz-lead">${esc(t('gear.lead', 'How do the bots get their gear?'))}</p><div class="wiz-grid">
+    ${choiceCard('style', 'classic', 'living', t('gear.classic', 'Classic'), t('gear.classicText', 'Bots get gear made for their level (our item level rules).'), { advised: true, facts: [[gear, t('wizard.factGiven', 'Given')]] })}
+    ${choiceCard('style', 'selfloot', 'selffound', t('gear.selfloot', 'Self-loot'), t('gear.selflootText', 'Bots only wear what they loot or craft; nothing is generated.'), { facts: [[gear, t('wizard.factLooted', 'Never given: only what they loot')]] })}
+  </div><p class="wiz-note">${icon('info')}<span>${esc(t('gear.note', 'Your bots keep their level and what they wear today: only what comes next changes. Then Save.'))}</span></p>`;
   }
   if (id === 'bots') {
     const advised = wizardAdvised();
@@ -199,7 +199,7 @@ function wizardStepView(id) {
   }
   if (id === 'xp') return `<p class="wiz-lead">${esc(t('wizard.xpLead', 'How fast do you level up?'))}</p>
     <div class="wiz-row"><span>${esc(t('wizard.xpYou', 'Your characters'))}</span><div class="wiz-pills">${[1, 2, 3, 5].map(n => pillChoice('xp', n, `× ${n}`, n === 1)).join('')}</div></div>
-    <div class="wiz-row"><span>${esc(t('wizard.xpBots', 'The random bots'))}</span><div class="wiz-pills">${['1', '2', '3', '5'].map(n => pillChoice('botXp', n, `× ${n}`, n === (w.style === 'selffound' ? '2' : '1'))).join('')}</div></div>
+    <div class="wiz-row"><span>${esc(t('wizard.xpBots', 'The random bots'))}</span><div class="wiz-pills">${['1', '2', '3', '5'].map(n => pillChoice('botXp', n, `× ${n}`, n === (w.style === 'selfloot' ? '2' : '1'))).join('')}</div></div>
     <p class="wiz-note">${icon('info')}<span>${esc(t('wizard.xpNote', '× 1 is the CoA experience. The bots\' speed only matters when they level up by playing (self-found, fresh start).'))}</span></p>`;
   if (id === 'activities') {
     const row = (title, text, field, options) => `<div class="wiz-activity"><div><strong>${esc(title)}</strong><small>${esc(text)}</small></div><div class="wiz-pills">${options.map(([value, label, advised]) => pillChoice(field, value, label, advised)).join('')}</div></div>`;
@@ -209,7 +209,7 @@ function wizardStepView(id) {
     ${w.bgMode === 'off' ? '' : row(t('wizard.arenaTitle', 'Rated arenas'), t('wizard.arenaText', '2v2 and 3v3 at level 60.'), 'arenaMode', [['auto', t('wizard.bgAuto', 'Bots start their own'), true], ['player', t('wizard.arenaPlayer', 'Only against a player team')]])}
     </div></div>
     <div class="wiz-activities"><div class="wiz-act-art">${WIZARD_ART.dungeon}</div><div>
-    ${w.style === 'selffound' ? `<div class="wiz-activity"><div><strong>${esc(t('wizard.sfDunTitle', 'Bot parties in dungeons'))}</strong><small>${esc(t('wizard.sfDunOn', 'On with Solo self-found: 20 % of the bots clear the dungeons of their level in parties of five.'))}</small></div></div>`
+    ${w.style === 'selfloot' ? `<div class="wiz-activity"><div><strong>${esc(t('wizard.sfDunTitle', 'Bot parties in dungeons'))}</strong><small>${esc(t('wizard.sfDunOn', 'On with Solo self-found: 20 % of the bots clear the dungeons of their level in parties of five.'))}</small></div></div>`
       : row(t('wizard.sfDunTitle', 'Bot parties in dungeons'), t('wizard.sfDunText', 'Parties of five bots clear the dungeons of their level by themselves (with Dungeon Clear) and wear what they loot.'), 'sfDungeons', [['0', t('wizard.no', 'No'), true], ['20', t('wizard.sfDun20', 'Yes, 20 % of the bots')]])}
     </div></div>
     ${wizSwitch('lfg', t('wizard.lfgTitle', 'Bots in the dungeon finder'), t('wizard.lfgText', 'Queue for a dungeon and bots fill your group in a moment.'))}`;
@@ -266,7 +266,7 @@ function wizardStepView(id) {
 function wizardView() {
   const w = App.state.wizard;
   const id = WIZARD_STEPS[w.step];
-  const titles = { welcome: t('wizard.stepWelcome', 'Welcome'), realms: t('wizard.stepRealms', 'Realms'), style: t('wizard.stepStyle', 'World'), bots: t('wizard.stepBots', 'Bots'), xp: t('wizard.stepXp', 'Experience'), collections: t('wizard.stepCollections', 'Collections'), life: t('wizard.stepLife', 'Server life'), activities: t('wizard.stepActivities', 'Bot activities'), alts: t('wizard.stepAlts', 'Your alts'), difficulty: t('wizard.stepDifficulty', 'Difficulty'), pvp: t('wizard.stepPvp', 'PvP'), chat: t('wizard.stepChat', 'Language'), summary: t('wizard.stepSummary', 'Summary') };
+  const titles = { welcome: t('wizard.stepWelcome', 'Welcome'), realms: t('wizard.stepRealms', 'Realms'), style: t('gear.title', 'Bot gear'), bots: t('wizard.stepBots', 'Bots'), xp: t('wizard.stepXp', 'Experience'), collections: t('wizard.stepCollections', 'Collections'), life: t('wizard.stepLife', 'Server life'), activities: t('wizard.stepActivities', 'Bot activities'), alts: t('wizard.stepAlts', 'Your alts'), difficulty: t('wizard.stepDifficulty', 'Difficulty'), pvp: t('wizard.stepPvp', 'PvP'), chat: t('wizard.stepChat', 'Language'), summary: t('wizard.stepSummary', 'Summary') };
   const rail = `<ol class="wiz-rail">${WIZARD_STEPS.map((step, index) => `<li class="${index === w.step ? 'current' : index < w.step ? 'done' : ''}"><i>${index < w.step ? icon('check') : index + 1}</i>${esc(titles[step])}</li>`).join('')}</ol>`;
   if (w.applying || w.done) {
     const lines = w.log.map(line => `<li class="${line.state}"><i>${line.state === 'done' ? icon('check') : line.state === 'error' ? icon('warning') : icon('refresh')}</i>${esc(line.text)}</li>`).join('');
@@ -291,7 +291,7 @@ async function wizardApply() {
   const newRealms = [...w.realms].filter(key => !w.created.has(key));
   // Nothing to do: the wizard just closes (no stop, no backup, no start).
   if (!changes.length && !newRealms.length) { dialog.close(); toast(t('wizard.nothing', 'Nothing to change: your server already matches these choices.'), 'success'); return; }
-  const forced = ['selffound', 'fresh'].includes(w.style) && w.style !== w.from.style;
+  const forced = false;
   const reset = (forced || (w.reset && changes.length > 0)) && App.state.server?.bots?.installed && App.state.server?.canPurgeBots;
   w.applying = true;
   const step = async (text, work) => {

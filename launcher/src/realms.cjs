@@ -78,6 +78,8 @@ const SEED_TABLES = ['updates', 'updates_include', 'worldstates', 'active_arena_
   'playerbots_arena_team_names', 'coa_build_creator', 'coa_build_creator_enchant', 'coa_build_creator_item_type', 'coa_build_creator_spell',
   'instance_reset', 'pool_quest_save'];
 const DEFAULT_BOTS = 150;
+// The Living World realm (user's decision, 11/11): 1000 bots, editable like any realm's count.
+const LIVING_BOTS = 1000;
 const KEY = /^[a-z]{3,12}$/;
 const CONF_KEY = /^[A-Za-z][A-Za-z0-9_.-]{0,99}$/;
 const FILE_ID = /^[A-Za-z0-9_.-]{1,60}\.conf$/;
@@ -445,7 +447,7 @@ async function skipCoaAtStart(root) {
 // MySQL must run. Never touches a database that already exists (a realm removed by hand and created again keeps
 // its characters).
 // db: the MySQL calls (tests give their own, to check what is written where).
-async function create(root, key, { bots = DEFAULT_BOTS, notify = () => {}, name, db = { sql, copyDump } } = {}) {
+async function create(root, key, { bots = key === 'living' ? LIVING_BOTS : DEFAULT_BOTS, notify = () => {}, name, db = { sql, copyDump } } = {}) {
   const m = mode(key);
   const run = { sql: (_root, query) => db.sql(root, query), copyDump: (_root, args, target) => db.copyDump(root, args, target) };
   const exists = async database => (await run.sql(root, `SHOW DATABASES LIKE '${database}'`)) === database;
