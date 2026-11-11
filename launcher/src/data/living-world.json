@@ -2751,6 +2751,34 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaWorld.Guilds.LoginGraceSeconds",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "int",
+   "default": 40,
+   "min": 0,
+   "max": 600,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Guilds.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Pause after login before guild offers (s)",
+    "fr": "Pause après la connexion avant les offres de la guilde (s)",
+    "ru": "Пауза после входа перед предложениями гильдии (с)",
+    "zh": "登录后公会提议前的等待时间（秒）"
+   },
+   "help": {
+    "en": "Gifts, gear offers and guild charters wait this long after a player logs in.",
+    "fr": "Les cadeaux, les offres d'équipement et les chartes de guilde attendent ce délai après la connexion d'un joueur.",
+    "ru": "Подарки, предложения снаряжения и уставы гильдий ждут столько времени после входа игрока.",
+    "zh": "礼物、装备提议和公会章程会在玩家登录后等待这么久。"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaWorld.Guilds.Addon",
    "file": "playerbots.conf",
    "group": "lw-social",
