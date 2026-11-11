@@ -709,13 +709,17 @@ async function anotherStarting(root, except) {
 }
 
 const stopping = new Set();
+// When the launcher last stopped each realm: a world that ends without it is a crash (restarted if the player wants).
+const stoppedAt = new Map();
+const stoppedOnPurpose = (key, within = 5 * 60 * 1000) => Date.now() - (stoppedAt.get(key) || 0) < within;
 async function stop(root, key) {
   const saved = await realmFile(root, key);
   if (!saved) return;
   const pid = await processOf(root, key);
   if (!pid && !(await portOpen(saved.worldPort))) return;
   stopping.add(key);
-  try { await stopWorld(root, key, saved, pid); } finally { stopping.delete(key); }
+  stoppedAt.set(key, Date.now());
+  try { await stopWorld(root, key, saved, pid); } finally { stopping.delete(key); stoppedAt.set(key, Date.now()); }
 }
 async function stopWorld(root, key, saved, pid) {
   // A world whose port never opened, not being started now (left by a start given up, or by an older launcher): no
@@ -856,4 +860,4 @@ async function clearOffline(root, { coa = false } = {}) {
   if (ids.length) await sql(root, `UPDATE acore_auth.realmlist SET flag = flag & ~2 WHERE id IN (${ids.join(',')})`);
   return ids;
 }
-module.exports = { setPinner, livingOwn, clearOffline, setRealmName, ahbotSettingsOf, setAhbotSettingsOf, onlineRunning, shippedTables, syncShippedTables, MODES, queueMarked, memoryFor, neededMb, botsOnline, setDisabled, versionReady, modulesOf, setModule, coaAutostart, setCoaAutostart, skipCoaAtStart, anotherStarting, refreshBotConfigs, status, create, start, stop, stopAll, startMarked, setOptions, settingsOf, saveSettings, purgeBots, writeConfigs, setKey };
+module.exports = { stoppedOnPurpose, setPinner, livingOwn, clearOffline, setRealmName, ahbotSettingsOf, setAhbotSettingsOf, onlineRunning, shippedTables, syncShippedTables, MODES, queueMarked, memoryFor, neededMb, botsOnline, setDisabled, versionReady, modulesOf, setModule, coaAutostart, setCoaAutostart, skipCoaAtStart, anotherStarting, refreshBotConfigs, status, create, start, stop, stopAll, startMarked, setOptions, settingsOf, saveSettings, purgeBots, writeConfigs, setKey };

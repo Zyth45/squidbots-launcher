@@ -389,3 +389,7 @@ test('the Living World realm opens like a new server: its own values at creation
   // Events stay in a GM's hands, as on any realm.
   for (const key of ['Invasions.Auto', 'ResourceRush.Auto', 'CapitalRaid.Auto']) assert.ok(!Object.hasOwn(own, `AiPlayerbot.CoaWorld.${key}`), key);
 });
+
+test('a realm stopped by the launcher is not a crash; one that ends alone is', () => {
+  assert.equal(realms.stoppedOnPurpose('nosuchrealm'), false);
+});

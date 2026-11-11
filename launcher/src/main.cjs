@@ -1702,7 +1702,9 @@ function registerIpc() {
     return { ...(await sqlConsole.run(serverPath(), String(query).slice(0, 20000), { allowChanges: allowChanges === true })), backup };
   });
   const verify = require('./verify.cjs');
-  const watch = { world: null, crashes: null, restarts: [], backupDay: '', ecoAt: 0 };
+  const watch = { world: null, crashes: null, restarts: [], backupDay: '', ecoAt: 0, realms: {}, realmRestarts: {} };
+  // A realm started again after a crash: its world alone (MySQL and the authserver if they are not up), never CoA.
+  const restartRealm = async key => { await realmBase(false); await realms.start(serverPath(), key); await requireControl().start('auth'); await realmsOnline(); };
   serverStartOnOpen = async () => {
     if (!serverPath() || !inspectRepack(serverPath()).repack || serverBusy()) return;
     const services = await requireControl().status();
@@ -1730,6 +1732,17 @@ function registerIpc() {
       // At most 3 restarts an hour: a world that crashes at every start is left stopped.
       watch.restarts = watch.restarts.filter(at => Date.now() - at < 3600000);
       if (quiet && settings.restartWorldOnCrash && world === 'stopped' && watch.restarts.length < 3) { watch.restarts.push(Date.now()); notifyUser('restarted'); startEverything().catch(() => {}); }
+      else notifyUser('crash');
+    }
+    // The realm worlds: one that was running and ended without the launcher stopping it is a crash, handled like the
+    // CoA world's (restartWorldOnCrash, at most 3 an hour per realm); the CoA world stays as it is.
+    const realmList = await realms.status(root, { live: false }).then(result => result.realms).catch(() => null);
+    for (const realm of realmList || []) {
+      const was = watch.realms[realm.key];
+      watch.realms[realm.key] = realm.state;
+      if (was !== 'running' || realm.state !== 'stopped' || realms.stoppedOnPurpose(realm.key)) continue;
+      const restarts = watch.realmRestarts[realm.key] = (watch.realmRestarts[realm.key] || []).filter(at => Date.now() - at < 3600000);
+      if (quiet && settings.restartWorldOnCrash && restarts.length < 3) { restarts.push(Date.now()); notifyUser('restarted'); restartRealm(realm.key).catch(() => {}); }
       else notifyUser('crash');
     }
     // One automatic backup a day while MySQL runs (characters, accounts, bots), the last 7 kept.
