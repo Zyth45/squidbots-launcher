@@ -1296,7 +1296,7 @@ const VIRTUAL_TABS = {
       const groups = conf.sections?.find(section => section.id === 'living')?.groups || [];
       const chat = settingOf(CHAT_KEY);
       const chatOn = chat && CHAT_READY && pendingOr(chat) === '1';
-      const banner = `<div class="preset-card chat-card"><div><strong>${icon('chat')}${esc(t('lw.chat', 'Bot chat'))}</strong><p>${esc(t('lw.chatText', 'Bots talk in the chat channels, greet and answer. Everything else of the living world stays on.'))}${CHAT_READY ? '' : ` <em>${esc(t('lw.chatSoon', 'Coming with the next bots build.'))}</em>`}</p></div>${moduleSwitch('chat-switch', chatOn, !CHAT_READY || !chat)}</div>`;
+      const banner = `<div class="preset-card chat-card"><div><strong>${icon('chat')}${esc(t('lw.chat', 'Bot chat'))}</strong><p>${esc(t('lw.chatText', 'Bots talk in the chat channels, greet and answer (off also stops their group invites near you). Everything else of the living world stays on.'))}${CHAT_READY ? '' : ` <em>${esc(t('lw.chatSoon', 'Coming with the next bots build.'))}</em>`}</p></div>${moduleSwitch('chat-switch', chatOn, !CHAT_READY || !chat)}</div>`;
       const lines = groups.map(id => conf.groups.find(group => group.id === id)).filter(Boolean).map(group => {
         const count = conf.settings.filter(setting => setting.group === group.id).length;
         return `<button class="line-action lw-line" data-action="conf-group" data-id="${esc(group.id)}">${icon(group.icon)}<span>${esc(loc(group.label))}</span><small class="muted">${esc(t('lw.count', '{n} setting(s)', { n: count }))}</small>${icon('arrow')}</button>`;
@@ -1305,9 +1305,10 @@ const VIRTUAL_TABS = {
     },
   },
 };
-// The bot chat switch: wired once the bots' own "chat only" key is confirmed (CoA SquidBot); until then shown off.
+// The bot chat switch: CoaLive.Enable (CoA SquidBot, 11/11): every bot line, greetings, night bank, whisper answers;
+// it also stops the bots' group invites near players and their idling in inns and capitals (same pass in the code).
 const CHAT_KEY = 'AiPlayerbot.CoaLive.Enable';
-const CHAT_READY = false;
+const CHAT_READY = true;
 Object.assign(App.actions, {
   'gear-pick': button => {
     const setting = settingOf('AiPlayerbot.CoaSelfFound');
