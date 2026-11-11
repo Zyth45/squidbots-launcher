@@ -1631,5 +1631,7 @@
   "realms.livingText2": "Un nouveau royaume CoA qui ouvre comme un serveur officiel : 1000 bots dès le niveau 1, self-loot, un hôtel des ventes qui grandit, des « server first ».",
   "realms.quickNext": "Appliqué au prochain démarrage de ce royaume.",
   "realms.selflootLocked": "Toujours actif sur le royaume Living World.",
-  "realms.selflootHelp": "Self-loot jusqu'au niveau 59 ; au 60, les bots sont équipés comme d'habitude."
+  "realms.selflootHelp": "Self-loot jusqu'au niveau 59 ; au 60, les bots sont équipés comme d'habitude.",
+  "modules.squidchatSettings": "Réglages du chat",
+  "modules.squidchatRealm": "Royaume Conquest of Azeroth ; chaque autre royaume a son interrupteur sur sa carte."
 }

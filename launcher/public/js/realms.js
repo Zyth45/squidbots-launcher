@@ -64,11 +64,14 @@ async function loadRealms() {
 // The home page reads the realms too (every 10 s): a realm started from its card shows there without visiting its tab.
 setInterval(() => { if (App.state.tab === 'home' && App.state.realms?.available && !App.state.realmBusy) loadRealms(); }, 10000);
 
-// Every realm in the order of the page: CoA first, then the extra ones (created or not).
+// Every realm in the order of the page (user, 11/11): CoA, Living World on the first row; Wildcard, Reborn, then Free
+// Pick (Dawnrise) last on the next one. A realm not in that list comes after them.
+const REALM_ORDER = ['living', 'wildcard', 'reborn', 'dawnrise'];
+const realmRank = key => (REALM_ORDER.includes(key) ? REALM_ORDER.indexOf(key) : REALM_ORDER.length);
 function realmList() {
   const r = App.state.realms;
   if (!r || r.error) return [];
-  return [{ key: 'coa', ...r.coa, main: true }, ...r.realms];
+  return [{ key: 'coa', ...r.coa, main: true }, ...[...r.realms].sort((a, b) => realmRank(a.key) - realmRank(b.key))];
 }
 const createdRealms = () => realmList().filter(realm => realm.main || !['absent', 'disabled'].includes(realm.state));
 
@@ -141,15 +144,15 @@ function realmCard(realm, busy) {
        <button class="link-button" data-action="realm-disable" data-key="${realm.key}" ${busy ? 'disabled' : ''} title="${esc(t('realms.disableHint', 'Stops it and takes it out of the realm list; nothing is deleted.'))}">${icon('close')}${esc(t('realms.disable', 'Switch off'))}</button></span>`;
   return `<article class="realm-card realm-${realm.key}${on ? ' on' : ''}">${head}${stats}
     <div class="realm-buttons">${startStop}<button class="button ghost small" data-action="realm-settings" data-key="${realm.key}">${icon('settings')}${esc(t('realms.settings', 'Settings'))}${realm.changed ? `<em class="count" title="${esc(t('realms.ownHint', 'Settings changed for this realm only'))}">${realm.changed}</em>` : ''}</button><button class="button ghost small" data-action="realm-console" data-key="${realm.key}" ${realm.state === 'running' ? '' : 'disabled'}>${icon('terminal')}${esc(t('realms.console', 'Console'))}</button>${App.state.dashboard?.available ? `<button class="button ghost small" data-action="realm-dashboard" data-key="${realm.key}">${icon('chart')}${esc(t('realms.dashboard', 'Dashboard'))}</button>` : ''}</div>
-    ${realmQuick(realm)}<footer class="realm-more">${more}</footer>
+    <footer class="realm-more">${realmQuick(realm)}${more}</footer>
   </article>`;
 }
 
 // Two quick switches per realm: Bot chat and Self-loot, the same keys as in Server settings, in this realm's own values.
 // Self-loot changes only what comes next (no bot is made again, nothing is taken off). Applied at the realm's next start.
 const SELFLOOT_KEY = 'AiPlayerbot.CoaSelfFound';
-function realmQuick(realm) {
-  const target = realm.main ? '' : realm.key;
+// A realm's Bot chat and Self-loot values ('' = the main realm), read once, then kept until a save.
+function quickOf(target) {
   const cache = App.state.realmQuick ||= {};
   if (!(target in cache)) {
     cache[target] = null;
@@ -157,10 +160,14 @@ function realmQuick(realm) {
       const value = key => String(conf.settings.find(setting => setting.key === key)?.value ?? '').trim();
       const has = key => conf.settings.some(setting => setting.key === key);
       cache[target] = { chat: value(CHAT_KEY), selfloot: value(SELFLOOT_KEY), hasChat: has(CHAT_KEY), hasLoot: has(SELFLOOT_KEY) };
-      App.refresh('realms');
+      App.refresh('realms'); App.refresh('server');
     }).catch(() => { cache[target] = { error: true }; });
   }
-  const q = cache[target];
+  return cache[target];
+}
+function realmQuick(realm) {
+  const target = realm.main ? '' : realm.key;
+  const q = quickOf(target);
   if (!q || q.error) return '';
   const locked = realm.key === 'living';
   const row = (action, on, disabled, title, hint) => `<div class="realm-quick-row"><span title="${esc(hint)}">${esc(title)}</span>${moduleSwitch(action, on, disabled).replace('<button', `<button data-key="${esc(target)}"`)}</div>`;
@@ -172,7 +179,9 @@ function realmQuick(realm) {
 async function realmQuickSet(target, key, on) {
   await App.api.saveServerSettings([{ file: 'playerbots.conf', key, value: on ? '1' : '0' }], target);
   delete App.state.realmQuick?.[target];
-  App.refresh('realms');
+  // Server settings of that realm show the new value too.
+  if (App.state.conf && !App.state.conf.error && confRealm() === target) for (const setting of App.state.conf.settings) if (setting.key === key) setting.value = on ? '1' : '0';
+  App.refresh('realms'); App.refresh('server');
 }
 Object.assign(App.actions, {
   'realm-chat': button => guard(() => realmQuickSet(button.dataset.key, CHAT_KEY, button.dataset.on !== '1'), button),

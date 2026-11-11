@@ -1,14 +1,6 @@
 {
  "schema": 1,
- "onByDefault": [
-  "AiPlayerbot.CoaWorld.Invasions.Scourge.Enable",
-  "AiPlayerbot.CoaWorld.Invasions.Legion.Enable",
-  "AiPlayerbot.CoaWorld.Invasions.AhnQiraj.Enable",
-  "AiPlayerbot.CoaWorld.WorldPvp.Skirmish.Enable",
-  "AiPlayerbot.CoaWorld.WorldPvp.CapitalDefence.Enable",
-  "AiPlayerbot.CoaWorld.Travel.Hearthstone",
-  "AiPlayerbot.CoaWorld.Guilds.Help"
- ],
+ "onByDefault": [],
  "onInCore": [
   "AiPlayerbot.CoaCombat.MoltenCore.Enable",
   "AiPlayerbot.CoaLive.Chat.Enable",
@@ -20,7 +12,27 @@
   "AiPlayerbot.CoaLive.NightBank.Enable",
   "AiPlayerbot.CoaLive.Immersion.Enable",
   "AiPlayerbot.CoaSoul.Enable",
-  "AiPlayerbot.CoaLive.DataFile.Enable"
+  "AiPlayerbot.CoaLive.DataFile.Enable",
+  "AiPlayerbot.CoaWorld.BotOnlyBgPace.Enable",
+  "AiPlayerbot.CoaWorld.CapitalRaid.Enable",
+  "AiPlayerbot.CoaWorld.Density.Enable",
+  "AiPlayerbot.CoaWorld.DungeonSim.Enable",
+  "AiPlayerbot.CoaWorld.Events.Enable",
+  "AiPlayerbot.CoaWorld.Guilds.Enable",
+  "AiPlayerbot.CoaWorld.Invasions.Enable",
+  "AiPlayerbot.CoaWorld.Leveling.Enable",
+  "AiPlayerbot.CoaWorld.Recovery.Enable",
+  "AiPlayerbot.CoaWorld.ResourceRush.Enable",
+  "AiPlayerbot.CoaWorld.StateFile.Enable",
+  "AiPlayerbot.CoaWorld.Travel.Enable",
+  "AiPlayerbot.CoaWorld.WorldPvp.Enable",
+  "AiPlayerbot.CoaWorld.Invasions.Scourge.Enable",
+  "AiPlayerbot.CoaWorld.Invasions.Legion.Enable",
+  "AiPlayerbot.CoaWorld.Invasions.AhnQiraj.Enable",
+  "AiPlayerbot.CoaWorld.WorldPvp.Skirmish.Enable",
+  "AiPlayerbot.CoaWorld.WorldPvp.CapitalDefence.Enable",
+  "AiPlayerbot.CoaWorld.Travel.Hearthstone",
+  "AiPlayerbot.CoaWorld.Guilds.Help"
  ],
  "groups": [
   {
@@ -143,7 +155,7 @@
    "when": "reload",
    "key": "AiPlayerbot.CoaWorld.Invasions.Enable",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "label": {
     "en": "World invasions",
     "fr": "Invasions du monde",
@@ -151,10 +163,30 @@
     "zh": "世界入侵"
    },
    "help": {
-    "en": "Off by default. On: the Scourge marches on Stormwind or Orgrimmar, the Legion opens a portal outside a town, the Qiraji storm the Scarab Wall. Announced 10 minutes before, in waves, with a boss and a reward; bots of your level come to defend with you.",
-    "fr": "Désactivé par défaut. Activé : le Fléau marche sur Hurlevent ou Orgrimmar, la Légion ouvre un portail aux portes d'une ville, les Qiraji assaillent le Mur du Scarabée. Annoncé 10 minutes avant, par vagues, avec un boss et une récompense ; des bots de ton niveau viennent défendre avec toi.",
-    "ru": "Выключено по умолчанию. Включено: Плеть идёт на Штормград или Оргриммар, Легион открывает портал у города, киражи штурмуют Стену Скарабея. Объявляется за 10 минут, волнами, с боссом и наградой; боты вашего уровня приходят защищать вместе с вами.",
-    "zh": "默认关闭。开启后：天灾军团进攻暴风城或奥格瑞玛，燃烧军团在城镇外打开传送门，其拉虫族猛攻甲虫之墙。提前 10 分钟公告，分波来袭，有首领和奖励；与你等级相近的机器人会前来一起防守。"
+    "en": "On by default since 3.0. On: the Scourge marches on Stormwind or Orgrimmar, the Legion opens a portal outside a town, the Qiraji storm the Scarab Wall. Announced 10 minutes before, in waves, with a boss and a reward; bots of your level come to defend with you.",
+    "fr": "Activé par défaut depuis la 3.0. Activé : le Fléau marche sur Hurlevent ou Orgrimmar, la Légion ouvre un portail aux portes d'une ville, les Qiraji assaillent le Mur du Scarabée. Annoncé 10 minutes avant, par vagues, avec un boss et une récompense ; des bots de ton niveau viennent défendre avec toi.",
+    "ru": "Включено по умолчанию с 3.0. Включено: Плеть идёт на Штормград или Оргриммар, Легион открывает портал у города, киражи штурмуют Стену Скарабея. Объявляется за 10 минут, волнами, с боссом и наградой; боты вашего уровня приходят защищать вместе с вами.",
+    "zh": "自 3.0 起默认开启。开启后：天灾军团进攻暴风城或奥格瑞玛，燃烧军团在城镇外打开传送门，其拉虫族猛攻甲虫之墙。提前 10 分钟公告，分波来袭，有首领和奖励；与你等级相近的机器人会前来一起防守。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.Invasions.Auto",
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "type": "bool",
+   "default": 0,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Invasions.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Invasions start by themselves (off: GM only)",
+    "fr": "Les invasions démarrent toutes seules (désactivé : MJ seulement)",
+    "ru": "Вторжения начинаются сами (выкл.: только ГМ)",
+    "zh": "入侵自动发起（关闭：仅由 GM 发起）"
    }
   },
   {
@@ -300,7 +332,7 @@
    "file": "playerbots.conf",
    "group": "lw-invasions",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "reload",
    "label": {
     "en": "One invasion at a time",
@@ -425,7 +457,7 @@
    "when": "reload",
    "key": "AiPlayerbot.CoaWorld.ResourceRush.Enable",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "label": {
     "en": "Gold rushes",
     "fr": "Ruées vers l'or",
@@ -433,10 +465,30 @@
     "zh": "淘金热"
    },
    "help": {
-    "en": "Off by default. On: now and then, rich veins and rare herbs of your level appear in the open world near a player, the realm is told, and bots of both sides run there to grab them.",
-    "fr": "Désactivé par défaut. Activé : de temps en temps, de riches filons et des herbes rares de ton niveau apparaissent dans le monde près d'un joueur, le royaume est prévenu, et les bots des deux camps y courent pour les récolter.",
-    "ru": "Выключено по умолчанию. Включено: время от времени рядом с игроком в открытом мире появляются богатые жилы и редкие травы вашего уровня, мир получает объявление, и боты обеих сторон бегут их собирать.",
-    "zh": "默认关闭。开启后：不时会在玩家附近的野外出现与你等级相符的富矿和稀有草药，全服会收到通知，双方阵营的机器人都会赶去采集。"
+    "en": "On by default since 3.0. On: now and then, rich veins and rare herbs of your level appear in the open world near a player, the realm is told, and bots of both sides run there to grab them.",
+    "fr": "Activé par défaut depuis la 3.0. Activé : de temps en temps, de riches filons et des herbes rares de ton niveau apparaissent dans le monde près d'un joueur, le royaume est prévenu, et les bots des deux camps y courent pour les récolter.",
+    "ru": "Включено по умолчанию с 3.0. Включено: время от времени рядом с игроком в открытом мире появляются богатые жилы и редкие травы вашего уровня, мир получает объявление, и боты обеих сторон бегут их собирать.",
+    "zh": "自 3.0 起默认开启。开启后：不时会在玩家附近的野外出现与你等级相符的富矿和稀有草药，全服会收到通知，双方阵营的机器人都会赶去采集。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.ResourceRush.Auto",
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "type": "bool",
+   "default": 0,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.ResourceRush.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Gold rushes start by themselves (off: GM only)",
+    "fr": "Les ruées vers l'or démarrent toutes seules (désactivé : MJ seulement)",
+    "ru": "Золотые лихорадки начинаются сами (выкл.: только ГМ)",
+    "zh": "淘金热自动发起（关闭：仅由 GM 发起）"
    }
   },
   {
@@ -560,7 +612,7 @@
    "file": "playerbots.conf",
    "group": "lw-invasions",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "reload",
    "label": {
     "en": "Capital raids (Horde on Stormwind, Alliance on Orgrimmar)",
@@ -776,7 +828,7 @@
    "file": "playerbots.conf",
    "group": "lw-invasions",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "label": {
     "en": "World events in the SquidBots Lite addon",
@@ -1105,7 +1157,7 @@
    "group": "lw-population",
    "key": "AiPlayerbot.CoaWorld.DungeonSim.Enable",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "label": {
     "en": "Bots run dungeons on their own",
     "fr": "Les bots font des donjons entre eux",
@@ -1113,10 +1165,10 @@
     "zh": "机器人自行组队下副本"
    },
    "help": {
-    "en": "Off by default. On: when no player is queued, groups of five bots call for a classic dungeon in LookingForGroup, gather at its entrance and go in, then come out later with real loot from its bosses.",
-    "fr": "Désactivé par défaut. Activé : quand aucun joueur n'est en file, des groupes de cinq bots cherchent un donjon classique dans le canal Recherche de groupe, se retrouvent à l'entrée et y entrent, puis en ressortent plus tard avec le vrai butin de ses boss.",
-    "ru": "Выключено по умолчанию. Включено: когда в очереди нет игроков, группы из пяти ботов ищут классическое подземелье в канале Поиска группы, собираются у входа и заходят, а позже выходят с настоящей добычей его боссов.",
-    "zh": "默认关闭。开启后：没有玩家排队时，五个机器人一组会在寻求组队频道招募经典副本，在入口集合后进入，之后带着首领的真实战利品出来。"
+    "en": "On by default since 3.0. On: when no player is queued, groups of five bots call for a classic dungeon in LookingForGroup, gather at its entrance and go in, then come out later with real loot from its bosses.",
+    "fr": "Activé par défaut depuis la 3.0. Activé : quand aucun joueur n'est en file, des groupes de cinq bots cherchent un donjon classique dans le canal Recherche de groupe, se retrouvent à l'entrée et y entrent, puis en ressortent plus tard avec le vrai butin de ses boss.",
+    "ru": "Включено по умолчанию с 3.0. Включено: когда в очереди нет игроков, группы из пяти ботов ищут классическое подземелье в канале Поиска группы, собираются у входа и заходят, а позже выходят с настоящей добычей его боссов.",
+    "zh": "自 3.0 起默认开启。开启后：没有玩家排队时，五个机器人一组会在寻求组队频道招募经典副本，在入口集合后进入，之后带着首领的真实战利品出来。"
    }
   },
   {
@@ -1147,7 +1199,7 @@
    "group": "lw-population",
    "key": "AiPlayerbot.CoaWorld.Recovery.Enable",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "label": {
     "en": "Stuck bots find their way again",
     "fr": "Les bots coincés retrouvent leur chemin",
@@ -1155,10 +1207,10 @@
     "zh": "卡住的机器人重新找到路"
    },
    "help": {
-    "en": "Off by default. On: a bot standing still, going round in circles or dying over and over drops what it was doing, or uses its hearthstone home.",
-    "fr": "Désactivé par défaut. Activé : un bot immobile, qui tourne en rond ou qui meurt sans cesse abandonne ce qu'il faisait, ou utilise sa pierre de foyer pour rentrer.",
-    "ru": "Выключено по умолчанию. Включено: бот, который стоит на месте, ходит по кругу или раз за разом умирает, бросает своё занятие или возвращается домой камнем возвращения.",
-    "zh": "默认关闭。开启后：原地不动、绕圈或反复死亡的机器人会放弃当前行为，或用炉石回家。"
+    "en": "On by default since 3.0. On: a bot standing still, going round in circles or dying over and over drops what it was doing, or uses its hearthstone home.",
+    "fr": "Activé par défaut depuis la 3.0. Activé : un bot immobile, qui tourne en rond ou qui meurt sans cesse abandonne ce qu'il faisait, ou utilise sa pierre de foyer pour rentrer.",
+    "ru": "Включено по умолчанию с 3.0. Включено: бот, который стоит на месте, ходит по кругу или раз за разом умирает, бросает своё занятие или возвращается домой камнем возвращения.",
+    "zh": "自 3.0 起默认开启。开启后：原地不动、绕圈或反复死亡的机器人会放弃当前行为，或用炉石回家。"
    }
   },
   {
@@ -1270,7 +1322,7 @@
    "group": "lw-population",
    "key": "AiPlayerbot.CoaWorld.Density.Enable",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "reload",
    "idleWhen": {
     "key": "AiPlayerbot.EnablePeriodicOnlineOffline",
@@ -1285,10 +1337,10 @@
     "zh": "玩家所在处机器人更多"
    },
    "help": {
-    "en": "Off by default. On (with the bots' online/offline rotation on, in Bots > Levels): bots saved where real players are log in first, and bots far from everyone leave the world early so others come near the players. Offline bots cost no CPU, for 1000 to 2000 bots.",
-    "fr": "Désactivé par défaut. Activé (avec la rotation connexion/déconnexion des bots, dans Bots > Niveaux) : les bots enregistrés là où sont les vrais joueurs se connectent en premier, et les bots loin de tout le monde quittent le monde plus tôt pour que d'autres viennent près des joueurs. Les bots déconnectés ne coûtent pas de CPU, pour 1000 à 2000 bots.",
-    "ru": "Выключено по умолчанию. Включено (при включённой ротации ботов онлайн/офлайн, в разделе Боты > Уровни): боты, сохранённые рядом с живыми игроками, входят первыми, а боты вдали от всех раньше покидают мир, чтобы другие оказались рядом с игроками. Офлайн-боты не нагружают процессор, для 1000–2000 ботов.",
-    "zh": "默认关闭。开启后（需在“机器人 > 等级”中开启机器人上下线轮换）：存档位置靠近真实玩家的机器人优先上线，远离所有人的机器人更早下线，让其他机器人来到玩家附近。离线机器人不占用 CPU，适用于 1000 到 2000 个机器人。"
+    "en": "On by default since 3.0. On (with the bots' online/offline rotation on, in Bots > Levels): bots saved where real players are log in first, and bots far from everyone leave the world early so others come near the players. Offline bots cost no CPU, for 1000 to 2000 bots.",
+    "fr": "Activé par défaut depuis la 3.0. Activé (avec la rotation connexion/déconnexion des bots, dans Bots > Niveaux) : les bots enregistrés là où sont les vrais joueurs se connectent en premier, et les bots loin de tout le monde quittent le monde plus tôt pour que d'autres viennent près des joueurs. Les bots déconnectés ne coûtent pas de CPU, pour 1000 à 2000 bots.",
+    "ru": "Включено по умолчанию с 3.0. Включено (при включённой ротации ботов онлайн/офлайн, в разделе Боты > Уровни): боты, сохранённые рядом с живыми игроками, входят первыми, а боты вдали от всех раньше покидают мир, чтобы другие оказались рядом с игроками. Офлайн-боты не нагружают процессор, для 1000–2000 ботов.",
+    "zh": "自 3.0 起默认开启。开启后（需在“机器人 > 等级”中开启机器人上下线轮换）：存档位置靠近真实玩家的机器人优先上线，远离所有人的机器人更早下线，让其他机器人来到玩家附近。离线机器人不占用 CPU，适用于 1000 到 2000 个机器人。"
    }
   },
   {
@@ -1318,7 +1370,7 @@
    "group": "lw-population",
    "key": "AiPlayerbot.CoaWorld.Events.Enable",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "hidden": true,
    "label": {
@@ -1328,10 +1380,10 @@
     "zh": "供仪表盘使用的世界事件日志"
    },
    "help": {
-    "en": "Off by default. On: invasions, gold rushes, server firsts, guild news and stuck bots go to squidbot/events.jsonl for the SquidBots dashboard.",
-    "fr": "Désactivé par défaut. Activé : invasions, ruées vers l'or, « server first », nouvelles des guildes et bots coincés vont dans squidbot/events.jsonl pour le dashboard SquidBots.",
-    "ru": "Выключено по умолчанию. Включено: вторжения, золотые лихорадки, «первые на сервере», новости гильдий и застрявшие боты записываются в squidbot/events.jsonl для панели SquidBots.",
-    "zh": "默认关闭。开启后：入侵、淘金热、服务器首杀、公会新闻和卡住的机器人会写入 squidbot/events.jsonl，供 SquidBots 仪表盘使用。"
+    "en": "On by default since 3.0. On: invasions, gold rushes, server firsts, guild news and stuck bots go to squidbot/events.jsonl for the SquidBots dashboard.",
+    "fr": "Activé par défaut depuis la 3.0. Activé : invasions, ruées vers l'or, « server first », nouvelles des guildes et bots coincés vont dans squidbot/events.jsonl pour le dashboard SquidBots.",
+    "ru": "Включено по умолчанию с 3.0. Включено: вторжения, золотые лихорадки, «первые на сервере», новости гильдий и застрявшие боты записываются в squidbot/events.jsonl для панели SquidBots.",
+    "zh": "自 3.0 起默认开启。开启后：入侵、淘金热、服务器首杀、公会新闻和卡住的机器人会写入 squidbot/events.jsonl，供 SquidBots 仪表盘使用。"
    }
   },
   {
@@ -1339,7 +1391,7 @@
    "file": "playerbots.conf",
    "group": "lw-population",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "hidden": true,
    "label": {
@@ -1376,7 +1428,7 @@
    "group": "lw-travellers",
    "key": "AiPlayerbot.CoaWorld.Travel.Enable",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "label": {
     "en": "Bots take the zeppelins and boats",
     "fr": "Les bots prennent les zeppelins et les bateaux",
@@ -1384,10 +1436,10 @@
     "zh": "机器人乘坐飞艇和船只"
    },
    "help": {
-    "en": "Off by default. On: bots wait at the zeppelin towers and docks, board when it leaves and step off at the other end.",
-    "fr": "Désactivé par défaut. Activé : les bots attendent aux tours des zeppelins et aux quais, montent au départ et descendent à l'arrivée.",
-    "ru": "Выключено по умолчанию. Включено: боты ждут у башен дирижаблей и на пристанях, садятся при отправлении и сходят на другой стороне.",
-    "zh": "默认关闭。开启后：机器人在飞艇塔和码头等候，出发时登上，到达后下来。"
+    "en": "On by default since 3.0. On: bots wait at the zeppelin towers and docks, board when it leaves and step off at the other end.",
+    "fr": "Activé par défaut depuis la 3.0. Activé : les bots attendent aux tours des zeppelins et aux quais, montent au départ et descendent à l'arrivée.",
+    "ru": "Включено по умолчанию с 3.0. Включено: боты ждут у башен дирижаблей и на пристанях, садятся при отправлении и сходят на другой стороне.",
+    "zh": "自 3.0 起默认开启。开启后：机器人在飞艇塔和码头等候，出发时登上，到达后下来。"
    }
   },
   {
@@ -1415,7 +1467,7 @@
    "file": "playerbots.conf",
    "group": "lw-travellers",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "reload",
    "label": {
     "en": "Bots level along credible routes",
@@ -1457,7 +1509,7 @@
    "file": "playerbots.conf",
    "group": "lw-travellers",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "reload",
    "label": {
     "en": "Levelling bots avoid areas above their level",
@@ -1500,7 +1552,7 @@
    "group": "lw-pvp",
    "key": "AiPlayerbot.CoaWorld.WorldPvp.Enable",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "label": {
     "en": "World PvP of the bots",
     "fr": "PvP sauvage des bots",
@@ -1508,10 +1560,10 @@
     "zh": "机器人的野外 PvP"
    },
    "help": {
-    "en": "Off by default. On: skirmishes between the posts of contested zones (Southshore and Tarren Mill...), and bots rally to defend a capital that players of the other side attack.",
-    "fr": "Désactivé par défaut. Activé : escarmouches entre les postes des zones contestées (Austrivage et Moulin-de-Tarren…), et les bots se rassemblent pour défendre une capitale attaquée par des joueurs du camp adverse.",
-    "ru": "Выключено по умолчанию. Включено: стычки между заставами спорных территорий (Южнобережье и Мельница Таррен…), и боты собираются защищать столицу, на которую нападают игроки другой стороны.",
-    "zh": "默认关闭。开启后：争夺区域的据点之间会发生冲突（南海镇与塔伦米尔……），当敌对阵营玩家进攻主城时，机器人会集结防守。"
+    "en": "On by default since 3.0. On: skirmishes between the posts of contested zones (Southshore and Tarren Mill...), and bots rally to defend a capital that players of the other side attack.",
+    "fr": "Activé par défaut depuis la 3.0. Activé : escarmouches entre les postes des zones contestées (Austrivage et Moulin-de-Tarren…), et les bots se rassemblent pour défendre une capitale attaquée par des joueurs du camp adverse.",
+    "ru": "Включено по умолчанию с 3.0. Включено: стычки между заставами спорных территорий (Южнобережье и Мельница Таррен…), и боты собираются защищать столицу, на которую нападают игроки другой стороны.",
+    "zh": "自 3.0 起默认开启。开启后：争夺区域的据点之间会发生冲突（南海镇与塔伦米尔……），当敌对阵营玩家进攻主城时，机器人会集结防守。"
    }
   },
   {
@@ -2496,7 +2548,7 @@
    "key": "AiPlayerbot.CoaWorld.Guilds.Enable",
    "group": "lw-social",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "reload",
    "label": {
     "en": "Guilds of bots that live",
@@ -2505,10 +2557,10 @@
     "zh": "鲜活的机器人公会"
    },
    "help": {
-    "en": "Off by default. On: bot guilds balanced between the sides, messages of the day, dings and drops in guild chat, recruiting in General, and a real player in a guild with bots greeted and now and then given potions.",
-    "fr": "Désactivé par défaut. Activé : des guildes de bots équilibrées entre les camps, des messages du jour, les niveaux et les butins annoncés dans le canal de guilde, du recrutement dans Général, et un vrai joueur dans une guilde de bots est accueilli et reçoit de temps en temps des potions.",
-    "ru": "Выключено по умолчанию. Включено: гильдии ботов, сбалансированные между сторонами, сообщения дня, уровни и добыча в чате гильдии, набор в канале «Общий», а живого игрока в гильдии с ботами приветствуют и время от времени дарят зелья.",
-    "zh": "默认关闭。开启后：两大阵营均衡的机器人公会、每日公告、公会频道中的升级和掉落消息、在综合频道招人，加入机器人公会的真实玩家会受到欢迎，并不时获赠药水。"
+    "en": "On by default since 3.0. On: bot guilds balanced between the sides, messages of the day, dings and drops in guild chat, recruiting in General, and a real player in a guild with bots greeted and now and then given potions.",
+    "fr": "Activé par défaut depuis la 3.0. Activé : des guildes de bots équilibrées entre les camps, des messages du jour, les niveaux et les butins annoncés dans le canal de guilde, du recrutement dans Général, et un vrai joueur dans une guilde de bots est accueilli et reçoit de temps en temps des potions.",
+    "ru": "Включено по умолчанию с 3.0. Включено: гильдии ботов, сбалансированные между сторонами, сообщения дня, уровни и добыча в чате гильдии, набор в канале «Общий», а живого игрока в гильдии с ботами приветствуют и время от времени дарят зелья.",
+    "zh": "自 3.0 起默认开启。开启后：两大阵营均衡的机器人公会、每日公告、公会频道中的升级和掉落消息、在综合频道招人，加入机器人公会的真实玩家会受到欢迎，并不时获赠药水。"
    }
   },
   {
@@ -2768,7 +2820,7 @@
    "file": "playerbots.conf",
    "group": "lw-social",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "idleWhen": {
     "key": "AiPlayerbot.CoaWorld.Guilds.Enable",
@@ -2822,7 +2874,7 @@
    "file": "playerbots.conf",
    "group": "lw-social",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "idleWhen": {
     "key": "AiPlayerbot.CoaWorld.Guilds.Enable",
@@ -2848,7 +2900,7 @@
    "file": "playerbots.conf",
    "group": "lw-social",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "idleWhen": {
     "key": "AiPlayerbot.CoaWorld.Guilds.Enable",
@@ -2874,7 +2926,7 @@
    "file": "playerbots.conf",
    "group": "lw-social",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "idleWhen": {
     "key": "AiPlayerbot.CoaWorld.Guilds.Enable",
@@ -2972,7 +3024,7 @@
    "file": "playerbots.conf",
    "group": "lw-social",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "idleWhen": {
     "key": "AiPlayerbot.CoaWorld.Guilds.Enable",
@@ -3048,7 +3100,7 @@
    "file": "playerbots.conf",
    "group": "lw-social",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "idleWhen": {
     "key": "AiPlayerbot.CoaWorld.Guilds.Enable",
@@ -3074,7 +3126,7 @@
    "file": "playerbots.conf",
    "group": "lw-social",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "idleWhen": {
     "key": "AiPlayerbot.CoaWorld.Guilds.Enable",
@@ -3603,7 +3655,7 @@
    "file": "playerbots.conf",
    "group": "lw-performance",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "label": {
     "en": "Slower idle checks for bots far from players",
@@ -3643,7 +3695,7 @@
    "file": "playerbots.conf",
    "group": "lw-performance",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "label": {
     "en": "Slower AI in battlegrounds with only bots",

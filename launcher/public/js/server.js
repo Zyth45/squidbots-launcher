@@ -300,6 +300,25 @@ function moduleSwitch(action, on, disabled) {
   return `<button class="switch ${on ? 'on' : ''}" data-action="${action}" data-on="${on ? '1' : '0'}" ${disabled ? 'disabled' : ''} role="switch" aria-checked="${on}"><span></span></button>`;
 }
 
+// SquidChat: the bot chat of SquidBots 3.0 (CoA Live lines, night bank). Its switch is "Bot chat" of the main realm
+// (CoaLive.Chat.Enable), the same as on the realm card and in Server settings > Living world. The AI answers come later.
+function squidchatCard() {
+  const q = quickOf('');
+  const ready = q && !q.error && q.hasChat;
+  const on = ready && q.chat === '1';
+  return `<section class="panel module-card">${moduleArt('squidchat')}<header><h2>${icon('chat')}SquidChat</h2>${moduleSwitch('squidchat-switch', on, !ready)}</header>
+      <p class="muted">${esc(t('modules.squidchatText', 'Your server will never be quiet again: bots chat, cheer the good loot, laugh at the wipes and have an opinion on everything. Even on Jealous.'))}</p>
+      <ul class="module-facts"><li class="ok">${icon('check')}<span>${esc(t('modules.iatalkBank', 'A bank of lines written in advance.'))}</span></li></ul>
+      <div class="module-extra soon"><span class="soon-tag">${esc(t('conf.soon', 'Coming soon'))}</span><span>${esc(t('modules.iatalkAi', 'Optional AI for the answers: Ollama on this PC or on your network, or an online service with your own key and a daily cap.'))}</span></div>
+      <div class="button-row module-actions"><button class="button ghost small" data-action="squidchat-settings">${icon('settings')}${esc(t('modules.squidchatSettings', 'Chat settings'))}</button><small class="muted">${esc(t('modules.squidchatRealm', 'Conquest of Azeroth realm; each other realm has its own switch on its card.'))}</small></div>
+      <p class="module-credit">${esc(t('modules.by', 'By {author}', { author: 'SquidBots (Zyth45)' }))}</p>
+    </section>`;
+}
+Object.assign(App.actions, {
+  'squidchat-switch': button => guard(() => realmQuickSet('', CHAT_KEY, button.dataset.on !== '1'), button),
+  'squidchat-settings': () => { App.state.confRealm = 'coa'; App.state.pending = {}; App.state.conf = null; App.state.srvTab = 'settings'; App.state.confGroup = 'lw-social'; App.go('server'); loadConf(); },
+});
+
 // The Enchanter NPC: working once the server has its module (CoA Bots 2.8.4), a "coming soon" preview before.
 function enchanterCard(e, running, stopFirst) {
   const live = !!e?.available;
@@ -363,11 +382,7 @@ function modulesView() {
       ${stopFirst}
       <p class="module-credit long"><span>${esc(t('modules.dungeonCredit', 'SquidBots version (AGPL) · original module by Jared Wright'))}</span><span class="credit-links"><button class="link-button" data-action="source-link" data-id="dungeonclear">${icon('external')}${esc(t('modules.source', 'Source code'))}</button><button class="link-button" data-action="source-link" data-id="dungeonclearOriginal">${icon('external')}${esc(t('modules.enchanterOriginal', 'Original module'))}</button></span></p>
     </section>` : ''}
-    <section class="panel module-card soon coming">${moduleArt('squidchat')}<header><h2>${icon('chat')}SquidChat</h2><span class="pill info">${esc(t('modules.comingSoon', 'Coming soon'))}</span></header>
-      <p class="muted">${esc(t('modules.squidchatText', 'Your server will never be quiet again: bots chat, cheer the good loot, laugh at the wipes and have an opinion on everything. Even on Jealous.'))}</p>
-      <ul class="module-facts">${[t('modules.iatalkBank', 'A bank of lines written in advance.'), t('modules.iatalkAi', 'Optional AI for the answers: Ollama on this PC or on your network, or an online service with your own key and a daily cap.')].map(text => `<li class="ok">${icon('check')}<span>${esc(text)}</span></li>`).join('')}</ul>
-      <p class="module-credit">${esc(t('modules.by', 'By {author}', { author: 'SquidBots (Zyth45)' }))}</p>
-    </section>
+    ${squidchatCard()}
     ${enchanterCard(m.enchanter, m.worldRunning, stopFirst)}
     ${(App.state.realms?.realms || []).some(realm => realm.key === 'reborn' && !['absent', 'disabled'].includes(realm.state)) ? `<section class="panel module-card soon coming">${moduleArt('enchanter')}<header><h2>${icon('star')}${esc(t('modules.enchanterWcr', 'Enchanter NPC: Warcraft Reborn'))}</h2><span class="pill info">${esc(t('modules.comingSoon', 'Coming soon'))}</span></header>
       <p class="muted">${esc(t('modules.enchanterWcrText', 'The Enchanter NPC on the Warcraft Reborn realm too, with the enchantments of that realm.'))}</p>
@@ -1070,6 +1085,7 @@ Object.assign(App.actions, {
     const release = holdDialog(t('fresh.running', 'Remaking the world'), t('fresh.runningBody2', 'Settings saved, server stopped, backup made, random bots deleted, server started again: a few minutes. Keep the launcher open.'));
     try {
       await App.api.saveServerSettings(Object.values(App.state.pending), realm);
+      App.state.realmQuick = {};
       App.state.pending = {};
       // The bots deleted cannot come back: the databases are saved first (the realms' own ones too).
       if (realm) { await App.api.realmsStop(realm).catch(() => {}); await App.api.createBackup({ label: 'fresh-world' }); await App.api.realmsPurge(realm); await App.api.realmsStart(realm); }

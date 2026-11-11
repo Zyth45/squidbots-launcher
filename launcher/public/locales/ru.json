@@ -1625,5 +1625,7 @@
   "realms.livingText2": "Новый мир CoA, открывающийся как официальный сервер: 1000 ботов с 1 уровня, self-loot, растущий аукцион, «первые на сервере».",
   "realms.quickNext": "Применяется при следующем запуске этого мира.",
   "realms.selflootLocked": "Всегда включено в мире Living World.",
-  "realms.selflootHelp": "Self-loot до 59 уровня; на 60 уровне боты получают снаряжение как обычно."
+  "realms.selflootHelp": "Self-loot до 59 уровня; на 60 уровне боты получают снаряжение как обычно.",
+  "modules.squidchatSettings": "Настройки чата",
+  "modules.squidchatRealm": "Мир Conquest of Azeroth; у каждого другого мира свой переключатель на его карточке."
 }
