@@ -299,6 +299,7 @@ class ServerControl {
   }
 
   async stop(id) {
+    this.lastStop = Date.now();
     const service = this.services.find(item => item.id === id);
     if (!service) throw new Error('Unknown service.');
     if (!(await portOpen(service.port))) return;
@@ -374,6 +375,7 @@ class ServerControl {
   note(id, text) { try { fs.appendFileSync(this.logFile(id), `\n==== ${new Date().toISOString()} ${text}\n`); } catch {} }
 
   async stopAll() {
+    this.lastStop = Date.now();
     if (this.commands.stopAll) {
       for (const service of this.services) this.states.set(service.id, 'stopping');
       await this.emit();

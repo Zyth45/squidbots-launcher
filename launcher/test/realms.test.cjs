@@ -393,3 +393,25 @@ test('the Living World realm opens like a new server: its own values at creation
 test('a realm stopped by the launcher is not a crash; one that ends alone is', () => {
   assert.equal(realms.stoppedOnPurpose('nosuchrealm'), false);
 });
+
+test('how a world ended: a GM\'s clean stop is not a crash (exit code first, then the console log)', async () => {
+  assert.equal(realms.endKind({ code: 0 }), 'shutdown');
+  assert.equal(realms.endKind({ code: 2 }), 'restart');
+  assert.equal(realms.endKind({ code: 1 }), 'crash');
+  assert.equal(realms.endKind({ code: null }), 'crash'); // killed
+  assert.equal(realms.endKind({ code: 3221225477 }), 'crash'); // access violation
+  // No exit code known: the last lines of the console log.
+  assert.equal(realms.endKind({ log: 'World: saving\r\nHalting process...\r\n\r\n' }), 'shutdown');
+  assert.equal(realms.endKind({ log: 'Halting process...\n' + 'boot line\n'.repeat(20) }), 'crash');
+  assert.equal(realms.endKind({ log: '' }), 'crash');
+  // A realm: its exit code wins over its log.
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'realm-end-'));
+  fs.mkdirSync(path.join(dir, 'Royaumes', 'living', 'Logs'), { recursive: true });
+  fs.writeFileSync(path.join(dir, 'Royaumes', 'living', 'Logs', 'world-console.log'), 'Halting process...\n');
+  assert.equal(await realms.realmEnd(dir, 'living'), 'shutdown');
+  fs.writeFileSync(path.join(dir, 'Royaumes', 'living', 'Logs', '.exit.json'), JSON.stringify({ code: 2 }));
+  assert.equal(await realms.realmEnd(dir, 'living'), 'restart');
+  fs.writeFileSync(path.join(dir, 'Royaumes', 'living', 'Logs', '.exit.json'), JSON.stringify({ code: null }));
+  assert.equal(await realms.realmEnd(dir, 'living'), 'crash');
+  fs.rmSync(dir, { recursive: true, force: true });
+});

@@ -1728,7 +1728,12 @@ function registerIpc() {
     const before = watch.world;
     Object.assign(watch, { world, crashes: count });
     if (before === 'starting' && world === 'running' && !window?.isFocused()) notifyUser('ready');
-    if (before === 'running' && world !== 'running' && crashed) {
+    // The CoA world ended without the launcher (it was running, no task of the launcher): a crash file, or no clean
+    // end in its console log, is a crash; "Halting process" is a GM's .server shutdown (it stays stopped). The repack's
+    // supervisor keeps no exit code, so a .server restart reads as a shutdown here.
+    const stoppedByUs = Date.now() - (found.lastStop || 0) < 5 * 60 * 1000;
+    const coaEnd = stoppedByUs ? '' : before === 'running' && world === 'stopped' && quiet ? (crashed ? 'crash' : realms.endKind({ log: await realms.logTail(path.join(root, 'Core', 'Logs', 'world-console.log')) })) : before === 'running' && world !== 'running' && crashed ? 'crash' : '';
+    if (coaEnd === 'crash') {
       // At most 3 restarts an hour: a world that crashes at every start is left stopped.
       watch.restarts = watch.restarts.filter(at => Date.now() - at < 3600000);
       if (quiet && settings.restartWorldOnCrash && world === 'stopped' && watch.restarts.length < 3) { watch.restarts.push(Date.now()); notifyUser('restarted'); startEverything().catch(() => {}); }
@@ -1741,6 +1746,10 @@ function registerIpc() {
       const was = watch.realms[realm.key];
       watch.realms[realm.key] = realm.state;
       if (was !== 'running' || realm.state !== 'stopped' || realms.stoppedOnPurpose(realm.key)) continue;
+      // A GM's .server shutdown stays stopped; a .server restart is started again once, not counted.
+      const end = await realms.realmEnd(root, realm.key).catch(() => 'crash');
+      if (end === 'shutdown') continue;
+      if (end === 'restart') { if (quiet) restartRealm(realm.key).catch(() => {}); continue; }
       const restarts = watch.realmRestarts[realm.key] = (watch.realmRestarts[realm.key] || []).filter(at => Date.now() - at < 3600000);
       if (quiet && settings.restartWorldOnCrash && restarts.length < 3) { restarts.push(Date.now()); notifyUser('restarted'); restartRealm(realm.key).catch(() => {}); }
       else notifyUser('crash');

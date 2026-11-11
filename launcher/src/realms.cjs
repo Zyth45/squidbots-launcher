@@ -689,9 +689,12 @@ function launch(root, key, why, env) {
   // realm, so two worlds applying their updates at once never remove each other's file (ERROR 1045).
   const tmp = path.join(dir, 'tmp');
   fs.mkdirSync(tmp, { recursive: true });
+  fs.rmSync(path.join(dir, 'Logs', '.exit.json'), { force: true });
   const child = spawn(worldExe(root), ['-c', 'configs\\worldserver.conf'], { cwd: dir, windowsHide: true, detached: !env, stdio: ['ignore', log, log], env: { ...process.env, ...env, TEMP: tmp, TMP: tmp } });
   fs.closeSync(log);
   fs.writeFileSync(path.join(dir, '.state.json'), JSON.stringify({ pid: child.pid, exe: worldExe(root), started: new Date().toISOString() }));
+  // Its exit code, while the launcher runs: 0 a clean stop, 2 a GM's .server restart, anything else a crash.
+  child.on('exit', code => { try { fs.writeFileSync(path.join(dir, 'Logs', '.exit.json'), JSON.stringify({ code, at: new Date().toISOString() })); } catch {} });
   pinWorld?.(child.pid, `worldserver (${key})`).catch(() => {});
   if (!env) child.unref();
   return child;
@@ -706,6 +709,31 @@ async function anotherStarting(root, except) {
     if (saved && await processOf(root, key) && !(await portOpen(saved.worldPort))) return key;
   }
   return '';
+}
+
+// How a world ended. 'shutdown': exit 0 (a GM's .server shutdown or exit), or, with no exit code known (the launcher
+// was closed, or the repack's supervisor started it), "Halting process" among the last lines of its console log.
+// 'restart': exit 2 (a GM's .server restart). 'crash': any other code, a process killed, or no clean end in its log.
+function endKind({ code, log = '' } = {}) {
+  if (code === 0) return 'shutdown';
+  if (code === 2) return 'restart';
+  if (code !== undefined) return 'crash';
+  const last = String(log).split(/\r?\n/).filter(line => line.trim()).slice(-15).join('\n');
+  return /Halting process/i.test(last) ? 'shutdown' : 'crash';
+}
+async function logTail(file, bytes = 8192) {
+  const handle = await fsp.open(file, 'r').catch(() => null);
+  if (!handle) return '';
+  try {
+    const { size } = await handle.stat();
+    const buffer = Buffer.alloc(Math.min(bytes, size));
+    await handle.read(buffer, 0, buffer.length, size - buffer.length);
+    return buffer.toString('utf8');
+  } finally { await handle.close(); }
+}
+async function realmEnd(root, key) {
+  const exit = await readJson(path.join(dirOf(root, key), 'Logs', '.exit.json'));
+  return endKind({ code: exit && 'code' in exit ? exit.code : undefined, log: await logTail(path.join(dirOf(root, key), 'Logs', 'world-console.log')) });
 }
 
 const stopping = new Set();
@@ -860,4 +888,4 @@ async function clearOffline(root, { coa = false } = {}) {
   if (ids.length) await sql(root, `UPDATE acore_auth.realmlist SET flag = flag & ~2 WHERE id IN (${ids.join(',')})`);
   return ids;
 }
-module.exports = { stoppedOnPurpose, setPinner, livingOwn, clearOffline, setRealmName, ahbotSettingsOf, setAhbotSettingsOf, onlineRunning, shippedTables, syncShippedTables, MODES, queueMarked, memoryFor, neededMb, botsOnline, setDisabled, versionReady, modulesOf, setModule, coaAutostart, setCoaAutostart, skipCoaAtStart, anotherStarting, refreshBotConfigs, status, create, start, stop, stopAll, startMarked, setOptions, settingsOf, saveSettings, purgeBots, writeConfigs, setKey };
+module.exports = { endKind, logTail, realmEnd, stoppedOnPurpose, setPinner, livingOwn, clearOffline, setRealmName, ahbotSettingsOf, setAhbotSettingsOf, onlineRunning, shippedTables, syncShippedTables, MODES, queueMarked, memoryFor, neededMb, botsOnline, setDisabled, versionReady, modulesOf, setModule, coaAutostart, setCoaAutostart, skipCoaAtStart, anotherStarting, refreshBotConfigs, status, create, start, stop, stopAll, startMarked, setOptions, settingsOf, saveSettings, purgeBots, writeConfigs, setKey };
