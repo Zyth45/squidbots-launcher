@@ -1208,11 +1208,11 @@ function livingRealmDialog() {
   return new Promise(resolve => {
     dialog.open(`${dialog.header(t('pack.newRealmTitle', 'New living server'))}<div class="dialog-content">
       <p>${esc(t('pack.newRealmSteps', 'The launcher makes a new realm beside yours: its own characters (none yet) and its own bots, created at level 1 and growing with the age of the server. It takes the Solo self-found settings, the Living server values and an auction house that fills up as the realm grows. One more world runs: about 2 GB of memory with 150 bots. Your realms, characters and settings are not touched.'))}</p>
-      <label class="field"><span>${esc(t('pack.newRealmName', 'Its name in the realm list'))}</span><input id="living-name" type="text" maxlength="32" value="${esc(t('pack.newRealmDefault', 'Living world'))}"></label>
+      <label class="field"><span>${esc(t('pack.newRealmName', 'Its name in the realm list'))}</span><input id="living-name" type="text" maxlength="32" value="${esc(t('pack.newRealmDefault', 'Malfurion'))}"></label>
     </div><footer class="dialog-foot"><button class="button ghost" data-choice="no">${esc(t('common.cancel', 'Cancel'))}</button><button class="button primary" data-choice="yes">${icon('play')}${esc(t('pack.newRealmCreate', 'Make the realm'))}</button></footer>`);
     const element = $('#dialog');
     const done = value => { element.removeEventListener('click', onClick); element.removeEventListener('close', onClose); dialog.close(); resolve(value); };
-    const onClick = event => { const choice = event.target.closest('[data-choice]')?.dataset.choice; if (choice) done(choice === 'yes' ? $('#living-name').value.trim() || t('pack.newRealmDefault', 'Living world') : null); };
+    const onClick = event => { const choice = event.target.closest('[data-choice]')?.dataset.choice; if (choice) done(choice === 'yes' ? $('#living-name').value.trim() || t('pack.newRealmDefault', 'Malfurion') : null); };
     const onClose = () => { if (!element.open) done(null); };
     element.addEventListener('click', onClick);
     element.addEventListener('close', onClose, { once: true });

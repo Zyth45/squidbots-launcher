@@ -1591,7 +1591,7 @@
   "pack.newRealmText2": "Un nouveau royaume à côté du tien, dont le monde ouvre comme un serveur officiel : bots au niveau 1, solo self-found, un hôtel des ventes qui se remplit à mesure que le royaume grandit, annonces « server first ». Tes royaumes ne sont pas touchés.",
   "pack.newRealmSteps": "Le launcher crée un nouveau royaume à côté du tien : ses propres personnages (aucun pour l'instant) et ses propres bots, créés au niveau 1, qui grandissent avec l'âge du serveur. Il reprend les réglages Solo self-found, les valeurs du Serveur vivant et un hôtel des ventes qui se remplit à mesure que le royaume grandit. Un monde de plus tourne : environ 2 Go de mémoire avec 150 bots. Tes royaumes, tes personnages et tes réglages ne sont pas touchés.",
   "pack.newRealmName": "Son nom dans la liste des royaumes",
-  "pack.newRealmDefault": "Monde vivant",
+  "pack.newRealmDefault": "Malfurion",
   "pack.newRealmCreate": "Créer le royaume",
   "pack.newRealmDone": "« {name} » est créé : démarre-le dans l'onglet Royaumes, puis choisis-le dans la liste des royaumes du jeu.",
   "realms.livingText": "Un nouveau royaume CoA qui ouvre comme un serveur officiel : bots au niveau 1 qui grandissent avec le serveur, solo self-found, un hôtel des ventes qui se remplit, des « server first ».",
@@ -1633,5 +1633,9 @@
   "realms.selflootLocked": "Toujours actif sur le royaume Living World.",
   "realms.selflootHelp": "Self-loot jusqu'au niveau 59 ; au 60, les bots sont équipés comme d'habitude.",
   "modules.squidchatSettings": "Réglages du chat",
-  "modules.squidchatRealm": "Royaume Conquest of Azeroth ; chaque autre royaume a son interrupteur sur sa carte."
+  "modules.squidchatRealm": "Royaume Conquest of Azeroth ; chaque autre royaume a son interrupteur sur sa carte.",
+  "realms.catchup": "Les bots rattrapent les joueurs",
+  "realms.catchupHint": "Les bots aléatoires en retard sur les joueurs humains gagnent plus d'expérience.",
+  "realms.needSince2": "Nécessite CoA Bots {version} ou plus récent (installé : {installed}).",
+  "realms.coaAlone": "Un démarrage par royaume : « Démarrer » de l'accueil laisse ce royaume arrêté ; les royaumes cochés démarrent sans lui."
 }

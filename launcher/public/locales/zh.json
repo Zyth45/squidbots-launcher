@@ -1591,7 +1591,7 @@
   "pack.newRealmText2": "在你的服务器旁新建一个国度，像官方服务器开服一样：机器人从 1 级开始，单人自给自足，拍卖行随国度成长逐渐充实，“服务器首杀”公告。你现有的国度不受影响。",
   "pack.newRealmSteps": "启动器会在你的服务器旁新建一个国度：它有自己的角色（暂时没有）和自己的机器人，从 1 级创建并随服务器成长。它采用单人自给自足设置、鲜活服务器的数值，以及随国度成长逐渐充实的拍卖行。会多运行一个世界：150 个机器人约需 2 GB 内存。你的国度、角色和设置不受影响。",
   "pack.newRealmName": "在国度列表中的名称",
-  "pack.newRealmDefault": "鲜活世界",
+  "pack.newRealmDefault": "Malfurion",
   "pack.newRealmCreate": "创建国度",
   "pack.newRealmDone": "“{name}”已创建：在“国度”标签页中启动它，然后在游戏的国度列表中选择它。",
   "realms.livingText": "一个像官方服务器开服的全新 CoA 国度：机器人从 1 级开始并随服务器成长，单人自给自足，逐渐充实的拍卖行，服务器首杀。",
@@ -1633,5 +1633,9 @@
   "realms.selflootLocked": "在 Living World 国度中始终开启。",
   "realms.selflootHelp": "自给拾取持续到 59 级；60 级时机器人照常获得装备。",
   "modules.squidchatSettings": "聊天设置",
-  "modules.squidchatRealm": "Conquest of Azeroth 国度；其他国度在各自卡片上有自己的开关。"
+  "modules.squidchatRealm": "Conquest of Azeroth 国度；其他国度在各自卡片上有自己的开关。",
+  "realms.catchup": "机器人追赶玩家",
+  "realms.catchupHint": "落后于真人玩家的随机机器人获得更多经验。",
+  "realms.needSince2": "需要 CoA Bots {version} 或更高版本（已安装：{installed}）。",
+  "realms.coaAlone": "每个国度单独启动：主页的“启动”不会启动此国度；勾选的国度会在没有它的情况下启动。"
 }

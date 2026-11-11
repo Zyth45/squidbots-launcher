@@ -67,7 +67,7 @@ const MODES = {
   // database starts empty (no character, no auction); the launch mode and the auction house launch curve are imposed,
   // the rest (Solo self-found, the Living pack, the economy) is written once as the realm's own values.
   living: {
-    id: 5, name: 'Living world', prefix: 'rndlv', step: 4,
+    id: 5, name: 'Malfurion', prefix: 'rndlv', step: 4,
     keys: {
       'playerbots.conf': { 'AiPlayerbot.CoaFreshStart.Enable': '1', 'AiPlayerbot.CoaEconomy.LaunchCurve.Enable': '1' },
     },
@@ -77,7 +77,8 @@ const MODES = {
 const SEED_TABLES = ['updates', 'updates_include', 'worldstates', 'active_arena_season', 'playerbots_names', 'playerbots_guild_names',
   'playerbots_arena_team_names', 'coa_build_creator', 'coa_build_creator_enchant', 'coa_build_creator_item_type', 'coa_build_creator_spell',
   'instance_reset', 'pool_quest_save'];
-const DEFAULT_BOTS = 150;
+// Wildcard and Reborn start with 500 bots (user, 11/11): only a realm being created; one made before keeps its count.
+const DEFAULT_BOTS = 500;
 // The Living World realm (user's decision, 11/11): 1000 bots, editable like any realm's count.
 const LIVING_BOTS = 1000;
 const KEY = /^[a-z]{3,12}$/;
@@ -524,7 +525,15 @@ function livingOwn({ ahMerged = true } = {}) {
   for (const [key, value] of Object.entries(CATALOG.recipes.find(recipe => recipe.id === 'self-found-world')?.changes || {})) put(fileOf(key), key, value);
   for (const [key, value] of Object.entries(CATALOG.packs.find(pack => pack.id === 'living')?.changes || {})) if (ahMerged || key !== 'AiPlayerbot.CoaEconomy.AHBot.Enable') put(fileOf(key), key, value);
   const E = 'AiPlayerbot.CoaEconomy.';
+  // A realm that opens like a new official server (Pilote, 11/11): fresh start, launch curve, server firsts, self-loot,
+  // bot chat on. Written on this new realm only; an existing realm keeps the core's defaults.
   put('playerbots.conf', 'AiPlayerbot.CoaWorld.ServerFirst.Enable', 1);
+  put('playerbots.conf', 'AiPlayerbot.CoaFreshStart.Enable', 1);
+  put('playerbots.conf', `${E}LaunchCurve.Enable`, 1);
+  put('playerbots.conf', 'AiPlayerbot.CoaSelfFound', 1);
+  put('playerbots.conf', 'AiPlayerbot.CoaLive.Chat.Enable', 1);
+  // Bots need items: Need on real upgrades (user, 11/11); the other realms keep Greed.
+  put('playerbots.conf', 'AiPlayerbot.LootNeedRollLevel', 2);
   for (const part of ['Filter', 'Buyer', 'Market', 'Rarity']) put('playerbots.conf', `${E}${part}.Enable`, 1);
   put('playerbots.conf', `${E}LaunchCurve.LevelMargin`, 5);
   put('playerbots.conf', `${E}LaunchCurve.StartStockPercent`, 15);

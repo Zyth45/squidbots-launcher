@@ -1,6 +1,8 @@
 {
  "schema": 1,
- "onByDefault": [],
+ "onByDefault": [
+  "AiPlayerbot.CoaFreshStart.CatchUp.Enable"
+ ],
  "onInCore": [
   "AiPlayerbot.CoaCombat.MoltenCore.Enable",
   "AiPlayerbot.CoaLive.Chat.Enable",
@@ -3753,6 +3755,184 @@
     "ru": "Когда боты карты израсходовали это время за тик, следующие думают на следующем тике (никто не ждёт два раза подряд). Никогда не пропускаются: бот в бою, в группе с игроком или в пределах 100 м от него. Сглаживает пики на континенте с множеством ботов. 0: выключено.",
     "zh": "某地图的机器人在一个 tick 中用完此时间后，其余机器人改到下一个 tick 思考（不会连续等待两次）。战斗中、与玩家组队或距玩家 100 码内的机器人从不跳过。可削减机器人众多的大陆上的峰值。0：关闭。"
    }
+  },
+  {
+   "key": "AiPlayerbot.CoaFreshStart.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-population",
+   "type": "bool",
+   "default": 0,
+   "when": "reload",
+   "label": {
+    "en": "Fresh start (a new realm opening)",
+    "fr": "Départ à zéro (ouverture d'un nouveau royaume)",
+    "ru": "Новый старт (открытие нового мира)",
+    "zh": "全新开服（新国度开放）"
+   },
+   "help": {
+    "en": "On for a realm that opens like a new server (the Living World realm turns it on at its creation): the bots start at level 1 with the players.",
+    "fr": "Activé pour un royaume qui ouvre comme un nouveau serveur (le royaume Living World l'active à sa création) : les bots démarrent au niveau 1 avec les joueurs.",
+    "ru": "Включено для мира, который открывается как новый сервер (мир Living World включает это при создании): боты начинают с 1 уровня вместе с игроками.",
+    "zh": "用于像新服务器一样开服的国度（Living World 国度在创建时开启）：机器人与玩家一起从 1 级开始。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaFreshStart.CatchUp.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-population",
+   "type": "bool",
+   "default": 1,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaFreshStart.Enable",
+    "values": [
+     0
+    ]
+   },
+   "help": {
+    "en": "Random bots behind the human players earn more experience.",
+    "fr": "Les bots aléatoires en retard sur les joueurs humains gagnent plus d'expérience.",
+    "ru": "Случайные боты, отстающие от живых игроков, получают больше опыта.",
+    "zh": "落后于真人玩家的随机机器人获得更多经验。"
+   },
+   "label": {
+    "en": "Bots catch up with players",
+    "fr": "Les bots rattrapent les joueurs",
+    "ru": "Боты догоняют игроков",
+    "zh": "机器人追赶玩家"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaFreshStart.CatchUp.MarginLevels",
+   "file": "playerbots.conf",
+   "group": "lw-population",
+   "type": "int",
+   "default": 3,
+   "when": "reload",
+   "min": 0,
+   "max": 20,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaFreshStart.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "No bonus within this many levels of the players",
+    "fr": "Aucun bonus à moins de ce nombre de niveaux des joueurs",
+    "ru": "Без бонуса в пределах стольких уровней от игроков",
+    "zh": "与玩家相差在此等级数以内时无加成"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaFreshStart.CatchUp.StepPercent",
+   "file": "playerbots.conf",
+   "group": "lw-population",
+   "type": "int",
+   "default": 25,
+   "when": "reload",
+   "min": 0,
+   "max": 200,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaFreshStart.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Extra experience per level behind (%)",
+    "fr": "Expérience en plus par niveau de retard (%)",
+    "ru": "Доп. опыт за каждый уровень отставания (%)",
+    "zh": "每落后一级的额外经验（%）"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaFreshStart.CatchUp.MaxRate",
+   "file": "playerbots.conf",
+   "group": "lw-population",
+   "type": "float",
+   "default": 4,
+   "when": "reload",
+   "min": 1,
+   "max": 10,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaFreshStart.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Highest catch-up rate (×)",
+    "fr": "Taux de rattrapage maximal (×)",
+    "ru": "Максимальный множитель догона (×)",
+    "zh": "最高追赶倍率（×）"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaFreshStart.CatchUp.MinHumans",
+   "file": "playerbots.conf",
+   "group": "lw-population",
+   "type": "int",
+   "default": 1,
+   "when": "reload",
+   "min": 1,
+   "max": 1000,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaFreshStart.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Active players needed for the catch-up",
+    "fr": "Joueurs actifs nécessaires au rattrapage",
+    "ru": "Нужно активных игроков для догона",
+    "zh": "触发追赶所需的活跃玩家数"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaFreshStart.CatchUp.MaxTotalRate",
+   "file": "playerbots.conf",
+   "group": "lw-population",
+   "type": "float",
+   "default": 6,
+   "when": "reload",
+   "min": 0,
+   "max": 20,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaFreshStart.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Highest total bot experience rate (×, 0 = no cap)",
+    "fr": "Taux d'expérience total maximal des bots (×, 0 = sans plafond)",
+    "ru": "Максимальный общий множитель опыта ботов (×, 0 = без предела)",
+    "zh": "机器人总经验倍率上限（×，0 = 不限）"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaFreshStart.CatchUp.ActiveDays",
+   "file": "playerbots.conf",
+   "group": "lw-population",
+   "type": "int",
+   "default": 7,
+   "when": "reload",
+   "min": 1,
+   "max": 90,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaFreshStart.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "A player counts if seen within this many days",
+    "fr": "Un joueur compte s'il a été vu dans ce nombre de jours",
+    "ru": "Игрок учитывается, если заходил за столько дней",
+    "zh": "在此天数内上线过的玩家才计入"
+   }
   }
  ],
  "packs": [
@@ -3851,7 +4031,8 @@
     "AiPlayerbot.CoaWorld.Leveling.AreaGuard": 1,
     "AiPlayerbot.CoaLive.NoAwayFlag": 1,
     "AiPlayerbot.CoaWorld.Invasions.OneAtATime": 1,
-    "AiPlayerbot.CoaLive.Chat.Enable": 1
+    "AiPlayerbot.CoaLive.Chat.Enable": 1,
+    "AiPlayerbot.CoaFreshStart.CatchUp.Enable": 1
    }
   }
  ]

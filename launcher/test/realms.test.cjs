@@ -382,3 +382,10 @@ test('the new living server is only offered when the update tool of CoA Bots kno
   assert.strictEqual(status.realms.find(realm => realm.key === 'living').ready, false);
   await assert.rejects(realms.create(root, 'living', { db: fakeMysql().db }), /newer CoA Bots/);
 });
+
+test('the Living World realm opens like a new server: its own values at creation (Pilote, 11/11)', () => {
+  const own = realms.livingOwn()['playerbots.conf'];
+  for (const [key, value] of Object.entries({ 'AiPlayerbot.CoaFreshStart.Enable': '1', 'AiPlayerbot.CoaEconomy.LaunchCurve.Enable': '1', 'AiPlayerbot.CoaWorld.ServerFirst.Enable': '1', 'AiPlayerbot.CoaSelfFound': '1', 'AiPlayerbot.CoaLive.Chat.Enable': '1', 'AiPlayerbot.LootNeedRollLevel': '2' })) assert.strictEqual(own[key], value, key);
+  // Events stay in a GM's hands, as on any realm.
+  for (const key of ['Invasions.Auto', 'ResourceRush.Auto', 'CapitalRaid.Auto']) assert.ok(!Object.hasOwn(own, `AiPlayerbot.CoaWorld.${key}`), key);
+});

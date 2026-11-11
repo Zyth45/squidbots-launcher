@@ -113,13 +113,13 @@ function realmCard(realm, busy) {
     const r = App.state.realms;
     const creatable = r.supported && realm.ready;
     const why = !r.supported && r.version ? t('realms.needVersion', 'Comes with CoA Bots 2.6 (this server: {version}).', { version: r.version })
-      : r.supported && info.since ? t('realms.needSince', 'Comes with CoA Bots {version}: its update tool must know the databases of this realm.', { version: info.since })
+      : r.supported && info.since ? t('realms.needSince2', 'Needs CoA Bots {version} or later (installed: {installed}).', { version: info.since, installed: r.version || '?' })
       : r.supported ? t('realms.needNewer', 'Comes with CoA Bots 2.6: its update tool must know the databases of this realm.')
       : t('realms.needBots', 'Needs CoA Bots in this server.');
     return `<article class="realm-card realm-${realm.key} absent">${head}
-      <ul class="realm-promise"><li>${icon('user')}${esc(t('realms.ownChars', 'Its own characters (your CoA characters stay where they are)'))}</li>${info.noBots ? '' : `<li>${icon('bot')}${esc(t('realms.ownBots', 'Its own bots, {n} to start with', { n: realm.key === 'living' ? 1000 : 150 }))}</li>`}<li>${icon('key')}${esc(t('realms.sameAccount', 'The same game accounts'))}</li></ul>
-      <div class="realm-buttons">${creatable ? `<button class="button primary small wide" data-action="realm-create" data-key="${realm.key}" ${busy ? 'disabled' : ''}>${icon('play')}${esc(working ? t('realms.creating', 'Switching on…') : t('realms.activate', 'Switch on'))}</button>` : `<small class="muted">${esc(why)}</small>`}</div>
-      <footer class="realm-more"><small class="muted">${creatable ? esc(working && App.state.realmLine ? App.state.realmLine : t('realms.createTime', 'About a minute.')) : ''}</small></footer>
+      <ul class="realm-promise"><li>${icon('user')}${esc(t('realms.ownChars', 'Its own characters (your CoA characters stay where they are)'))}</li>${info.noBots ? '' : `<li>${icon('bot')}${esc(t('realms.ownBots', 'Its own bots, {n} to start with', { n: realm.key === 'living' ? 1000 : 500 }))}</li>`}<li>${icon('key')}${esc(t('realms.sameAccount', 'The same game accounts'))}</li></ul>
+      <div class="realm-buttons">${creatable ? `<button class="button primary small wide" data-action="realm-create" data-key="${realm.key}" ${busy ? 'disabled' : ''}>${icon('play')}${esc(working ? t('realms.creating', 'Switching on…') : t('realms.activate', 'Switch on'))}</button>` : `<button class="button primary small wide" disabled title="${esc(why)}">${icon('play')}${esc(t('realms.activate', 'Switch on'))}</button>`}</div>
+      <footer class="realm-more"><small class="muted">${esc(creatable ? (working && App.state.realmLine ? App.state.realmLine : t('realms.createTime', 'About a minute.')) : why)}</small></footer>
     </article>`;
   }
   // Switched off: out of the realm list, everything kept; one click puts it back.
@@ -137,7 +137,7 @@ function realmCard(realm, busy) {
     ? `<button class="button ghost small" data-action="realm-stop" data-key="${realm.key}" ${busy || realm.state === 'starting' ? 'disabled' : ''}>${icon('pause')}${esc(t('realms.stop', 'Stop'))}</button>`
     : `<button class="button primary small" data-action="realm-start" data-key="${realm.key}" ${busy || realm.state === 'queued' ? 'disabled' : ''}>${icon('play')}${esc(t('realms.start', 'Start'))}</button>`;
   const more = realm.main
-    ? `<label class="realm-auto"><input type="checkbox" data-action="realm-auto" data-key="coa" ${realm.autostart !== false ? 'checked' : ''}>${esc(t('realms.autostart', 'Start with the server'))}</label>${ecoSwitch(realm)}<small class="muted">${esc(t('realms.mainFoot', 'Its settings are the base of the other realms.'))}</small>`
+    ? `<label class="realm-auto"><input type="checkbox" data-action="realm-auto" data-key="coa" ${realm.autostart !== false ? 'checked' : ''}>${esc(t('realms.autostart', 'Start with the server'))}</label>${ecoSwitch(realm)}${realm.autostart === false && realmList().some(other => !other.main && other.autostart && !['absent', 'disabled'].includes(other.state)) ? `<small class="muted">${esc(t('realms.coaAlone', 'One start per realm: "Start" on the home page leaves this realm stopped; the realms ticked start without it.'))}</small>` : ''}<small class="muted">${esc(t('realms.mainFoot', 'Its settings are the base of the other realms.'))}</small>`
     : `<label class="realm-auto"><input type="checkbox" data-action="realm-auto" data-key="${realm.key}" ${realm.autostart ? 'checked' : ''}>${esc(t('realms.autostart', 'Start with the server'))}</label>${ecoSwitch(realm)}
        <span class="realm-links"><button class="link-button" data-action="realm-logs" data-key="${realm.key}">${icon('book')}${esc(t('realms.logs', 'Logs'))}</button>
        <button class="link-button" data-action="realm-purge" data-key="${realm.key}" ${on || busy ? 'disabled' : ''} title="${esc(t('realms.purgeHint', 'Deletes the random bots of this realm only; they are made again at its next start.'))}">${icon('refresh')}${esc(t('realms.purge', 'New bots'))}</button>
@@ -151,6 +151,8 @@ function realmCard(realm, busy) {
 // Two quick switches per realm: Bot chat and Self-loot, the same keys as in Server settings, in this realm's own values.
 // Self-loot changes only what comes next (no bot is made again, nothing is taken off). Applied at the realm's next start.
 const SELFLOOT_KEY = 'AiPlayerbot.CoaSelfFound';
+// Bots catch up with the players (SquidBot 5576aa9f): only on the Living World realm, where CoaFreshStart is on.
+const CATCHUP_KEY = 'AiPlayerbot.CoaFreshStart.CatchUp.Enable';
 // A realm's Bot chat and Self-loot values ('' = the main realm), read once, then kept until a save.
 function quickOf(target) {
   const cache = App.state.realmQuick ||= {};
@@ -159,7 +161,7 @@ function quickOf(target) {
     App.api.serverSettings(target).then(conf => {
       const value = key => String(conf.settings.find(setting => setting.key === key)?.value ?? '').trim();
       const has = key => conf.settings.some(setting => setting.key === key);
-      cache[target] = { chat: value(CHAT_KEY), selfloot: value(SELFLOOT_KEY), hasChat: has(CHAT_KEY), hasLoot: has(SELFLOOT_KEY) };
+      cache[target] = { chat: value(CHAT_KEY), selfloot: value(SELFLOOT_KEY), catchup: value(CATCHUP_KEY), hasChat: has(CHAT_KEY), hasLoot: has(SELFLOOT_KEY), hasCatchup: has(CATCHUP_KEY) };
       App.refresh('realms'); App.refresh('server');
     }).catch(() => { cache[target] = { error: true }; });
   }
@@ -174,7 +176,8 @@ function realmQuick(realm) {
   const chat = q.hasChat ? row('realm-chat', CHAT_READY && q.chat === '1', !CHAT_READY, t('lw.chat', 'Bot chat'), CHAT_READY ? t('lw.chatText', 'Bots talk in the chat channels, greet and answer. Off: they stay silent, everything else goes on.') : t('lw.chatSoon', 'Coming with the next bots build.')) : '';
   const loot = q.hasLoot ? row('realm-selfloot', locked || q.selfloot === '1', locked, t('gear.selfloot', 'Self-loot'), locked ? t('realms.selflootLocked', 'Always on for the Living World realm.') : t('gear.note', 'Your bots keep their level and what they wear today: only what comes next changes. Then Save.')) : '';
   const help = loot && !locked ? ` ${t('realms.selflootHelp', 'Self-loot until level 59; at 60 bots are geared as usual.')}` : '';
-  return chat || loot ? `<div class="realm-quick">${chat}${loot}<small class="muted">${esc(t('realms.quickNext', 'Applied at the next start of this realm.') + help)}</small></div>` : '';
+  const catchup = locked && q.hasCatchup ? row('realm-catchup', q.catchup === '1', false, t('realms.catchup', 'Bots catch up with players'), t('realms.catchupHint', 'Random bots behind the human players earn more experience.')) : '';
+  return chat || loot || catchup ? `<div class="realm-quick">${chat}${loot}${catchup}<small class="muted">${esc(t('realms.quickNext', 'Applied at the next start of this realm.') + help)}</small></div>` : '';
 }
 async function realmQuickSet(target, key, on) {
   await App.api.saveServerSettings([{ file: 'playerbots.conf', key, value: on ? '1' : '0' }], target);
@@ -185,6 +188,7 @@ async function realmQuickSet(target, key, on) {
 }
 Object.assign(App.actions, {
   'realm-chat': button => guard(() => realmQuickSet(button.dataset.key, CHAT_KEY, button.dataset.on !== '1'), button),
+  'realm-catchup': button => guard(() => realmQuickSet(button.dataset.key, CATCHUP_KEY, button.dataset.on !== '1'), button),
   'realm-selfloot': button => guard(() => realmQuickSet(button.dataset.key, SELFLOOT_KEY, button.dataset.on !== '1'), button),
 });
 
