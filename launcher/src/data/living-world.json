@@ -283,6 +283,70 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaWorld.Invasions.OneAtATime",
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "type": "bool",
+   "default": 0,
+   "when": "reload",
+   "label": {
+    "en": "One invasion at a time",
+    "fr": "Une seule invasion à la fois",
+    "ru": "Одно вторжение за раз",
+    "zh": "一次只有一场入侵"
+   },
+   "help": {
+    "en": "At most one invasion announced or running; the kinds take turns, with a pause between two. Their turn order starts at the next restart.",
+    "fr": "Au plus une invasion annoncée ou en cours ; les types d'invasion se relaient, avec une pause entre deux. L'ordre de passage démarre au prochain redémarrage.",
+    "ru": "Не больше одного объявленного или идущего вторжения; виды чередуются, с паузой между ними. Очерёдность начинается после следующего перезапуска.",
+    "zh": "最多同时有一场已宣布或进行中的入侵；各类入侵轮流进行，两次之间有间隔。轮换顺序从下次重启开始。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.Invasions.GapMinutesMin",
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "type": "int",
+   "default": 30,
+   "min": 1,
+   "max": 1440,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Invasions.OneAtATime",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Pause between two invasions, minimum (min)",
+    "fr": "Pause entre deux invasions, minimum (min)",
+    "ru": "Пауза между вторжениями, минимум (мин)",
+    "zh": "两次入侵之间的间隔，最短（分钟）"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.Invasions.GapMinutesMax",
+   "file": "playerbots.conf",
+   "group": "lw-invasions",
+   "type": "int",
+   "default": 60,
+   "min": 1,
+   "max": 1440,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Invasions.OneAtATime",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Pause between two invasions, maximum (min)",
+    "fr": "Pause entre deux invasions, maximum (min)",
+    "ru": "Пауза между вторжениями, максимум (мин)",
+    "zh": "两次入侵之间的间隔，最长（分钟）"
+   }
+  },
+  {
    "file": "playerbots.conf",
    "group": "lw-invasions",
    "when": "reload",
@@ -3666,7 +3730,8 @@
     "AiPlayerbot.CoaWorld.SlowIdleTriggers": 1,
     "AiPlayerbot.CoaLive.MaintenanceSpread": 1,
     "AiPlayerbot.CoaWorld.Leveling.AreaGuard": 1,
-    "AiPlayerbot.CoaLive.NoAwayFlag": 1
+    "AiPlayerbot.CoaLive.NoAwayFlag": 1,
+    "AiPlayerbot.CoaWorld.Invasions.OneAtATime": 1
    }
   }
  ]
