@@ -731,6 +731,14 @@ async function logTail(file, bytes = 8192) {
     return buffer.toString('utf8');
   } finally { await handle.close(); }
 }
+// The last "WORLD_EXIT code=<n> at=<YYYY-MM-DDTHH:MM:SS>" of a supervisor log, if it is recent (local time).
+function lastWorldExit(log, now = Date.now(), within = 10 * 60 * 1000) {
+  const all = [...String(log).matchAll(/WORLD_EXIT code=(-?\d+) at=(\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d)/g)];
+  const last = all[all.length - 1];
+  if (!last) return undefined;
+  const at = new Date(last[2]).getTime();
+  return Number.isFinite(at) && now - at < within && at - now < 60000 ? Number(last[1]) : undefined;
+}
 async function realmEnd(root, key) {
   const exit = await readJson(path.join(dirOf(root, key), 'Logs', '.exit.json'));
   return endKind({ code: exit && 'code' in exit ? exit.code : undefined, log: await logTail(path.join(dirOf(root, key), 'Logs', 'world-console.log')) });
@@ -888,4 +896,4 @@ async function clearOffline(root, { coa = false } = {}) {
   if (ids.length) await sql(root, `UPDATE acore_auth.realmlist SET flag = flag & ~2 WHERE id IN (${ids.join(',')})`);
   return ids;
 }
-module.exports = { endKind, logTail, realmEnd, stoppedOnPurpose, setPinner, livingOwn, clearOffline, setRealmName, ahbotSettingsOf, setAhbotSettingsOf, onlineRunning, shippedTables, syncShippedTables, MODES, queueMarked, memoryFor, neededMb, botsOnline, setDisabled, versionReady, modulesOf, setModule, coaAutostart, setCoaAutostart, skipCoaAtStart, anotherStarting, refreshBotConfigs, status, create, start, stop, stopAll, startMarked, setOptions, settingsOf, saveSettings, purgeBots, writeConfigs, setKey };
+module.exports = { lastWorldExit, endKind, logTail, realmEnd, stoppedOnPurpose, setPinner, livingOwn, clearOffline, setRealmName, ahbotSettingsOf, setAhbotSettingsOf, onlineRunning, shippedTables, syncShippedTables, MODES, queueMarked, memoryFor, neededMb, botsOnline, setDisabled, versionReady, modulesOf, setModule, coaAutostart, setCoaAutostart, skipCoaAtStart, anotherStarting, refreshBotConfigs, status, create, start, stop, stopAll, startMarked, setOptions, settingsOf, saveSettings, purgeBots, writeConfigs, setKey };

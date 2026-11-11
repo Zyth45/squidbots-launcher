@@ -1732,7 +1732,9 @@ function registerIpc() {
     // end in its console log, is a crash; "Halting process" is a GM's .server shutdown (it stays stopped). The repack's
     // supervisor keeps no exit code, so a .server restart reads as a shutdown here.
     const stoppedByUs = Date.now() - (found.lastStop || 0) < 5 * 60 * 1000;
-    const coaEnd = stoppedByUs ? '' : before === 'running' && world === 'stopped' && quiet ? (crashed ? 'crash' : realms.endKind({ log: await realms.logTail(path.join(root, 'Core', 'Logs', 'world-console.log')) })) : before === 'running' && world !== 'running' && crashed ? 'crash' : '';
+    const coaEnd = stoppedByUs ? '' : before === 'running' && world === 'stopped' && quiet ? (crashed ? 'crash' : realms.endKind({ code: realms.lastWorldExit(await realms.logTail(path.join(root, 'Core', 'Logs', 'supervisor.log'))), log: await realms.logTail(path.join(root, 'Core', 'Logs', 'world-console.log')) })) : before === 'running' && world !== 'running' && crashed ? 'crash' : '';
+    // A GM's .server restart (exit 2, read from the 3.0 supervisor): started again once, not counted.
+    if (coaEnd === 'restart') startEverything().catch(() => {});
     if (coaEnd === 'crash') {
       // At most 3 restarts an hour: a world that crashes at every start is left stopped.
       watch.restarts = watch.restarts.filter(at => Date.now() - at < 3600000);

@@ -415,3 +415,12 @@ test('how a world ended: a GM\'s clean stop is not a crash (exit code first, the
   assert.equal(await realms.realmEnd(dir, 'living'), 'crash');
   fs.rmSync(dir, { recursive: true, force: true });
 });
+
+test('the CoA world: its exit code from the repack supervisor log, when recent', () => {
+  const now = new Date(2026, 10, 11, 23, 0, 0).getTime();
+  const log = 'started\nWORLD_EXIT code=1 at=2026-11-11T20:00:00\nWORLD_EXIT code=2 at=2026-11-11T22:58:30\n';
+  assert.equal(realms.lastWorldExit(log, now), 2);
+  assert.equal(realms.endKind({ code: realms.lastWorldExit(log, now) }), 'restart');
+  assert.equal(realms.lastWorldExit('WORLD_EXIT code=0 at=2026-11-11T22:00:00\n', now), undefined); // too old: the log decides
+  assert.equal(realms.lastWorldExit('', now), undefined);
+});
