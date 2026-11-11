@@ -2113,6 +2113,20 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaLive.NoAwayFlag",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "bool",
+   "default": 0,
+   "when": "reload",
+   "label": {
+    "en": "No <Away> tag on resting bots in the chat",
+    "fr": "Pas d'étiquette <Absent> sur les bots au repos dans le chat",
+    "ru": "Без метки <Отошёл> у отдыхающих ботов в чате",
+    "zh": "聊天中休息的机器人不显示 <离开> 标记"
+   }
+  },
+  {
    "file": "playerbots.conf",
    "group": "lw-social",
    "when": "reload",
@@ -3651,7 +3665,8 @@
     "AiPlayerbot.CoaWorld.CapitalRaid.Enable": 1,
     "AiPlayerbot.CoaWorld.SlowIdleTriggers": 1,
     "AiPlayerbot.CoaLive.MaintenanceSpread": 1,
-    "AiPlayerbot.CoaWorld.Leveling.AreaGuard": 1
+    "AiPlayerbot.CoaWorld.Leveling.AreaGuard": 1,
+    "AiPlayerbot.CoaLive.NoAwayFlag": 1
    }
   }
  ]
