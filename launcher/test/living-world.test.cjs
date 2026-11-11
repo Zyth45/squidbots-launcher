@@ -25,7 +25,7 @@ test('the living world manifest shipped with the launcher is valid and makes its
   // The performance switches are technical, not game features: left out until the A/B bench (Pilote, 09/11). Pursuit stop and
   // Telegraph made the dungeon runs worse on the bench (Pilote, 09/11): the pack turns on only the combat options benched. Off-tank out too (two bot tanks fight over a monster). Real
   // battlegrounds of bots kept, no simulated ones (user, 09/11: "BGs are comfort and keep the world alive without players").
-  const switches = CATALOG.settings.filter(setting => setting.living && setting.kind === 'bool' && setting.group !== 'lw-performance' && !['AiPlayerbot.CoaWorld.ServerFirst.Enable', 'AiPlayerbot.CoaCombat.LootNeedEpicOnly', 'AiPlayerbot.CoaCombat.PursuitStop.Enable', 'AiPlayerbot.CoaCombat.Telegraph.Enable', 'AiPlayerbot.CoaCombat.OffTank.Enable', 'AiPlayerbot.CoaWorld.BgSim.Enable', 'AiPlayerbot.CoaWorld.BgSim.ReplaceAutoJoin', 'AiPlayerbot.CoaEconomy.LaunchCurve.Enable', 'AiPlayerbot.CoaWorld.CapitalRaid.Auto'].includes(setting.key));
+  const switches = CATALOG.settings.filter(setting => setting.living && setting.kind === 'bool' && setting.group !== 'lw-performance' && !['AiPlayerbot.CoaWorld.ServerFirst.Enable', 'AiPlayerbot.CoaCombat.LootNeedEpicOnly', 'AiPlayerbot.CoaCombat.PursuitStop.Enable', 'AiPlayerbot.CoaCombat.Telegraph.Enable', 'AiPlayerbot.CoaCombat.OffTank.Enable', 'AiPlayerbot.CoaWorld.BgSim.Enable', 'AiPlayerbot.CoaWorld.BgSim.ReplaceAutoJoin', 'AiPlayerbot.CoaEconomy.LaunchCurve.Enable', 'AiPlayerbot.CoaWorld.CapitalRaid.Auto', 'AiPlayerbot.CoaLive.Sessions.Enable'].includes(setting.key));
   // Only the performance switches the bench validated (user's decision, 10/11): slower idle checks, upkeep spread.
   assert.deepEqual(Object.keys(livingPack.changes).filter(key => CATALOG.settings.find(setting => setting.key === key)?.group === 'lw-performance').sort(), ['AiPlayerbot.CoaLive.MaintenanceSpread', 'AiPlayerbot.CoaWorld.SlowIdleTriggers']);
   assert.deepEqual(switches.filter(setting => livingPack.changes[setting.key] !== '1').map(setting => setting.key), []);
@@ -33,7 +33,7 @@ test('the living world manifest shipped with the launcher is valid and makes its
   assert.deepEqual([livingPack.changes['AiPlayerbot.CoaCombat.LootNeedEpicOnly'], livingPack.changes['AiPlayerbot.CoaCombat.LootNeedMinUpgradePct']], ['0', '10']);
   assert.ok(!Object.keys(livingPack.changes).some(key => CATALOG.hidden.includes(key)));
   // The density needs the bots' online rotation, a key of the main catalog: the pack turns it on, Classic never.
-  assert.equal(livingPack.changes['AiPlayerbot.EnablePeriodicOnlineOffline'], '1');
+  assert.equal(livingPack.changes['AiPlayerbot.EnablePeriodicOnlineOffline'], '0');
   assert.ok(!Object.hasOwn(CATALOG.packs.find(pack => pack.id === 'classic').changes, 'AiPlayerbot.EnablePeriodicOnlineOffline'));
   // The data files of the dashboard are driven by the dashboard: hidden.
   for (const key of ['AiPlayerbot.CoaWorld.Events.Enable', 'AiPlayerbot.CoaEconomy.DataFile.Enable', 'AiPlayerbot.CoaLive.DataFile.Enable']) assert.ok(CATALOG.hidden.includes(key), key);
@@ -72,7 +72,8 @@ test('the living world manifest shipped with the launcher is valid and makes its
   // onInCore: on in the core's own code, shown on with no master (Molten Core, 3.0).
   const inCore = require('../src/data/living-world.json').onInCore || [];
   assert.ok(inCore.includes('AiPlayerbot.CoaCombat.MoltenCore.Enable'));
-  for (const key of inCore) assert.equal(living.find(item => item.key === key)?.default, '1', key);
+  const shipped = require('../src/data/living-world.json').options;
+  for (const key of inCore) assert.equal(String(shipped.find(item => item.key === key)?.default), '1', key);
   assert.deepEqual(living.filter(setting => /(^|.)Enabled?$/i.test(setting.key) && setting.default !== '0' && !allowed.includes(setting.key) && !inCore.includes(setting.key)).map(setting => setting.key), []);
   const section = CATALOG.sections.find(item => item.id === 'living');
   // Every tab of the manifest is in one section: Living world, or Bots for Group combat (after Dungeon Clear).
@@ -174,9 +175,9 @@ test('bot surname: the player\'s 0/1 is kept, 2 is a new choice, and the list sh
   const list = settings.find(item => item.key === 'AiPlayerbot.CoaBotSurnameList');
   assert.equal(list.value, '');
   assert.deepEqual([list.offWhen, list.hideOff], [{ key: 'AiPlayerbot.CoaBotSurname', values: ['0', '1'] }, true]);
-  // Identify: off by default, greyed (no effect) while the surname is not "Bot".
+  // Identify: on by default since 3.0 (SquidBot), greyed (no effect) while the surname is not "Bot".
   const identify = settings.find(item => item.key === 'AiPlayerbot.CoaBotIdentify');
-  assert.deepEqual([identify.value, identify.when, identify.offWhen, identify.hideOff], ['0', 'reload', { key: 'AiPlayerbot.CoaBotSurname', values: ['0', '2'] }, undefined]);
+  assert.deepEqual([identify.value, identify.when, identify.offWhen, identify.hideOff], ['1', 'reload', { key: 'AiPlayerbot.CoaBotSurname', values: ['0', '2'] }, undefined]);
   assert.equal(await fsp.readFile(bots, 'utf8'), before);
   await config.save([{ file: 'playerbots.conf', key: 'AiPlayerbot.CoaBotSurname', value: '2' }, { file: 'playerbots.conf', key: 'AiPlayerbot.CoaBotSurnameList', value: 'Ashford, Brightwood' }]);
   const after = await fsp.readFile(bots, 'utf8');
@@ -273,7 +274,7 @@ test('the Living pack never applies by itself: the player\'s online rotation sta
   assert.match(before, /^AiPlayerbot\.EnablePeriodicOnlineOffline = 0\r?$/m);
   const config = new ServerConfig(root);
   const overview = await config.overview();
-  assert.equal(overview.packs.find(pack => pack.id === 'living').changes['AiPlayerbot.EnablePeriodicOnlineOffline'], '1');
+  assert.equal(overview.packs.find(pack => pack.id === 'living').changes['AiPlayerbot.EnablePeriodicOnlineOffline'], '0');
   assert.equal(overview.settings.find(setting => setting.key === 'AiPlayerbot.EnablePeriodicOnlineOffline').value, '0');
   assert.deepEqual(overview.packUndo, {});
   assert.equal(await fsp.readFile(bots, 'utf8'), before);

@@ -7,11 +7,20 @@
   "AiPlayerbot.CoaWorld.WorldPvp.Skirmish.Enable",
   "AiPlayerbot.CoaWorld.WorldPvp.CapitalDefence.Enable",
   "AiPlayerbot.CoaWorld.Travel.Hearthstone",
-  "AiPlayerbot.CoaWorld.Guilds.Help",
-  "AiPlayerbot.CoaLive.Chat.Enable"
+  "AiPlayerbot.CoaWorld.Guilds.Help"
  ],
  "onInCore": [
-  "AiPlayerbot.CoaCombat.MoltenCore.Enable"
+  "AiPlayerbot.CoaCombat.MoltenCore.Enable",
+  "AiPlayerbot.CoaLive.Chat.Enable",
+  "AiPlayerbot.CoaLive.Enable",
+  "AiPlayerbot.CoaLive.Social.Enable",
+  "AiPlayerbot.CoaLive.City.Enable",
+  "AiPlayerbot.CoaLive.Sheath.Enable",
+  "AiPlayerbot.CoaLive.CleanWorld.Enable",
+  "AiPlayerbot.CoaLive.NightBank.Enable",
+  "AiPlayerbot.CoaLive.Immersion.Enable",
+  "AiPlayerbot.CoaSoul.Enable",
+  "AiPlayerbot.CoaLive.DataFile.Enable"
  ],
  "groups": [
   {
@@ -1345,7 +1354,7 @@
    "file": "playerbots.conf",
    "group": "lw-population",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "reload",
    "hidden": true,
    "label": {
@@ -2058,7 +2067,7 @@
    "when": "reload",
    "key": "AiPlayerbot.CoaLive.Enable",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "label": {
     "en": "Bots react like people (CoA Live)",
     "fr": "Les bots réagissent comme des joueurs (CoA Live)",
@@ -2103,7 +2112,7 @@
    "file": "playerbots.conf",
    "group": "lw-social",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "reload",
    "idleWhen": {
     "key": "AiPlayerbot.CoaLive.Enable",
@@ -2157,7 +2166,7 @@
    "file": "playerbots.conf",
    "group": "lw-social",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "reload",
    "idleWhen": {
     "key": "AiPlayerbot.CoaLive.Enable",
@@ -2183,7 +2192,7 @@
    "file": "playerbots.conf",
    "group": "lw-social",
    "type": "int",
-   "default": 0,
+   "default": 1,
    "min": 0,
    "max": 6,
    "when": "reload",
@@ -2211,7 +2220,7 @@
    "file": "playerbots.conf",
    "group": "lw-social",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "reload",
    "label": {
     "en": "No <Away> tag on resting bots in the chat",
@@ -2226,7 +2235,7 @@
    "when": "reload",
    "key": "AiPlayerbot.CoaSoul.Enable",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "label": {
     "en": "Bot personalities",
     "fr": "Personnalités des bots",
@@ -2271,7 +2280,7 @@
    "file": "playerbots.conf",
    "group": "lw-social",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "reload",
    "idleWhen": {
     "key": "AiPlayerbot.CoaSoul.Enable",
@@ -2460,7 +2469,7 @@
    "file": "playerbots.conf",
    "group": "lw-social",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "reload",
    "idleWhen": {
     "key": "AiPlayerbot.CoaBotSurname",
@@ -3113,7 +3122,7 @@
    "file": "playerbots.conf",
    "group": "lw-citylife",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "reload",
    "label": {
     "en": "City Life",
@@ -3133,7 +3142,7 @@
    "file": "playerbots.conf",
    "group": "lw-citylife",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "reload",
    "label": {
     "en": "Bots fish on the shores",
@@ -3181,7 +3190,7 @@
    "file": "playerbots.conf",
    "group": "lw-citylife",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "reload",
    "label": {
     "en": "Bots sheathe their weapons out of combat",
@@ -3201,7 +3210,7 @@
    "file": "playerbots.conf",
    "group": "lw-citylife",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "reload",
    "label": {
     "en": "Bots revive away from monsters and leave the water",
@@ -3552,7 +3561,7 @@
    "file": "playerbots.conf",
    "group": "lw-performance",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "reload",
    "label": {
     "en": "Bot level-up upkeep done a step a second",
@@ -3720,7 +3729,7 @@
     "AiPlayerbot.CoaCombat.CombatPurge.Enable": 1,
     "AiPlayerbot.CoaCombat.SunkenTemple.Enable": 1,
     "AiPlayerbot.CoaCombat.MoltenCore.Enable": 1,
-    "AiPlayerbot.CoaLive.Sessions.Enable": 1,
+    "AiPlayerbot.CoaLive.Sessions.Enable": 0,
     "AiPlayerbot.CoaWorld.DungeonSim.Enable": 1,
     "AiPlayerbot.CoaWorld.Recovery.Enable": 1,
     "AiPlayerbot.CoaWorld.Travel.Enable": 1,
@@ -3744,7 +3753,7 @@
     "AiPlayerbot.CoaLive.City.Enable": 1,
     "AiPlayerbot.CoaLive.Immersion.Enable": 1,
     "AiPlayerbot.CoaWorld.Density.Enable": 1,
-    "AiPlayerbot.EnablePeriodicOnlineOffline": 1,
+    "AiPlayerbot.EnablePeriodicOnlineOffline": 0,
     "AiPlayerbot.CoaCombat.BlackwingLair.Enable": 1,
     "AiPlayerbot.CoaSoul.Enable": 1,
     "AiPlayerbot.CoaCombat.ZulGurub.Enable": 1,
