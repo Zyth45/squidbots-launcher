@@ -13,7 +13,7 @@ realm stays in Realms; the player's real choice is the bots' gear. Open question
 | Living world | the 9 tabs (Advanced) | pack cards | Banner: **"Bot chat"** — "Bots talk in the chat channels, greet and answer. Everything else of the living world stays on." (switch: CoaLive.Enable + Guilds.Greetings, after SquidBot confirms CoaLive.Enable only drives chat). |
 | Wizard (Get started) | bot count, levels | "fresh start" = reset of the existing realm | Step **"Bot gear"**: **"Classic"** — "Bots get gear made for their level (our item level rules)." / **"Self-loot"** — "Bots only wear what they loot or craft; nothing is generated." Levels are never changed on an existing server; a fresh start is the Living World realm. |
 | Modules | SquidBots-AH settings, Dungeon Clear, etc. | SquidBots-AH switch to turn it on | "SquidBots-AH — on by default" with its settings button. |
-| Updates (CoA Bots 3.0) | — | — | Line shown from coa_update: "New auction house bot: SquidBots-AH replaces the old module, with our recommended settings. The old bot's auctions are cleared once; players' auctions are never touched." |
+| Updates (CoA Bots 3.0) | — | — | Line shown from coa_update: "New auction house bot: SquidBots-AH replaces the old module, with our recommended settings. The old bot's auctions are cleared once; players' auctions are never touched. The bots now price their items from the prices seen on the real CoA auction house, kept in line with quality and crafting costs." |
 
 Cost: about one day (catalog and packs, server.js/realms.js/core.js, the essentials view, locales fr/ru/zh, tests),
 then a beta.3 for the user's screenshots.
