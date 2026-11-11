@@ -2162,6 +2162,32 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaLive.LegacyChat",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "bool",
+   "default": 0,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaLive.Chat.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Old playerbots chatter (broadcasts, suggestions) alongside the living chat",
+    "fr": "Ancien bavardage de playerbots (annonces, suggestions) en plus du chat vivant",
+    "ru": "Старая болтовня playerbots (объявления, предложения) вместе с живым чатом",
+    "zh": "在鲜活聊天之外保留旧版 playerbots 闲聊（广播、建议）"
+   },
+   "help": {
+    "en": "Off by default: while the living chat speaks, the older broadcasts (loot, quests, kills, level up, guild) and RandomBotTalk lines stay silent, and the CoA Live banks say these moments. Answers to commands are not concerned.",
+    "fr": "Désactivé par défaut : tant que le chat vivant parle, les anciennes annonces (butin, quêtes, victimes, niveau, guilde) et les lignes RandomBotTalk se taisent, et les banques CoA Live disent ces moments. Les réponses aux commandes ne sont pas concernées.",
+    "ru": "Выключено по умолчанию: пока говорит живой чат, старые объявления (добыча, задания, убийства, уровень, гильдия) и реплики RandomBotTalk молчат, а эти моменты озвучивают банки CoA Live. Ответы на команды не затрагиваются.",
+    "zh": "默认关闭：鲜活聊天开启时，旧版广播（拾取、任务、击杀、升级、公会）和 RandomBotTalk 台词保持沉默，由 CoA Live 语句库说出这些时刻。对命令的回复不受影响。"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaLive.Social.Enable",
    "file": "playerbots.conf",
    "group": "lw-social",
