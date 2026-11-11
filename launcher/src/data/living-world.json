@@ -1376,6 +1376,48 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaWorld.Leveling.AreaGuard",
+   "file": "playerbots.conf",
+   "group": "lw-travellers",
+   "type": "bool",
+   "default": 0,
+   "when": "reload",
+   "label": {
+    "en": "Levelling bots avoid areas above their level",
+    "fr": "Les bots en montée de niveau évitent les zones au-dessus de leur niveau",
+    "ru": "Прокачивающиеся боты избегают зон выше своего уровня",
+    "zh": "升级中的机器人避开高于自身等级的区域"
+   },
+   "help": {
+    "en": "Bots skip grind spots, quest places and travel spots in a subzone well above their level (e.g. a level 10 bot stays out of the Barrens' level 20 packs).",
+    "fr": "Les bots évitent les coins de farm, les lieux de quête et les points de passage d'une sous-zone bien au-dessus de leur niveau (par ex. un bot de niveau 10 reste loin des groupes de niveau 20 des Tarides).",
+    "ru": "Боты обходят места фарма, заданий и путевые точки в подзоне намного выше их уровня (например, бот 10 уровня держится подальше от групп 20 уровня в Степях).",
+    "zh": "机器人会避开远高于自身等级的子区域中的刷怪点、任务地点和旅行点（例如 10 级机器人会远离贫瘠之地的 20 级怪群）。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.Leveling.AreaGuardLevels",
+   "file": "playerbots.conf",
+   "group": "lw-travellers",
+   "type": "int",
+   "default": 3,
+   "min": 0,
+   "max": 20,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Leveling.AreaGuard",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Levels above the bot an area may be",
+    "fr": "Niveaux au-dessus du bot qu'une zone peut avoir",
+    "ru": "На сколько уровней зона может быть выше бота",
+    "zh": "区域可高于机器人的等级数"
+   }
+  },
+  {
    "file": "playerbots.conf",
    "when": "reload",
    "group": "lw-pvp",
@@ -3608,7 +3650,8 @@
     "AiPlayerbot.CoaEconomy.BotAuctions.RealHousePrices": 1,
     "AiPlayerbot.CoaWorld.CapitalRaid.Enable": 1,
     "AiPlayerbot.CoaWorld.SlowIdleTriggers": 1,
-    "AiPlayerbot.CoaLive.MaintenanceSpread": 1
+    "AiPlayerbot.CoaLive.MaintenanceSpread": 1,
+    "AiPlayerbot.CoaWorld.Leveling.AreaGuard": 1
    }
   }
  ]
