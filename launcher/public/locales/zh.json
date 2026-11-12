@@ -1645,5 +1645,6 @@
   "home.realmStoppingText": "{name} 正在停止：先保存角色和机器人。",
   "live.realmStarting": "{name} 正在启动：运行后其数据将显示在这里。",
   "realms.cardsLater": "它在游戏国度列表中的外观（背景、文字）将在服务器下次启动时显示。",
-  "realms.disableLine": "关闭会将其从游戏国度列表中移除，不删除任何内容。仅停止时，它仍以“离线”显示在列表中。"
+  "realms.disableLine": "关闭会将其从游戏国度列表中移除，不删除任何内容。仅停止时，它仍以“离线”显示在列表中。",
+  "cards.savedNow": "已保存：游戏的国度列表现在会显示（请重新打开国度列表）。"
 }

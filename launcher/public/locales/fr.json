@@ -1645,5 +1645,6 @@
   "home.realmStoppingText": "{name} s’arrête : il sauvegarde d’abord ses personnages et ses bots.",
   "live.realmStarting": "{name} démarre : ses chiffres apparaissent ici dès qu’il tourne.",
   "realms.cardsLater": "Son habillage dans la liste des royaumes du jeu (fond, texte) apparaîtra au prochain démarrage du serveur.",
-  "realms.disableLine": "Éteindre le retire de la liste des royaumes du jeu, sans rien supprimer. Arrêté, il reste dans la liste, « hors ligne »."
+  "realms.disableLine": "Éteindre le retire de la liste des royaumes du jeu, sans rien supprimer. Arrêté, il reste dans la liste, « hors ligne ».",
+  "cards.savedNow": "Enregistré : la liste des royaumes du jeu l’affiche maintenant (rouvre la liste des royaumes)."
 }

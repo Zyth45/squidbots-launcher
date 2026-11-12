@@ -419,7 +419,7 @@ Object.assign(App.actions, {
     const realms = { ...cards.realms, [key]: { mode: Number($('#card-mode').value), image: $('#card-image').value, description: Number($('#card-description').value), name: $('#card-name').value.trim(), subtitle: $('#card-subtitle').value.trim() } };
     const result = await App.api.cardsSave({ expansion: Number($('#card-expansion').value), realms });
     dialog.close();
-    toast(result.authRunning ? t('cards.savedRunning', 'Saved: the realm list shows it after the next start of the server.') : t('cards.saved', 'Saved: the realm list shows it at the next start of the server.'), 'success');
+    toast(result.shown === 'now' ? t('cards.savedNow', 'Saved: the realm list of the game shows it now (open the realm list again).') : result.authRunning ? t('cards.savedRunning', 'Saved: the realm list shows it after the next start of the server.') : t('cards.saved', 'Saved: the realm list shows it at the next start of the server.'), 'success');
     loadRealms();
   }, button),
 });

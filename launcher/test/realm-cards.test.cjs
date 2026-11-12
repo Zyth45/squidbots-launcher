@@ -77,3 +77,14 @@ test('the living server opens on the Malfurion background; an untouched card of 
   assert.equal(cards.configLines(saved, { living: 5 }, { perRealm: true })['RealmCards.Realm.5.Image'], '"Malfurion"');
   assert.equal(saved.version, cards.VERSION);
 });
+
+test('the live authserver config is reported changed when a card changes, and only then (the launcher restarts the authserver on it)', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'cards-live-'));
+  fs.mkdirSync(path.join(root, 'Core', 'configs'), { recursive: true });
+  fs.writeFileSync(path.join(root, 'Core', 'configs', 'authserver.conf'), CONF);
+  await cards.save(root, cards.DEFAULTS);
+  assert.deepEqual(await cards.apply(root, { coa: 1, living: 5 }), ['Core/configs/authserver.conf']);
+  assert.deepEqual(await cards.apply(root, { coa: 1, living: 5 }), []);
+  await cards.save(root, { ...cards.DEFAULTS, realms: { ...cards.DEFAULTS.realms, living: { ...cards.DEFAULTS.realms.living, image: 'Elune' } } });
+  assert.deepEqual(await cards.apply(root, { coa: 1, living: 5 }), ['Core/configs/authserver.conf']);
+});

@@ -1482,13 +1482,25 @@ function registerIpc() {
   };
   // A launcher that knows the cards meets this server for the first time: the official look, once; the player
   // changes it afterwards in the gear of each realm card.
+  // The authserver reads the realm cards only when it starts: whenever the card lines of its config change while it
+  // runs (a realm created, a card saved, an older choice upgraded at the launcher's start), it is restarted alone, so the
+  // realm list shows them at once. Players already in a world stay there (the authserver only serves the login and the
+  // realm list). Returns 'later' when that was not possible (an authserver not started from this repack): the cards then
+  // show at the next start of the server; 'now' when it was restarted; '' when nothing changed or it was not running.
+  const authRunning = async () => (await requireControl().status()).some(service => service.id === 'auth' && service.state === 'running');
+  const restartAuthForCards = async () => {
+    try { await stopOne('auth'); await requireControl().start('auth'); await realmsOnline(); return 'now'; }
+    catch { return 'later'; }
+  };
   applyCards = async root => {
-    if (!root || !inspectRepack(root).repack) return;
+    if (!root || !inspectRepack(root).repack) return '';
     let cards = await realmCards.read(root);
     if (!cards.version) { cards = await realmCards.save(root, realmCards.DEFAULTS); await applyCardNames(root, cards); }
     // A choice saved by an older launcher: written again in this version (an untouched living card gets Malfurion).
     else if (cards.version < realmCards.VERSION) await realmCards.save(root, cards);
-    await realmCards.apply(root, await cardIds(root));
+    const changed = await realmCards.apply(root, await cardIds(root));
+    if (!changed.includes('Core/configs/authserver.conf') || root !== serverPath() || !(await authRunning().catch(() => false))) return '';
+    return restartAuthForCards();
   };
   handle('cards:get', async () => {
     if (!serverPath()) throw new Error('Choose the server folder first.');
@@ -1498,30 +1510,21 @@ function registerIpc() {
     if (!serverPath()) throw new Error('Choose the server folder first.');
     const cards = await realmCards.save(serverPath(), value);
     await applyCardNames(serverPath(), cards);
-    await realmCards.apply(serverPath(), await cardIds(serverPath()));
-    const auth = (await requireControl().status()).find(service => service.id === 'auth');
-    return { cards, authRunning: auth?.state === 'running' };
+    const shown = await applyCards(serverPath()).catch(() => 'later');
+    return { cards, shown, authRunning: shown === 'later' };
   });
-  // The authserver reads the realm cards only when it starts: one already running is restarted alone after a realm is
-  // created, so the new card shows its background and description at once. Players already in a world stay there (the
-  // authserver only serves the login and the realm list). Not possible: the card shows at the next start of the server.
-  const authRunning = async () => (await requireControl().status()).some(service => service.id === 'auth' && service.state === 'running');
-  const restartAuthForCards = async () => {
-    try { await stopOne('auth'); await requireControl().start('auth'); await realmsOnline(); return false; }
-    catch { return true; }
-  };
   handle('realms:create', async (key, options) => {
-    const authBefore = await authRunning().catch(() => false);
+    let shown = '';
     if (options?.start === true) {
       await realmBase(false);
       await realms.create(serverPath(), text(key, 12), { bots: Number(options?.bots) || undefined, name: text(options?.name, 32) || undefined, notify: line => send('realms:progress', line) });
       // The new realm's card (background, description) in the authserver's config before the authserver starts.
-      await applyCards(serverPath()).catch(() => {});
+      shown = await applyCards(serverPath()).catch(() => 'later');
       await realms.start(serverPath(), text(key, 12));
       await requireControl().start('auth');
       await realmsOnline();
-    } else { await withMysql(() => realms.create(serverPath(), text(key, 12), { bots: Number(options?.bots) || undefined, name: text(options?.name, 32) || undefined, notify: line => send('realms:progress', line) })); await applyCards(serverPath()).catch(() => {}); }
-    const cardsLater = authBefore && await authRunning().catch(() => false) ? await restartAuthForCards() : false;
+    } else { await withMysql(() => realms.create(serverPath(), text(key, 12), { bots: Number(options?.bots) || undefined, name: text(options?.name, 32) || undefined, notify: line => send('realms:progress', line) })); shown = await applyCards(serverPath()).catch(() => 'later'); }
+    const cardsLater = shown === 'later';
     // A server open to other PCs: the new realm's world port joins the firewall rules (Windows asks for the
     // administrator; refused, the realm stays created and Who can join > Open the firewall does it later).
     if ((await network.readNetwork(serverPath()).catch(() => ({}))).mode === 'open') {
