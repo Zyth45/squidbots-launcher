@@ -1,7 +1,8 @@
 {
  "schema": 1,
  "onByDefault": [
-  "AiPlayerbot.CoaFreshStart.CatchUp.Enable"
+  "AiPlayerbot.CoaFreshStart.CatchUp.Enable",
+  "AiPlayerbot.CoaFreshStart.CatchUp.CountGameMasters"
  ],
  "onInCore": [
   "AiPlayerbot.CoaCombat.MoltenCore.Enable",
@@ -3917,6 +3918,32 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaFreshStart.CatchUp.CountGameMasters",
+   "file": "playerbots.conf",
+   "group": "lw-population",
+   "type": "bool",
+   "default": 1,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaFreshStart.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Count game master accounts as players for the bots' XP catch-up",
+    "fr": "Compter les comptes MJ comme joueurs pour le rattrapage d'XP des bots",
+    "ru": "Считать аккаунты ГМ игроками для догоняющего опыта ботов",
+    "zh": "在机器人经验追赶中将 GM 账号计为玩家"
+   },
+   "help": {
+    "en": "On a solo server you often play with the repack's GM account (LOCAL): on, it counts like a player. Off, GM accounts never count.",
+    "fr": "Sur un serveur solo, on joue souvent avec le compte MJ du repack (LOCAL) : activé, il compte comme un joueur. Désactivé, les comptes MJ ne comptent jamais.",
+    "ru": "На одиночном сервере часто играют с ГМ-аккаунтом репака (LOCAL): если включено, он считается игроком. Если выключено, ГМ-аккаунты не учитываются.",
+    "zh": "在单人服务器上，玩家常用整合包的 GM 账号（LOCAL）游玩：开启时它计为玩家。关闭时 GM 账号从不计入。"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaFreshStart.CatchUp.MaxTotalRate",
    "file": "playerbots.conf",
    "group": "lw-population",
@@ -4079,7 +4106,8 @@
     "AiPlayerbot.CoaLive.NoAwayFlag": 1,
     "AiPlayerbot.CoaWorld.Invasions.OneAtATime": 1,
     "AiPlayerbot.CoaLive.Chat.Enable": 1,
-    "AiPlayerbot.CoaFreshStart.CatchUp.Enable": 1
+    "AiPlayerbot.CoaFreshStart.CatchUp.Enable": 1,
+    "AiPlayerbot.CoaFreshStart.CatchUp.CountGameMasters": 1
    }
   }
  ]
