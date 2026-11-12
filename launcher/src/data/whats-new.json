@@ -1,5 +1,46 @@
 [
     {
+        "version": "0.4.0",
+        "items": {
+            "en": [
+                "Made for CoA Bots 3.0: the Living world settings (social bots, city life, economy, crafting on order, world events, group combat), each with its help, and ready-made packs prepared in one click with Go back.",
+                "Squid World: a new realm beside your classic CoA realm, our own take on levelling and a living world (1000 bots from level 1, self-loot, a growing auction house, server firsts). Your CoA realm and characters are not touched.",
+                "Home page: every realm has its light, and a realm starting or stopping is named there; the big button waits meanwhile, so nothing is started twice.",
+                "Realm cards: Bot chat and the bots' catch-up apply at once on a running realm; Switch off takes a realm out of the game's realm list without deleting anything.",
+                "The realm list of the game shows each realm's background and text as soon as they change (the login server is restarted alone; players in a world stay there).",
+                "SquidBots-AH: the auction house bot is now part of SquidBots, with recommended settings.",
+                "Updates: a test build is never offered as a normal update."
+            ],
+            "fr": [
+                "Fait pour CoA Bots 3.0 : les réglages du monde vivant (bots sociaux, vie des villes, économie, artisanat sur commande, événements du monde, combat de groupe), chacun avec son aide, et des packs prêts à l'emploi en un clic, avec retour arrière.",
+                "Squid World : un nouveau royaume à côté de votre royaume CoA classique, notre version du leveling et du monde vivant (1000 bots dès le niveau 1, self-loot, un hôtel des ventes qui grandit, des « premiers du serveur »). Votre royaume CoA et vos personnages ne sont pas touchés.",
+                "Accueil : chaque royaume a sa pastille, et un royaume qui démarre ou s'arrête y est nommé ; le gros bouton attend pendant ce temps, rien n'est lancé deux fois.",
+                "Cartes des royaumes : le chat des bots et le rattrapage des bots s'appliquent tout de suite sur un royaume en marche ; Éteindre retire un royaume de la liste du jeu sans rien supprimer.",
+                "La liste des royaumes du jeu montre le fond et le texte de chaque royaume dès qu'ils changent (le serveur de connexion redémarre seul ; les joueurs en jeu restent connectés).",
+                "SquidBots-AH : le bot de l'hôtel des ventes fait maintenant partie de SquidBots, avec des réglages recommandés.",
+                "Mises à jour : une version de test n'est jamais proposée comme mise à jour normale."
+            ],
+            "ru": [
+                "Для CoA Bots 3.0: настройки живого мира (общительные боты, жизнь городов, экономика, ремесло на заказ, события мира, групповой бой), у каждой своя подсказка, и готовые наборы в один клик с возможностью вернуть всё назад.",
+                "Squid World: новый мир рядом с вашим классическим миром CoA, наш взгляд на прокачку и живой мир (1000 ботов с 1-го уровня, self-loot, растущий аукцион, первые на сервере). Ваш мир CoA и персонажи не затрагиваются.",
+                "Главная страница: у каждого мира свой индикатор, а запускающийся или останавливающийся мир назван там же; большая кнопка в это время ждёт, ничего не запускается дважды.",
+                "Карточки миров: чат ботов и догоняющий опыт ботов применяются сразу в работающем мире; «Выключить» убирает мир из списка игры, ничего не удаляя.",
+                "Список миров в игре показывает фон и текст каждого мира сразу после изменения (сервер входа перезапускается сам; игроки в мире остаются).",
+                "SquidBots-AH: бот аукциона теперь часть SquidBots, с рекомендуемыми настройками.",
+                "Обновления: тестовая сборка никогда не предлагается как обычное обновление."
+            ],
+            "zh": [
+                "为 CoA Bots 3.0 打造：鲜活世界设置（社交机器人、城市生活、经济、订单制作、世界事件、团队战斗），每项都有说明，并提供一键准备、可撤回的现成方案。",
+                "Squid World：与你的经典 CoA 国度并存的新国度，我们自己的练级与鲜活世界玩法（1000 个从 1 级开始的机器人、自拾取、不断壮大的拍卖行、全服首杀）。你的 CoA 国度和角色不受影响。",
+                "主页：每个国度都有自己的指示灯，正在启动或停止的国度会在主页上标明；此时大按钮会等待，不会重复启动。",
+                "国度卡片：在运行中的国度上，机器人聊天和机器人追赶会立即生效；“关闭”会将国度移出游戏列表，不删除任何内容。",
+                "游戏的国度列表会在更改后立即显示每个国度的背景和文字（登录服务器会单独重启；已在世界中的玩家不受影响）。",
+                "SquidBots-AH：拍卖行机器人现已并入 SquidBots，并附带推荐设置。",
+                "更新：测试版本永远不会作为普通更新提供。"
+            ]
+        }
+    },
+    {
         "version": "0.3.59",
         "items": {
             "en": [
