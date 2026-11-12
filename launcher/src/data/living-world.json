@@ -3591,6 +3591,117 @@
    }
   },
   {
+   "file": "playerbots.conf",
+   "group": "lw-economy",
+   "when": "reload",
+   "classic": false,
+   "key": "AiPlayerbot.CoaEconomy.BotStartGoldPercent",
+   "type": "int",
+   "default": 100,
+   "min": 0,
+   "max": 100,
+   "slider": {
+    "step": 5,
+    "marks": [
+     0,
+     50,
+     100
+    ],
+    "unit": "%"
+   },
+   "label": {
+    "en": "Bots' gold",
+    "fr": "Or des bots",
+    "ru": "Золото ботов",
+    "zh": "机器人的金币"
+   },
+   "help": {
+    "en": "Share of their usual gold at creation, upkeep and back in town (0 = they start with nothing).",
+    "fr": "Part de leur or habituel à la création, à l’entretien et au retour en ville (0 = ils démarrent sans rien).",
+    "ru": "Доля их обычного золота при создании, на содержание и по возвращении в город (0 = они начинают ни с чем).",
+    "zh": "创建、维持和回城时获得的常规金币比例（0 = 一无所有地开始）。"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-economy",
+   "when": "reload",
+   "classic": false,
+   "key": "AiPlayerbot.CoaEconomy.BotLevelGold",
+   "type": "text",
+   "default": "",
+   "label": {
+    "en": "Bots' gold by level",
+    "fr": "Or des bots par palier",
+    "ru": "Золото ботов по уровням",
+    "zh": "机器人的等级金币"
+   },
+   "help": {
+    "en": "Copper paid once when a bot reaches these levels by playing, as level:copper separated by commas (empty = none).",
+    "fr": "Cuivre versé une fois quand un bot atteint ces niveaux en jouant, sous la forme niveau:cuivre séparés par des virgules (vide = aucun).",
+    "ru": "Медь, выплачиваемая один раз, когда бот достигает этих уровней в игре, в виде уровень:медь через запятую (пусто = ничего).",
+    "zh": "机器人通过游戏达到这些等级时一次性发放的铜币，格式为 等级:铜币，用逗号分隔（留空 = 无）。"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-economy",
+   "when": "reload",
+   "classic": false,
+   "key": "AiPlayerbot.CoaEconomy.LaunchCurve.UnitPriceCapGold",
+   "type": "float",
+   "default": 0.25,
+   "min": 0,
+   "max": 5,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.LaunchCurve.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Launch price cap",
+    "fr": "Plafond de prix au lancement",
+    "ru": "Потолок цен на старте",
+    "zh": "开服价格上限"
+   },
+   "help": {
+    "en": "One item costs at most this × front² gold (0 = no cap).",
+    "fr": "Un objet coûte au plus ceci × front² po (0 = pas de plafond).",
+    "ru": "Один предмет стоит не больше этого × фронт² золота (0 = без потолка).",
+    "zh": "单件物品最多卖 此值 × 前沿等级² 金币（0 = 不设上限）。"
+   }
+  },
+  {
+   "file": "playerbots.conf",
+   "group": "lw-economy",
+   "when": "reload",
+   "classic": false,
+   "key": "AiPlayerbot.CoaEconomy.LaunchCurve.UnitPriceCapUntilLevel",
+   "type": "int",
+   "default": 60,
+   "min": 1,
+   "max": 80,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.LaunchCurve.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Launch price cap ends at front level",
+    "fr": "Fin du plafond de prix au niveau du front",
+    "ru": "Потолок цен действует до уровня фронта",
+    "zh": "开服价格上限截止的前沿等级"
+   },
+   "help": {
+    "en": "The launch price cap stops when the front reaches this level.",
+    "fr": "Le plafond de prix s’arrête quand le front atteint ce niveau.",
+    "ru": "Потолок цен снимается, когда фронт достигает этого уровня.",
+    "zh": "前沿等级达到此值时，开服价格上限停止。"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaEconomy.Rarity.Enable",
    "file": "playerbots.conf",
    "group": "lw-economy",
