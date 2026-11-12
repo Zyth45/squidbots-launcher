@@ -152,7 +152,7 @@ function valueProblem(setting, value) {
 const CLASSIC = {
   id: 'classic',
   title: { en: 'Classic', fr: 'Classique', ru: 'Классика', zh: '经典' },
-  summary: { en: 'The bots as you know them: every Living world feature off (the defaults).', fr: 'Les bots comme tu les connais : toutes les fonctions du Monde vivant coupées (les valeurs par défaut).', ru: 'Боты как прежде: все функции «Живого мира» выключены (значения по умолчанию).', zh: '你熟悉的机器人：所有鲜活世界功能关闭（默认值）。' },
+  summary: { en: 'The bots as you know them: every living world feature off (the defaults).', fr: 'Les bots comme tu les connais : toutes les fonctions du monde vivant coupées (les valeurs par défaut).', ru: 'Боты как прежде: все функции «Живого мира» выключены (значения по умолчанию).', zh: '你熟悉的机器人：所有鲜活世界功能关闭（默认值）。' },
 };
 
 function packsOf(living, settings, refused, baseSettings = []) {

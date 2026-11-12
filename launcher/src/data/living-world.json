@@ -3797,10 +3797,10 @@
     "zh": "全新开服（新国度开放）"
    },
    "help": {
-    "en": "On for a realm that opens like a new server (the Living World realm turns it on at its creation): the bots start at level 1 with the players.",
-    "fr": "Activé pour un royaume qui ouvre comme un nouveau serveur (le royaume Living World l'active à sa création) : les bots démarrent au niveau 1 avec les joueurs.",
-    "ru": "Включено для мира, который открывается как новый сервер (мир Living World включает это при создании): боты начинают с 1 уровня вместе с игроками.",
-    "zh": "用于像新服务器一样开服的国度（Living World 国度在创建时开启）：机器人与玩家一起从 1 级开始。"
+    "en": "On for a realm that opens like a new server (the Squid World realm turns it on at its creation): the bots start at level 1 with the players.",
+    "fr": "Activé pour un royaume qui ouvre comme un nouveau serveur (le royaume Squid World l'active à sa création) : les bots démarrent au niveau 1 avec les joueurs.",
+    "ru": "Включено для мира, который открывается как новый сервер (мир Squid World включает это при создании): боты начинают с 1 уровня вместе с игроками.",
+    "zh": "用于像新服务器一样开服的国度（Squid World 国度在创建时开启）：机器人与玩家一起从 1 级开始。"
    }
   },
   {
@@ -4020,7 +4020,7 @@
    },
    "summary": {
     "en": "Every Living world feature on, on your realm as it is (your characters stay): bots that live, talk, travel, trade and fight better, world events. No \"Bot\" surname.",
-    "fr": "Toutes les fonctions du Monde vivant activées, sur ton royaume tel qu'il est (tes personnages restent) : des bots qui vivent, parlent, voyagent, commercent et combattent mieux, des événements dans le monde. Pas de surnom « Bot ».",
+    "fr": "Toutes les fonctions du monde vivant activées, sur ton royaume tel qu'il est (tes personnages restent) : des bots qui vivent, parlent, voyagent, commercent et combattent mieux, des événements dans le monde. Pas de surnom « Bot ».",
     "ru": "Все функции «Живого мира» включены, на вашем мире как он есть (персонажи остаются): боты живут, общаются, путешествуют, торгуют и лучше сражаются, события в мире. Без фамилии «Bot».",
     "zh": "在你现有的服务器上开启所有鲜活世界功能（角色保留）：机器人会生活、聊天、旅行、交易并更会战斗，还有世界事件。不加“Bot”姓氏。"
    },

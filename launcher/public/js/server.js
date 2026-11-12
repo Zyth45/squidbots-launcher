@@ -1261,14 +1261,14 @@ function livingChoiceDialog() {
   element.addEventListener('click', onClick);
 }
 
-// Once, at the first launch where the realm can be made: the Living World realm (1000 bots, self-loot). "Later" keeps
+// Once, at the first launch where the realm can be made: the Squid World realm (1000 bots, self-loot). "Later" keeps
 // it in the Realms tab. Nothing is made without "Create it".
 function livingOfferDialog() {
   const r = App.state.realms;
   const realm = r?.realms?.find(item => item.key === 'living');
   if (!r?.supported || !realm?.ready || realm.state !== 'absent' || !isNew('livingOffer') || $('#dialog')?.open) return;
   markSeen('livingOffer');
-  dialog.open(`${dialog.header(t('offer.title', 'New: Living World realm'))}<div class="dialog-content"><p>${esc(t('offer.text', 'A fresh realm beside yours, opening like an official server: 1000 bots from level 1, self-loot, a growing auction house. Your realm is not touched.'))}</p></div><footer class="dialog-foot"><button class="button ghost" data-choice="later">${esc(t('offer.later', 'Later'))}</button><button class="button primary" data-choice="create">${icon('play')}${esc(t('offer.create', 'Create it'))}</button></footer>`);
+  dialog.open(`${dialog.header(t('offer.title', 'New: the Squid World realm'))}<div class="dialog-content"><p>${esc(t('offer.text', 'Squid World is our own take on levelling and a living world, next to your classic CoA realm: a fresh realm, 1000 bots from level 1, self-loot, a growing auction house, server firsts. Your CoA realm and characters are not touched.'))}</p></div><footer class="dialog-foot"><button class="button ghost" data-choice="later">${esc(t('offer.later', 'Later'))}</button><button class="button primary" data-choice="create">${icon('play')}${esc(t('offer.create', 'Create it'))}</button></footer>`);
   const element = $('#dialog');
   const onClick = event => {
     const choice = event.target.closest('[data-choice]')?.dataset.choice;

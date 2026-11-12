@@ -40,12 +40,12 @@ const REALMS_INFO = {
   wildcard: { color: '#c27bff', title: 'Wildcard', sub: 'Darkmoon', textKey: 'realms.wildcardText', text: 'One class, the Hero: its spells and talents are drawn at random. A new game every time.' },
   reborn: { color: '#ff8a3d', title: 'Warcraft Reborn', sub: 'Bronzebeard', textKey: 'realms.rebornText', text: 'The ten original classes, reworked: classic Warcraft, plus.' },
   dawnrise: { color: '#5cc8ff', title: 'Free Pick', sub: 'Dawnrise', textKey: 'realms.dawnriseText', text: 'One class, the Hero: choose every spell and talent yourself, from every class.', experimental: true, noBots: true, since: '2.8.2' },
-  living: { color: '#7fd17a', title: 'Living World', sub: 'New server', since: '3.0', textKey: 'realms.livingText2', text: 'A new CoA realm opening like an official server: 1000 bots from level 1, self-loot, a growing auction house, server firsts.' },
+  living: { color: '#7fd17a', title: 'Squid World', sub: 'Our take on levelling', since: '3.0', textKey: 'realms.livingText2', text: 'Our own take on levelling and a living world, next to your classic CoA realm: a fresh realm, 1000 bots from level 1, self-loot, a growing auction house, server firsts.' },
 };
 const realmEmblem = (key, size = 56) => `<span class="realm-emblem realm-${key} s${size}">${REALM_EMBLEMS[key] || ''}</span>`;
 const realmTitle = key => REALMS_INFO[key]?.title || key;
 // Short names, for the lights of the home page.
-const realmShort = key => ({ coa: 'CoA', wildcard: 'Wildcard', reborn: 'Reborn', dawnrise: 'Free Pick', living: 'Living' }[key] || key);
+const realmShort = key => ({ coa: 'CoA', wildcard: 'Wildcard', reborn: 'Reborn', dawnrise: 'Free Pick', living: 'Squid World' }[key] || key);
 
 async function loadRealms() {
   const before = !!App.state.realms?.available;
@@ -65,7 +65,7 @@ async function loadRealms() {
 // It also reads them while a card works: a realm starting for minutes shows on the home page meanwhile.
 setInterval(() => { if (App.state.tab === 'home' && App.state.realms?.available) loadRealms(); }, 10000);
 
-// Every realm in the order of the page (user, 11/11): CoA, Living World on the first row; Wildcard, Reborn, then Free
+// Every realm in the order of the page (user, 11/11): CoA, Squid World on the first row; Wildcard, Reborn, then Free
 // Pick (Dawnrise) last on the next one. A realm not in that list comes after them.
 const REALM_ORDER = ['living', 'wildcard', 'reborn', 'dawnrise'];
 const realmRank = key => (REALM_ORDER.includes(key) ? REALM_ORDER.indexOf(key) : REALM_ORDER.length);
@@ -153,7 +153,7 @@ function realmCard(realm, busy) {
 // Two quick switches per realm: Bot chat and Self-loot, the same keys as in Server settings, in this realm's own values.
 // Self-loot changes only what comes next (no bot is made again, nothing is taken off). Applied at the realm's next start.
 const SELFLOOT_KEY = 'AiPlayerbot.CoaSelfFound';
-// Bots catch up with the players (SquidBot 5576aa9f): only on the Living World realm, where CoaFreshStart is on.
+// Bots catch up with the players (SquidBot 5576aa9f): only on the Squid World realm, where CoaFreshStart is on.
 const CATCHUP_KEY = 'AiPlayerbot.CoaFreshStart.CatchUp.Enable';
 // A realm's Bot chat and Self-loot values ('' = the main realm), read once, then kept until a save.
 function quickOf(target) {
@@ -176,7 +176,7 @@ function realmQuick(realm) {
   const locked = realm.key === 'living';
   const row = (action, on, disabled, title, hint) => `<div class="realm-quick-row"><span title="${esc(hint)}">${esc(title)}</span>${moduleSwitch(action, on, disabled).replace('<button', `<button data-key="${esc(target)}"`)}</div>`;
   const chat = q.hasChat ? row('realm-chat', CHAT_READY && q.chat === '1', !CHAT_READY, t('lw.chat', 'Bot chat'), CHAT_READY ? t('lw.chatText', 'Bots talk in the chat channels, greet and answer. Off: they stay silent, everything else goes on.') : t('lw.chatSoon', 'Coming with the next bots build.')) : '';
-  const loot = q.hasLoot ? row('realm-selfloot', locked || q.selfloot === '1', locked, t('gear.selfloot', 'Self-loot'), locked ? t('realms.selflootLocked', 'Always on for the Living World realm.') : t('gear.note', 'Your bots keep their level and what they wear today: only what comes next changes. Then Save.')) : '';
+  const loot = q.hasLoot ? row('realm-selfloot', locked || q.selfloot === '1', locked, t('gear.selfloot', 'Self-loot'), locked ? t('realms.selflootLocked', 'Always on for the Squid World realm.') : t('gear.note', 'Your bots keep their level and what they wear today: only what comes next changes. Then Save.')) : '';
   const help = loot && !locked ? ` ${t('realms.selflootHelp', 'Self-loot until level 59; at 60 bots are geared as usual.')}` : '';
   const catchup = locked && q.hasCatchup ? row('realm-catchup', q.catchup === '1', false, t('realms.catchup', 'Bots catch up with players'), t('realms.catchupHint', 'Random bots behind the human players earn more experience.')) : '';
   return chat || loot || catchup ? `<div class="realm-quick">${chat}${loot}${catchup}<small class="muted">${esc(t('realms.quickNext', 'Applied at the next start of this realm.') + help)}</small></div>` : '';

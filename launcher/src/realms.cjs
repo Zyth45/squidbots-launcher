@@ -79,7 +79,7 @@ const SEED_TABLES = ['updates', 'updates_include', 'worldstates', 'active_arena_
   'instance_reset', 'pool_quest_save'];
 // Wildcard and Reborn start with 500 bots (user, 11/11): only a realm being created; one made before keeps its count.
 const DEFAULT_BOTS = 500;
-// The Living World realm (user's decision, 11/11): 1000 bots, editable like any realm's count.
+// The Squid World realm (user's decision, 11/11): 1000 bots, editable like any realm's count.
 const LIVING_BOTS = 1000;
 const KEY = /^[a-z]{3,12}$/;
 const CONF_KEY = /^[A-Za-z][A-Za-z0-9_.-]{0,99}$/;
