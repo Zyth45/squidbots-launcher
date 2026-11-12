@@ -44,7 +44,11 @@ test('a server on a 3.0 test package is offered the stable 3.0, a 3.0 server is 
 
 test('a beta is signed as such, and a tester ahead of the stable version has nothing to do', () => {
   assert.equal(manifest({ channel: 'beta' }).channel, 'beta');
-  assert.equal(manifest({}).channel, 'stable');
+  // A test or pre-release version is never offered by the stable channel (12/11), except from a local test feed.
+  assert.throws(() => manifest({}), /test version on the stable channel/);
+  assert.throws(() => manifest({ version: '3.0-test-a57b' }), /stable channel/);
+  assert.equal(manifest({ version: '3.0-test-a57b', package: { url: 'http://127.0.0.1:8096/a.zip', sha256: 'a'.repeat(64), size: 10, folder: 'CoA-Update-3.0' } }).channel, 'stable');
+  assert.equal(manifest({ version: '3.0' }).channel, 'stable');
   const root = folder({ 'RELEASE.json': '{"releaseId":"main-20261020-0123abcd"}', 'CoA-Bots/release.json': '{"version":"2.5-beta.1"}' });
   const stable = cleanManifest({ version: '2.4', release: 'main-20261016-2ab3ebca', from: ['main-20261014-ad8370da'], package: { url: 'https://example.org/b.zip', sha256: 'b'.repeat(64), size: 10, folder: 'CoA-Update-2.4' } });
   assert.equal(status(root, stable).state, 'current');

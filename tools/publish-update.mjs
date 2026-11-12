@@ -40,6 +40,9 @@ const spec = JSON.parse(fs.readFileSync(path.join(folder, 'update', 'update.json
 // A draft is refused, except for a local test (--allow-draft with --url-base: it never reaches GitHub).
 if (spec.draft && !(args['allow-draft'] && args['url-base'])) throw new Error('This package is a DRAFT (update.json "draft": true): it is not published.');
 for (const key of ['version', 'targetRelease', 'fromReleases']) if (!spec[key]) throw new Error(`update.json has no ${key}.`);
+// A test or pre-release build never goes to the stable channel (it would become the "latest" release every launcher
+// reads): only with --channel beta, or to a local test feed (--url-base).
+if (/[-_.](alpha|beta|rc|pre|test|dev)/i.test(String(spec.version)) && args.channel !== 'beta' && !args['url-base']) throw new Error(`${spec.version} is a test build: publish it with --channel beta or to a local feed (--url-base), never on the stable channel.`);
 
 // The zip: the one given, or the folder packed (its own name at the top, like the manual zip).
 const zipName = `${name}.zip`;

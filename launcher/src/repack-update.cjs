@@ -36,6 +36,10 @@ function cleanManifest(data) {
   if (!/^[0-9a-f]{64}$/.test(pkg.sha256 || '') || !(pkg.size > 0) || !FOLDER.test(pkg.folder || '') || !/^(https:\/\/|http:\/\/(127\.0\.0\.1|localhost)[:/])/.test(pkg.url || '')) {
     throw new Error('The update list has no valid package.');
   }
+  // A test or pre-release build (3.0-test-a57b, 2.5-beta.1...) is never offered by the stable channel: only a beta
+  // feed, or a local test feed (127.0.0.1), may carry one.
+  const local = /^http:\/\/(127\.0\.0\.1|localhost)[:/]/.test(pkg.url);
+  if (data.channel !== 'beta' && !local && /[-_.](alpha|beta|rc|pre|test|dev)/i.test(String(data.version || ''))) throw new Error('The update list offers a test version on the stable channel: refused.');
   // More zips when the package is too big for one file (each one holds the same CoA-Update-x folder).
   const parts = (Array.isArray(pkg.parts) ? pkg.parts : []).slice(0, 8).map(part => {
     if (!/^[0-9a-f]{64}$/.test(part?.sha256 || '') || !(part.size > 0) || !/^(https:\/\/|http:\/\/(127\.0\.0\.1|localhost)[:/])/.test(part.url || '')) throw new Error('The update list has an invalid package part.');
