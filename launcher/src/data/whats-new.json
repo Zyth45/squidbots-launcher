@@ -3,16 +3,20 @@
         "version": "0.4.1",
         "items": {
             "en": [
-                "Squid World: the memory a realm needs is now estimated from real measures (1000 bots ≈ 7 GB instead of 11), and a realm left stopped at the server's start can be started anyway from its card."
+                "Squid World: the memory a realm needs is now estimated from real measures (1000 bots ≈ 7 GB instead of 11), and a realm left stopped at the server's start can be started anyway from its card.",
+                "Squid World: a new realm now starts with nothing of your CoA realm (no server firsts, learned prices or bot state copied from it). A Squid World created with 0.4.0 keeps those copied firsts and prices; \"Reset the world\" comes with the next version."
             ],
             "fr": [
-                "Squid World : la mémoire demandée par un royaume est maintenant estimée d'après des mesures réelles (1000 bots ≈ 7 Go au lieu de 11), et un royaume laissé arrêté au démarrage du serveur peut être démarré quand même depuis sa carte."
+                "Squid World : la mémoire demandée par un royaume est maintenant estimée d'après des mesures réelles (1000 bots ≈ 7 Go au lieu de 11), et un royaume laissé arrêté au démarrage du serveur peut être démarré quand même depuis sa carte.",
+                "Squid World : un nouveau royaume démarre maintenant sans rien de votre royaume CoA (aucun premier du serveur, prix appris ni état des bots recopié). Un Squid World créé avec la 0.4.0 garde ces premiers et ces prix recopiés ; « Remettre le monde à neuf » arrive avec la prochaine version."
             ],
             "ru": [
-                "Squid World: память, нужная миру, теперь оценивается по реальным замерам (1000 ботов ≈ 7 ГБ вместо 11), а мир, не запущенный вместе с сервером, можно всё равно запустить с его карточки."
+                "Squid World: память, нужная миру, теперь оценивается по реальным замерам (1000 ботов ≈ 7 ГБ вместо 11), а мир, не запущенный вместе с сервером, можно всё равно запустить с его карточки.",
+                "Squid World: новый мир теперь начинается без всего из вашего мира CoA (не копируются «первые на сервере», изученные цены и состояние ботов). Squid World, созданный в 0.4.0, сохраняет эти скопированные «первые» и цены; «Начать мир заново» появится в следующей версии."
             ],
             "zh": [
-                "Squid World：国度所需内存现在根据实测估算（1000 个机器人约 7 GB，而不是 11 GB），未随服务器启动的国度也可以从其卡片上仍然启动。"
+                "Squid World：国度所需内存现在根据实测估算（1000 个机器人约 7 GB，而不是 11 GB），未随服务器启动的国度也可以从其卡片上仍然启动。",
+                "Squid World：新国度现在启动时不再带有你的 CoA 国度的任何内容（不复制全服首杀、已学习的价格或机器人状态）。用 0.4.0 创建的 Squid World 会保留这些复制来的首杀和价格；“重置世界”将在下一版本中推出。"
             ]
         }
     },
