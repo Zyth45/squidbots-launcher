@@ -252,6 +252,48 @@
    }
   },
   {
+   "key": "CharactersPerRealm",
+   "file": "worldserver.conf",
+   "group": "realm",
+   "kind": "int",
+   "when": "restart",
+   "min": 1,
+   "max": 128,
+   "label": {
+    "en": "Characters per account on this realm",
+    "fr": "Personnages par compte sur ce royaume",
+    "ru": "Персонажей на аккаунт в этом мире",
+    "zh": "每个账号在此国度的角色数"
+   },
+   "help": {
+    "en": "How many characters an account can have here (1 to 128; the CoA character screen lists them all). Only active characters count. Keep \"Characters per account\" at least as high.",
+    "fr": "Combien de personnages un compte peut avoir ici (1 à 128 ; l'écran de personnages de CoA les affiche tous). Seuls les personnages actifs comptent. Garde « Personnages par compte » au moins aussi haut.",
+    "ru": "Сколько персонажей может быть у аккаунта здесь (от 1 до 128; экран персонажей CoA показывает всех). Учитываются только активные персонажи. «Персонажей на аккаунт» должно быть не меньше.",
+    "zh": "一个账号在此可拥有的角色数（1 到 128；CoA 的角色界面会全部显示）。只计算活跃角色。“每个账号的角色数”应不低于此值。"
+   }
+  },
+  {
+   "key": "CharactersPerAccount",
+   "file": "worldserver.conf",
+   "group": "realm",
+   "kind": "int",
+   "when": "restart",
+   "min": 1,
+   "max": 128,
+   "label": {
+    "en": "Characters per account (all realms)",
+    "fr": "Personnages par compte (tous les royaumes)",
+    "ru": "Персонажей на аккаунт (все миры)",
+    "zh": "每个账号的角色数（所有国度）"
+   },
+   "help": {
+    "en": "The total for an account across all the realms of this server. It must be at least \"Characters per account on this realm\".",
+    "fr": "Le total d'un compte sur tous les royaumes de ce serveur. Il doit être au moins égal à « Personnages par compte sur ce royaume ».",
+    "ru": "Общее число для аккаунта во всех мирах этого сервера. Не меньше, чем «Персонажей на аккаунт в этом мире».",
+    "zh": "一个账号在本服务器所有国度的总数。不得低于“每个账号在此国度的角色数”。"
+   }
+  },
+  {
    "key": "StartPlayerMoney",
    "file": "worldserver.conf",
    "group": "realm",
