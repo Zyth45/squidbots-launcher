@@ -1637,5 +1637,11 @@
   "realms.catchup": "Les bots rattrapent les joueurs",
   "realms.catchupHint": "Les bots aléatoires en retard sur les joueurs humains gagnent plus d'expérience.",
   "realms.needSince2": "Nécessite CoA Bots {version} ou plus récent (installé : {installed}).",
-  "realms.coaAlone": "Un démarrage par royaume : « Démarrer » de l'accueil laisse ce royaume arrêté ; les royaumes cochés démarrent sans lui."
+  "realms.coaAlone": "Un démarrage par royaume : « Démarrer » de l'accueil laisse ce royaume arrêté ; les royaumes cochés démarrent sans lui.",
+  "home.realmStarting": "{name} démarre…",
+  "home.realmStopping": "{name} s’arrête…",
+  "home.realmFirstStart": "{name} démarre : premier démarrage, quelques minutes (hôtel des ventes, création des bots). Inutile de cliquer encore sur Démarrer.",
+  "home.realmStartingText": "{name} démarre : environ une minute.",
+  "home.realmStoppingText": "{name} s’arrête : il sauvegarde d’abord ses personnages et ses bots.",
+  "live.realmStarting": "{name} démarre : ses chiffres apparaissent ici dès qu’il tourne."
 }

@@ -1637,5 +1637,11 @@
   "realms.catchup": "机器人追赶玩家",
   "realms.catchupHint": "落后于真人玩家的随机机器人获得更多经验。",
   "realms.needSince2": "需要 CoA Bots {version} 或更高版本（已安装：{installed}）。",
-  "realms.coaAlone": "每个国度单独启动：主页的“启动”不会启动此国度；勾选的国度会在没有它的情况下启动。"
+  "realms.coaAlone": "每个国度单独启动：主页的“启动”不会启动此国度；勾选的国度会在没有它的情况下启动。",
+  "home.realmStarting": "{name} 正在启动…",
+  "home.realmStopping": "{name} 正在停止…",
+  "home.realmFirstStart": "{name} 正在启动：首次启动需要几分钟（拍卖行、创建机器人）。无需再次点击启动。",
+  "home.realmStartingText": "{name} 正在启动：大约一分钟。",
+  "home.realmStoppingText": "{name} 正在停止：先保存角色和机器人。",
+  "live.realmStarting": "{name} 正在启动：运行后其数据将显示在这里。"
 }

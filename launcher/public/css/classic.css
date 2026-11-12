@@ -241,10 +241,12 @@
 .console-form input { flex: 1; font: 13px var(--mono); }
 /* The play button and, right of it, the gear to the server settings. */
 /* The gear stays on the button's line whatever its text ("Starting the server…" is wider): the button shrinks. */
-.play-row { display: flex; flex-wrap: nowrap; align-items: center; gap: 12px; margin-top: 0; }
-.play-row .split-button { min-width: 0; flex: 0 1 auto; }
+/* The big button keeps its whole label: the Play button goes under it when the window is narrow. */
+.play-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 0; }
+.play-row .split-button { min-width: 0; max-width: 100%; flex: 0 0 auto; }
 .play-row .split-main { min-width: 0; }
-.play-row .split-main strong { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.play-row .split-main strong { white-space: normal; overflow-wrap: anywhere; }
+.home-moving { max-width: 360px; margin: -4px 0 10px; }
 .play-row .gear-settings { flex: none; width: 52px; height: 52px; border-radius: 12px; border: 1px solid var(--line-strong); background: var(--panel); }
 .play-row .gear-settings .icon { width: 24px; height: 24px; }
 .play-row .gear-settings:hover { border-color: var(--accent); color: var(--accent); }
@@ -301,7 +303,7 @@ button.switch.on span { transform: translateX(20px); background: var(--accent); 
 #launcher-banner .update-banner { position: fixed; left: 50%; top: 66px; transform: translateX(-50%); z-index: 30; width: min(640px, calc(100% - 48px)); margin: 0; box-shadow: 0 12px 30px rgba(0, 0, 0, .5); background: var(--panel-solid, #0a2233); }
 
 /* Home: the start button as tall as the two square buttons beside it; what it starts is in its tooltip. */
-.play-row .split-button { height: 52px; box-shadow: 0 8px 22px var(--cta-glow), 0 0 0 1px var(--cta-edge) inset; }
+.play-row .split-button { min-height: 52px; box-shadow: 0 8px 22px var(--cta-glow), 0 0 0 1px var(--cta-edge) inset; }
 .play-row .split-main { gap: 10px; padding: 0 18px; }
 .play-row .split-main .icon { width: 22px; height: 22px; }
 .play-row .split-main strong { font-size: 16px; }

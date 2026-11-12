@@ -62,7 +62,8 @@ async function loadRealms() {
   }
 }
 // The home page reads the realms too (every 10 s): a realm started from its card shows there without visiting its tab.
-setInterval(() => { if (App.state.tab === 'home' && App.state.realms?.available && !App.state.realmBusy) loadRealms(); }, 10000);
+// It also reads them while a card works: a realm starting for minutes shows on the home page meanwhile.
+setInterval(() => { if (App.state.tab === 'home' && App.state.realms?.available) loadRealms(); }, 10000);
 
 // Every realm in the order of the page (user, 11/11): CoA, Living World on the first row; Wildcard, Reborn, then Free
 // Pick (Dawnrise) last on the next one. A realm not in that list comes after them.

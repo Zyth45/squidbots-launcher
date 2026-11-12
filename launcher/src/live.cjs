@@ -129,7 +129,7 @@ function withRealms(stats, list) {
   // CoA stopped, realms running: the figures are theirs, the tick that of the first one running.
   const main = others[0];
   return {
-    running: true, realmOnly: main.key, consoleBusy: false, at: Date.now(),
+    running: true, realmOnly: main.key, realmName: main.name || '', consoleBusy: false, at: Date.now(),
     players: sum('players'), characters: sum('characters'), tick: main.tick, tickMean: main.tickMean, uptime: main.uptime,
     memory: memory || null, cpu: null,
     bots: { count: sum('online'), inCombat: null, target: sum('bots') || null },
