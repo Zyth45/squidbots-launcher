@@ -1921,6 +1921,79 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaEconomy.Artisans.LearnRareRecipes.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.Artisans.Enable",
+    "values": [
+     0
+    ]
+   },
+   "classic": false,
+   "label": {
+    "en": "Artisans know rare recipes",
+    "fr": "Les artisans connaissent des recettes rares",
+    "ru": "Ремесленники знают редкие рецепты",
+    "zh": "工匠掌握稀有配方"
+   },
+   "help": {
+    "en": "Bot artisans also know a few recipes found in the world (dropped or sold by vendors), so some can craft epics.",
+    "fr": "Les artisans bots connaissent aussi quelques recettes trouvées dans le monde (butin ou vendues par des marchands), donc certains peuvent fabriquer des épiques.",
+    "ru": "Ремесленники-боты также знают несколько рецептов, найденных в мире (добыча или у торговцев), поэтому некоторые могут создавать эпические предметы.",
+    "zh": "机器人工匠还掌握少量在世界中获得的配方（掉落或商人出售），因此部分工匠能制作史诗物品。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.Artisans.LearnRareRecipes.Percent",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "type": "int",
+   "default": 15,
+   "min": 0,
+   "max": 100,
+   "when": "reload",
+   "onlyWhen": {
+    "key": "AiPlayerbot.CoaEconomy.Artisans.LearnRareRecipes.Enable",
+    "values": [
+     1
+    ]
+   },
+   "classic": false,
+   "label": {
+    "en": "Chance per rare recipe (%)",
+    "fr": "Chance par recette rare (%)",
+    "ru": "Шанс на каждый редкий рецепт (%)",
+    "zh": "每个稀有配方的概率（%）"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.Artisans.LearnRareRecipes.EpicPercent",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "type": "int",
+   "default": 5,
+   "min": 0,
+   "max": 100,
+   "when": "reload",
+   "onlyWhen": {
+    "key": "AiPlayerbot.CoaEconomy.Artisans.LearnRareRecipes.Enable",
+    "values": [
+     1
+    ]
+   },
+   "classic": false,
+   "label": {
+    "en": "Chance per epic recipe (%)",
+    "fr": "Chance par recette épique (%)",
+    "ru": "Шанс на каждый эпический рецепт (%)",
+    "zh": "每个史诗配方的概率（%）"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaEconomy.Materials.Enable",
    "file": "playerbots.conf",
    "group": "lw-crafting",
@@ -4067,6 +4140,7 @@
     "AiPlayerbot.CoaCombat.LootNeedEpicOnly": 0,
     "AiPlayerbot.CoaEconomy.Artisans.RecursiveCost.Enable": 1,
     "AiPlayerbot.CoaEconomy.Artisans.Stock.Enable": 1,
+    "AiPlayerbot.CoaEconomy.Artisans.LearnRareRecipes.Enable": 1,
     "AiPlayerbot.CoaEconomy.Materials.Enable": 1,
     "AiPlayerbot.CoaEconomy.AuctionClock.Enable": 1,
     "AiPlayerbot.CoaLive.Sheath.Enable": 1,
