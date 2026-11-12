@@ -74,6 +74,9 @@ const MODES = {
   },
 };
 // Tables the new characters database needs filled (the world fails or misbehaves without them).
+// The per-realm state of acore_playerbots, emptied in a new realm's copy (see create).
+const REALM_STATE_TABLES = ['playerbots_random_bots', 'playerbots_coa_brain_usage', 'playerbots_account_type', 'playerbots_coa_soul', 'playerbots_db_store',
+  'playerbots_guild_tasks', 'playerbots_preferred_mounts', 'coa_world_server_first', 'coa_world_guild_log', 'coa_economy_clock', 'coa_economy_market', 'coa_economy_orders'];
 const SEED_TABLES = ['updates', 'updates_include', 'worldstates', 'active_arena_season', 'playerbots_names', 'playerbots_guild_names',
   'playerbots_arena_team_names', 'coa_build_creator', 'coa_build_creator_enchant', 'coa_build_creator_item_type', 'coa_build_creator_spell',
   'instance_reset', 'pool_quest_save'];
@@ -497,9 +500,14 @@ async function create(root, key, { bots = key === 'living' ? LIVING_BOTS : DEFAU
     notify(`Creating ${botsDb}…`);
     await run.sql(root, `CREATE DATABASE ${botsDb} DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
     await run.copyDump(root, ['acore_playerbots'], botsDb);
-    // The bot state of the CoA realm is not this realm's: its bots are made again with their own prefix.
+    // The bot state of the CoA realm is not this realm's: its bots are made again with their own prefix, and the state
+    // the modules keep per character or per realm starts empty (listed by SquidBot, Monde and Economie, 13/11: souls,
+    // stored values, guild tasks, mounts, server firsts, guild logs, learned prices, the auction clock, artisans' orders).
+    // The data tables (texts, names, caches, travel nodes, rotations...) stay as copied.
     const present = new Set((await run.sql(root, `SELECT table_name FROM information_schema.tables WHERE table_schema = '${botsDb}'`)).split(/\r?\n/));
-    for (const table of ['playerbots_random_bots', 'playerbots_coa_brain_usage', 'playerbots_account_type']) if (present.has(table)) await run.sql(root, `TRUNCATE ${botsDb}.${table}`);
+    for (const table of REALM_STATE_TABLES) if (present.has(table)) await run.sql(root, `TRUNCATE ${botsDb}.${table}`);
+    // The players' own strategies of the CoA realm (owner <> 0); the factory rotations (owner 0) stay.
+    if (present.has('playerbots_custom_strategy')) await run.sql(root, `DELETE FROM ${botsDb}.playerbots_custom_strategy WHERE owner <> 0`);
   }
   // The worldserver logs in as the user of its DatabaseInfo, which only has rights on the repack's own databases.
   const ws = await fsp.readFile(path.join(BOTS_CONFIGS(root), 'worldserver.conf'), 'utf8');
