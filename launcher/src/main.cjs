@@ -1486,6 +1486,8 @@ function registerIpc() {
     if (!root || !inspectRepack(root).repack) return;
     let cards = await realmCards.read(root);
     if (!cards.version) { cards = await realmCards.save(root, realmCards.DEFAULTS); await applyCardNames(root, cards); }
+    // A choice saved by an older launcher: written again in this version (an untouched living card gets Malfurion).
+    else if (cards.version < realmCards.VERSION) await realmCards.save(root, cards);
     await realmCards.apply(root, await cardIds(root));
   };
   handle('cards:get', async () => {
@@ -1504,10 +1506,12 @@ function registerIpc() {
     if (options?.start === true) {
       await realmBase(false);
       await realms.create(serverPath(), text(key, 12), { bots: Number(options?.bots) || undefined, name: text(options?.name, 32) || undefined, notify: line => send('realms:progress', line) });
+      // The new realm's card (background, description) in the authserver's config before the authserver starts.
+      await applyCards(serverPath()).catch(() => {});
       await realms.start(serverPath(), text(key, 12));
       await requireControl().start('auth');
       await realmsOnline();
-    } else await withMysql(() => realms.create(serverPath(), text(key, 12), { bots: Number(options?.bots) || undefined, name: text(options?.name, 32) || undefined, notify: line => send('realms:progress', line) }));
+    } else { await withMysql(() => realms.create(serverPath(), text(key, 12), { bots: Number(options?.bots) || undefined, name: text(options?.name, 32) || undefined, notify: line => send('realms:progress', line) })); await applyCards(serverPath()).catch(() => {}); }
     // A server open to other PCs: the new realm's world port joins the firewall rules (Windows asks for the
     // administrator; refused, the realm stays created and Who can join > Open the firewall does it later).
     if ((await network.readNetwork(serverPath()).catch(() => ({}))).mode === 'open') {

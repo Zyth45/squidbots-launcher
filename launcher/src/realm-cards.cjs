@@ -8,7 +8,8 @@ const fsp = require('node:fs/promises');
 const path = require('node:path');
 
 const FILE = 'Settings/realm-cards.json';
-const VERSION = 1;
+// 2: the living server's background is Malfurion (with its title), no more the plain Thrall1 of version 1.
+const VERSION = 2;
 // Enum.RealmGameMode of the client (found on 24/10 on the LAPTOP, one value per card).
 const GAME_MODES = [
   { id: 11, name: 'Conquest of Azeroth' }, { id: 6, name: 'Wildcard' }, { id: 12, name: 'Warcraft Reborn' },
@@ -38,7 +39,7 @@ const DEFAULTS = {
     wildcard: { mode: 6, image: 'Darkmoon', description: 13977904, name: 'Darkmoon', subtitle: '' },
     reborn: { mode: 12, image: 'Bronzebeard', description: 1397607, name: 'Bronzebeard', subtitle: 'Warcraft Reborn' },
     dawnrise: { mode: 9, image: 'Dawnrise', description: 13977920, name: 'Dawnrise', subtitle: 'Free Pick' },
-    living: { mode: 11, image: 'Thrall1', description: 13977864, name: '', subtitle: 'New server' },
+    living: { mode: 11, image: 'Malfurion', description: 13977864, name: '', subtitle: 'New server' },
   },
 };
 const NAME = /^[\w '().]{0,24}$/;
@@ -59,11 +60,20 @@ function clean(value) {
   return out;
 }
 
+// A living card saved by version 1 exactly as its defaults were (Thrall1, never changed by the player) takes the
+// Malfurion background; one the player changed in any way stays as it is.
+const LIVING_V1 = { mode: 11, image: 'Thrall1', description: 13977864, name: '', subtitle: 'New server' };
+function upgrade(saved) {
+  const living = saved?.realms?.living;
+  if (Number(saved?.version) !== 1 || !living || !Object.entries(LIVING_V1).every(([field, value]) => (field === 'description' || field === 'mode' ? Number(living[field]) : String(living[field] ?? '')) === value)) return saved;
+  return { ...saved, realms: { ...saved.realms, living: { ...living, image: 'Malfurion' } } };
+}
+
 // The choice saved; none yet (first start of a launcher that knows the cards): the defaults, marked as new.
 async function read(root) {
   try {
     const saved = JSON.parse(await fsp.readFile(path.join(root, FILE), 'utf8'));
-    return { ...clean(saved), version: Number(saved.version) || 0 };
+    return { ...clean(upgrade(saved)), version: Number(saved.version) || 0 };
   } catch { return { ...clean(DEFAULTS), version: 0 }; }
 }
 

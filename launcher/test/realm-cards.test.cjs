@@ -59,3 +59,21 @@ test('nothing is written before the choice exists, then the template follows it'
   assert.deepEqual(await cards.apply(root, { coa: 1 }), ['Settings/authserver.conf.template']);
   assert.match(fs.readFileSync(path.join(root, 'Settings', 'authserver.conf.template'), 'utf8'), /RealmCards\.Realm\.1\.GameMode = 11/);
 });
+
+test('the living server opens on the Malfurion background; an untouched card of version 1 moves to it, a changed one stays', async () => {
+  assert.equal(cards.DEFAULTS.realms.living.image, 'Malfurion');
+  assert.ok(cards.IMAGES.find(image => image.id === 'Malfurion').title);
+  assert.deepEqual(['wildcard', 'reborn', 'dawnrise'].map(key => cards.DEFAULTS.realms[key].image), ['Darkmoon', 'Bronzebeard', 'Dawnrise']);
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'cards-v1-'));
+  const write = living => { fs.mkdirSync(path.join(root, 'Settings'), { recursive: true }); fs.writeFileSync(path.join(root, cards.FILE), JSON.stringify({ version: 1, expansion: 0, realms: { living } })); };
+  write({ mode: 11, image: 'Thrall1', description: 13977864, name: '', subtitle: 'New server' });
+  assert.equal((await cards.read(root)).realms.living.image, 'Malfurion');
+  write({ mode: 11, image: 'Thrall1', description: 13977864, name: 'Mon serveur', subtitle: 'New server' });
+  assert.equal((await cards.read(root)).realms.living.image, 'Thrall1');
+  write({ mode: 11, image: 'Elune', description: 13977864, name: '', subtitle: 'New server' });
+  assert.equal((await cards.read(root)).realms.living.image, 'Elune');
+  // Renaming the realm keeps its background (the image is chosen per realm, not from its name).
+  const saved = await cards.save(root, { ...(await cards.read(root)), realms: { living: { mode: 11, image: 'Malfurion', description: 13977864, name: 'Azeroth Neuf', subtitle: '' } } });
+  assert.equal(cards.configLines(saved, { living: 5 }, { perRealm: true })['RealmCards.Realm.5.Image'], '"Malfurion"');
+  assert.equal(saved.version, cards.VERSION);
+});
