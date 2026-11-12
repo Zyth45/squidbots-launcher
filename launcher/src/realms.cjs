@@ -195,6 +195,9 @@ function imposed(key, saved) {
   // CoA tells its random bots from alts by this prefix: it must be the realm's bot prefix (else its bots count as alts).
   out['coa.conf'] = { ...out['coa.conf'], 'CoA.RandomBotAccountPrefix': `"${m.prefix}"` };
   out['playerbots.conf'] = { ...out['playerbots.conf'], 'AiPlayerbot.RandomBotAccountPrefix': `"${m.prefix}"`, 'AiPlayerbot.CoaStatusFile': '"Logs/bot-status.json"', 'AiPlayerbot.CommandServerPort': '0' };
+  // The bots' data files (world.json for the dashboard) in the realm's own Logs/squidbot: a folder the player set on CoA
+  // is never copied, or two worlds would write the same files.
+  out['playerbots.conf']['AiPlayerbot.CoaDataDir'] = '""';
   return out;
 }
 
@@ -896,4 +899,4 @@ async function clearOffline(root, { coa = false } = {}) {
   if (ids.length) await sql(root, `UPDATE acore_auth.realmlist SET flag = flag & ~2 WHERE id IN (${ids.join(',')})`);
   return ids;
 }
-module.exports = { lastWorldExit, endKind, logTail, realmEnd, stoppedOnPurpose, setPinner, livingOwn, clearOffline, setRealmName, ahbotSettingsOf, setAhbotSettingsOf, onlineRunning, shippedTables, syncShippedTables, MODES, queueMarked, memoryFor, neededMb, botsOnline, setDisabled, versionReady, modulesOf, setModule, coaAutostart, setCoaAutostart, skipCoaAtStart, anotherStarting, refreshBotConfigs, status, create, start, stop, stopAll, startMarked, setOptions, settingsOf, saveSettings, purgeBots, writeConfigs, setKey };
+module.exports = { imposedNow, lastWorldExit, endKind, logTail, realmEnd, stoppedOnPurpose, setPinner, livingOwn, clearOffline, setRealmName, ahbotSettingsOf, setAhbotSettingsOf, onlineRunning, shippedTables, syncShippedTables, MODES, queueMarked, memoryFor, neededMb, botsOnline, setDisabled, versionReady, modulesOf, setModule, coaAutostart, setCoaAutostart, skipCoaAtStart, anotherStarting, refreshBotConfigs, status, create, start, stop, stopAll, startMarked, setOptions, settingsOf, saveSettings, purgeBots, writeConfigs, setKey };

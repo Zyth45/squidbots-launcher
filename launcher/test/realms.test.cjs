@@ -424,3 +424,11 @@ test('the CoA world: its exit code from the repack supervisor log, when recent',
   assert.equal(realms.lastWorldExit('WORLD_EXIT code=0 at=2026-11-11T22:00:00\n', now), undefined); // too old: the log decides
   assert.equal(realms.lastWorldExit('', now), undefined);
 });
+
+test('a realm never takes the data folder of CoA: AiPlayerbot.CoaDataDir imposed empty (its own Logs/squidbot)', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'realm-datadir-'));
+  for (const key of ['living', 'wildcard', 'reborn', 'dawnrise']) {
+    const out = await realms.imposedNow(root, key, { id: 5, worldPort: 8559, raPort: 3909 });
+    assert.equal(out['playerbots.conf']['AiPlayerbot.CoaDataDir'], '""', key);
+  }
+});
