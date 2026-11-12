@@ -294,6 +294,27 @@
    }
   },
   {
+   "key": "CoA.CharacterSelectionMaxActive",
+   "file": "coa.conf",
+   "group": "realm",
+   "kind": "int",
+   "when": "restart",
+   "min": 1,
+   "max": 128,
+   "label": {
+    "en": "Active characters per account",
+    "fr": "Personnages actifs par compte",
+    "ru": "Активных персонажей на аккаунт",
+    "zh": "每个账号的活跃角色数"
+   },
+   "help": {
+    "en": "How many characters of an account can be active at once on the CoA character screen (1 to 128). Characters beyond it are kept but hidden until re-activated. To show more than 10 characters, raise this and \"Characters per account on this realm\" together.",
+    "fr": "Combien de personnages d'un compte peuvent être actifs en même temps sur l'écran de personnages de CoA (1 à 128). Les autres sont gardés mais cachés jusqu'à leur réactivation. Pour afficher plus de 10 personnages, monte ce réglage et « Personnages par compte sur ce royaume » ensemble.",
+    "ru": "Сколько персонажей аккаунта могут быть активны одновременно на экране персонажей CoA (от 1 до 128). Остальные сохраняются, но скрыты до повторной активации. Чтобы показать больше 10 персонажей, поднимите это значение вместе с «Персонажей на аккаунт в этом мире».",
+    "zh": "在 CoA 角色界面上，一个账号可同时激活的角色数（1 到 128）。超出的角色会保留但隐藏，直到重新激活。要显示超过 10 个角色，请同时提高此项和“每个账号在此国度的角色数”。"
+   }
+  },
+  {
    "key": "StartPlayerMoney",
    "file": "worldserver.conf",
    "group": "realm",
