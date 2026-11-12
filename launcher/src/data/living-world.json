@@ -2190,6 +2190,27 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaAltBags.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-loot",
+   "type": "bool",
+   "default": 0,
+   "when": "reload",
+   "classic": false,
+   "label": {
+    "en": "Alt bags",
+    "fr": "Sacs des alts",
+    "ru": "Сумки альтов",
+    "zh": "小号背包"
+   },
+   "help": {
+    "en": "The SquidBots addon can compare an item with what your alt wears, and sell or destroy its grey, white or green bag items after a preview.",
+    "fr": "L’addon SquidBots peut comparer un objet avec ce que porte ton alt, et vendre ou détruire ses objets gris, blancs ou verts des sacs après un aperçu.",
+    "ru": "Аддон SquidBots может сравнить предмет с тем, что надето на альте, и продать или уничтожить серые, белые или зелёные предметы из его сумок после предпросмотра.",
+    "zh": "SquidBots 插件可将物品与小号身上的装备比较，并在预览后出售或摧毁其背包中的灰色、白色或绿色物品。"
+   }
+  },
+  {
    "file": "playerbots.conf",
    "group": "lw-social",
    "when": "reload",
@@ -4212,7 +4233,8 @@
     "AiPlayerbot.CoaWorld.Invasions.OneAtATime": 1,
     "AiPlayerbot.CoaLive.Chat.Enable": 1,
     "AiPlayerbot.CoaFreshStart.CatchUp.Enable": 1,
-    "AiPlayerbot.CoaFreshStart.CatchUp.CountGameMasters": 1
+    "AiPlayerbot.CoaFreshStart.CatchUp.CountGameMasters": 1,
+    "AiPlayerbot.CoaAltBags.Enable": 1
    }
   }
  ]
