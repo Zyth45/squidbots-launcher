@@ -100,7 +100,8 @@ function realmNote(realm, working) {
   const line = (kind, text) => `<p class="realm-text realm-note ${kind}">${esc(text)}</p>`;
   if (realm.state === 'queued') return line('warn', t('realms.queuedText', 'Starts after {name}: the worlds start one after the other.', { name: realmTitle(realm.after || 'coa') }));
   if ((realm.state === 'starting' || working) && realm.firstStart) return line('info', t('realms.firstStart', 'First start: a few minutes (auction house, new bots). The next ones are quicker.'));
-  if (realm.state === 'stopped' && realm.skipped?.reason === 'memory') return line('bad', t('realms.lowMemoryText', 'Not started with the server: {free} GB free, about {need} GB needed. Stop a realm or lower its bots.', { free: (realm.skipped.free / 1024).toFixed(1), need: (realm.skipped.need / 1024).toFixed(1) }));
+  // A warning, not a refusal: the estimate may be high for this PC, the player can start it anyway.
+  if (realm.state === 'stopped' && realm.skipped?.reason === 'memory') return `<p class="realm-text realm-note warn">${esc(t('realms.lowMemoryText2', 'Not started with the server: {free} GB free, about {need} GB estimated. You can start it anyway, or stop a realm or lower its bots.', { free: (realm.skipped.free / 1024).toFixed(1), need: (realm.skipped.need / 1024).toFixed(1) }))} <button class="link-button" data-action="realm-start" data-key="${esc(realm.key)}">${icon('play')}${esc(t('realms.startAnyway', 'Start anyway'))}</button></p>`;
   return '';
 }
 

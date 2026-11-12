@@ -817,9 +817,11 @@ async function queueMarked(root) {
   queue.current = 'coa';
 }
 
-// Memory a world needs, from the number of its bots (measured: a world with its maps ≈ 4.5 to 5.8 GB before any bot,
-// CoA with 300 bots ≈ 6.6 GB on the LAPTOP): about 4.5 GB plus 7 MB per bot. Free memory is what Windows reports now.
-const neededMb = bots => Math.round(4500 + 7 * Math.max(0, Number(bots) || 0));
+// Memory a world needs, from the number of its bots. Measured on the LAPTOP (15 GB): a world with its maps ≈ 4.5 to
+// 5.8 GB before any bot, CoA with 300 bots ≈ 6.6 GB, Malfurion (3.0) 5.9 GB at 6 min and 6.5 GB steady with 1000 bots
+// online. So about 5.5 GB plus 1.5 MB per bot (1000 bots ≈ 7 GB, a little above what was measured). The old 7 MB per
+// bot asked 11+ GB for 1000 bots and left Malfurion stopped with 9.4 GB free. Free memory is what Windows reports now.
+const neededMb = bots => Math.round(5500 + 1.5 * Math.max(0, Number(bots) || 0));
 async function memoryFor(root, key) {
   const realm = (await status(root, { live: false })).realms.find(item => item.key === key);
   if (!realm) throw new Error('Unknown realm.');

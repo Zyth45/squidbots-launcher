@@ -230,7 +230,8 @@ test('start with the server: a realm waits its turn, and is left stopped when me
   list = (await realms.status(root, { live: false })).realms.filter(realm => realm.state !== 'absent');
   assert.deepStrictEqual(list.map(realm => realm.state), ['stopped', 'stopped', 'stopped']);
   assert.deepStrictEqual(list[0].skipped, { reason: 'memory', need: realms.neededMb(150), free: 1000 });
-  assert.strictEqual(realms.neededMb(300), 6600);
+  assert.strictEqual(realms.neededMb(300), 5950);
+  assert.strictEqual(realms.neededMb(1000), 7000);
 });
 
 test('bots in game of a realm come from its own status file, and only while it is fresh', () => {

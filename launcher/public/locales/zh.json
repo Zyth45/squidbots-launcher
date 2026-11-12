@@ -952,6 +952,8 @@
   "realms.logs": "日志",
   "realms.lowMemory": "内存不足",
   "realms.lowMemoryText": "未随服务器启动：可用 {free} GB，约需 {need} GB。请停止一个国度或减少其机器人数量。",
+  "realms.lowMemoryText2": "未随服务器启动：可用 {free} GB，估计约需 {need} GB。你仍可启动它，或停止一个国度、减少其机器人数量。",
+  "realms.startAnyway": "仍然启动",
   "realms.mainFoot": "它的设置是其他国度的基础。",
   "realms.memoryBody": "{name} 加上机器人约需 {need} GB，当前可用 {free} GB。整台电脑可能变慢。请先停止其他国度或减少其机器人数量，或仍然启动。",
   "realms.memoryTitle": "可用内存不多",
