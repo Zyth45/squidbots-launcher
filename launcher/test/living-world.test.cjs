@@ -129,6 +129,27 @@ test('a manifest option is turned into a setting; a malformed one is refused, ne
   assert.ok(built.groups.some(group => group.id === 'lw-test'));
 });
 
+test('a slider is an int with min and max, its default and marks on a step; anything else is refused', () => {
+  const base = { file: 'mod_living.conf', group: 'lw-test', type: 'int', min: 50, max: 150, label: 'x' };
+  const built = CATALOG.build(require('../src/data/server-settings.json'), {
+    groups: GROUPS,
+    options: [
+      { ...base, key: 'Living.Scale', default: 100, slider: { step: 5, marks: [50, 100, 150], unit: '%' } },
+      { ...base, key: 'Living.OffStep', default: 102, slider: { step: 5 } },
+      { ...base, key: 'Living.BadMark', default: 100, slider: { step: 5, marks: [160] } },
+      { ...base, key: 'Living.NoMax', default: 100, max: undefined, slider: { step: 5 } },
+      { ...base, key: 'Living.Float', type: 'float', default: 100, slider: { step: 5 } },
+      { ...base, key: 'Living.NoStep', default: 100, slider: { marks: [100] } },
+    ],
+  });
+  assert.deepEqual(built.settings.find(setting => setting.key === 'Living.Scale').slider, { step: 5, marks: [50, 100, 150], unit: '%' });
+  assert.deepEqual(built.refused.map(line => line.split(':')[0]).sort(), ['Living.BadMark', 'Living.Float', 'Living.NoMax', 'Living.NoStep', 'Living.OffStep']);
+  // The auction house price scale of CoA Economy 3.0.1: a bar from 50 to 150 %, out of the Living server pack.
+  const scale = CATALOG.settings.find(setting => setting.key === 'AiPlayerbot.CoaEconomy.PriceScalePercent');
+  assert.deepEqual([scale.default, scale.min, scale.max, scale.when, scale.slider.step], ['100', 50, 150, 'reload', 5]);
+  assert.ok(!Object.hasOwn(CATALOG.packs.find(pack => pack.id === 'living').changes, scale.key));
+});
+
 test('a living world option shows the player\'s value or its default, writes nothing until changed, and keeps its bounds', async () => {
   const root = await tempDir();
   await fsp.cp(FIXTURE, root, { recursive: true });

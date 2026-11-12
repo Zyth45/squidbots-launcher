@@ -45,6 +45,16 @@ function problem(option, groups, keys, onByDefault = new Set()) {
     if (!option.choices.some(choice => String(choice.value) === value)) return 'default (not one of the choices)';
   }
   if (SWITCH.test(option.key) && !['0', 'false'].includes(value.toLowerCase()) && !onByDefault.has(option.key)) return 'a new feature ships off (default 0), or is named in onByDefault';
+  if (option.slider !== undefined) {
+    // slider { step, marks?, unit? }: an int shown as a bar from min to max; the default and every mark on a step.
+    const s = option.slider;
+    const onStep = number => Number.isInteger(number) && number >= option.min && number <= option.max && (number - option.min) % s.step === 0;
+    if (option.type !== 'int' || !Number.isInteger(option.min) || !Number.isInteger(option.max) || option.max <= option.min) return 'slider (an int with min and max)';
+    if (!s || typeof s !== 'object' || !Number.isInteger(s.step) || s.step < 1) return 'slider step';
+    if (!onStep(Number(value))) return 'slider (default on a step)';
+    if (s.marks !== undefined && (!Array.isArray(s.marks) || s.marks.some(mark => !onStep(mark)))) return 'slider marks';
+    if (s.unit !== undefined && (typeof s.unit !== 'string' || s.unit.length > 4)) return 'slider unit';
+  }
   return null;
 }
 
@@ -71,6 +81,7 @@ function build(base = BASE, living = LIVING) {
     if (option.help !== undefined) setting.help = text(option.help);
     if (option.min !== undefined) setting.min = option.min;
     if (option.max !== undefined) setting.max = option.max;
+    if (option.slider !== undefined) setting.slider = { step: option.slider.step, marks: option.slider.marks || [], unit: option.slider.unit || '' };
     if (option.type === 'choice') setting.choices = option.choices.map(choice => ({ value: String(choice.value), label: text(choice.label) }));
     for (const field of ['onlyWhen', 'idleWhen']) if (option[field] !== undefined) setting[field] = option[field];
     if (option.classic === false) setting.notClassic = true;

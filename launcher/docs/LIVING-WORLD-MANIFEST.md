@@ -92,6 +92,7 @@ Add a group only for a new family of features. The LLM options come with 3.1, no
 | `type` | yes | `bool` (0/1, shown as a switch), `int`, `float`, `choice` (a list), `text` (written between quotes), `ids` (numbers separated by commas). |
 | `default` | yes | The value the module uses when the line is absent (the one in its `.conf.dist`). For `bool`, 0 or 1 (`false`/`true` are read as 0/1). `text` and `ids` may default to `""`. For `choice`, one of the `choices`. Within `min`/`max`. |
 | `min`, `max` | no | Bounds for `int` and `float`. The launcher refuses a value outside them. |
+| `slider` | no | `{ "step": 5, "marks": [50, 100, 150], "unit": "%" }`: an `int` with `min` and `max` shown as a bar instead of a number field. The default and every mark must sit on a step from `min`; `marks` and `unit` (up to 4 characters) are optional. A value written by hand off the bar is shown as a number field and kept. |
 | `choices` | for `choice` | `[{ "value": 1, "label": "Greed" }, …]`. |
 | `onlyWhen` | no | `{ "key": "…", "values": [2] }`: the option is shown only while that `bool` or `choice` setting holds one of these values (hidden otherwise). Example: the list of family names, shown only when the surname mode is 2. |
 | `idleWhen` | no | `{ "key": "…", "values": [0, 2] }`: the option has no effect while that `bool` or `choice` setting holds one of these values (shown greyed). Example: "Bots identify themselves", always on when the surname is not "Bot". One of `onlyWhen` / `idleWhen` per option. |

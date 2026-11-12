@@ -268,6 +268,14 @@ function control(setting) {
     const extra = current && !setting.choices.some(same) ? `<option value="${esc(current)}" selected>${esc(current)}</option>` : '';
     return `<select ${attrs}>${setting.choices.map(choice => `<option value="${esc(choice.value)}" ${same(choice) ? 'selected' : ''}>${esc(loc(choice.label))}</option>`).join('')}${extra}</select>`;
   }
+  // A bar for an int of the manifest with a slider; a value written by hand off the bar stays a number field.
+  const slider = setting.slider;
+  const number = Number(String(value).trim());
+  if (slider && Number.isInteger(number) && number >= setting.min && number <= setting.max && (number - setting.min) % slider.step === 0) {
+    const list = `marks-${String(setting.key).replace(/[^A-Za-z0-9]/g, '-')}`;
+    const unit = slider.unit ? ` ${slider.unit}` : '';
+    return `<span class="conf-range"><input type="range" min="${setting.min}" max="${setting.max}" step="${slider.step}" value="${number}" list="${list}" ${attrs}><output>${number}${esc(unit)}</output><datalist id="${list}">${slider.marks.map(mark => `<option value="${mark}" label="${mark}${esc(unit)}"></option>`).join('')}</datalist>${slider.marks.length ? `<span class="conf-marks">${slider.marks.map(mark => `<small style="left:${((mark - setting.min) / (setting.max - setting.min)) * 100}%">${mark}${esc(unit)}</small>`).join('')}</span>` : ''}</span>`;
+  }
   if (setting.kind === 'int' || setting.kind === 'float') return `<input class="num-input" type="number" ${setting.kind === 'float' ? 'step="any"' : 'step="1"'} value="${esc(value)}" ${attrs}>`;
   return `<input class="text-input" type="text" maxlength="400" value="${esc(value)}" ${attrs}>`;
 }
@@ -704,6 +712,7 @@ document.addEventListener('input', event => {
   if (!target.dataset?.confKey) return;
   const { confFile: file, confKey: key, confKind: kind } = target.dataset;
   const value = target.type === 'checkbox' ? (target.checked ? '1' : '0') : target.value;
+  if (target.type === 'range') { const out = target.parentElement?.querySelector('output'); if (out) out.textContent = out.textContent.replace(/^-?\d+/, value); }
   const setting = App.state.conf.settings.find(item => item.file === file && item.key === key) || App.state.confIndex?.find(item => item.file === file && item.key === key) || { value: '' };
   const id = pendingKey(file, key);
   if (String(value).trim() === String(setting.value).trim()) delete App.state.pending[id];

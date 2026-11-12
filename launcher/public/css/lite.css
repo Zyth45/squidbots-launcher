@@ -239,6 +239,10 @@ input:focus, select:focus { border-color: var(--accent); }
 .conf-warn { display: flex; gap: 6px; margin-top: 6px; padding: 6px 9px; border-radius: 8px; background: color-mix(in srgb, var(--warn) 10%, transparent); color: var(--warn); font-size: 12px; }
 .conf-warn .icon { width: 14px; height: 14px; }
 .num-input { width: 110px; text-align: right; }
+.conf-range { position: relative; display: inline-grid; grid-template-columns: 200px auto; align-items: center; gap: 10px; padding-bottom: 16px; }
+.conf-range output { min-width: 52px; text-align: right; font-variant-numeric: tabular-nums; }
+.conf-marks { position: absolute; left: 0; width: 200px; bottom: 0; height: 14px; pointer-events: none; }
+.conf-marks small { position: absolute; transform: translateX(-50%); color: var(--faint); font-size: 10.5px; white-space: nowrap; }
 .text-input { width: 220px; }
 .switch { position: relative; display: inline-flex; cursor: pointer; }
 .switch input { position: absolute; top: 0; left: 0; opacity: 0; width: 1px; height: 1px; margin: 0; }

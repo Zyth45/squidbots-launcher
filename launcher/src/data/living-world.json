@@ -3493,6 +3493,37 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaEconomy.PriceScalePercent",
+   "file": "playerbots.conf",
+   "group": "lw-economy",
+   "type": "int",
+   "default": 100,
+   "min": 50,
+   "max": 150,
+   "slider": {
+    "step": 5,
+    "marks": [
+     50,
+     100,
+     150
+    ],
+    "unit": "%"
+   },
+   "when": "reload",
+   "label": {
+    "en": "Auction house prices",
+    "fr": "Prix de l'hôtel des ventes",
+    "ru": "Цены аукциона",
+    "zh": "拍卖行价格"
+   },
+   "help": {
+    "en": "Scales every price the bots ask and pay (50% = half price, 150% = half again as dear). New auctions and purchases follow at once; auctions already up keep their price until they end (12 to 48 hours).",
+    "fr": "Ajuste tous les prix que les bots demandent et paient (50 % = moitié prix, 150 % = une fois et demie plus cher). Les nouvelles enchères et les achats suivent tout de suite ; les enchères déjà posées gardent leur prix jusqu'à leur fin (12 à 48 h).",
+    "ru": "Меняет все цены, которые боты запрашивают и платят (50% = за полцены, 150% = в полтора раза дороже). Новые лоты и покупки следуют сразу; уже выставленные лоты сохраняют цену до окончания (от 12 до 48 часов).",
+    "zh": "按比例调整机器人要价和出价的所有价格（50% = 半价，150% = 贵一半）。新拍卖和购买立即生效；已上架的拍卖保持原价直到结束（12 到 48 小时）。"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaEconomy.Market.Enable",
    "file": "playerbots.conf",
    "group": "lw-economy",
