@@ -1502,7 +1502,16 @@ function registerIpc() {
     const auth = (await requireControl().status()).find(service => service.id === 'auth');
     return { cards, authRunning: auth?.state === 'running' };
   });
+  // The authserver reads the realm cards only when it starts: one already running is restarted alone after a realm is
+  // created, so the new card shows its background and description at once. Players already in a world stay there (the
+  // authserver only serves the login and the realm list). Not possible: the card shows at the next start of the server.
+  const authRunning = async () => (await requireControl().status()).some(service => service.id === 'auth' && service.state === 'running');
+  const restartAuthForCards = async () => {
+    try { await stopOne('auth'); await requireControl().start('auth'); await realmsOnline(); return false; }
+    catch { return true; }
+  };
   handle('realms:create', async (key, options) => {
+    const authBefore = await authRunning().catch(() => false);
     if (options?.start === true) {
       await realmBase(false);
       await realms.create(serverPath(), text(key, 12), { bots: Number(options?.bots) || undefined, name: text(options?.name, 32) || undefined, notify: line => send('realms:progress', line) });
@@ -1512,6 +1521,7 @@ function registerIpc() {
       await requireControl().start('auth');
       await realmsOnline();
     } else { await withMysql(() => realms.create(serverPath(), text(key, 12), { bots: Number(options?.bots) || undefined, name: text(options?.name, 32) || undefined, notify: line => send('realms:progress', line) })); await applyCards(serverPath()).catch(() => {}); }
+    const cardsLater = authBefore && await authRunning().catch(() => false) ? await restartAuthForCards() : false;
     // A server open to other PCs: the new realm's world port joins the firewall rules (Windows asks for the
     // administrator; refused, the realm stays created and Who can join > Open the firewall does it later).
     if ((await network.readNetwork(serverPath()).catch(() => ({}))).mode === 'open') {
@@ -1519,7 +1529,7 @@ function registerIpc() {
       const extra = (await realms.status(serverPath(), { live: false }).catch(() => ({ realms: [] }))).realms.filter(realm => realm.state !== 'absent').map(realm => realm.worldPort).filter(Boolean);
       await network.openFirewall(serverPath(), { auth: ports.auth || 3724, world: ports.world || 8085, extra }).catch(error => send('realms:progress', error.message));
     }
-    return realmsStatus();
+    return { ...(await realmsStatus()), cardsLater };
   });
   // MySQL and the authserver started by a realm's own Start (the server was stopped): stopped again with the last world
   // stopped from a card, so the home page does not stay on "2 of 3 services running". "Start the server" keeps them.

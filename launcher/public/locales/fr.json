@@ -1643,5 +1643,7 @@
   "home.realmFirstStart": "{name} démarre : premier démarrage, quelques minutes (hôtel des ventes, création des bots). Inutile de cliquer encore sur Démarrer.",
   "home.realmStartingText": "{name} démarre : environ une minute.",
   "home.realmStoppingText": "{name} s’arrête : il sauvegarde d’abord ses personnages et ses bots.",
-  "live.realmStarting": "{name} démarre : ses chiffres apparaissent ici dès qu’il tourne."
+  "live.realmStarting": "{name} démarre : ses chiffres apparaissent ici dès qu’il tourne.",
+  "realms.cardsLater": "Son habillage dans la liste des royaumes du jeu (fond, texte) apparaîtra au prochain démarrage du serveur.",
+  "realms.disableLine": "Éteindre le retire de la liste des royaumes du jeu, sans rien supprimer. Arrêté, il reste dans la liste, « hors ligne »."
 }

@@ -433,3 +433,5 @@ summary.damage-row::-webkit-details-marker { display: none; }
 .realm-quick{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;margin:8px 0 2px}.realm-quick-row{display:flex;align-items:center;gap:8px}.realm-quick small{flex-basis:100%}.conf-advanced{margin:14px 10px 4px;font-size:12px}.lw-lines{display:grid;gap:6px;margin-top:10px}.lw-line{width:100%;justify-content:flex-start;text-align:left}.lw-line small{margin-left:auto}
 /* beta.5: the quick switches sit at the top of the footer, on their own lines; the third card starts a new row. */
 .realm-more .realm-quick{display:grid;gap:6px;margin:0 0 4px;padding-bottom:10px;border-bottom:1px solid var(--line)}.realm-more .realm-quick-row{display:flex;justify-content:space-between;align-items:center;gap:10px}.realm-more .realm-quick small{display:block;line-height:1.45}.realm-cards>.realm-card:nth-child(3){grid-column-start:1}
+.realm-off { display: grid; gap: 4px; justify-items: start; margin-top: 6px; }
+.realm-off small { font-size: 11.5px; line-height: 1.35; }

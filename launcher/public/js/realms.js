@@ -142,7 +142,8 @@ function realmCard(realm, busy) {
     : `<label class="realm-auto"><input type="checkbox" data-action="realm-auto" data-key="${realm.key}" ${realm.autostart ? 'checked' : ''}>${esc(t('realms.autostart', 'Start with the server'))}</label>${ecoSwitch(realm)}
        <span class="realm-links"><button class="link-button" data-action="realm-logs" data-key="${realm.key}">${icon('book')}${esc(t('realms.logs', 'Logs'))}</button>
        <button class="link-button" data-action="realm-purge" data-key="${realm.key}" ${on || busy ? 'disabled' : ''} title="${esc(t('realms.purgeHint', 'Deletes the random bots of this realm only; they are made again at its next start.'))}">${icon('refresh')}${esc(t('realms.purge', 'New bots'))}</button>
-       <button class="link-button" data-action="realm-disable" data-key="${realm.key}" ${busy ? 'disabled' : ''} title="${esc(t('realms.disableHint', 'Stops it and takes it out of the realm list; nothing is deleted.'))}">${icon('close')}${esc(t('realms.disable', 'Switch off'))}</button></span>`;
+       </span>
+       <div class="realm-off"><button class="button ghost small" data-action="realm-disable" data-key="${realm.key}" ${busy ? 'disabled' : ''}>${icon('close')}${esc(t('realms.disable', 'Switch off'))}</button><small class="muted">${esc(t('realms.disableLine', 'Switch off takes it out of the realm list of the game, without deleting anything. Stopped, it stays in the list as Offline.'))}</small></div>`;
   return `<article class="realm-card realm-${realm.key}${on ? ' on' : ''}">${head}${stats}
     <div class="realm-buttons">${startStop}<button class="button ghost small" data-action="realm-settings" data-key="${realm.key}">${icon('settings')}${esc(t('realms.settings', 'Settings'))}${realm.changed ? `<em class="count" title="${esc(t('realms.ownHint', 'Settings changed for this realm only'))}">${realm.changed}</em>` : ''}</button><button class="button ghost small" data-action="realm-console" data-key="${realm.key}" ${realm.state === 'running' ? '' : 'disabled'}>${icon('terminal')}${esc(t('realms.console', 'Console'))}</button>${App.state.dashboard?.available ? `<button class="button ghost small" data-action="realm-dashboard" data-key="${realm.key}">${icon('chart')}${esc(t('realms.dashboard', 'Dashboard'))}</button>` : ''}</div>
     <footer class="realm-more">${realmQuick(realm)}${more}</footer>
@@ -253,9 +254,11 @@ Object.assign(App.actions, {
     const name = realmTitle(key);
     if (!await confirmDialog({ title: t('realms.activateTitle', 'Switch the {name} realm on?', { name }), body: esc(t('realms.activateBody', 'The first time, its two databases are made (its characters and its bots, about a minute) and it is added to the realm list of the game. Your Conquest of Azeroth characters and bots are not touched. You can switch it off again at any time.')), confirm: t('realms.activate', 'Switch on') })) return;
     const off = App.api.onRealmsProgress(line => { App.state.realmLine = line; App.refresh('realms'); });
-    try { await realmAction(key, () => App.api.realmsCreate(key, {})); }
+    let result = null;
+    try { await realmAction(key, async () => { result = await App.api.realmsCreate(key, {}); }); }
     finally { off(); App.state.realmLine = ''; }
     toast(t('realms.activated', '{name} is on: start it, then pick it in the realm list of the game.', { name }), 'success');
+    if (result?.cardsLater) toast(t('realms.cardsLater', 'Its look in the realm list of the game (background, text) appears at the next start of the server.'));
   }, button),
   'realm-start': button => guard(async () => {
     const key = button.dataset.key;

@@ -1226,9 +1226,11 @@ Object.assign(App.actions, {
     const name = await livingRealmDialog();
     if (!name) return;
     const off = App.api.onRealmsProgress(line => { App.state.realmLine = line; App.refresh(App.state.tab); });
-    try { await realmAction('living', () => App.api.realmsCreate('living', { name })); }
+    let result = null;
+    try { await realmAction('living', async () => { result = await App.api.realmsCreate('living', { name }); }); }
     finally { off(); App.state.realmLine = ''; }
     toast(t('pack.newRealmDone', '"{name}" is made: start it in the Realms tab, then pick it in the realm list of the game.', { name }), 'success');
+    if (result?.cardsLater) toast(t('realms.cardsLater', 'Its look in the realm list of the game (background, text) appears at the next start of the server.'));
     App.go('realms');
   }, button),
 });
