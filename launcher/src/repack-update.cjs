@@ -15,11 +15,12 @@ const text = (value, max) => String(value ?? '').slice(0, max);
 const RELEASE = /^main-\d{8}-[0-9a-f]{7,40}$/;
 const FOLDER = /^CoA-Update-[0-9A-Za-z.-]{1,20}$/;
 
-// Versions like 2.4, 2.5-beta.1, 2.5: number by number, then a stable version before a beta of the same number.
+// Versions like 2.4, 2.5-beta.1, 3.0-test-a57, 2.5: number by number, then a stable version above a beta or test
+// build of the same number (a server on 3.0-test-a57 is offered 3.0).
 function compareVersions(a, b) {
   const key = value => {
     const match = /^(\d+(?:\.\d+)*)(.*)$/.exec(String(value || '').trim()) || [null, '0', ''];
-    return { nums: match[1].split('.').map(Number), beta: /beta|rc|pre/i.test(match[2]), step: Number(/(\d+)/.exec(match[2])?.[1] || 0) };
+    return { nums: match[1].split('.').map(Number), beta: /alpha|beta|rc|pre|test|dev/i.test(match[2]), step: Number(/(\d+)/.exec(match[2])?.[1] || 0) };
   };
   const x = key(a), y = key(b);
   for (let i = 0; i < Math.max(x.nums.length, y.nums.length); i++) if ((x.nums[i] || 0) !== (y.nums[i] || 0)) return (x.nums[i] || 0) - (y.nums[i] || 0);

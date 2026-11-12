@@ -23,6 +23,23 @@ test('versions: numbers first, then a stable version before its betas', () => {
   assert.ok(compareVersions('2.5', '2.5-beta.3') > 0);
   assert.ok(compareVersions('2.5-beta.2', '2.5-beta.1') > 0);
   assert.equal(compareVersions('2.4', '2.4'), 0);
+  // The test packages of 3.0 (release.json "3.0-test-a55"): below 3.0, above 2.9.5, in build order.
+  assert.ok(compareVersions('3.0', '3.0-test-a57') > 0);
+  assert.ok(compareVersions('3.0-test-a57', '3.0-test-a55') > 0);
+  assert.ok(compareVersions('3.0-test-a55', '2.9.5') > 0);
+  assert.ok(compareVersions('3.0.1', '3.0') > 0);
+});
+
+test('a server on a 3.0 test package is offered the stable 3.0, a 3.0 server is up to date', () => {
+  const pkg = { url: 'https://example.org/c.zip', sha256: 'c'.repeat(64), size: 10, folder: 'CoA-Update-3.0' };
+  const stable = cleanManifest({ version: '3.0', release: 'main-20261120-0123abcd', from: ['main-20261108-7fc67d94'], package: pkg });
+  const onTest = folder({ 'RELEASE.json': '{"releaseId":"main-20261112-33df6faf"}', 'CoA-Bots/release.json': '{"version":"3.0-test-a55"}' });
+  assert.equal(status(onTest, stable).state, 'unsupported');
+  assert.notEqual(status(onTest, stable).ahead, true);
+  const onStable = folder({ 'RELEASE.json': '{"releaseId":"main-20261120-0123abcd"}', 'CoA-Bots/release.json': '{"version":"3.0"}' });
+  assert.equal(status(onStable, stable).state, 'current');
+  const on295 = folder({ 'RELEASE.json': '{"releaseId":"main-20261108-7fc67d94"}', 'CoA-Bots/release.json': '{"version":"2.9.5"}' });
+  assert.equal(status(on295, stable).state, 'available');
 });
 
 test('a beta is signed as such, and a tester ahead of the stable version has nothing to do', () => {
