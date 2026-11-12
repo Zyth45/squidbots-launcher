@@ -456,3 +456,22 @@ test('a setting saved for a running realm is written in its configs at once, so 
     assert.strictEqual(value(path.join(dir, 'configs', 'modules', 'playerbots.conf'), 'AiPlayerbot.MaxRandomBots'), '200');
   } finally { server.close(); }
 });
+
+test('New bots: the auctions of the realm\'s bots go with them, players\' auctions stay, a player\'s bid is mailed back', () => {
+  const text = realms.auctionPurgeSql('living');
+  // Only the realm's own databases, one transaction, and the auction house bot by default.
+  assert.match(text, /^START TRANSACTION;/);
+  assert.match(text, /COMMIT;\nSELECT/);
+  assert.ok(!/acore_characters\./.test(text), 'the CoA realm is never touched');
+  assert.match(text, /acore_characters_living\.auctionhouse/);
+  assert.match(text, /oa\.username LIKE 'RNDLV%' OR oa\.username = 'AHBOT'/);
+  // Sellers that no longer exist (an earlier purge) are cleaned too.
+  assert.match(text, /o\.guid IS NULL OR oa\.id IS NULL/);
+  // The refund: only a player's bid (not a bot, not the house), as an auction mail from its house with the bid.
+  assert.match(text, /ba\.username NOT LIKE 'RNDLV%' AND ba\.username <> 'AHBOT'/);
+  assert.match(text, /INSERT INTO acore_characters_living\.mail .* SELECT @base \+ ROW_NUMBER\(\) OVER \(ORDER BY id\), 2, 62, 0, houseid, buyguid/);
+  assert.match(text, /':4:'/);
+  // Unticked: the auction house bot keeps its auctions.
+  assert.ok(!/'AHBOT'(?! AND)/.test(realms.auctionPurgeSql('living', { house: false }).split('purge_refund')[0]));
+  assert.throws(() => realms.auctionPurgeSql('coa'));
+});

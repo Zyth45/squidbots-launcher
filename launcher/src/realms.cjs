@@ -866,12 +866,40 @@ async function startMarked(root, { freeMb = () => os.freemem() / 1048576 } = {})
   return failed;
 }
 
+// The auctions of the bots of a realm, removed with them: those of its random bots (its account prefix), those whose
+// seller no longer exists (left by an earlier purge), and with house, those of the SquidBots-AH seller (AHBOT).
+// A player's auction is never touched. A player who bid on one of them gets the bid back by mail, the way the core
+// does when an auction is cancelled (auction mail from its house, subject item:0:4 = "cancelled", money = the bid).
+// One transaction; the realm is stopped. Returns SQL that ends with: removed auctions, refunds, refunded copper.
+function auctionPurgeSql(key, { house = true } = {}) {
+  const m = mode(key);
+  const c = `acore_characters_${key}`;
+  const prefix = m.prefix.toUpperCase();
+  if (!/^[A-Z]+$/.test(prefix) || !/^[a-z]+$/.test(key)) throw new Error('Unknown realm.');
+  const seller = `o.guid IS NULL OR oa.id IS NULL OR oa.username LIKE '${prefix}%'${house ? " OR oa.username = 'AHBOT'" : ''}`;
+  return [
+    'START TRANSACTION',
+    'DROP TEMPORARY TABLE IF EXISTS purge_ah',
+    `CREATE TEMPORARY TABLE purge_ah AS SELECT ah.id, ah.houseid, ah.itemguid, ah.itemowner, ah.buyguid, ah.lastbid, ah.buyoutprice, ah.deposit FROM ${c}.auctionhouse ah LEFT JOIN ${c}.characters o ON o.guid = ah.itemowner LEFT JOIN acore_auth.account oa ON oa.id = o.account WHERE ${seller}`,
+    'DROP TEMPORARY TABLE IF EXISTS purge_refund',
+    `CREATE TEMPORARY TABLE purge_refund AS SELECT p.id, p.houseid, p.itemowner, p.buyguid, p.lastbid, p.buyoutprice, p.deposit, ii.itemEntry, ii.randomPropertyId, ii.count FROM purge_ah p JOIN ${c}.characters b ON b.guid = p.buyguid JOIN acore_auth.account ba ON ba.id = b.account LEFT JOIN ${c}.item_instance ii ON ii.guid = p.itemguid WHERE p.buyguid <> 0 AND p.lastbid > 0 AND ba.username NOT LIKE '${prefix}%' AND ba.username <> 'AHBOT'`,
+    `SET @base = (SELECT COALESCE(MAX(id), 0) FROM ${c}.mail)`,
+    `INSERT INTO ${c}.mail (id, messageType, stationery, mailTemplateId, sender, receiver, subject, body, has_items, expire_time, deliver_time, money, cod, checked) SELECT @base + ROW_NUMBER() OVER (ORDER BY id), 2, 62, 0, houseid, buyguid, CONCAT(COALESCE(itemEntry, 0), ':', COALESCE(randomPropertyId, 0), ':4:', id, ':', COALESCE(count, 1)), CONCAT(LPAD(HEX(itemowner), 16, '0'), ':', lastbid, ':', buyoutprice, ':', deposit, ':0'), 0, UNIX_TIMESTAMP() + 2592000, UNIX_TIMESTAMP(), lastbid, 0, 4 FROM purge_refund`,
+    `DELETE ii FROM ${c}.item_instance ii JOIN purge_ah p ON p.itemguid = ii.guid`,
+    `DELETE ah FROM ${c}.auctionhouse ah JOIN purge_ah p ON p.id = ah.id`,
+    'COMMIT',
+    'SELECT (SELECT COUNT(*) FROM purge_ah), (SELECT COUNT(*) FROM purge_refund), (SELECT COALESCE(SUM(lastbid), 0) FROM purge_refund)',
+  ].join(';\n') + ';';
+}
+
 // The random bots of this realm only (its own account prefix), the way CoA Bots purges those of CoA: the realm's
-// worldserver runs once with the module's delete option given through the environment, deletes and stops.
-async function purgeBots(root, key) {
+// worldserver runs once with the module's delete option given through the environment, deletes and stops. Their
+// auctions go first (while their accounts still tell them apart), and with house, those of the auction house bot.
+async function purgeBots(root, key, { house = true, runSql = sql } = {}) {
   const saved = await realmFile(root, key);
   if (!saved) throw new Error('Create the realm first.');
   if (await portOpen(saved.worldPort) || await processOf(root, key)) throw new Error('Stop this realm first.');
+  const [auctions = 0, refunds = 0, refunded = 0] = String(await runSql(root, auctionPurgeSql(key, { house }))).trim().split(/\s+/).map(Number);
   await refreshBotConfigs(root);
   await writeConfigs(root, key, saved);
   const child = launch(root, key, 'deleting the random bots of this realm', { AC_AI_PLAYERBOT_DELETE_RANDOM_BOT_ACCOUNTS: '1' });
@@ -879,7 +907,7 @@ async function purgeBots(root, key) {
   await fsp.rm(path.join(dirOf(root, key), '.state.json'), { force: true });
   const left = Number(await sql(root, `SELECT COUNT(*) FROM acore_auth.account WHERE username LIKE '${mode(key).prefix.toUpperCase()}%'`).catch(() => '-1'));
   if (left > 0) throw new Error(`${left} bot account(s) of this realm are still there (exit ${code}); see Royaumes\\${key}\\Logs.`);
-  return { deleted: true };
+  return { deleted: true, auctions, refunds, refunded };
 }
 
 async function setOptions(root, key, { autostart } = {}) {
@@ -912,4 +940,4 @@ async function clearOffline(root, { coa = false } = {}) {
   if (ids.length) await sql(root, `UPDATE acore_auth.realmlist SET flag = flag & ~2 WHERE id IN (${ids.join(',')})`);
   return ids;
 }
-module.exports = { changedCount, imposedNow, lastWorldExit, endKind, logTail, realmEnd, stoppedOnPurpose, setPinner, livingOwn, clearOffline, setRealmName, ahbotSettingsOf, setAhbotSettingsOf, onlineRunning, shippedTables, syncShippedTables, MODES, queueMarked, memoryFor, neededMb, botsOnline, setDisabled, versionReady, modulesOf, setModule, coaAutostart, setCoaAutostart, skipCoaAtStart, anotherStarting, refreshBotConfigs, status, create, start, stop, stopAll, startMarked, setOptions, settingsOf, saveSettings, purgeBots, writeConfigs, setKey };
+module.exports = { auctionPurgeSql, changedCount, imposedNow, lastWorldExit, endKind, logTail, realmEnd, stoppedOnPurpose, setPinner, livingOwn, clearOffline, setRealmName, ahbotSettingsOf, setAhbotSettingsOf, onlineRunning, shippedTables, syncShippedTables, MODES, queueMarked, memoryFor, neededMb, botsOnline, setDisabled, versionReady, modulesOf, setModule, coaAutostart, setCoaAutostart, skipCoaAtStart, anotherStarting, refreshBotConfigs, status, create, start, stop, stopAll, startMarked, setOptions, settingsOf, saveSettings, purgeBots, writeConfigs, setKey };

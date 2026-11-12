@@ -140,7 +140,7 @@ contextBridge.exposeInMainWorld('launcher', Object.freeze({
   realmsOptions: (key, options) => call('realms:options', key, options || {}),
   realmsEco: (key, on) => call('realms:eco', key, on === true),
   realmsOpenLogs: key => call('realms:openLogs', key),
-  realmsPurge: key => call('realms:purge', key),
+  realmsPurge: (key, options) => call('realms:purge', key, options),
   realmsDisable: (key, off) => call('realms:disable', key, off === true),
   realmsModules: key => call('realms:modules', key),
   realmsMemory: key => call('realms:memory', key),

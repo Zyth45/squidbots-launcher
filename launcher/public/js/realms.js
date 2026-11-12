@@ -290,10 +290,18 @@ Object.assign(App.actions, {
   'realm-logs': button => guard(() => App.api.realmsOpenLogs(button.dataset.key)),
   'realm-purge': button => guard(async () => {
     const key = button.dataset.key;
-    if (!await confirmDialog({ title: t('realms.purgeTitle', 'Recreate the bots of {name}?', { name: realmTitle(key) }), body: esc(t('realms.purgeBody', 'The random bots of this realm are deleted (players are not touched); they are made again at its next start. The bots of the other realms stay.')), confirm: t('realms.purge', 'New bots'), danger: true })) return;
+    // Their auctions go with them; the auction house bot's ones too unless the box is unticked. Players' auctions stay.
+    let house = true;
+    const onChange = event => { if (event.target?.id === 'purge-house') house = event.target.checked; };
+    document.addEventListener('change', onChange);
+    const body = `${esc(t('realms.purgeBody2', 'The random bots of this realm are deleted with their auctions (players are not touched; a player who bid on one gets the bid back by mail). They are made again at its next start. The bots of the other realms stay.'))}</p><p><label class="check-line"><input type="checkbox" id="purge-house" checked> ${esc(t('realms.purgeHouse', 'Empty the auctions of the auction house bot too'))}</label>`;
+    let ok = false;
+    try { ok = await confirmDialog({ title: t('realms.purgeTitle', 'Recreate the bots of {name}?', { name: realmTitle(key) }), body, confirm: t('realms.purge', 'New bots'), danger: true }); } finally { document.removeEventListener('change', onChange); }
+    if (!ok) return;
     const release = holdDialog(t('server.purgingTitle', 'Recreating the bots'), t('realms.purgingLong', 'Recreating the bots of {name}: the realm starts, deletes them and stops by itself (a few minutes).', { name: realmTitle(key) }));
-    try { await realmAction(key, () => App.api.realmsPurge(key)); } finally { release(); }
-    toast(t('realms.purged', 'Done: the bots come back at the next start.'), 'success');
+    let purged = null;
+    try { await realmAction(key, async () => { const result = await App.api.realmsPurge(key, { house }); purged = result?.purged || null; return result; }); } finally { release(); }
+    toast(purged ? t('realms.purged2', 'Done: the bots come back at the next start. {auctions} auction(s) removed, {refunds} bid(s) refunded by mail.', { auctions: purged.auctions || 0, refunds: purged.refunds || 0 }) : t('realms.purged', 'Done: the bots come back at the next start.'), 'success');
   }, button),
   'realm-disable': button => guard(async () => {
     const key = button.dataset.key;
