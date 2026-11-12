@@ -82,6 +82,8 @@ test('the live authserver config is reported changed when a card changes, and on
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'cards-live-'));
   fs.mkdirSync(path.join(root, 'Core', 'configs'), { recursive: true });
   fs.writeFileSync(path.join(root, 'Core', 'configs', 'authserver.conf'), CONF);
+  // A core that reads the per-realm image and description.
+  fs.writeFileSync(path.join(root, 'Core', 'authserver.exe'), 'RealmCards.Realm.%u.DescriptionSpell');
   await cards.save(root, cards.DEFAULTS);
   assert.deepEqual(await cards.apply(root, { coa: 1, living: 5 }), ['Core/configs/authserver.conf']);
   assert.deepEqual(await cards.apply(root, { coa: 1, living: 5 }), []);
