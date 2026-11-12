@@ -130,11 +130,11 @@ function realmCard(realm, busy) {
       <footer class="realm-more"><small class="muted">${esc(t('realms.nothingDeleted', 'Nothing is deleted: switch it on whenever you want.'))}</small></footer>
     </article>`;
   }
-  const on = ['running', 'starting'].includes(realm.state) || working;
+  const on = ['running', 'starting', 'stopping'].includes(realm.state) || working;
   const stat = (label, value, hint, of) => `<div${hint ? ` title="${esc(hint)}"` : ''}><dt>${esc(label)}</dt><dd>${value === null || value === undefined || value === '' ? '—' : esc(String(value))}${of ? `<small>/${esc(String(of))}</small>` : ''}</dd></div>`;
   const stats = `<dl class="realm-stats">${stat(t('realms.players', 'Players'), realm.state === 'running' ? realm.players : null)}${realm.state === 'running' && Number.isFinite(realm.online) ? stat(t('realms.bots', 'Bots'), realm.online, t('realms.botsHint', 'Bots in game now, out of the number set for this realm.'), realm.bots) : stat(t('realms.bots', 'Bots'), realm.bots)}${stat(t('realms.port', 'Port'), realm.worldPort, t('realms.portHint', 'The game reaches this realm on this port (the realm list gives it to the client).'))}</dl>`;
   const startStop = on
-    ? `<button class="button ghost small" data-action="realm-stop" data-key="${realm.key}" ${busy || realm.state === 'starting' ? 'disabled' : ''}>${icon('pause')}${esc(t('realms.stop', 'Stop'))}</button>`
+    ? `<button class="button ghost small" data-action="realm-stop" data-key="${realm.key}" ${busy || ['starting', 'stopping'].includes(realm.state) ? 'disabled' : ''}>${icon('pause')}${esc(t('realms.stop', 'Stop'))}</button>`
     : `<button class="button primary small" data-action="realm-start" data-key="${realm.key}" ${busy || realm.state === 'queued' ? 'disabled' : ''}>${icon('play')}${esc(t('realms.start', 'Start'))}</button>`;
   const more = realm.main
     ? `<label class="realm-auto"><input type="checkbox" data-action="realm-auto" data-key="coa" ${realm.autostart !== false ? 'checked' : ''}>${esc(t('realms.autostart', 'Start with the server'))}</label>${ecoSwitch(realm)}${realm.autostart === false && realmList().some(other => !other.main && other.autostart && !['absent', 'disabled'].includes(other.state)) ? `<small class="muted">${esc(t('realms.coaAlone', 'One start per realm: "Start" on the home page leaves this realm stopped; the realms ticked start without it.'))}</small>` : ''}<small class="muted">${esc(t('realms.mainFoot', 'Its settings are the base of the other realms.'))}</small>`

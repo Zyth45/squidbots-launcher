@@ -135,6 +135,13 @@ function copyDump(root, args, target) {
 }
 
 // ---------------------------------------------------------------- realm files
+// The values the player changed for a realm (the number on its Settings button): on the living server, those written
+// at its creation and left as they were are its starting values, not changes (0.4.1-beta.9 showed « 101 » on a realm
+// nobody had touched).
+function changedCount(key, own) {
+  const start = key === 'living' ? livingOwn() : {};
+  return Object.entries(own).reduce((sum, [file, keys]) => sum + Object.entries(keys).filter(([name, value]) => String(value) !== start[file]?.[name]).length, 0);
+}
 async function realmFile(root, key) { return readJson(path.join(dirOf(root, key), 'realm.json')); }
 async function ownSettings(root, key) {
   const own = (await readJson(path.join(dirOf(root, key), 'settings.json'))) || {};
@@ -230,7 +237,7 @@ async function status(root, { live: withLive = true } = {}) {
     const open = await portOpen(p.worldPort);
     const pid = await processOf(root, key);
     const own = await ownSettings(root, key);
-    const changed = Object.values(own).reduce((sum, keys) => sum + Object.keys(keys).length, 0);
+    const changed = changedCount(key, own);
     let bots = Number(own['playerbots.conf']?.[BOT_COUNT[1]]);
     if (!Number.isFinite(bots)) bots = Number(confValue(await fsp.readFile(path.join(BOTS_CONFIGS(root), 'modules', 'playerbots.conf'), 'utf8').catch(() => ''), BOT_COUNT[1])) || null;
     let info = null;
@@ -899,4 +906,4 @@ async function clearOffline(root, { coa = false } = {}) {
   if (ids.length) await sql(root, `UPDATE acore_auth.realmlist SET flag = flag & ~2 WHERE id IN (${ids.join(',')})`);
   return ids;
 }
-module.exports = { imposedNow, lastWorldExit, endKind, logTail, realmEnd, stoppedOnPurpose, setPinner, livingOwn, clearOffline, setRealmName, ahbotSettingsOf, setAhbotSettingsOf, onlineRunning, shippedTables, syncShippedTables, MODES, queueMarked, memoryFor, neededMb, botsOnline, setDisabled, versionReady, modulesOf, setModule, coaAutostart, setCoaAutostart, skipCoaAtStart, anotherStarting, refreshBotConfigs, status, create, start, stop, stopAll, startMarked, setOptions, settingsOf, saveSettings, purgeBots, writeConfigs, setKey };
+module.exports = { changedCount, imposedNow, lastWorldExit, endKind, logTail, realmEnd, stoppedOnPurpose, setPinner, livingOwn, clearOffline, setRealmName, ahbotSettingsOf, setAhbotSettingsOf, onlineRunning, shippedTables, syncShippedTables, MODES, queueMarked, memoryFor, neededMb, botsOnline, setDisabled, versionReady, modulesOf, setModule, coaAutostart, setCoaAutostart, skipCoaAtStart, anotherStarting, refreshBotConfigs, status, create, start, stop, stopAll, startMarked, setOptions, settingsOf, saveSettings, purgeBots, writeConfigs, setKey };

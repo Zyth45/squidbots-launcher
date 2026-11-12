@@ -14,7 +14,7 @@ function mysqlLender({ status, start, stopAll, realmRunning }) {
     } finally {
       tasks--;
       if (tasks === 0 && stopAfter) {
-        const others = (await status()).some(service => service.id !== 'mysql' && ['running', 'starting'].includes(service.state));
+        const others = (await status()).some(service => service.id !== 'mysql' && ['running', 'starting', 'stopping'].includes(service.state));
         if (!others && !(await realmRunning().catch(() => false))) await stopAll().catch(() => {});
       }
     }

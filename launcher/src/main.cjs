@@ -1398,11 +1398,17 @@ function registerIpc() {
   handle('repack:start', async id => { assertServerFree(); if (assembler.state(serverPath()).needed) throw new Error('Prepare the game data from your client first (home page).'); if (id === 'all') await startEverything(); else { await prepareStart(); await requireControl().start(text(id, 30)); if (text(id, 30) === 'auth') await realmsOnline(); } return serverInfo(); });
   // The repack's manager only stops everything (stop-all): one service alone is stopped by the launcher itself.
   const stopCoaWorld = async () => {
-    const world = requireControl().services.find(service => /world/i.test(service.id));
-    await live.raCommand(serverPath(), 'server shutdown 1s 0', 20000).catch(() => {});
-    const deadline = Date.now() + 120000;
-    while (Date.now() < deadline && await portOpen(world.port)) await new Promise(resolve => setTimeout(resolve, 1000));
-    if (await portOpen(world.port)) throw new Error('The CoA world is still stopping; try Stop all on the home page.');
+    const c = requireControl();
+    const world = c.services.find(service => /world/i.test(service.id));
+    await c.stopping(world.id, async () => {
+      await live.raCommand(serverPath(), 'server shutdown 1s 0', 20000).catch(() => {});
+      const deadline = Date.now() + 120000;
+      while (Date.now() < deadline && await portOpen(world.port)) await new Promise(resolve => setTimeout(resolve, 1000));
+      if (await portOpen(world.port)) throw new Error('The CoA world is still stopping; try Stop all on the home page.');
+      // The port closes first, then the world saves its players and bots: waited for, so MySQL is never stopped under it.
+      const saving = Date.now() + 300000;
+      while (Date.now() < saving && await c.processAlive(world.id)) await new Promise(resolve => setTimeout(resolve, 1000));
+    });
   };
   const stopOne = async id => {
     const root = serverPath();
@@ -1518,7 +1524,7 @@ function registerIpc() {
   const releaseBase = async () => {
     if (!baseByRealm) return;
     const c = requireControl();
-    const world = (await c.status()).some(service => /world/i.test(service.id) && ['running', 'starting'].includes(service.state));
+    const world = (await c.status()).some(service => /world/i.test(service.id) && ['running', 'starting', 'stopping'].includes(service.state));
     const realmOn = (await realms.status(serverPath(), { live: false })).realms.some(realm => ['running', 'starting'].includes(realm.state));
     if (world || realmOn) return;
     baseByRealm = false;
@@ -2243,7 +2249,7 @@ function createUpdaters() {
     repackUpdater = new ClientUpdater({
       manifestUrl: channelUrl(config.server), requiredExecutable: config.server.requiredExecutable, publicKey: config.keys.server, rules: 'server', area: 'repack', fetchImpl: netFetch,
       notify: status => send('repack:progress', status),
-      beforeApply: async () => { const found = serverControl(); if (found && (await found.status()).some(service => service.state === 'running' || service.state === 'starting')) throw new Error('Stop the server before updating it.'); },
+      beforeApply: async () => { const found = serverControl(); if (found && (await found.status()).some(service => ['running', 'starting', 'stopping'].includes(service.state))) throw new Error('Stop the server before updating it.'); },
     });
   }
   if (config.server?.bots) bots = new BotsPackage({ bots: { ...config.server.bots, channelUrl: channelUrl(config.server.bots) }, key: config.keys.bots, fetchImpl: netFetch, notify: status => send('bots:progress', status), onLine: line => upgradeNotify({ line }) });
@@ -2473,7 +2479,7 @@ const CLOSE_TEXT = {
 async function closeWithNotice() {
   // Kept in the notification area: the window only hides.
   if (settings.trayOnClose && tray) { window?.hide(); return; }
-  const running = !settings.hideCloseNotice && (await serverControl()?.status().catch(() => []) || []).some(service => service.state === 'running' || service.state === 'starting');
+  const running = !settings.hideCloseNotice && (await serverControl()?.status().catch(() => []) || []).some(service => ['running', 'starting', 'stopping'].includes(service.state));
   if (running) {
     const words = CLOSE_TEXT[settings.language] || CLOSE_TEXT.en;
     const answer = await dialog.showMessageBox(window, { type: 'info', title: words.title, message: words.message, detail: words.detail, buttons: [words.close, words.cancel], defaultId: 0, cancelId: 1, checkboxLabel: words.again, noLink: true });

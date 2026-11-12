@@ -432,3 +432,13 @@ test('a realm never takes the data folder of CoA: AiPlayerbot.CoaDataDir imposed
     assert.equal(out['playerbots.conf']['AiPlayerbot.CoaDataDir'], '""', key);
   }
 });
+
+test('the Settings count of the living server leaves out its starting values, and counts what the player changed', () => {
+  const own = JSON.parse(JSON.stringify(realms.livingOwn()));
+  assert.ok(Object.values(own).reduce((sum, keys) => sum + Object.keys(keys).length, 0) > 50);
+  assert.strictEqual(realms.changedCount('living', own), 0);
+  own['playerbots.conf']['AiPlayerbot.CoaLive.Chat.Enable'] = '0';
+  own['worldserver.conf'] = { ...own['worldserver.conf'], 'Rate.XP.Kill': '3' };
+  assert.strictEqual(realms.changedCount('living', own), 2);
+  assert.strictEqual(realms.changedCount('reborn', { 'worldserver.conf': { 'Rate.XP.Kill': '3' } }), 1);
+});

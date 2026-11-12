@@ -72,6 +72,8 @@ class ServerControl {
     this.notify = notify;
     this.children = new Map();
     this.states = new Map();
+    // Services asked to stop whose process may still be saving after their port closed: « stopping », never « starting ».
+    this.ending = new Set();
   }
 
   // Runs a repack command to completion, logging its output; stdin lines are sent then closed.
@@ -175,7 +177,8 @@ class ServerControl {
       // The repack records the process it started (.state/<service>.json): alive with its port still closed,
       // the service is loading (a first world start with bots takes minutes), not stopped.
       // While it stops, the world closes its port first and saves for a few seconds more: still « stopping ».
-      if (state === 'stopped' && await this.processAlive(service.id)) state = transient === 'stopping' ? 'stopping' : 'starting';
+      if (state === 'stopped' && await this.processAlive(service.id)) state = transient === 'stopping' || this.ending.has(service.id) ? 'stopping' : 'starting';
+      else if (state === 'stopped') this.ending.delete(service.id);
       let other = '';
       if (state === 'running') {
         const owner = await this.portOwner(service.port);
@@ -208,6 +211,7 @@ class ServerControl {
     const service = this.services.find(item => item.id === id);
     if (!service) throw new Error('Unknown service.');
     if (this.states.get(id) === 'stopping') throw new Error(`${service.name} is stopping: wait until it is stopped.`);
+    this.ending.delete(id);
     if (await this.assertPortFree(service)) return;
     const start = this.startCommand(service);
     if (start) {
@@ -298,6 +302,15 @@ class ServerControl {
     return owner?.inside ? { pid: owner.pid, file: owner.file } : null;
   }
 
+  // A stop done outside this class (the world by its console): shown « stopping » while it runs and afterwards, as long
+  // as the process is still saving.
+  async stopping(id, work) {
+    this.states.set(id, 'stopping');
+    this.ending.add(id);
+    await this.emit();
+    try { return await work(); } finally { this.states.delete(id); await this.emit(); }
+  }
+
   async stop(id) {
     this.lastStop = Date.now();
     const service = this.services.find(item => item.id === id);
@@ -306,6 +319,7 @@ class ServerControl {
     // A service started by the repack's manager is stopped the way the manager wants: all together, in order.
     if (service.start && !service.stop && this.commands.stopAll) { await this.stopAll(); return; }
     this.states.set(id, 'stopping');
+    this.ending.add(id);
     await this.emit();
     const child = this.children.get(id);
     try {
@@ -377,7 +391,7 @@ class ServerControl {
   async stopAll() {
     this.lastStop = Date.now();
     if (this.commands.stopAll) {
-      for (const service of this.services) this.states.set(service.id, 'stopping');
+      for (const service of this.services) { this.states.set(service.id, 'stopping'); this.ending.add(service.id); }
       await this.emit();
       let failure = null;
       try {
