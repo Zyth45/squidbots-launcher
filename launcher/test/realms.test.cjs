@@ -442,3 +442,16 @@ test('the Settings count of the living server leaves out its starting values, an
   assert.strictEqual(realms.changedCount('living', own), 2);
   assert.strictEqual(realms.changedCount('reborn', { 'worldserver.conf': { 'Rate.XP.Kill': '3' } }), 1);
 });
+
+test('a setting saved for a running realm is written in its configs at once, so ".reload config" reads it', async () => {
+  const net = require('node:net');
+  const server = net.createServer().listen(0, '127.0.0.1');
+  await new Promise(resolve => server.once('listening', resolve));
+  try {
+    const root = repack();
+    const dir = realmFolder(root, 'reborn', { worldPort: server.address().port });
+    const result = await realms.saveSettings(root, 'reborn', [{ file: 'playerbots.conf', key: 'AiPlayerbot.MaxRandomBots', value: '200' }]);
+    assert.strictEqual(result.running, true);
+    assert.strictEqual(value(path.join(dir, 'configs', 'modules', 'playerbots.conf'), 'AiPlayerbot.MaxRandomBots'), '200');
+  } finally { server.close(); }
+});

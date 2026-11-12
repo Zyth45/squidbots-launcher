@@ -181,9 +181,18 @@ function realmQuick(realm) {
   const catchup = locked && q.hasCatchup ? row('realm-catchup', q.catchup === '1', false, t('realms.catchup', 'Bots catch up with players'), t('realms.catchupHint', 'Random bots behind the human players earn more experience.')) : '';
   return chat || loot || catchup ? `<div class="realm-quick">${chat}${loot}${catchup}<small class="muted">${esc(t('realms.quickNext', 'Applied at the next start of this realm.') + help)}</small></div>` : '';
 }
+// Bot chat and the bots' catch-up are read again by a running world (.reload config): applied at once. Self-loot is read
+// at the start of the world only.
+const QUICK_RELOAD = ['AiPlayerbot.CoaLive.Chat.Enable', 'AiPlayerbot.CoaFreshStart.CatchUp.Enable'];
 async function realmQuickSet(target, key, on) {
   await App.api.saveServerSettings([{ file: 'playerbots.conf', key, value: on ? '1' : '0' }], target);
   delete App.state.realmQuick?.[target];
+  const running = target ? realmList().some(item => item.key === target && item.state === 'running') : worldRunning(App.state.server);
+  if (running && QUICK_RELOAD.includes(key)) {
+    await App.api.consoleRun('reload config', target)
+      .then(() => toast(t('conf.reloaded', 'Applied at once: the server read its settings again.'), 'success'))
+      .catch(() => toast(t('conf.reloadFailed', 'The server did not answer: these settings apply at its next start.'), 'info'));
+  } else if (running) toast(t('realms.quickNextStart', 'Saved: it applies at the next start of this realm.'), 'info');
   // Server settings of that realm show the new value too.
   if (App.state.conf && !App.state.conf.error && confRealm() === target) for (const setting of App.state.conf.settings) if (setting.key === key) setting.value = on ? '1' : '0';
   App.refresh('realms'); App.refresh('server');

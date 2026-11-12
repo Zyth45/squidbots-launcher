@@ -340,7 +340,11 @@ async function saveSettings(root, key, changes) {
   }
   if (Object.keys(errors).length) throw Object.assign(new Error(`Some values were refused: ${Object.entries(errors).map(([k, m]) => `${k}: ${m}`).join(' ')}`), { fields: errors });
   await writeOwn(root, key, own);
-  return { written: [saved.name], backup: null };
+  // A running world reads its own configs again on ".reload config": they are written now (before, only at its next
+  // start, so a reload read the old values: the Bot chat switch of a running realm did nothing until a restart).
+  const running = await portOpen(saved.worldPort);
+  if (running) await writeConfigs(root, key, saved);
+  return { written: [saved.name], backup: null, running };
 }
 
 // ---------------------------------------------------------------- modules of a realm
