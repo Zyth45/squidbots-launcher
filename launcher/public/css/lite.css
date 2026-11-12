@@ -440,3 +440,4 @@ summary.damage-row::-webkit-details-marker { display: none; }
 .realm-off { display: grid; gap: 4px; justify-items: start; margin-top: 6px; }
 .realm-off small { font-size: 11.5px; line-height: 1.35; }
 .check-line { display: flex; gap: 8px; align-items: center; margin-top: 4px; }
+.reset-list { margin: 4px 0 8px 18px; max-height: 180px; overflow: auto; }

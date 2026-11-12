@@ -475,3 +475,58 @@ test('New bots: the auctions of the realm\'s bots go with them, players\' auctio
   assert.ok(!/'AHBOT'(?! AND)/.test(realms.auctionPurgeSql('living', { house: false }).split('purge_refund')[0]));
   assert.throws(() => realms.auctionPurgeSql('coa'));
 });
+
+test('reset the world: Squid World only, its name typed again, saved whole first, then made new; a copy can be put back', async () => {
+  const root = repack();
+  const dir = realmFolder(root, 'living', { id: 5, name: 'Malfurion', worldPort: 65511, raPort: 65512, autostart: false });
+  fs.writeFileSync(path.join(dir, 'settings.json'), JSON.stringify({ 'playerbots.conf': { 'AiPlayerbot.CoaEconomy.LaunchCurve.Enable': '1' } }));
+  fs.writeFileSync(path.join(dir, '.state.json'), '{}');
+  fs.mkdirSync(path.join(dir, 'Logs', 'squidbot'), { recursive: true });
+  fs.writeFileSync(path.join(dir, 'Logs', 'squidbot', 'events.jsonl'), 'old world\n');
+  fs.writeFileSync(path.join(dir, 'Logs', 'bot-status.json'), '{}');
+  const queries = [];
+  const loaded = [];
+  const io = {
+    sql: async (_root, query) => {
+      queries.push(query);
+      if (/SELECT c\.name, c\.level/.test(query)) return 'Squid World\t12\nSquid Alt\t3';
+      if (/SELECT \(SELECT COUNT/.test(query)) return '3234\t21\t2293\t2\t140';
+      return '';
+    },
+    dumpTo: async (_root, database, file) => fs.writeFileSync(file, `-- ${database}\n`),
+    loadFrom: async (_root, file) => loaded.push(path.basename(file)),
+    create: async (r, key, { name }) => fs.writeFileSync(path.join(r, 'Royaumes', key, 'realm.json'), JSON.stringify({ key, id: 5, name, worldPort: 65511, raPort: 65512, autostart: true, created: 'new' })),
+  };
+  // Never the CoA realm nor another realm.
+  await assert.rejects(realms.resetWorld(root, 'wildcard', { confirmName: 'wildcard', io }), /Only Squid World/);
+  const preview = await realms.worldPreview(root, 'living', { io });
+  assert.deepStrictEqual(preview, { players: [{ name: 'Squid World', level: 12 }, { name: 'Squid Alt', level: 3 }], bots: 3234, guilds: 21, auctions: 2293, mails: 2, achievements: 140 });
+  // The name must be typed again.
+  await assert.rejects(realms.resetWorld(root, 'living', { confirmName: 'Malfu', io }), /Type the name/);
+  assert.ok(!queries.some(query => /DROP/.test(query)), 'nothing dropped without the name');
+  const done = await realms.resetWorld(root, 'living', { confirmName: ' malfurion ', io, now: new Date(2026, 10, 13, 1, 2, 3) });
+  // Saved whole first: both databases and the folder, with what was erased.
+  assert.strictEqual(path.basename(done.backup), 'living-reset-20261113-010203');
+  assert.deepStrictEqual(fs.readdirSync(done.backup).sort(), ['Royaumes', 'acore_characters_living.sql', 'acore_playerbots_living.sql', 'backup.json']);
+  assert.ok(fs.existsSync(path.join(done.backup, 'Royaumes', 'living', 'Logs', 'squidbot', 'events.jsonl')));
+  assert.strictEqual(JSON.parse(fs.readFileSync(path.join(done.backup, 'backup.json'), 'utf8')).preview.players.length, 2);
+  // Then only the realm's own databases dropped, its characters count cleared, its state files gone, made new.
+  const drops = queries.filter(query => /DROP DATABASE/.test(query));
+  assert.deepStrictEqual(drops, ['DROP DATABASE IF EXISTS acore_characters_living', 'DROP DATABASE IF EXISTS acore_playerbots_living']);
+  assert.ok(queries.includes('DELETE FROM acore_auth.realmcharacters WHERE realmid = 5'));
+  assert.ok(!queries.some(query => /acore_characters\b(?!_)|acore_playerbots\b(?!_)/.test(query.replace(/acore_characters_living|acore_playerbots_living/g, ''))), 'the CoA databases are never touched');
+  for (const rel of ['.state.json', path.join('Logs', 'bot-status.json'), path.join('Logs', 'squidbot')]) assert.ok(!fs.existsSync(path.join(dir, rel)), rel);
+  // Its settings and its choice to start with the server stay.
+  assert.ok(fs.existsSync(path.join(dir, 'settings.json')));
+  const fresh = JSON.parse(fs.readFileSync(path.join(dir, 'realm.json'), 'utf8'));
+  assert.deepStrictEqual([fresh.name, fresh.created, fresh.autostart], ['Malfurion', 'new', false]);
+  // The saved copy is listed, and put back (the realm as it is now saved first).
+  const list = await realms.realmBackups(root, 'living');
+  assert.deepStrictEqual(list.map(item => [item.id, item.players]), [['living-reset-20261113-010203', 2]]);
+  await assert.rejects(realms.restoreRealm(root, 'living', '..\evil', { io }), /Unknown backup/);
+  const back = await realms.restoreRealm(root, 'living', list[0].id, { io, now: new Date(2026, 10, 13, 2, 0, 0) });
+  assert.deepStrictEqual(loaded, ['acore_characters_living.sql', 'acore_playerbots_living.sql']);
+  assert.strictEqual(path.basename(back.before), 'living-before-restore-20261113-020000');
+  assert.ok(fs.existsSync(path.join(dir, 'Logs', 'squidbot', 'events.jsonl')), 'the folder of the copy is back');
+  assert.strictEqual(JSON.parse(fs.readFileSync(path.join(dir, 'realm.json'), 'utf8')).created, undefined);
+});

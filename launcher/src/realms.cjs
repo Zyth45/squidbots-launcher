@@ -940,4 +940,125 @@ async function clearOffline(root, { coa = false } = {}) {
   if (ids.length) await sql(root, `UPDATE acore_auth.realmlist SET flag = flag & ~2 WHERE id IN (${ids.join(',')})`);
   return ids;
 }
-module.exports = { auctionPurgeSql, changedCount, imposedNow, lastWorldExit, endKind, logTail, realmEnd, stoppedOnPurpose, setPinner, livingOwn, clearOffline, setRealmName, ahbotSettingsOf, setAhbotSettingsOf, onlineRunning, shippedTables, syncShippedTables, MODES, queueMarked, memoryFor, neededMb, botsOnline, setDisabled, versionReady, modulesOf, setModule, coaAutostart, setCoaAutostart, skipCoaAtStart, anotherStarting, refreshBotConfigs, status, create, start, stop, stopAll, startMarked, setOptions, settingsOf, saveSettings, purgeBots, writeConfigs, setKey };
+// ---------------------------------------------------------------- reset the world (Squid World only)
+// A completely new run of the living server: its two databases are saved whole, dropped, and made again the way a new
+// realm is created (bots, auction house and its seller, mail, guilds, the players' characters of THIS realm,
+// achievements, server firsts, learned prices, guild logs: all of it lives in acore_characters_<key> and
+// acore_playerbots_<key>; asked to SquidBot, Monde and Economie, 13/11). Game accounts (acore_auth) and the realm's
+// settings (settings.json: LaunchCurve.*, AuctionHouseBot.*, the player's choices) are kept. The state files the
+// modules and the dashboard write for this realm go too; they are made again at its start. Nothing is lost for good:
+// the saved copy (Backups\<key>-reset-<date>) can be put back by restoreRealm.
+const RESETTABLE = new Set(['living']);
+const realmDbs = key => [`acore_characters_${key}`, `acore_playerbots_${key}`];
+// Relative to Royaumes\<key>: written by the modules (Logs\squidbot: events, monde, economy, watch) and the launcher.
+const RESET_STATE = ['.state.json', path.join('Logs', 'bot-status.json'), path.join('Logs', 'squidbot')];
+const stampOf = (now = new Date()) => `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
+
+function dumpTo(root, database, file) {
+  return new Promise((resolve, reject) => execFile(path.join(root, 'mysql', 'bin', 'mysqldump.exe'), [...mysqlArgs(root), '--single-transaction', '--routines', '--triggers', `--result-file=${file}`, '--databases', database],
+    { windowsHide: true, timeout: 3600 * 1000, maxBuffer: 16 << 20 }, (error, stdout, stderr) => error ? reject(new Error(`Saving ${database} failed: ${String(stderr || error.message).trim().split(/\r?\n/).pop()}`)) : resolve()));
+}
+function loadFrom(root, file) {
+  return new Promise((resolve, reject) => {
+    const load = spawn(path.join(root, 'mysql', 'bin', 'mysql.exe'), mysqlArgs(root), { windowsHide: true });
+    let errors = '';
+    load.stderr.on('data', chunk => { errors += chunk; });
+    load.once('error', reject);
+    load.once('exit', code => (code ? reject(new Error(`Restoring ${path.basename(file)} failed: ${errors.trim().split(/\r?\n/).pop() || code}`)) : resolve()));
+    fs.createReadStream(file).on('error', reject).pipe(load.stdin);
+  });
+}
+const realIo = () => ({ sql, dumpTo, loadFrom, create });
+
+// What a reset would erase, to show before it is confirmed: the players' characters of this realm (name, level), and
+// how many bots, guilds, auctions, mails and achievements.
+async function worldPreview(root, key, { io = realIo() } = {}) {
+  if (!RESETTABLE.has(key)) throw new Error('Only Squid World can be reset.');
+  const prefix = mode(key).prefix.toUpperCase();
+  const c = `acore_characters_${key}`;
+  const rows = (await io.sql(root, `SELECT c.name, c.level FROM ${c}.characters c JOIN acore_auth.account a ON a.id = c.account WHERE a.username NOT LIKE '${prefix}%' AND a.username NOT IN ('AHBOT', 'DCDRIVER') ORDER BY c.level DESC, c.name`))
+    .split(/\r?\n/).filter(Boolean).map(line => { const [name, level] = line.split('\t'); return { name, level: Number(level) }; });
+  const counts = (await io.sql(root, `SELECT (SELECT COUNT(*) FROM ${c}.characters c JOIN acore_auth.account a ON a.id = c.account WHERE a.username LIKE '${prefix}%'), (SELECT COUNT(*) FROM ${c}.guild), (SELECT COUNT(*) FROM ${c}.auctionhouse), (SELECT COUNT(*) FROM ${c}.mail), (SELECT COUNT(*) FROM ${c}.character_achievement)`))
+    .split('\t').map(Number);
+  const [bots = 0, guilds = 0, auctions = 0, mails = 0, achievements = 0] = counts;
+  return { players: rows, bots, guilds, auctions, mails, achievements };
+}
+
+async function stoppedRealm(root, key) {
+  const saved = await realmFile(root, key);
+  if (!saved) throw new Error('Create the realm first.');
+  if (await portOpen(saved.worldPort) || await processOf(root, key)) throw new Error('Stop this realm first.');
+  return saved;
+}
+
+// The whole realm saved in Backups\<key>-<label>-<date>: its two databases (mysqldump) and its folder.
+async function backupRealm(root, key, { label = 'reset', io = realIo(), now = new Date(), preview = null } = {}) {
+  const saved = await realmFile(root, key);
+  const dir = path.join(root, 'Backups', `${key}-${label}-${stampOf(now)}`);
+  await fsp.mkdir(dir, { recursive: true });
+  const files = [];
+  for (const database of realmDbs(key)) {
+    const file = path.join(dir, `${database}.sql`);
+    await io.dumpTo(root, database, file);
+    files.push(path.basename(file));
+  }
+  await fsp.cp(dirOf(root, key), path.join(dir, 'Royaumes', key), { recursive: true });
+  const info = { kind: 'realm', key, name: saved?.name || key, label, at: now.toISOString(), files, preview };
+  await fsp.writeFile(path.join(dir, 'backup.json'), JSON.stringify(info, null, 2));
+  return { dir, ...info };
+}
+
+// The reset itself: the player retyped the realm's name; saved first, then made new.
+async function resetWorld(root, key, { confirmName, io = realIo(), now = new Date() } = {}) {
+  if (!RESETTABLE.has(key)) throw new Error('Only Squid World can be reset.');
+  const saved = await stoppedRealm(root, key);
+  if (String(confirmName || '').trim().toLowerCase() !== String(saved.name).trim().toLowerCase()) throw new Error('Type the name of the realm to confirm.');
+  const preview = await worldPreview(root, key, { io });
+  const backup = await backupRealm(root, key, { label: 'reset', io, now, preview });
+  for (const database of realmDbs(key)) await io.sql(root, `DROP DATABASE IF EXISTS ${database}`);
+  await io.sql(root, `DELETE FROM acore_auth.realmcharacters WHERE realmid = ${Number(saved.id)}`);
+  for (const rel of RESET_STATE) await fsp.rm(path.join(dirOf(root, key), rel), { recursive: true, force: true });
+  // Made again as a new realm, with its name, ports and settings (create keeps the values the player set).
+  await io.create(root, key, { name: saved.name });
+  const fresh = await realmFile(root, key);
+  if (fresh) {
+    fresh.autostart = saved.autostart !== false;
+    if (saved.disabled) fresh.disabled = saved.disabled;
+    await fsp.writeFile(path.join(dirOf(root, key), 'realm.json'), JSON.stringify(fresh, null, 2));
+  }
+  return { backup: backup.dir, preview };
+}
+
+// The saved copies of a realm (newest first), for the Restore button.
+async function realmBackups(root, key) {
+  const base = path.join(root, 'Backups');
+  const out = [];
+  for (const name of await fsp.readdir(base).catch(() => [])) {
+    const info = await readJson(path.join(base, name, 'backup.json'));
+    if (info?.kind === 'realm' && info.key === key) out.push({ id: name, at: info.at, label: info.label, name: info.name, players: info.preview?.players?.length ?? null });
+  }
+  return out.sort((a, b) => String(b.at).localeCompare(String(a.at)));
+}
+
+// A saved copy put back: the realm as it is now is saved first (label before-restore), then its databases and its
+// folder are replaced by the copy's.
+async function restoreRealm(root, key, id, { io = realIo(), now = new Date() } = {}) {
+  if (!RESETTABLE.has(key)) throw new Error('Only Squid World can be reset.');
+  if (!/^[A-Za-z0-9_.-]+$/.test(String(id || ''))) throw new Error('Unknown backup.');
+  const dir = path.join(root, 'Backups', id);
+  const info = await readJson(path.join(dir, 'backup.json'));
+  if (info?.kind !== 'realm' || info.key !== key) throw new Error('Unknown backup.');
+  for (const database of realmDbs(key)) if (!fs.existsSync(path.join(dir, `${database}.sql`))) throw new Error(`The backup has no copy of ${database}.`);
+  await stoppedRealm(root, key);
+  const before = await backupRealm(root, key, { label: 'before-restore', io, now });
+  for (const database of realmDbs(key)) await io.sql(root, `DROP DATABASE IF EXISTS ${database}`);
+  for (const database of realmDbs(key)) await io.loadFrom(root, path.join(dir, `${database}.sql`));
+  const folder = path.join(dir, 'Royaumes', key);
+  if (fs.existsSync(folder)) {
+    for (const rel of RESET_STATE) await fsp.rm(path.join(dirOf(root, key), rel), { recursive: true, force: true });
+    await fsp.cp(folder, dirOf(root, key), { recursive: true, force: true });
+  }
+  return { restored: id, before: before.dir };
+}
+
+module.exports = { RESETTABLE, worldPreview, backupRealm, resetWorld, realmBackups, restoreRealm, auctionPurgeSql, changedCount, imposedNow, lastWorldExit, endKind, logTail, realmEnd, stoppedOnPurpose, setPinner, livingOwn, clearOffline, setRealmName, ahbotSettingsOf, setAhbotSettingsOf, onlineRunning, shippedTables, syncShippedTables, MODES, queueMarked, memoryFor, neededMb, botsOnline, setDisabled, versionReady, modulesOf, setModule, coaAutostart, setCoaAutostart, skipCoaAtStart, anotherStarting, refreshBotConfigs, status, create, start, stop, stopAll, startMarked, setOptions, settingsOf, saveSettings, purgeBots, writeConfigs, setKey };

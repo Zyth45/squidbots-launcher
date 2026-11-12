@@ -143,6 +143,7 @@ function realmCard(realm, busy) {
     : `<label class="realm-auto"><input type="checkbox" data-action="realm-auto" data-key="${realm.key}" ${realm.autostart ? 'checked' : ''}>${esc(t('realms.autostart', 'Start with the server'))}</label>${ecoSwitch(realm)}
        <span class="realm-links"><button class="link-button" data-action="realm-logs" data-key="${realm.key}">${icon('book')}${esc(t('realms.logs', 'Logs'))}</button>
        <button class="link-button" data-action="realm-purge" data-key="${realm.key}" ${on || busy ? 'disabled' : ''} title="${esc(t('realms.purgeHint', 'Deletes the random bots of this realm only; they are made again at its next start.'))}">${icon('refresh')}${esc(t('realms.purge', 'New bots'))}</button>
+       ${realm.key === 'living' ? `<button class="link-button" data-action="realm-reset" data-key="${realm.key}" ${on || busy ? 'disabled' : ''} title="${esc(t('realms.resetHint', 'A completely new run: bots, auction house, mail, guilds, the characters of this realm, achievements and server firsts start again. Saved first.'))}">${icon('refresh')}${esc(t('realms.reset', 'Reset the world'))}</button><button class="link-button" data-action="realm-restore" data-key="${realm.key}" ${on || busy ? 'disabled' : ''}>${icon('book')}${esc(t('realms.restore', 'Restore a backup'))}</button>` : ''}
        </span>
        <div class="realm-off"><button class="button ghost small" data-action="realm-disable" data-key="${realm.key}" ${busy ? 'disabled' : ''}>${icon('close')}${esc(t('realms.disable', 'Switch off'))}</button><small class="muted">${esc(t('realms.disableLine', 'Switch off takes it out of the realm list of the game, without deleting anything. Stopped, it stays in the list as Offline.'))}</small></div>`;
   return `<article class="realm-card realm-${realm.key}${on ? ' on' : ''}">${head}${stats}
@@ -302,6 +303,43 @@ Object.assign(App.actions, {
     let purged = null;
     try { await realmAction(key, async () => { const result = await App.api.realmsPurge(key, { house }); purged = result?.purged || null; return result; }); } finally { release(); }
     toast(purged ? t('realms.purged2', 'Done: the bots come back at the next start. {auctions} auction(s) removed, {refunds} bid(s) refunded by mail.', { auctions: purged.auctions || 0, refunds: purged.refunds || 0 }) : t('realms.purged', 'Done: the bots come back at the next start.'), 'success');
+  }, button),
+  // Reset the world (Squid World only), in two steps: what will be erased, then the realm's name typed again.
+  'realm-reset': button => guard(async () => {
+    const key = button.dataset.key;
+    const name = realmTitle(key);
+    const preview = await App.api.realmsResetPreview(key);
+    const players = preview.players.length
+      ? `<ul class="reset-list">${preview.players.slice(0, 12).map(player => `<li>${esc(player.name)} (${esc(t('realms.level', 'level {n}', { n: player.level }))})</li>`).join('')}${preview.players.length > 12 ? `<li>… +${preview.players.length - 12}</li>` : ''}</ul>`
+      : `<p class="muted">${esc(t('realms.resetNoPlayers', 'No player character on this realm.'))}</p>`;
+    const first = `${esc(t('realms.resetBody', 'Everything of {name} starts again as a realm just created: its bots, its auction house (seller included), mail, guilds, achievements and server firsts, and the characters of the players on THIS realm. Game accounts, your other realms and the settings of this realm stay. The whole realm is saved first, and can be restored.', { name }))}</p>
+      <p><strong>${esc(t('realms.resetPlayers', '{n} player character(s) erased:', { n: preview.players.length }))}</strong></p>${players}
+      <p class="muted">${esc(t('realms.resetCounts', 'Also erased: {bots} bots, {guilds} guilds, {auctions} auctions, {mails} mails, {achievements} achievements.', preview))}`;
+    if (!await confirmDialog({ title: t('realms.resetTitle', 'Reset {name}?', { name }), body: first, confirm: t('common.continue', 'Continue'), danger: true })) return;
+    let typed = '';
+    const onInput = event => { if (event.target?.id === 'reset-name') typed = event.target.value; };
+    document.addEventListener('input', onInput);
+    let ok = false;
+    try {
+      ok = await confirmDialog({ title: t('realms.resetConfirmTitle', 'Type the name of the realm'), body: `${esc(t('realms.resetConfirmBody', 'To reset it, type {name} below. This erases the characters listed before (a saved copy is kept in Backups).', { name }))}</p><p><input class="text-input" id="reset-name" autocomplete="off" spellcheck="false" placeholder="${esc(name)}">`, confirm: t('realms.reset', 'Reset the world'), danger: true });
+    } finally { document.removeEventListener('input', onInput); }
+    if (!ok) return;
+    if (typed.trim().toLowerCase() !== String(name).trim().toLowerCase()) { toast(t('realms.resetWrongName', 'The name typed is not {name}: nothing was reset.', { name }), 'error'); return; }
+    const release = holdDialog(t('realms.resetting', 'Resetting the world'), t('realms.resettingLong', 'Saving {name}, then making it new (a few minutes). Do not close the launcher.', { name }));
+    try { await realmAction(key, () => App.api.realmsReset(key, typed)); } finally { release(); }
+    toast(t('realms.resetDone', '{name} is new: its bots are made at its next start. The old world is saved in Backups.', { name }), 'success');
+  }, button),
+  'realm-restore': button => guard(async () => {
+    const key = button.dataset.key;
+    const name = realmTitle(key);
+    const list = await App.api.realmsBackups(key);
+    if (!list.length) { toast(t('realms.noBackup', 'No saved copy of {name} yet.', { name }), 'info'); return; }
+    const last = list[0];
+    const when = new Date(last.at).toLocaleString();
+    if (!await confirmDialog({ title: t('realms.restoreTitle', 'Restore {name}?', { name }), body: esc(t('realms.restoreBody', 'The copy of {when} replaces the realm as it is now (which is saved first). {count} saved cop(ies) in Backups.', { when, count: list.length })), confirm: t('realms.restore', 'Restore a backup'), danger: true })) return;
+    const release = holdDialog(t('realms.restoring', 'Restoring the world'), t('realms.restoringLong', 'Putting back the copy of {when} (a few minutes). Do not close the launcher.', { when }));
+    try { await realmAction(key, () => App.api.realmsRestore(key, last.id)); } finally { release(); }
+    toast(t('realms.restored', '{name} is back as it was on {when}.', { name, when }), 'success');
   }, button),
   'realm-disable': button => guard(async () => {
     const key = button.dataset.key;
