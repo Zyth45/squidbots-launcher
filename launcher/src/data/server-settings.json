@@ -3971,6 +3971,34 @@
  "overrides": [
   {
    "if": {
+    "CoA.CollectionsForBots": {
+     "min": 2
+    },
+    "AiPlayerbot.RandomBotTransmog": "1"
+   },
+   "warn": [
+    "CoA.CollectionsForBots",
+    "AiPlayerbot.RandomBotTransmog"
+   ],
+   "text": {
+    "en": "Every bot uses the collections, so the random bots will not be transmogrified: the two exclude each other.",
+    "fr": "Tous les bots utilisent les collections : les bots aléatoires ne seront pas transmogrifiés, les deux s'excluent.",
+    "ru": "Все боты используют коллекции, поэтому случайные боты не получат трансмог: одно исключает другое.",
+    "zh": "所有机器人都使用收藏，因此随机机器人不会被幻化：两者互相排斥。"
+   },
+   "fix": {
+    "key": "CoA.CollectionsForBots",
+    "value": "1",
+    "label": {
+     "en": "Collections for my characters only (1)",
+     "fr": "Collections pour mes personnages seulement (1)",
+     "ru": "Коллекции только для моих персонажей (1)",
+     "zh": "仅为我的角色启用收藏（1）"
+    }
+   }
+  },
+  {
+   "if": {
     "AiPlayerbot.LevelBrackets.Enabled": "1"
    },
    "warn": [

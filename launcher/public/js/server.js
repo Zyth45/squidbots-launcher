@@ -247,14 +247,28 @@ function settingOff(setting) {
   return !!other && rule.values.includes(String(confValue(other)).trim());
 }
 
-function warnings(key) {
+// An override's condition: a value, a list of values, or { "min": n } for a number at least n.
+function ruleHolds(rule) {
+  const conf = App.state.conf;
+  return Object.entries(rule.if).every(([name, wanted]) => {
+    const setting = conf.settings.find(item => item.key === name);
+    if (!setting) return false;
+    const value = String(confValue(setting)).trim();
+    if (Array.isArray(wanted)) return wanted.map(String).includes(value);
+    if (wanted && typeof wanted === 'object') return value !== '' && Number.isFinite(Number(value)) && Number(value) >= Number(wanted.min);
+    return value === String(wanted);
+  });
+}
+function warningRules(key) {
   const conf = App.state.conf;
   const levelsOff = conf.settings.find(item => item.key === key);
   if (selfFoundOn() && levelsOff?.group === 'levels' && !levelsOff.selfFoundOk) return [];
-  return (conf.overrides || []).filter(rule => rule.warn.includes(key) && Object.entries(rule.if).every(([name, value]) => {
-    const setting = conf.settings.find(item => item.key === name);
-    return setting && String(confValue(setting)).trim() === value;
-  })).map(rule => loc(rule.text));
+  return (conf.overrides || []).filter(rule => rule.warn.includes(key) && ruleHolds(rule));
+}
+function warnings(key) { return warningRules(key).map(rule => loc(rule.text)); }
+// The text of the warnings of a setting, and for a rule with a fix { key, value, label } a button that proposes it.
+function warnHtml(key) {
+  return warningRules(key).map(rule => `<span>${esc(loc(rule.text))}</span>${rule.fix ? ` <button class="button ghost small" data-action="conf-fix" data-fix-key="${esc(rule.fix.key)}" data-fix-value="${esc(rule.fix.value)}">${esc(loc(rule.fix.label))}</button>` : ''}`).join(' ');
 }
 
 function control(setting) {
@@ -620,7 +634,7 @@ function settingRow(setting) {
   const conf = App.state.conf;
   const warn = warnings(setting.key);
   const changed = App.state.pending[pendingKey(setting.file, setting.key)] !== undefined;
-  return `<div class="conf-row${changed ? ' changed' : ''}${setting.group === 'levels' && !setting.selfFoundOk && selfFoundOn() ? ' self-found-off' : ''}${settingOff(setting) ? ' conf-off' : ''}${setting.hideOff ? ' conf-hide' : ''}${setting.origin ? ` from-${setting.origin}` : ''}"${setting.offWhen ? ` data-off-file="${esc(setting.file)}" data-off-key="${esc(setting.key)}"` : ''}><div class="conf-label"><strong>${esc(loc(setting.label))}</strong>${originTag(setting)}<p>${esc(loc(setting.help))}</p><small class="when">${icon('refresh')}${esc(loc(conf.when?.[setting.when]))}</small><div class="conf-warn" data-warn="${esc(setting.key)}" ${warn.length ? '' : 'hidden'}>${icon('info')}<span>${esc(warn.join(' '))}</span></div></div><div class="conf-control">${control(setting)}</div></div>`;
+  return `<div class="conf-row${changed ? ' changed' : ''}${setting.group === 'levels' && !setting.selfFoundOk && selfFoundOn() ? ' self-found-off' : ''}${settingOff(setting) ? ' conf-off' : ''}${setting.hideOff ? ' conf-hide' : ''}${setting.origin ? ` from-${setting.origin}` : ''}"${setting.offWhen ? ` data-off-file="${esc(setting.file)}" data-off-key="${esc(setting.key)}"` : ''}><div class="conf-label"><strong>${esc(loc(setting.label))}</strong>${originTag(setting)}<p>${esc(loc(setting.help))}</p><small class="when">${icon('refresh')}${esc(loc(conf.when?.[setting.when]))}</small><div class="conf-warn" data-warn="${esc(setting.key)}" ${warn.length ? '' : 'hidden'}>${icon('info')}<span class="conf-warn-text">${warnHtml(setting.key)}</span></div></div><div class="conf-control">${control(setting)}</div></div>`;
 }
 
 // ---------------------------------------------------------------- search in the settings
@@ -692,7 +706,7 @@ function patchConfBar() {
   for (const element of $$('[data-warn]')) {
     const list = warnings(element.dataset.warn);
     element.hidden = !list.length;
-    element.querySelector('span').textContent = list.join(' ');
+    element.querySelector('.conf-warn-text').innerHTML = warnHtml(element.dataset.warn);
   }
 }
 
@@ -1046,6 +1060,16 @@ Object.assign(App.actions, {
   }, button),
   'conf-save': button => guard(() => saveConf(false), button),
   'conf-save-restart': button => guard(() => saveConf(true), button),
+  // The fix a warning proposes: prepared like any change, nothing is written before Save.
+  'conf-fix': button => {
+    const setting = App.state.conf?.settings.find(item => item.key === button.dataset.fixKey);
+    if (!setting) return;
+    const value = button.dataset.fixValue;
+    const id = pendingKey(setting.file, setting.key);
+    if (String(value).trim() === String(setting.value).trim()) delete App.state.pending[id];
+    else App.state.pending[id] = { file: setting.file, key: setting.key, value, kind: setting.kind };
+    App.refresh('server');
+  },
   'conf-discard': () => { App.state.pending = {}; App.state.packPrepared = null; App.state.packUndoPrepared = null; App.refresh('server'); },
   // A Living world pack: its values are prepared like a recipe; nothing is written before Save.
   'pack-prepare': button => {
