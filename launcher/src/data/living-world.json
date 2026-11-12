@@ -3959,6 +3959,27 @@
     "ru": "Игрок учитывается, если заходил за столько дней",
     "zh": "在此天数内上线过的玩家才计入"
    }
+  },
+  {
+   "key": "AiPlayerbot.CoaFreshStart.CatchUp.ServiceAccounts",
+   "file": "playerbots.conf",
+   "group": "lw-population",
+   "type": "text",
+   "default": "AHBOT,DCDRIVER",
+   "when": "restart",
+   "hidden": true,
+   "label": {
+    "en": "Server accounts never counted as players for the bots' XP catch-up",
+    "fr": "Comptes du serveur jamais comptés comme joueurs pour le rattrapage d'XP des bots",
+    "ru": "Служебные аккаунты сервера, не считающиеся игроками для догоняющего опыта ботов",
+    "zh": "在机器人经验追赶中从不计为玩家的服务器账号"
+   },
+   "help": {
+    "en": "Account names, separated by commas: the auction house seller (AHBOT) and the dungeon clear driver (DCDRIVER) are not players.",
+    "fr": "Noms de comptes, séparés par des virgules : le vendeur de l'hôtel des ventes (AHBOT) et le pilote de dungeon clear (DCDRIVER) ne sont pas des joueurs.",
+    "ru": "Имена аккаунтов через запятую: продавец аукциона (AHBOT) и водитель dungeon clear (DCDRIVER) не являются игроками.",
+    "zh": "账号名，以逗号分隔：拍卖行卖家（AHBOT）和副本清理驱动（DCDRIVER）不是玩家。"
+   }
   }
  ],
  "packs": [
