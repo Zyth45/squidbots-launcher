@@ -41,7 +41,8 @@
   "AiPlayerbot.CoaEconomy.Artisans.MaterialsOnDelivery",
   "AiPlayerbot.CoaEconomy.LaunchCurve.Enable",
   "AiPlayerbot.CoaCombat.PullGuardSight.Enable",
-  "AiPlayerbot.CoaLive.ChannelQuestions.Enable"
+  "AiPlayerbot.CoaLive.ChannelQuestions.Enable",
+  "AiPlayerbot.CoaWorld.Guilds.AnswerAsk"
  ],
  "groups": [
   {
@@ -3328,7 +3329,7 @@
    "file": "playerbots.conf",
    "group": "lw-social",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "idleWhen": {
     "key": "AiPlayerbot.CoaWorld.Guilds.Enable",
