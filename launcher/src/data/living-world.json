@@ -39,7 +39,8 @@
   "AiPlayerbot.CoaAltBags.Enable",
   "AiPlayerbot.CoaEconomy.Artisans.LearnRareRecipes.Enable",
   "AiPlayerbot.CoaEconomy.Artisans.MaterialsOnDelivery",
-  "AiPlayerbot.CoaEconomy.LaunchCurve.Enable"
+  "AiPlayerbot.CoaEconomy.LaunchCurve.Enable",
+  "AiPlayerbot.CoaCombat.PullGuardSight.Enable"
  ],
  "groups": [
   {
@@ -996,6 +997,26 @@
     "fr": "Désactivé par défaut. Activé : dans un groupe de donjon ou de raid, un bot qui n'est pas le tank ne court pas après un monstre en fuite à plus de 20 mètres de son tank (le monstre part chercher de l'aide et ramène le pack suivant). Les bots à distance continuent de lui tirer dessus.",
     "ru": "Выключено по умолчанию. Включено: в группе подземелья или рейда бот, который не танк, не бежит за убегающим мобом дальше 20 ярдов от своего танка (моб бежит за подмогой и приводит следующую группу). Боты дальнего боя продолжают стрелять.",
     "zh": "默认关闭。开启后：在地下城或团队副本队伍中，非坦克机器人不会追击离坦克超过 20 码的逃跑怪物（怪物会去求援并引来下一群）。远程机器人会继续攻击它。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaCombat.PullGuardSight.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-combat",
+   "type": "bool",
+   "default": 1,
+   "when": "restart",
+   "label": {
+    "en": "Bots come out from behind walls in dungeon fights",
+    "fr": "En combat de donjon, les bots sortent de derrière les murs",
+    "ru": "В бою в подземелье боты выходят из-за стен",
+    "zh": "地下城战斗中机器人会从墙后走出"
+   },
+   "help": {
+    "en": "In a dungeon fight, healers and damage dealers no longer refuse a move just because an idle pack is nearby behind a wall. Only a pack that could see the spot counts, so ranged bots get back into line of sight and keep casting. Out of combat nothing changes.",
+    "fr": "En combat de donjon, les soigneurs et les DPS ne refusent plus un déplacement juste parce qu'un pack inactif se trouve derrière un mur à proximité. Seul un pack qui pourrait voir l'endroit compte : les bots à distance reviennent en ligne de vue et continuent de lancer leurs sorts. Hors combat, rien ne change.",
+    "ru": "В бою в подземелье лекари и бойцы больше не отказываются от перемещения только потому, что рядом за стеной стоит неактивная группа. Учитывается только группа, которая могла бы видеть это место, поэтому боты дальнего боя возвращаются в зону прямой видимости и продолжают атаковать. Вне боя ничего не меняется.",
+    "zh": "在地下城战斗中，治疗和输出不再因为墙后附近有一群未激活的怪物而拒绝移动。只有能看到该位置的怪物群才会被考虑，因此远程机器人会回到视线范围内继续施法。战斗外没有任何变化。"
    }
   },
   {
@@ -4328,6 +4349,7 @@
     "AiPlayerbot.CoaCombat.CombatPurge.Enable": 1,
     "AiPlayerbot.CoaCombat.SunkenTemple.Enable": 1,
     "AiPlayerbot.CoaCombat.MoltenCore.Enable": 1,
+    "AiPlayerbot.CoaCombat.PullGuardSight.Enable": 1,
     "AiPlayerbot.CoaLive.Sessions.Enable": 0,
     "AiPlayerbot.CoaWorld.DungeonSim.Enable": 1,
     "AiPlayerbot.CoaWorld.Recovery.Enable": 1,
