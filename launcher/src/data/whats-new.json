@@ -1,5 +1,22 @@
 [
     {
+        "version": "0.4.2",
+        "items": {
+            "en": [
+                "Fixes the launcher 0.4.1, which could not start after its update (a missing file). Nothing else changes: this is 0.4.1 as it should have been."
+            ],
+            "fr": [
+                "Corrige le launcher 0.4.1, qui ne démarrait plus après sa mise à jour (un fichier manquant). Rien d'autre ne change : c'est la 0.4.1 telle qu'elle aurait dû être."
+            ],
+            "ru": [
+                "Исправляет лаунчер 0.4.1, который не запускался после обновления (не хватало файла). Больше ничего не меняется: это 0.4.1 в том виде, в каком она должна была быть."
+            ],
+            "zh": [
+                "修复 0.4.1 版启动器更新后无法启动的问题（缺少一个文件）。其他没有变化：这就是本应如此的 0.4.1。"
+            ]
+        }
+    },
+    {
         "version": "0.4.1",
         "items": {
             "en": [
