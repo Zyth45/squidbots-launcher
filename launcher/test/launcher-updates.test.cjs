@@ -15,12 +15,29 @@ const fileFetch = root => async url => {
   catch { return new Response('', { status: 404 }); }
 };
 
-async function build(dist, installer) {
+async function build(dist, installer, proof = true) {
   await fsp.mkdir(dist, { recursive: true });
   await fsp.writeFile(path.join(dist, 'Setup-1.2.0.exe'), installer);
   const hash = crypto.createHash('sha512').update(installer).digest('base64');
   await fsp.writeFile(path.join(dist, 'latest.yml'), `version: 1.2.0\nfiles:\n  - url: Setup-1.2.0.exe\n    sha512: ${hash}\npath: Setup-1.2.0.exe\nsha512: ${hash}\n`);
+  // What tools/prove-launcher.mjs writes once the installer installed and reached its home screen.
+  if (proof) await fsp.writeFile(path.join(dist, 'Setup-1.2.0.exe.proof.json'), JSON.stringify({ installer: 'Setup-1.2.0.exe', sha512: hash, version: '1.2.0', home: 'ACCUEIL' }));
 }
+
+test('publish-launcher publishes nothing without a proof that this installer installs and starts (user, 13/11)', async () => {
+  const root = await tempDir();
+  const { privateKey } = crypto.generateKeyPairSync('ed25519');
+  const pem = path.join(root, 'key.pem');
+  await fsp.writeFile(pem, privateKey.export({ type: 'pkcs8', format: 'pem' }));
+  const dist = path.join(root, 'dist');
+  const out = path.join(root, 'out');
+  await build(dist, Buffer.from('installer v1.2.0'), false);
+  assert.throws(() => execFileSync(process.execPath, [TOOL, dist, out, '--key', pem], { stdio: 'pipe' }), /no proof/);
+  await assert.rejects(fsp.access(path.join(out, 'launcher.json')));
+  // A proof of another installer does not count.
+  await fsp.writeFile(path.join(dist, 'Setup-1.2.0.exe.proof.json'), JSON.stringify({ sha512: 'other', version: '1.2.0', home: 'ACCUEIL' }));
+  assert.throws(() => execFileSync(process.execPath, [TOOL, dist, out, '--key', pem], { stdio: 'pipe' }), /no proof/);
+});
 
 test('publish-launcher signs version and SHA-512; tampering is refused', async () => {
   const root = await tempDir();
