@@ -1921,6 +1921,33 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaEconomy.Artisans.MaterialsOnDelivery",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.Artisans.Enable",
+    "values": [
+     0
+    ]
+   },
+   "classic": false,
+   "label": {
+    "en": "Artisans: buy missing reagents on credit, paid from the cash on delivery",
+    "fr": "Artisans : composants manquants achetés à crédit, payés sur le contre-remboursement",
+    "ru": "Ремесленники: недостающие реагенты в кредит, оплата из наложенного платежа",
+    "zh": "工匠：赊购缺少的材料，从货到付款中支付"
+   },
+   "help": {
+    "en": "A bot artisan short of gold still takes the order: it buys the missing reagents on credit and pays them back from the cash on delivery.",
+    "fr": "Un artisan bot à court d'or prend quand même la commande : il achète les composants manquants à crédit et les rembourse avec le contre-remboursement.",
+    "ru": "Ремесленник-бот без золота всё равно берёт заказ: покупает недостающие реагенты в кредит и возвращает их стоимость из наложенного платежа.",
+    "zh": "缺少金币的机器人工匠仍会接单：赊购缺少的材料，再用货到付款的收入偿还。"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaEconomy.Artisans.LearnRareRecipes.Enable",
    "file": "playerbots.conf",
    "group": "lw-crafting",
@@ -4303,6 +4330,7 @@
     "AiPlayerbot.CoaCombat.LootNeedEpicOnly": 0,
     "AiPlayerbot.CoaEconomy.Artisans.RecursiveCost.Enable": 1,
     "AiPlayerbot.CoaEconomy.Artisans.Stock.Enable": 1,
+    "AiPlayerbot.CoaEconomy.Artisans.MaterialsOnDelivery": 1,
     "AiPlayerbot.CoaEconomy.Artisans.LearnRareRecipes.Enable": 1,
     "AiPlayerbot.CoaEconomy.Materials.Enable": 1,
     "AiPlayerbot.CoaEconomy.AuctionClock.Enable": 1,
