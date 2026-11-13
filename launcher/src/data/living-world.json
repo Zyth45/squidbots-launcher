@@ -4342,7 +4342,6 @@
     "AiPlayerbot.CoaBotIdentify": 1,
     "AiPlayerbot.CoaWorld.Guilds.Enable": 1,
     "AiPlayerbot.CoaWorld.Guilds.Help": 1,
-    "AiPlayerbot.CoaWorld.Guilds.AnswerAsk": 1,
     "AiPlayerbot.RefreshClearsInventory": 0,
     "AiPlayerbot.CoaEconomy.RpgSell.Enable": 1,
     "AiPlayerbot.CoaEconomy.BotAuctions.Enable": 1,

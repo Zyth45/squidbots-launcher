@@ -395,6 +395,9 @@ test('the Living World realm opens like a new server: its own values at creation
   // The economy of a new Squid World (user's go, 13/11, values of Economie): gold is rare.
   for (const [key, value] of Object.entries({ BotStartGoldPercent: '0', PriceScalePercent: '60', 'LaunchCurve.LaunchPremiumPercent': '0', 'Artisans.LearnRareRecipes.Enable': '1', 'Artisans.MaterialsOnDelivery': '1' })) assert.strictEqual(own[`AiPlayerbot.CoaEconomy.${key}`], value, key);
   assert.strictEqual(own['AiPlayerbot.CoaEconomy.BotLevelGold'].split(',').length, 15);
+  // Guild officers answer players looking for a guild: Squid World at creation only, never through the pack (Pilote, 13/11).
+  assert.strictEqual(own['AiPlayerbot.CoaWorld.Guilds.AnswerAsk'], '1');
+  assert.ok(!Object.hasOwn(require('../src/catalog.cjs').packs.find(pack => pack.id === 'living').changes, 'AiPlayerbot.CoaWorld.Guilds.AnswerAsk'));
   assert.ok(own['AiPlayerbot.CoaEconomy.BotLevelGold'].startsWith('10:5000,15:10000,'));
   for (const key of ['LaunchCurve.UnitPriceCapGold', 'LaunchCurve.UnitPriceCapUntilLevel']) assert.ok(!Object.hasOwn(own, `AiPlayerbot.CoaEconomy.${key}`), key);
   // Events stay in a GM's hands, as on any realm.

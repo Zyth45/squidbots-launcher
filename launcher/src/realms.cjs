@@ -554,6 +554,8 @@ function livingOwn({ ahMerged = true } = {}) {
   put('playerbots.conf', `${E}LaunchCurve.Enable`, 1);
   put('playerbots.conf', 'AiPlayerbot.CoaSelfFound', 1);
   put('playerbots.conf', 'AiPlayerbot.CoaLive.Chat.Enable', 1);
+  // Guild officers answer players looking for a guild: on Squid World only, at its creation (Pilote, 13/11); 0 elsewhere.
+  put('playerbots.conf', 'AiPlayerbot.CoaWorld.Guilds.AnswerAsk', 1);
   // Bots need items: Need on real upgrades (user, 11/11); the other realms keep Greed.
   put('playerbots.conf', 'AiPlayerbot.LootNeedRollLevel', 2);
   for (const part of ['Filter', 'Buyer', 'Market', 'Rarity']) put('playerbots.conf', `${E}${part}.Enable`, 1);
