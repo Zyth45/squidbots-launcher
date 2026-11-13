@@ -266,4 +266,12 @@ async function fillSql(folder, packageFolder, onEvent = () => {}, options = {}) 
   return true;
 }
 
-module.exports = { cleanManifest, compareVersions, forRelease, packageSize, installed, status, fetchPackage, unpack, runTool, fillSql, fillSqlLocal };
+// COA_UPDATE_ONLY_UNDER (set by a MAJ-TEST launcher only): the one folder its updates may change. Unset: no limit.
+function updateAllowed(folder, only = process.env.COA_UPDATE_ONLY_UNDER) {
+  if (!only) return true;
+  const root = path.resolve(only).toLowerCase();
+  const target = path.resolve(String(folder || '')).toLowerCase();
+  return target.startsWith(root + path.sep);
+}
+
+module.exports = { updateAllowed, cleanManifest, compareVersions, forRelease, packageSize, installed, status, fetchPackage, unpack, runTool, fillSql, fillSqlLocal };

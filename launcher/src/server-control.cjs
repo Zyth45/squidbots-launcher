@@ -144,6 +144,17 @@ class ServerControl {
 
   inside(file) { return !!file && path.resolve(file).toLowerCase().startsWith(this.root.toLowerCase() + path.sep); }
 
+  // The ports of this server held by a program of another folder (the original beside its copy, another repack with
+  // the same ports): [{ name, port, file }]. Its scripts would take that program for their own MySQL or world.
+  async foreignListeners() {
+    const found = [];
+    for (const service of this.services) {
+      const owner = await this.portOwner(service.port).catch(() => null);
+      if (owner?.inside === false) found.push({ name: service.name, port: service.port, file: owner.file });
+    }
+    return found;
+  }
+
   // The programs of this server still running, whoever started them (a previous launcher, the repack's own scripts):
   // only processes whose executable lies inside the server folder, never another MySQL of the PC.
   async processesInside(names = ['mysqld.exe', 'authserver.exe', 'worldserver.exe']) {

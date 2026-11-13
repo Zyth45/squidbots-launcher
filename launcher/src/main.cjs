@@ -973,6 +973,11 @@ function registerIpc() {
     if (update.busy) throw new Error('An update is already running.');
     assertServerFree();
     if (state.state !== 'available') throw new Error('No update to install for this server.');
+    if (!repackUpdate.updateAllowed(folder)) throw new Error(`This test launcher only updates the copy under ${process.env.COA_UPDATE_ONLY_UNDER}. Nothing was changed.`);
+    // The update stops and starts the MySQL and world of this folder: a port held by another server's program (the
+    // original running beside its copy) would send the update's SQL to that other server's database.
+    const foreign = await serverControl()?.foreignListeners().catch(() => []) || [];
+    if (foreign.length) throw new Error(`Stop the other server first: ${foreign.map(item => `port ${item.port} (${item.name}) is used by ${item.file}`).join('; ')}. Nothing was changed.`);
     if (update.manifest?.minLauncher && repackUpdate.compareVersions(app.getVersion(), update.manifest.minLauncher) < 0) throw new Error(`This update needs launcher ${update.manifest.minLauncher} or newer: update the launcher first (Settings > About).`);
     update.busy = true;
     const phase = (name, extra = {}) => { update.phase = name; send('update:event', { event: 'phase', phase: name, ...extra }); };
