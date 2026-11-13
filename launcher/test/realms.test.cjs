@@ -465,8 +465,10 @@ test('a setting saved for a running realm is written in its configs at once, so 
 test('New bots: the auctions of the realm\'s bots go with them, players\' auctions stay, a player\'s bid is mailed back', () => {
   const text = realms.auctionPurgeSql('living');
   // Only the realm's own databases, one transaction, and the auction house bot by default.
-  assert.match(text, /^START TRANSACTION;/);
-  assert.match(text, /COMMIT;\nSELECT/);
+  // Its database selected first: the multi-table DELETEs fail without one (seen on a real MySQL, 13/11).
+  assert.match(text, /^USE acore_characters_living;\nSTART TRANSACTION;/);
+  // The counts read once each: a temporary table cannot be opened twice in one query (real MySQL, 13/11).
+  assert.match(text, /COMMIT;\nSET @purged = .*;\nSELECT COUNT\(\*\), COALESCE\(SUM\(lastbid\), 0\) INTO @refunds, @refunded FROM acore_characters_living\.purge_refund;\nSELECT @purged, @refunds, @refunded;$/);
   assert.ok(!/acore_characters\./.test(text), 'the CoA realm is never touched');
   assert.match(text, /acore_characters_living\.auctionhouse/);
   assert.match(text, /oa\.username LIKE 'RNDLV%' OR oa\.username = 'AHBOT'/);
@@ -491,16 +493,26 @@ test('reset the world: Squid World only, its name typed again, saved whole first
   fs.writeFileSync(path.join(dir, 'Logs', 'bot-status.json'), '{}');
   const queries = [];
   const loaded = [];
+  const dbs = new Set(['acore_characters_living', 'acore_playerbots_living']);
+  let createFails = false;
   const io = {
     sql: async (_root, query) => {
       queries.push(query);
+      const shown = /^SHOW DATABASES LIKE '(\w+)'$/.exec(query);
+      if (shown) return dbs.has(shown[1]) ? shown[1] : '';
+      const dropped = /^DROP DATABASE IF EXISTS (\w+)$/.exec(query);
+      if (dropped) dbs.delete(dropped[1]);
       if (/SELECT c\.name, c\.level/.test(query)) return 'Squid World\t12\nSquid Alt\t3';
       if (/SELECT \(SELECT COUNT/.test(query)) return '3234\t21\t2293\t2\t140';
       return '';
     },
     dumpTo: async (_root, database, file) => fs.writeFileSync(file, `-- ${database}\n`),
-    loadFrom: async (_root, file) => loaded.push(path.basename(file)),
-    create: async (r, key, { name }) => fs.writeFileSync(path.join(r, 'Royaumes', key, 'realm.json'), JSON.stringify({ key, id: 5, name, worldPort: 65511, raPort: 65512, autostart: true, created: 'new' })),
+    loadFrom: async (_root, file) => { loaded.push(path.basename(file)); dbs.add(path.basename(file, '.sql')); },
+    create: async (r, key, { name }) => {
+      if (createFails) throw new Error('This realm needs a newer CoA Bots.');
+      for (const database of ['acore_characters_living', 'acore_playerbots_living']) dbs.add(database);
+      fs.writeFileSync(path.join(r, 'Royaumes', key, 'realm.json'), JSON.stringify({ key, id: 5, name, worldPort: 65511, raPort: 65512, autostart: true, created: 'new' }));
+    },
   };
   // Never the CoA realm nor another realm.
   await assert.rejects(realms.resetWorld(root, 'wildcard', { confirmName: 'wildcard', io }), /Only Squid World/);
@@ -534,4 +546,12 @@ test('reset the world: Squid World only, its name typed again, saved whole first
   assert.strictEqual(path.basename(back.before), 'living-before-restore-20261113-020000');
   assert.ok(fs.existsSync(path.join(dir, 'Logs', 'squidbot', 'events.jsonl')), 'the folder of the copy is back');
   assert.strictEqual(JSON.parse(fs.readFileSync(path.join(dir, 'realm.json'), 'utf8')).created, undefined);
+  // A reset stopped half-way (the new realm could not be made): no database left, and Restore still puts the copy back.
+  createFails = true;
+  await assert.rejects(realms.resetWorld(root, 'living', { confirmName: 'Malfurion', io, now: new Date(2026, 10, 13, 3, 0, 0) }), /newer CoA Bots/);
+  assert.strictEqual(dbs.size, 0);
+  loaded.length = 0;
+  const again = await realms.restoreRealm(root, 'living', 'living-reset-20261113-030000', { io, now: new Date(2026, 10, 13, 3, 5, 0) });
+  assert.deepStrictEqual(loaded, ['acore_characters_living.sql', 'acore_playerbots_living.sql']);
+  assert.deepStrictEqual(fs.readdirSync(again.before).sort(), ['Royaumes', 'backup.json'], 'nothing to save but the folder');
 });

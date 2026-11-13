@@ -886,17 +886,20 @@ function auctionPurgeSql(key, { house = true } = {}) {
   if (!/^[A-Z]+$/.test(prefix) || !/^[a-z]+$/.test(key)) throw new Error('Unknown realm.');
   const seller = `o.guid IS NULL OR oa.id IS NULL OR oa.username LIKE '${prefix}%'${house ? " OR oa.username = 'AHBOT'" : ''}`;
   return [
+    `USE ${c}`,
     'START TRANSACTION',
-    'DROP TEMPORARY TABLE IF EXISTS purge_ah',
-    `CREATE TEMPORARY TABLE purge_ah AS SELECT ah.id, ah.houseid, ah.itemguid, ah.itemowner, ah.buyguid, ah.lastbid, ah.buyoutprice, ah.deposit FROM ${c}.auctionhouse ah LEFT JOIN ${c}.characters o ON o.guid = ah.itemowner LEFT JOIN acore_auth.account oa ON oa.id = o.account WHERE ${seller}`,
-    'DROP TEMPORARY TABLE IF EXISTS purge_refund',
-    `CREATE TEMPORARY TABLE purge_refund AS SELECT p.id, p.houseid, p.itemowner, p.buyguid, p.lastbid, p.buyoutprice, p.deposit, ii.itemEntry, ii.randomPropertyId, ii.count FROM purge_ah p JOIN ${c}.characters b ON b.guid = p.buyguid JOIN acore_auth.account ba ON ba.id = b.account LEFT JOIN ${c}.item_instance ii ON ii.guid = p.itemguid WHERE p.buyguid <> 0 AND p.lastbid > 0 AND ba.username NOT LIKE '${prefix}%' AND ba.username <> 'AHBOT'`,
+    `DROP TEMPORARY TABLE IF EXISTS ${c}.purge_ah`,
+    `CREATE TEMPORARY TABLE ${c}.purge_ah AS SELECT ah.id, ah.houseid, ah.itemguid, ah.itemowner, ah.buyguid, ah.lastbid, ah.buyoutprice, ah.deposit FROM ${c}.auctionhouse ah LEFT JOIN ${c}.characters o ON o.guid = ah.itemowner LEFT JOIN acore_auth.account oa ON oa.id = o.account WHERE ${seller}`,
+    `DROP TEMPORARY TABLE IF EXISTS ${c}.purge_refund`,
+    `CREATE TEMPORARY TABLE ${c}.purge_refund AS SELECT p.id, p.houseid, p.itemowner, p.buyguid, p.lastbid, p.buyoutprice, p.deposit, ii.itemEntry, ii.randomPropertyId, ii.count FROM ${c}.purge_ah p JOIN ${c}.characters b ON b.guid = p.buyguid JOIN acore_auth.account ba ON ba.id = b.account LEFT JOIN ${c}.item_instance ii ON ii.guid = p.itemguid WHERE p.buyguid <> 0 AND p.lastbid > 0 AND ba.username NOT LIKE '${prefix}%' AND ba.username <> 'AHBOT'`,
     `SET @base = (SELECT COALESCE(MAX(id), 0) FROM ${c}.mail)`,
-    `INSERT INTO ${c}.mail (id, messageType, stationery, mailTemplateId, sender, receiver, subject, body, has_items, expire_time, deliver_time, money, cod, checked) SELECT @base + ROW_NUMBER() OVER (ORDER BY id), 2, 62, 0, houseid, buyguid, CONCAT(COALESCE(itemEntry, 0), ':', COALESCE(randomPropertyId, 0), ':4:', id, ':', COALESCE(count, 1)), CONCAT(LPAD(HEX(itemowner), 16, '0'), ':', lastbid, ':', buyoutprice, ':', deposit, ':0'), 0, UNIX_TIMESTAMP() + 2592000, UNIX_TIMESTAMP(), lastbid, 0, 4 FROM purge_refund`,
-    `DELETE ii FROM ${c}.item_instance ii JOIN purge_ah p ON p.itemguid = ii.guid`,
-    `DELETE ah FROM ${c}.auctionhouse ah JOIN purge_ah p ON p.id = ah.id`,
+    `INSERT INTO ${c}.mail (id, messageType, stationery, mailTemplateId, sender, receiver, subject, body, has_items, expire_time, deliver_time, money, cod, checked) SELECT @base + ROW_NUMBER() OVER (ORDER BY id), 2, 62, 0, houseid, buyguid, CONCAT(COALESCE(itemEntry, 0), ':', COALESCE(randomPropertyId, 0), ':4:', id, ':', COALESCE(count, 1)), CONCAT(LPAD(HEX(itemowner), 16, '0'), ':', lastbid, ':', buyoutprice, ':', deposit, ':0'), 0, UNIX_TIMESTAMP() + 2592000, UNIX_TIMESTAMP(), lastbid, 0, 4 FROM ${c}.purge_refund`,
+    `DELETE ii FROM ${c}.item_instance ii JOIN ${c}.purge_ah p ON p.itemguid = ii.guid`,
+    `DELETE ah FROM ${c}.auctionhouse ah JOIN ${c}.purge_ah p ON p.id = ah.id`,
     'COMMIT',
-    'SELECT (SELECT COUNT(*) FROM purge_ah), (SELECT COUNT(*) FROM purge_refund), (SELECT COALESCE(SUM(lastbid), 0) FROM purge_refund)',
+    `SET @purged = (SELECT COUNT(*) FROM ${c}.purge_ah)`,
+    `SELECT COUNT(*), COALESCE(SUM(lastbid), 0) INTO @refunds, @refunded FROM ${c}.purge_refund`,
+    'SELECT @purged, @refunds, @refunded',
   ].join(';\n') + ';';
 }
 
@@ -1006,6 +1009,9 @@ async function backupRealm(root, key, { label = 'reset', io = realIo(), now = ne
   await fsp.mkdir(dir, { recursive: true });
   const files = [];
   for (const database of realmDbs(key)) {
+    // A reset stopped half-way (the new realm could not be made) leaves no database: nothing to save, the copy is
+    // still made so Restore can put the last good one back.
+    if (String(await io.sql(root, `SHOW DATABASES LIKE '${database}'`)).trim() !== database) continue;
     const file = path.join(dir, `${database}.sql`);
     await io.dumpTo(root, database, file);
     files.push(path.basename(file));
