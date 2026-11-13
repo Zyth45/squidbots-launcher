@@ -40,7 +40,8 @@
   "AiPlayerbot.CoaEconomy.Artisans.LearnRareRecipes.Enable",
   "AiPlayerbot.CoaEconomy.Artisans.MaterialsOnDelivery",
   "AiPlayerbot.CoaEconomy.LaunchCurve.Enable",
-  "AiPlayerbot.CoaCombat.PullGuardSight.Enable"
+  "AiPlayerbot.CoaCombat.PullGuardSight.Enable",
+  "AiPlayerbot.CoaLive.ChannelQuestions.Enable"
  ],
  "groups": [
   {
@@ -2309,6 +2310,32 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaLive.ChannelQuestions.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "bool",
+   "default": 1,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaLive.Chat.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Bots answer players' questions in public channels",
+    "fr": "Les bots répondent aux questions des joueurs dans les canaux publics",
+    "ru": "Боты отвечают на вопросы игроков в общих каналах",
+    "zh": "机器人在公共频道回答玩家的问题"
+   },
+   "help": {
+    "en": "An open question from a real player in a public channel (Ascension, Newcomers, zone, LookingForGroup) gets one bot's answer there, 5 to 20 seconds later. Never two bots on one question, at most one answer per player every 5 minutes.",
+    "fr": "Une question ouverte d'un vrai joueur dans un canal public (Ascension, Newcomers, zone, LookingForGroup) reçoit la réponse d'un bot dans ce canal, 5 à 20 secondes plus tard. Jamais deux bots sur une même question, une réponse au plus par joueur toutes les 5 minutes.",
+    "ru": "На открытый вопрос живого игрока в общем канале (Ascension, Newcomers, зона, LookingForGroup) один бот отвечает в этом канале через 5–20 секунд. Никогда два бота на один вопрос, не больше одного ответа одному игроку за 5 минут.",
+    "zh": "真实玩家在公共频道（Ascension、Newcomers、区域、LookingForGroup）提出的开放问题，会在 5 到 20 秒后由一个机器人在该频道回答。同一问题绝不会有两个机器人回答，每位玩家每 5 分钟最多一次回答。"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaLive.LegacyChat",
    "file": "playerbots.conf",
    "group": "lw-social",
@@ -4423,6 +4450,7 @@
     "AiPlayerbot.CoaLive.NoAwayFlag": 1,
     "AiPlayerbot.CoaWorld.Invasions.OneAtATime": 1,
     "AiPlayerbot.CoaLive.Chat.Enable": 1,
+    "AiPlayerbot.CoaLive.ChannelQuestions.Enable": 1,
     "AiPlayerbot.CoaFreshStart.CatchUp.Enable": 1,
     "AiPlayerbot.CoaFreshStart.CatchUp.CountGameMasters": 1,
     "AiPlayerbot.CoaAltBags.Enable": 1
