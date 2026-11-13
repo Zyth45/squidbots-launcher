@@ -59,7 +59,7 @@ const probe = require('./probe.cjs');
 const portOpen = port => probe.portOpen(port);
 const PIPE_GONE = new Set(['EPIPE', 'ERR_STREAM_DESTROYED', 'ERR_STREAM_WRITE_AFTER_END']);
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
-// The first start after an install or an update applies the waiting SQL updates (402 s for a fresh 3.0.1 at Idle
+// The first start after an install or an update applies the waiting SQL updates (402 s for a fresh 3.1 at Idle
 // priority): past its own time, the world gets up to 20 minutes as long as its logs keep moving. A world whose logs
 // stay silent for 3 minutes is stuck and still fails at its own time.
 const UPDATING_MAX = 20 * 60;

@@ -2714,10 +2714,10 @@
     "zh": "机器人从不使用的专精"
    },
    "help": {
-    "en": "Specialization numbers separated by commas. Empty by default since 3.0.1: 99 (Bloodmage Eternal) plays, as a tank in normal dungeons only (see the option below). A value you changed yourself is kept.",
-    "fr": "Numéros de spécialisation séparés par des virgules. Vide par défaut depuis la 3.0.1 : 99 (Bloodmage Eternal) joue, comme tank en donjon normal seulement (voir l'option suivante). Une valeur que tu as changée toi-même est gardée.",
-    "ru": "Номера специализаций через запятую. С 3.0.1 по умолчанию пусто: 99 (Bloodmage Eternal) играет, танком только в обычных подземельях (см. следующую опцию). Значение, изменённое вами, сохраняется.",
-    "zh": "专精编号，用逗号分隔。自 3.0.1 起默认为空：99（Bloodmage Eternal）会参与，但只在普通地下城担任坦克（见下一个选项）。你自己改过的值会保留。"
+    "en": "Specialization numbers separated by commas. Empty by default since 3.1: 99 (Bloodmage Eternal) plays, as a tank in normal dungeons only (see the option below). A value you changed yourself is kept.",
+    "fr": "Numéros de spécialisation séparés par des virgules. Vide par défaut depuis la 3.1 : 99 (Bloodmage Eternal) joue, comme tank en donjon normal seulement (voir l'option suivante). Une valeur que tu as changée toi-même est gardée.",
+    "ru": "Номера специализаций через запятую. С 3.1 по умолчанию пусто: 99 (Bloodmage Eternal) играет, танком только в обычных подземельях (см. следующую опцию). Значение, изменённое вами, сохраняется.",
+    "zh": "专精编号，用逗号分隔。自 3.1 起默认为空：99（Bloodmage Eternal）会参与，但只在普通地下城担任坦克（见下一个选项）。你自己改过的值会保留。"
    }
   },
   {

@@ -144,7 +144,7 @@ test('a slider is an int with min and max, its default and marks on a step; anyt
   });
   assert.deepEqual(built.settings.find(setting => setting.key === 'Living.Scale').slider, { step: 5, marks: [50, 100, 150], unit: '%' });
   assert.deepEqual(built.refused.map(line => line.split(':')[0]).sort(), ['Living.BadMark', 'Living.Float', 'Living.NoMax', 'Living.NoStep', 'Living.OffStep']);
-  // The auction house price scale of CoA Economy 3.0.1: a bar from 50 to 150 %, 60 by default for every realm (user, 13/11), out of the Living server pack.
+  // The auction house price scale of CoA Economy 3.1: a bar from 50 to 150 %, 60 by default for every realm (user, 13/11), out of the Living server pack.
   const scale = CATALOG.settings.find(setting => setting.key === 'AiPlayerbot.CoaEconomy.PriceScalePercent');
   assert.deepEqual([scale.default, scale.min, scale.max, scale.when, scale.slider.step], ['60', 50, 150, 'reload', 5]);
   assert.ok(!Object.hasOwn(CATALOG.packs.find(pack => pack.id === 'living').changes, scale.key));

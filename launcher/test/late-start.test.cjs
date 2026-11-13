@@ -33,7 +33,7 @@ test('nothing of the world alive any more: the script\'s error is the answer', a
   await assert.rejects(item.start('world'), /stopped during startup/);
 });
 
-// A fresh 3.0.1 applies its SQL updates at its first start (402 s at Idle priority): past its own time, the world
+// A fresh 3.1 applies its SQL updates at its first start (402 s at Idle priority): past its own time, the world
 // waits up to 20 minutes while its logs keep moving, and says so; logs silent for long, it fails at its own time.
 test('past its own time, a world whose logs keep moving is still waited for, with « the database is being updated »', async () => {
   const port = await freePort();

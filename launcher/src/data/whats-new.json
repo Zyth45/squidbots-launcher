@@ -3,7 +3,7 @@
         "version": "0.4.3",
         "items": {
             "en": [
-                "Made for CoA Bots 3.0.1: new Living world settings: an auction price bar (50 to 150 %), the bots' starting gold and gold by level, artisans who know rare recipes and buy missing reagents on credit, the alts' bags (these three on after the update), guild officers who answer players looking for a guild.",
+                "Made for CoA Bots 3.1: new Living world settings: an auction price bar (50 to 150 %), the bots' starting gold and gold by level, artisans who know rare recipes and buy missing reagents on credit, the alts' bags (these three on after the update), guild officers who answer players looking for a guild.",
                 "A gold-scarce economy on every realm: new bots start with no gold and earn it level by level, auction prices at 60 %. A value you changed yourself is kept; one left at its default takes the new one. A new Squid World also starts with no launch premium.",
                 "Squid World card: New bots can also clear the bots' auctions (a player's bid comes back by mail); Reset the world (a backup is made first, settings are kept) and Restore a backup.",
                 "Collections and transmog: a warning when both are on for every bot, with a one-click fix.",
@@ -14,7 +14,7 @@
                 "Reset the world asks for the realm's name as it shows in the game's realm list (a renamed Squid World works), and New bots, Reset and Restore end in a window that says what was done, or why not."
             ],
             "fr": [
-                "Fait pour CoA Bots 3.0.1 : de nouveaux réglages du monde vivant : une barre des prix de l'hôtel des ventes (50 à 150 %), l'or de départ des bots et leur or par niveau, des artisans qui connaissent des recettes rares et achètent à crédit les composants manquants, les sacs des alts (ces trois-là activés après la mise à jour), des officiers de guilde qui répondent aux joueurs qui cherchent une guilde.",
+                "Fait pour CoA Bots 3.1 : de nouveaux réglages du monde vivant : une barre des prix de l'hôtel des ventes (50 à 150 %), l'or de départ des bots et leur or par niveau, des artisans qui connaissent des recettes rares et achètent à crédit les composants manquants, les sacs des alts (ces trois-là activés après la mise à jour), des officiers de guilde qui répondent aux joueurs qui cherchent une guilde.",
                 "Une économie où l'or est rare sur tous les royaumes : les nouveaux bots partent sans or et le gagnent niveau après niveau, prix de l'hôtel des ventes à 60 %. Un réglage changé par vous est gardé ; resté par défaut, il prend la nouvelle valeur. Un nouveau Squid World démarre aussi sans prime de lancement.",
                 "Carte Squid World : Nouveaux bots peut aussi vider les enchères des bots (l'offre d'un joueur lui revient par courrier) ; Remettre le monde à neuf (une sauvegarde est faite avant, les réglages sont gardés) et Restaurer une sauvegarde.",
                 "Collections et transmog : un avertissement quand les deux sont activés pour tous les bots, avec une correction en un clic.",
@@ -25,7 +25,7 @@
                 "Remettre le monde à neuf demande le nom du royaume tel qu'il apparaît dans la liste des royaumes du jeu (un Squid World renommé fonctionne), et Nouveaux bots, Remettre à neuf et Restaurer se terminent par une fenêtre qui dit ce qui a été fait, ou pourquoi pas."
             ],
             "ru": [
-                "Для CoA Bots 3.0.1: новые настройки «Живого мира»: шкала цен аукциона (от 50 до 150 %), стартовое золото ботов и золото за уровни, ремесленники, знающие редкие рецепты и покупающие недостающие реагенты в долг, сумки альтов (эти три включены после обновления), офицеры гильдий, отвечающие игрокам, которые ищут гильдию.",
+                "Для CoA Bots 3.1: новые настройки «Живого мира»: шкала цен аукциона (от 50 до 150 %), стартовое золото ботов и золото за уровни, ремесленники, знающие редкие рецепты и покупающие недостающие реагенты в долг, сумки альтов (эти три включены после обновления), офицеры гильдий, отвечающие игрокам, которые ищут гильдию.",
                 "Экономика, где золото редкость, во всех мирах: новые боты начинают без золота и получают его уровень за уровнем, цены аукциона 60 %. Значение, которое вы изменили сами, сохраняется; оставленное по умолчанию получает новое. Новый Squid World также начинается без надбавки запуска.",
                 "Карточка Squid World: «Новые боты» может также очистить аукционы ботов (ставка игрока возвращается почтой); «Начать мир заново» (сначала делается резервная копия, настройки сохраняются) и «Восстановить копию».",
                 "Коллекции и трансмогрификация: предупреждение, когда обе включены для всех ботов, с исправлением в один клик.",
@@ -36,7 +36,7 @@
                 "«Начать мир заново» просит название мира, как в списке миров игры (переименованный Squid World работает), а «Новые боты», «Начать заново» и «Восстановить» завершаются окном, где сказано, что сделано или почему нет."
             ],
             "zh": [
-                "为 CoA Bots 3.0.1 打造：新的鲜活世界设置：拍卖价格滑条（50% 到 150%）、机器人的初始金币和按等级发放的金币、懂得稀有配方并赊购缺少材料的工匠、小号的背包（这三项在更新后开启）、回应寻找公会的玩家的公会官员。",
+                "为 CoA Bots 3.1 打造：新的鲜活世界设置：拍卖价格滑条（50% 到 150%）、机器人的初始金币和按等级发放的金币、懂得稀有配方并赊购缺少材料的工匠、小号的背包（这三项在更新后开启）、回应寻找公会的玩家的公会官员。",
                 "所有国度都采用金币稀缺的经济：新机器人一开始没有金币，逐级获得；拍卖价格为 60%。你自己改过的数值会保留；保持默认的会采用新值。新的 Squid World 还会在没有开服溢价的情况下开局。",
                 "Squid World 卡片：“新机器人”也可以清空机器人的拍卖（玩家的出价会通过邮件退回）；“重置世界”（先做备份，保留设置）和“恢复备份”。",
                 "收藏与幻化：当两者都对所有机器人开启时显示警告，并可一键修正。",
