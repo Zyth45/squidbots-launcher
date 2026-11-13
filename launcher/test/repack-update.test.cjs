@@ -45,3 +45,10 @@ test('a part listed for older releases is left out for a server that already has
   const recent = status(repack('main-20261018-0ab739f5'), clean);
   assert.deepEqual(recent.manifest.package.parts.map(part => part.size), [5]);
 });
+
+test('the update notice is kept whole up to 1200 characters (the 3.0 one, 649 and 759, was cut at 600)', () => {
+  const long = 'x'.repeat(759);
+  const m = cleanManifest({ ...manifest, notice: { en: long, fr: long } });
+  assert.strictEqual(m.notice.fr.length, 759);
+  assert.strictEqual(cleanManifest({ ...manifest, notice: 'y'.repeat(1500) }).notice.en.length, 1200);
+});
