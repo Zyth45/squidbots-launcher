@@ -3574,7 +3574,7 @@
    "file": "playerbots.conf",
    "group": "lw-economy",
    "type": "int",
-   "default": 100,
+   "default": 60,
    "min": 50,
    "max": 150,
    "slider": {
@@ -3653,7 +3653,7 @@
    "classic": false,
    "key": "AiPlayerbot.CoaEconomy.BotStartGoldPercent",
    "type": "int",
-   "default": 100,
+   "default": 0,
    "min": 0,
    "max": 100,
    "slider": {
@@ -3685,7 +3685,7 @@
    "classic": false,
    "key": "AiPlayerbot.CoaEconomy.BotLevelGold",
    "type": "text",
-   "default": "",
+   "default": "10:5000,15:10000,20:20000,25:30000,30:50000,35:70000,40:100000,45:120000,50:150000,55:200000,60:250000,65:300000,70:350000,75:400000,80:500000",
    "label": {
     "en": "Bots' gold by level",
     "fr": "Or des bots par palier",
