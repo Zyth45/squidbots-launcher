@@ -59,6 +59,11 @@ const probe = require('./probe.cjs');
 const portOpen = port => probe.portOpen(port);
 const PIPE_GONE = new Set(['EPIPE', 'ERR_STREAM_DESTROYED', 'ERR_STREAM_WRITE_AFTER_END']);
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
+// The first start after an install or an update applies the waiting SQL updates (402 s for a fresh 3.0.1 at Idle
+// priority): past its own time, the world gets up to 20 minutes as long as its logs keep moving. A world whose logs
+// stay silent for 3 minutes is stuck and still fails at its own time.
+const UPDATING_MAX = 20 * 60;
+const LOGS_QUIET = 3 * 60 * 1000;
 
 class ServerControl {
   constructor({ root, services, commands = {}, notify = () => {}, onAuthStarted = null, pin = null }) {
@@ -74,6 +79,8 @@ class ServerControl {
     this.states = new Map();
     // Services asked to stop whose process may still be saving after their port closed: « stopping », never « starting ».
     this.ending = new Set();
+    // Services whose start script gave up while they still load (SQL updates): « the database is being updated ».
+    this.late = new Set();
   }
 
   // Runs a repack command to completion, logging its output; stdin lines are sent then closed.
@@ -184,7 +191,7 @@ class ServerControl {
         const owner = await this.portOwner(service.port);
         if (owner?.inside === false) { state = 'foreign'; other = owner.file; }
       }
-      result.push({ id: service.id, name: service.name, port: service.port, state, other, variant: this.variant(service), managed: this.children.has(service.id), console: service.console && this.children.has(service.id) });
+      result.push({ id: service.id, name: service.name, port: service.port, state, other, variant: this.variant(service), updating: state === 'starting' && this.late.has(service.id), managed: this.children.has(service.id), console: service.console && this.children.has(service.id) });
     }
     return result;
   }
@@ -269,12 +276,24 @@ class ServerControl {
   // The port opened after the start script gave up, while the repack's supervisor or the service's own process lived.
   async lateStart(service, began) {
     const deadline = began + service.startTimeout * 1000;
-    for (;;) {
-      if (await portOpen(service.port)) return true;
-      if (Date.now() >= deadline) return false;
-      if (!(await this.processAlive(service.id)) && !(service.id === 'world' && await this.processAlive('supervisor'))) return false;
-      await new Promise(resolve => setTimeout(resolve, this.lateDelay ?? 2000));
-    }
+    const longest = began + Math.max(service.startTimeout, service.id === 'world' ? UPDATING_MAX : 0) * 1000;
+    this.late.add(service.id);
+    await this.emit();
+    try {
+      for (;;) {
+        if (await portOpen(service.port)) return true;
+        const now = Date.now();
+        if (now >= longest || (now >= deadline && now - this.logsChanged() >= (this.logsQuiet ?? LOGS_QUIET))) return false;
+        if (!(await this.processAlive(service.id)) && !(service.id === 'world' && await this.processAlive('supervisor'))) return false;
+        await pause(this.lateDelay ?? 2000);
+      }
+    } finally { this.late.delete(service.id); }
+  }
+
+  // When the server's logs (Core\Logs: the world's console, its SQL updates) last changed; 0 without any.
+  logsChanged() {
+    const dir = path.join(this.root, 'Core', 'Logs');
+    try { return fs.readdirSync(dir).reduce((last, name) => { try { return Math.max(last, fs.statSync(path.join(dir, name)).mtimeMs); } catch { return last; } }, 0); } catch { return 0; }
   }
 
   startCommand(service) {

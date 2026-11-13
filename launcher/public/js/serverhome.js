@@ -367,7 +367,9 @@ function homeView() {
     : busy ? ['refresh', t('home.botsCreating', 'Bots on the way…'), '', 'busy']
     // The big button follows the world: MySQL alone (a crash of the world, a database task) still offers to start.
     : worldOn || realmsOnly ? ['pause', t('home.stop', 'Stop the server'), 'service-stop-all', 'ready'] : ['play', t('home.start', 'Start the server'), 'service-start-all', 'update'];
-  const status = App.state.stoppingAll ? t('server.stoppingAll', 'Stopping the server…') : App.state.startingAll ? t('server.startingAll', 'Starting the server…') : stuck ? t('home.stuckText', 'The world has not answered for {n} minutes: it is stuck. Force it to stop, then start the server again.', { n: Math.round(s.live.busyFor / 60000) })
+  // The world's start goes on past its script: it applies the SQL updates of an install or an update.
+  const updating = !App.state.stoppingAll && (info.services || []).some(service => service.updating);
+  const status = App.state.stoppingAll ? t('server.stoppingAll', 'Stopping the server…') : updating ? t('server.dbUpdating', 'First start: the database is being updated, this can take several minutes. Keep the launcher open.') : App.state.startingAll ? t('server.startingAll', 'Starting the server…') : stuck ? t('home.stuckText', 'The world has not answered for {n} minutes: it is stuck. Force it to stop, then start the server again.', { n: Math.round(s.live.busyFor / 60000) })
     : movingName && moving.state === 'starting' ? (moving.firstStart ? t('home.realmFirstStart', '{name} is starting: first start, a few minutes (auction house, new bots). No need to press Start again.', { name: movingName }) : t('home.realmStartingText', '{name} is starting: about a minute.', { name: movingName }))
     : movingName ? t('home.realmStoppingText', '{name} is stopping: it saves its characters and bots first.', { name: movingName })
     : busy ? t('home.botsCreatingText', 'The server is creating its bots (about 10 minutes at a first start). Do not close it: it can be stopped as soon as it answers again.')

@@ -646,6 +646,7 @@
   "server.install": "Установить сервер",
   "server.installTitle": "Установить сервер {version}?",
   "server.keepOpen": "Не закрывайте лаунчер до окончания.",
+  "server.dbUpdating": "Первый запуск: база данных обновляется, это может занять несколько минут. Не закрывайте лаунчер.",
   "server.log": "Журнал",
   "server.logOf": "Журнал: {name}",
   "server.noFolder": "Папка не выбрана",

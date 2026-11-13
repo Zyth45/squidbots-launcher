@@ -1075,6 +1075,7 @@
   "server.install": "安装服务器",
   "server.installTitle": "安装服务器 {version}？",
   "server.keepOpen": "完成前请保持启动器开启。",
+  "server.dbUpdating": "首次启动：正在更新数据库，可能需要几分钟。请保持启动器打开。",
   "server.log": "日志",
   "server.logOf": "日志：{name}",
   "server.newPassword": "新密码",

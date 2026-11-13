@@ -646,6 +646,7 @@
   "server.install": "Installer le serveur",
   "server.installTitle": "Installer le serveur {version} ?",
   "server.keepOpen": "Gardez le launcher ouvert jusqu'à la fin.",
+  "server.dbUpdating": "Premier démarrage : la base de données est mise à jour, cela peut prendre plusieurs minutes. Gardez le launcher ouvert.",
   "server.log": "Journal",
   "server.logOf": "Journal : {name}",
   "server.noFolder": "Aucun dossier choisi",
