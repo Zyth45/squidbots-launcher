@@ -2714,10 +2714,29 @@
     "zh": "机器人从不使用的专精"
    },
    "help": {
-    "en": "Specialization numbers separated by commas. 99 (Bloodmage Eternal) is left out by default.",
-    "fr": "Numéros de spécialisation séparés par des virgules. 99 (Bloodmage Eternal) est exclu par défaut.",
-    "ru": "Номера специализаций через запятую. 99 (Bloodmage Eternal) исключена по умолчанию.",
-    "zh": "专精编号，用逗号分隔。默认排除 99（Bloodmage Eternal）。"
+    "en": "Specialization numbers separated by commas. Empty by default since 3.0.1: 99 (Bloodmage Eternal) plays, as a tank in normal dungeons only (see the option below). A server installed before keeps its own value.",
+    "fr": "Numéros de spécialisation séparés par des virgules. Vide par défaut depuis la 3.0.1 : 99 (Bloodmage Eternal) joue, comme tank en donjon normal seulement (voir l'option suivante). Un serveur installé avant garde sa valeur.",
+    "ru": "Номера специализаций через запятую. С 3.0.1 по умолчанию пусто: 99 (Bloodmage Eternal) играет, танком только в обычных подземельях (см. следующую опцию). Сервер, установленный раньше, сохраняет своё значение.",
+    "zh": "专精编号，用逗号分隔。自 3.0.1 起默认为空：99（Bloodmage Eternal）会参与，但只在普通地下城担任坦克（见下一个选项）。之前安装的服务器保留自己的值。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaTankNormalDungeonOnly",
+   "file": "playerbots.conf",
+   "group": "coa",
+   "kind": "ids",
+   "when": "restart",
+   "label": {
+    "en": "Tank specializations kept to normal dungeons",
+    "fr": "Spécialisations tank réservées aux donjons normaux",
+    "ru": "Танковые специализации только для обычных подземелий",
+    "zh": "仅限普通地下城的坦克专精"
+   },
+   "help": {
+    "en": "Specialization numbers separated by commas. Bots tank with them in normal dungeons only: never in a heroic or mythic dungeon or a raid, where another tank specialization of the class is taken. 99 (Bloodmage Eternal) by default: it holds normal dungeons but takes too much damage beyond. Empty: every tank goes everywhere.",
+    "fr": "Numéros de spécialisation séparés par des virgules. Les bots ne tankent avec elles qu'en donjon normal : jamais en héroïque, en mythique ni en raid, où une autre spécialisation tank de la classe est prise. 99 (Bloodmage Eternal) par défaut : il tient les donjons normaux mais encaisse trop au-delà. Vide : chaque tank va partout.",
+    "ru": "Номера специализаций через запятую. Боты танкуют ими только в обычных подземельях: никогда в героических, эпохальных и рейдах, где берётся другая танковая специализация класса. По умолчанию 99 (Bloodmage Eternal): держит обычные подземелья, но дальше получает слишком много урона. Пусто: любой танк идёт куда угодно.",
+    "zh": "专精编号，用逗号分隔。机器人只在普通地下城用这些专精坦克：英雄、史诗地下城和团队副本中不会，改用该职业的其他坦克专精。默认 99（Bloodmage Eternal）：能守住普通地下城，但更难的内容中承伤过多。留空：所有坦克都可去任何地方。"
    }
   },
   {
@@ -4218,7 +4237,6 @@
     "AiPlayerbot.BotsWhisperPublic": "0",
     "AiPlayerbot.PublicReplyChance": "5",
     "AiPlayerbot.CoaSpecRotations": "1",
-    "AiPlayerbot.CoaExcludedSpecializations": "99",
     "AiPlayerbot.DisableRandomLevels": "0",
     "AiPlayerbot.LevelBrackets.Enabled": "1",
     "AiPlayerbot.SyncLevelWithPlayers": "0"

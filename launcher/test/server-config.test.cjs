@@ -27,6 +27,10 @@ test('settings files of a repack with CoA Bots are found, templates first', asyn
   assert.match(bots.value, /^\d+$/);
   assert.equal(overview.settings.find(setting => setting.key === 'AiPlayerbot.BroadcastWorldChannelName')?.value.includes('"'), false);
   assert.ok(overview.recipes.some(recipe => recipe.id === 'coa-recommended'));
+  // Bloodmage Eternal (Pilote, 13/11): tank in normal dungeons only on new installs; the recommended preset rewrites
+  // neither its exclusion nor its dungeon limit.
+  const recommended = overview.recipes.find(recipe => recipe.id === 'coa-recommended');
+  for (const key of ['AiPlayerbot.CoaExcludedSpecializations', 'AiPlayerbot.CoaTankNormalDungeonOnly']) assert.ok(!Object.hasOwn(recommended.changes, key), key);
 });
 
 test('details: documentation from the .dist, secrets never sent, managed keys locked', async () => {

@@ -80,7 +80,7 @@ The groups already declared, and what goes in them:
 | `lw-combat` | Group combat of the bots in dungeons (fixes that Dungeon Clear always has, made available outside its runs). Section `bots`: its tab is in Bots, after Dungeon Clear. |
 | `lw-loot` | Fine loot rules ("Bots need items" is the first one). |
 
-Add a group only for a new family of features. The LLM options come with 3.1, not before.
+Add a group only for a new family of features. The LLM options come in a later version, not before.
 
 ### Options
 

@@ -392,6 +392,11 @@ test('the new living server is only offered when the update tool of CoA Bots kno
 test('the Living World realm opens like a new server: its own values at creation (Pilote, 11/11)', () => {
   const own = realms.livingOwn()['playerbots.conf'];
   for (const [key, value] of Object.entries({ 'AiPlayerbot.CoaFreshStart.Enable': '1', 'AiPlayerbot.CoaEconomy.LaunchCurve.Enable': '1', 'AiPlayerbot.CoaWorld.ServerFirst.Enable': '1', 'AiPlayerbot.CoaSelfFound': '1', 'AiPlayerbot.CoaLive.Chat.Enable': '1', 'AiPlayerbot.LootNeedRollLevel': '2' })) assert.strictEqual(own[key], value, key);
+  // The economy of a new Squid World (user's go, 13/11, values of Economie): gold is rare.
+  for (const [key, value] of Object.entries({ BotStartGoldPercent: '0', PriceScalePercent: '60', 'LaunchCurve.LaunchPremiumPercent': '0', 'Artisans.LearnRareRecipes.Enable': '1', 'Artisans.MaterialsOnDelivery': '1' })) assert.strictEqual(own[`AiPlayerbot.CoaEconomy.${key}`], value, key);
+  assert.strictEqual(own['AiPlayerbot.CoaEconomy.BotLevelGold'].split(',').length, 15);
+  assert.ok(own['AiPlayerbot.CoaEconomy.BotLevelGold'].startsWith('10:5000,15:10000,'));
+  for (const key of ['LaunchCurve.UnitPriceCapGold', 'LaunchCurve.UnitPriceCapUntilLevel']) assert.ok(!Object.hasOwn(own, `AiPlayerbot.CoaEconomy.${key}`), key);
   // Events stay in a GM's hands, as on any realm.
   for (const key of ['Invasions.Auto', 'ResourceRush.Auto', 'CapitalRaid.Auto']) assert.ok(!Object.hasOwn(own, `AiPlayerbot.CoaWorld.${key}`), key);
 });

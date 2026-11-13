@@ -3272,6 +3272,32 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaWorld.Guilds.AnswerAsk",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWorld.Guilds.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Guild officers answer players looking for a guild",
+    "fr": "Les officiers de guilde répondent aux joueurs qui cherchent une guilde",
+    "ru": "Офицеры гильдий отвечают игрокам, ищущим гильдию",
+    "zh": "公会官员回应寻找公会的玩家"
+   },
+   "help": {
+    "en": "A player without a guild who asks for one in say or a public channel (\"LF guild\", \"any guild?\") gets a word and a guild invite from an officer bot of their faction.",
+    "fr": "Un joueur sans guilde qui en cherche une en /dire ou dans un canal public (« LF guild », « any guild? ») reçoit un mot et une invitation d'un officier bot de sa faction.",
+    "ru": "Игрок без гильдии, который ищет её в /сказать или в общем канале («LF guild», «any guild?»), получает пару слов и приглашение от бота-офицера своей фракции.",
+    "zh": "没有公会的玩家在说话或公共频道里寻找公会（“LF guild”、“any guild?”）时，会收到本阵营一名官员机器人的回应和公会邀请。"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaWorld.Guilds.PlayerGuildOnline",
    "file": "playerbots.conf",
    "group": "lw-social",
@@ -4316,6 +4342,7 @@
     "AiPlayerbot.CoaBotIdentify": 1,
     "AiPlayerbot.CoaWorld.Guilds.Enable": 1,
     "AiPlayerbot.CoaWorld.Guilds.Help": 1,
+    "AiPlayerbot.CoaWorld.Guilds.AnswerAsk": 1,
     "AiPlayerbot.RefreshClearsInventory": 0,
     "AiPlayerbot.CoaEconomy.RpgSell.Enable": 1,
     "AiPlayerbot.CoaEconomy.BotAuctions.Enable": 1,

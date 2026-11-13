@@ -559,7 +559,15 @@ function livingOwn({ ahMerged = true } = {}) {
   for (const part of ['Filter', 'Buyer', 'Market', 'Rarity']) put('playerbots.conf', `${E}${part}.Enable`, 1);
   put('playerbots.conf', `${E}LaunchCurve.LevelMargin`, 5);
   put('playerbots.conf', `${E}LaunchCurve.StartStockPercent`, 15);
-  put('playerbots.conf', `${E}LaunchCurve.LaunchPremiumPercent`, 100);
+  // The economy of a new Squid World (PROPOSITION-ECO-SQUIDWORLD.md, user's go 13/11, confirmed by Economie): gold is
+  // rare. Bots start with none and get it by level steps (copper), prices at 60 %, no launch premium. The other
+  // economy keys keep their defaults (UnitPriceCapGold 0.25, UnitPriceCapUntilLevel 60).
+  put('playerbots.conf', `${E}LaunchCurve.LaunchPremiumPercent`, 0);
+  put('playerbots.conf', `${E}BotStartGoldPercent`, 0);
+  put('playerbots.conf', `${E}BotLevelGold`, '10:5000,15:10000,20:20000,25:30000,30:50000,35:70000,40:100000,45:120000,50:150000,55:200000,60:250000,65:300000,70:350000,75:400000,80:500000');
+  put('playerbots.conf', `${E}PriceScalePercent`, 60);
+  put('playerbots.conf', `${E}Artisans.LearnRareRecipes.Enable`, 1);
+  put('playerbots.conf', `${E}Artisans.MaterialsOnDelivery`, 1);
   // SquidBots-AH, only on a core without mod-ah-bot-plus: on a core that still has it, the master key of mod_ahbot.conf
   // would start the old bot too (an auction house full of epics on day 1). Nothing of the AH is written there.
   if (ahMerged) {

@@ -1,5 +1,59 @@
 [
     {
+        "version": "0.4.2",
+        "items": {
+            "en": [
+                "Made for CoA Bots 3.0.1: new Living world settings: an auction price bar (50 to 150 %), the bots' starting gold and gold by level, artisans who know rare recipes and buy missing reagents on credit, the alts' bags, guild officers who answer players looking for a guild.",
+                "A new Squid World starts with an economy where gold is rare: bots start with none and earn it level by level, auction prices at 60 %, no launch premium. An existing realm keeps its values.",
+                "Squid World card: New bots can also clear the bots' auctions (a player's bid comes back by mail); Reset the world (a backup is made first, settings are kept) and Restore a backup.",
+                "Collections and transmog: a warning when both are on for every bot, with a one-click fix.",
+                "Bloodmage Eternal: on a new server, bots tank with it in normal dungeons only (new option). An existing server keeps its value, and the recommended settings no longer change it."
+            ],
+            "fr": [
+                "Fait pour CoA Bots 3.0.1 : de nouveaux réglages du monde vivant : une barre des prix de l'hôtel des ventes (50 à 150 %), l'or de départ des bots et leur or par niveau, des artisans qui connaissent des recettes rares et achètent à crédit les composants manquants, les sacs des alts, des officiers de guilde qui répondent aux joueurs qui cherchent une guilde.",
+                "Un nouveau Squid World démarre avec une économie où l'or est rare : les bots partent sans or et le gagnent niveau après niveau, prix de l'hôtel des ventes à 60 %, sans prime de lancement. Un royaume existant garde ses valeurs.",
+                "Carte Squid World : Nouveaux bots peut aussi vider les enchères des bots (l'offre d'un joueur lui revient par courrier) ; Remettre le monde à neuf (une sauvegarde est faite avant, les réglages sont gardés) et Restaurer une sauvegarde.",
+                "Collections et transmog : un avertissement quand les deux sont activés pour tous les bots, avec une correction en un clic.",
+                "Bloodmage Eternal : sur un nouveau serveur, les bots tankent avec lui en donjon normal seulement (nouvelle option). Un serveur existant garde sa valeur, et les réglages recommandés ne la changent plus."
+            ],
+            "ru": [
+                "Для CoA Bots 3.0.1: новые настройки «Живого мира»: шкала цен аукциона (от 50 до 150 %), стартовое золото ботов и золото за уровни, ремесленники, знающие редкие рецепты и покупающие недостающие реагенты в долг, сумки альтов, офицеры гильдий, отвечающие игрокам, которые ищут гильдию.",
+                "Новый Squid World начинается с экономикой, где золото редкость: боты начинают без золота и получают его уровень за уровнем, цены аукциона 60 %, без надбавки запуска. Существующий мир сохраняет свои значения.",
+                "Карточка Squid World: «Новые боты» может также очистить аукционы ботов (ставка игрока возвращается почтой); «Начать мир заново» (сначала делается резервная копия, настройки сохраняются) и «Восстановить копию».",
+                "Коллекции и трансмогрификация: предупреждение, когда обе включены для всех ботов, с исправлением в один клик.",
+                "Bloodmage Eternal: на новом сервере боты танкуют им только в обычных подземельях (новая опция). Существующий сервер сохраняет своё значение, а рекомендуемые настройки его больше не меняют."
+            ],
+            "zh": [
+                "为 CoA Bots 3.0.1 打造：新的鲜活世界设置：拍卖价格滑条（50% 到 150%）、机器人的初始金币和按等级发放的金币、懂得稀有配方并赊购缺少材料的工匠、小号的背包、回应寻找公会的玩家的公会官员。",
+                "新的 Squid World 以金币稀缺的经济开局：机器人一开始没有金币，逐级获得；拍卖价格为 60%，没有开服溢价。已有国度保留自己的数值。",
+                "Squid World 卡片：“新机器人”也可以清空机器人的拍卖（玩家的出价会通过邮件退回）；“重置世界”（先做备份，保留设置）和“恢复备份”。",
+                "收藏与幻化：当两者都对所有机器人开启时显示警告，并可一键修正。",
+                "Bloodmage Eternal：在新服务器上，机器人只在普通地下城用它坦克（新选项）。已有服务器保留自己的值，推荐设置也不再更改它。"
+            ]
+        }
+    },
+    {
+        "version": "0.4.1",
+        "items": {
+            "en": [
+                "Squid World: the memory a realm needs is now estimated from real measures (1000 bots ≈ 7 GB instead of 11), and a realm left stopped at the server's start can be started anyway from its card.",
+                "Squid World: a new realm now starts with nothing of your CoA realm (no server firsts, learned prices or bot state copied from it). A Squid World created with 0.4.0 keeps those copied firsts and prices; \"Reset the world\" comes with the next version."
+            ],
+            "fr": [
+                "Squid World : la mémoire demandée par un royaume est maintenant estimée d'après des mesures réelles (1000 bots ≈ 7 Go au lieu de 11), et un royaume laissé arrêté au démarrage du serveur peut être démarré quand même depuis sa carte.",
+                "Squid World : un nouveau royaume démarre maintenant sans rien de votre royaume CoA (aucun premier du serveur, prix appris ni état des bots recopié). Un Squid World créé avec la 0.4.0 garde ces premiers et ces prix recopiés ; « Remettre le monde à neuf » arrive avec la prochaine version."
+            ],
+            "ru": [
+                "Squid World: память, нужная миру, теперь оценивается по реальным замерам (1000 ботов ≈ 7 ГБ вместо 11), а мир, не запущенный вместе с сервером, можно всё равно запустить с его карточки.",
+                "Squid World: новый мир теперь начинается без всего из вашего мира CoA (не копируются «первые на сервере», изученные цены и состояние ботов). Squid World, созданный в 0.4.0, сохраняет эти скопированные «первые» и цены; «Начать мир заново» появится в следующей версии."
+            ],
+            "zh": [
+                "Squid World：国度所需内存现在根据实测估算（1000 个机器人约 7 GB，而不是 11 GB），未随服务器启动的国度也可以从其卡片上仍然启动。",
+                "Squid World：新国度现在启动时不再带有你的 CoA 国度的任何内容（不复制全服首杀、已学习的价格或机器人状态）。用 0.4.0 创建的 Squid World 会保留这些复制来的首杀和价格；“重置世界”将在下一版本中推出。"
+            ]
+        }
+    },
+    {
         "version": "0.4.0",
         "items": {
             "en": [
