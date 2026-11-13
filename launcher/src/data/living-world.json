@@ -35,7 +35,10 @@
   "AiPlayerbot.CoaWorld.WorldPvp.Skirmish.Enable",
   "AiPlayerbot.CoaWorld.WorldPvp.CapitalDefence.Enable",
   "AiPlayerbot.CoaWorld.Travel.Hearthstone",
-  "AiPlayerbot.CoaWorld.Guilds.Help"
+  "AiPlayerbot.CoaWorld.Guilds.Help",
+  "AiPlayerbot.CoaAltBags.Enable",
+  "AiPlayerbot.CoaEconomy.Artisans.LearnRareRecipes.Enable",
+  "AiPlayerbot.CoaEconomy.Artisans.MaterialsOnDelivery"
  ],
  "groups": [
   {
@@ -1925,7 +1928,7 @@
    "file": "playerbots.conf",
    "group": "lw-crafting",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "idleWhen": {
     "key": "AiPlayerbot.CoaEconomy.Artisans.Enable",
@@ -1952,7 +1955,7 @@
    "file": "playerbots.conf",
    "group": "lw-crafting",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "idleWhen": {
     "key": "AiPlayerbot.CoaEconomy.Artisans.Enable",
@@ -2221,7 +2224,7 @@
    "file": "playerbots.conf",
    "group": "lw-loot",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "reload",
    "classic": false,
    "label": {
