@@ -151,7 +151,31 @@ async function ownSettings(root, key) {
   // Realms made by the first beta kept their number of bots in realm.json.
   const saved = await realmFile(root, key);
   if (saved?.bots !== undefined && !own['playerbots.conf']?.[BOT_COUNT[1]]) own['playerbots.conf'] = { ...own['playerbots.conf'], [BOT_COUNT[0]]: String(saved.bots), [BOT_COUNT[1]]: String(saved.bots) };
+  if (saved && await moveOldDefaults(root, key, own, saved)) return ownSettings(root, key);
   return own;
+}
+
+// The creation values of a realm that later became the new defaults (users' rule, 13/11: an improvement reaches every
+// realm). A value still at an old creation default moves to the new one, once; any other value is the player's and stays.
+// The realm's settings.json is written into its configs at each start: the Builder's merge_conf cannot change it.
+const OLD_CREATION_DEFAULTS = [
+  // Squid World made before 0.4.3 (livingOwn of 0.4.0 wrote 100, the first betas 150): no launch premium (Economie, 13/11).
+  { id: 'launch-premium-0', key: 'living', file: 'playerbots.conf', setting: 'AiPlayerbot.CoaEconomy.LaunchCurve.LaunchPremiumPercent', old: ['100', '150'], now: '0' },
+];
+async function moveOldDefaults(root, key, own, saved) {
+  const done = new Set(Array.isArray(saved.moved) ? saved.moved : []);
+  const due = OLD_CREATION_DEFAULTS.filter(item => item.key === key && !done.has(item.id));
+  if (!due.length) return false;
+  for (const item of due) {
+    const value = own[item.file]?.[item.setting];
+    if (value !== undefined && item.old.includes(String(value).trim())) own[item.file][item.setting] = item.now;
+    done.add(item.id);
+  }
+  await writeOwn(root, key, own);
+  const fresh = (await realmFile(root, key)) || saved;
+  fresh.moved = [...done];
+  await fsp.writeFile(path.join(dirOf(root, key), 'realm.json'), JSON.stringify(fresh, null, 2));
+  return true;
 }
 async function writeOwn(root, key, own) {
   for (const file of Object.keys(own)) if (!Object.keys(own[file]).length) delete own[file];
@@ -488,18 +512,30 @@ async function create(root, key, { bots = key === 'living' ? LIVING_BOTS : DEFAU
 
   const chars = `acore_characters_${key}`;
   const botsDb = `acore_playerbots_${key}`;
+  // A database made by THIS call and left half-made by an error (13/11: a copy that failed on « Unknown database
+  // acore_playerbots » left an empty acore_playerbots_living, which then stopped the bot installer) is dropped again, so
+  // a new try starts clean. A database that was there before is never dropped.
+  const made = [];
+  const madeHere = async (database, work) => {
+    await run.sql(root, `CREATE DATABASE ${database} DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
+    made.push(database);
+    try { await work(); } catch (error) {
+      for (const name of made) await run.sql(root, `DROP DATABASE IF EXISTS ${name}`).catch(() => {});
+      throw error;
+    }
+  };
   if (!(await exists(chars))) {
     notify(`Creating ${chars}…`);
-    await run.sql(root, `CREATE DATABASE ${chars} DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
-    await run.copyDump(root, ['--no-data', '--skip-triggers', 'acore_characters'], chars);
-    const present = new Set((await run.sql(root, "SELECT table_name FROM information_schema.tables WHERE table_schema = 'acore_characters'")).split(/\r?\n/));
-    const seed = SEED_TABLES.filter(table => present.has(table));
-    if (seed.length) await run.copyDump(root, ['--no-create-info', 'acore_characters', ...seed], chars);
+    await madeHere(chars, async () => {
+      await run.copyDump(root, ['--no-data', '--skip-triggers', 'acore_characters'], chars);
+      const present = new Set((await run.sql(root, "SELECT table_name FROM information_schema.tables WHERE table_schema = 'acore_characters'")).split(/\r?\n/));
+      const seed = SEED_TABLES.filter(table => present.has(table));
+      if (seed.length) await run.copyDump(root, ['--no-create-info', 'acore_characters', ...seed], chars);
+    });
   }
   if (!(await exists(botsDb))) {
     notify(`Creating ${botsDb}…`);
-    await run.sql(root, `CREATE DATABASE ${botsDb} DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
-    await run.copyDump(root, ['acore_playerbots'], botsDb);
+    await madeHere(botsDb, async () => { await run.copyDump(root, ['acore_playerbots'], botsDb); });
     // The bot state of the CoA realm is not this realm's: its bots are made again with their own prefix, and the state
     // the modules keep per character or per realm starts empty (listed by SquidBot, Monde and Economie, 13/11: souls,
     // stored values, guild tasks, mounts, server firsts, guild logs, learned prices, the auction clock, artisans' orders).
@@ -970,6 +1006,13 @@ async function clearOffline(root, { coa = false } = {}) {
 // modules and the dashboard write for this realm go too; they are made again at its start. Nothing is lost for good:
 // the saved copy (Backups\<key>-reset-<date>) can be put back by restoreRealm.
 const RESETTABLE = new Set(['living']);
+// The name typed to confirm a reset against the realm's own name (realm.json: the name in the game's realm list, which
+// the player may have changed, « Malfurion »). Case and outer spaces do not count, accents do. public/js/realms.js
+// compares the same way (13/11: the page asked for « Squid World » and this check wanted « Malfurion »).
+function sameRealmName(a, b) {
+  const clean = value => String(value || '').normalize('NFC').trim().replace(/\s+/g, ' ').toLocaleLowerCase();
+  return clean(a) !== '' && clean(a) === clean(b);
+}
 const realmDbs = key => [`acore_characters_${key}`, `acore_playerbots_${key}`];
 // Relative to Royaumes\<key>: written by the modules (Logs\squidbot: events, monde, economy, watch) and the launcher.
 const RESET_STATE = ['.state.json', path.join('Logs', 'bot-status.json'), path.join('Logs', 'squidbot')];
@@ -1036,7 +1079,9 @@ async function backupRealm(root, key, { label = 'reset', io = realIo(), now = ne
 async function resetWorld(root, key, { confirmName, io = realIo(), now = new Date() } = {}) {
   if (!RESETTABLE.has(key)) throw new Error('Only Squid World can be reset.');
   const saved = await stoppedRealm(root, key);
-  if (String(confirmName || '').trim().toLowerCase() !== String(saved.name).trim().toLowerCase()) throw new Error('Type the name of the realm to confirm.');
+  // The realm list shows « Name - Subtitle » as the name and a line under it: either is accepted.
+  const shown = String(saved.name || '').split(' - ')[0];
+  if (!sameRealmName(confirmName, saved.name) && !sameRealmName(confirmName, shown)) throw new Error(`The name typed is not ${shown}, the name of this realm in the game's realm list: nothing was reset.`);
   const preview = await worldPreview(root, key, { io });
   const backup = await backupRealm(root, key, { label: 'reset', io, now, preview });
   for (const database of realmDbs(key)) await io.sql(root, `DROP DATABASE IF EXISTS ${database}`);
@@ -1085,4 +1130,4 @@ async function restoreRealm(root, key, id, { io = realIo(), now = new Date() } =
   return { restored: id, before: before.dir };
 }
 
-module.exports = { RESETTABLE, worldPreview, backupRealm, resetWorld, realmBackups, restoreRealm, auctionPurgeSql, changedCount, imposedNow, lastWorldExit, endKind, logTail, realmEnd, stoppedOnPurpose, setPinner, livingOwn, clearOffline, setRealmName, ahbotSettingsOf, setAhbotSettingsOf, onlineRunning, shippedTables, syncShippedTables, MODES, queueMarked, memoryFor, neededMb, botsOnline, setDisabled, versionReady, modulesOf, setModule, coaAutostart, setCoaAutostart, skipCoaAtStart, anotherStarting, refreshBotConfigs, status, create, start, stop, stopAll, startMarked, setOptions, settingsOf, saveSettings, purgeBots, writeConfigs, setKey };
+module.exports = { RESETTABLE, sameRealmName, worldPreview, backupRealm, resetWorld, realmBackups, restoreRealm, auctionPurgeSql, changedCount, imposedNow, lastWorldExit, endKind, logTail, realmEnd, stoppedOnPurpose, setPinner, livingOwn, clearOffline, setRealmName, ahbotSettingsOf, setAhbotSettingsOf, onlineRunning, shippedTables, syncShippedTables, MODES, queueMarked, memoryFor, neededMb, botsOnline, setDisabled, versionReady, modulesOf, setModule, coaAutostart, setCoaAutostart, skipCoaAtStart, anotherStarting, refreshBotConfigs, status, create, start, stop, stopAll, startMarked, setOptions, settingsOf, saveSettings, purgeBots, writeConfigs, setKey };

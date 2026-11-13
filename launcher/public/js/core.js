@@ -142,6 +142,37 @@ function confirmDialog({ title, body, confirm, danger = false }) {
   });
 }
 
+// The end of a long or destructive task: a window that stays until the player clicks OK (never only a toast).
+// kind 'success' or 'error'; body is HTML already escaped by the caller.
+function resultDialog({ title, body, kind = 'success' }) {
+  return new Promise(resolve => {
+    dialog.open(`${dialog.header(title)}<div class="dialog-content"><div class="result-line ${kind}">${icon(kind === 'error' ? 'warning' : 'check')}<div>${body}</div></div></div><footer class="dialog-foot"><button class="button primary" data-choice="ok">${esc(t('common.ok', 'OK'))}</button></footer>`, 'small');
+    const element = $('#dialog');
+    const done = () => { element.removeEventListener('click', onClick); element.removeEventListener('close', onClose); dialog.close(); resolve(); };
+    const onClick = event => { if (event.target.closest('[data-choice="ok"]')) done(); };
+    const onClose = () => { if (!element.open) done(); };
+    element.addEventListener('click', onClick);
+    element.addEventListener('close', onClose, { once: true });
+  });
+}
+
+// A long destructive task run behind a hold window, ended by a result window: success(result) gives { title, body },
+// a failure shows its message in a window of its own.
+async function destructiveTask({ holdTitle, holdBody, work, success, errorTitle }) {
+  const release = holdDialog(holdTitle, holdBody);
+  let result;
+  try { result = await work(); }
+  catch (error) {
+    release();
+    await resultDialog({ title: errorTitle, body: `<p>${esc(translateError(error.message))}</p><p class="muted">${esc(t('realms.nothingChangedMaybe', 'Details in logs\\launcher-realms.log of the server folder.'))}</p>`, kind: 'error' });
+    return undefined;
+  }
+  release();
+  const shown = success(result);
+  await resultDialog({ ...shown, kind: 'success' });
+  return result;
+}
+
 function emptyState(iconName, title, text, action = '') {
   return `<div class="empty">${icon(iconName)}<strong>${esc(title)}</strong>${text ? `<span>${esc(text)}</span>` : ''}${action}</div>`;
 }

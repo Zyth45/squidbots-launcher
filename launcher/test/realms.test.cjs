@@ -527,7 +527,7 @@ test('reset the world: Squid World only, its name typed again, saved whole first
   const preview = await realms.worldPreview(root, 'living', { io });
   assert.deepStrictEqual(preview, { players: [{ name: 'Squid World', level: 12 }, { name: 'Squid Alt', level: 3 }], bots: 3234, guilds: 21, auctions: 2293, mails: 2, achievements: 140 });
   // The name must be typed again.
-  await assert.rejects(realms.resetWorld(root, 'living', { confirmName: 'Malfu', io }), /Type the name/);
+  await assert.rejects(realms.resetWorld(root, 'living', { confirmName: 'Malfu', io }), /The name typed is not Malfurion/);
   assert.ok(!queries.some(query => /DROP/.test(query)), 'nothing dropped without the name');
   const done = await realms.resetWorld(root, 'living', { confirmName: ' malfurion ', io, now: new Date(2026, 10, 13, 1, 2, 3) });
   // Saved whole first: both databases and the folder, with what was erased.
@@ -562,4 +562,23 @@ test('reset the world: Squid World only, its name typed again, saved whole first
   const again = await realms.restoreRealm(root, 'living', 'living-reset-20261113-030000', { io, now: new Date(2026, 10, 13, 3, 5, 0) });
   assert.deepStrictEqual(loaded, ['acore_characters_living.sql', 'acore_playerbots_living.sql']);
   assert.deepStrictEqual(fs.readdirSync(again.before).sort(), ['Royaumes', 'backup.json'], 'nothing to save but the folder');
+});
+
+// 13/11: a creation stopped by « Unknown database 'acore_playerbots' » left an empty acore_playerbots_living (and a
+// half-made acore_characters_living), which then stopped the bot installer. What this call made is dropped again.
+test('a realm creation that fails half-way drops the databases it made, never one that was there before', async () => {
+  const root = repack();
+  fs.writeFileSync(path.join(root, 'CoA-Bots', 'coa_common.py'), 'MYSQL_DATA_KNOWN = {"acore_characters_living", "acore_playerbots_living"}\n');
+  const mysql = fakeMysql();
+  mysql.db.copyDump = async (_root, args) => { if (args.includes('acore_playerbots')) throw new Error("mysqldump: Got error: 1049: Unknown database 'acore_playerbots'"); };
+  await assert.rejects(realms.create(root, 'living', { db: mysql.db }), /Unknown database/);
+  const drops = mysql.statements.filter(query => /^DROP DATABASE/.test(query));
+  assert.deepEqual(drops, ['DROP DATABASE IF EXISTS acore_characters_living', 'DROP DATABASE IF EXISTS acore_playerbots_living']);
+  // The characters database was already there: only the bots database made by this call goes.
+  const again = fakeMysql();
+  const sql = again.db.sql;
+  again.db.sql = async (r, query) => (/SHOW DATABASES LIKE 'acore_characters_living'/.test(query) ? 'acore_characters_living' : sql(r, query));
+  again.db.copyDump = mysql.db.copyDump;
+  await assert.rejects(realms.create(root, 'living', { db: again.db }), /Unknown database/);
+  assert.deepEqual(again.statements.filter(query => /^DROP DATABASE/.test(query)), ['DROP DATABASE IF EXISTS acore_playerbots_living']);
 });

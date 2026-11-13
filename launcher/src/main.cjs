@@ -1582,12 +1582,20 @@ function registerIpc() {
   handle('realms:eco', async (key, on) => { await eco.setEnabled(serverPath(), text(key, 12), on === true); return realmsStatus(); });
   handle('realms:options', async (key, options) => { if (text(key, 12) === 'coa') { await realms.setCoaAutostart(serverPath(), options?.autostart === true); return realmsStatus(); } await realms.setOptions(serverPath(), text(key, 12), { autostart: options?.autostart, bots: options?.bots }); return realmsStatus(); });
   const onePurge = (name, work) => oneServerJob(`recreating the bots of ${name}`, () => withMysql(work));
-  handle('realms:purge', async (key, options) => { let done = null; await onePurge(realms.MODES[text(key, 12)]?.title || key, async () => { done = await realms.purgeBots(serverPath(), text(key, 12), { house: options?.house !== false }); }); return { ...(await realmsStatus()), purged: done }; });
+  // The destructive realm tasks (new bots, reset, restore) write their start, their end and any error in
+  // <server>\logs\launcher-realms.log: the page shows the end in a window, the log keeps it.
+  const realmsLog = line => fs.mkdir(path.join(serverPath(), 'logs'), { recursive: true }).then(() => fs.appendFile(path.join(serverPath(), 'logs', 'launcher-realms.log'), `${new Date().toISOString()} ${line}\n`)).catch(() => {});
+  const loggedTask = async (what, work) => {
+    await realmsLog(`${what}: started`);
+    try { const done = await work(); await realmsLog(`${what}: done ${JSON.stringify(done ?? {})}`); return done; }
+    catch (error) { await realmsLog(`${what}: FAILED ${error?.stack || error?.message || error}`); throw error; }
+  };
+  handle('realms:purge', async (key, options) => { let done = null; await loggedTask(`new bots ${text(key, 12)}`, () => onePurge(realms.MODES[text(key, 12)]?.title || key, async () => { done = await realms.purgeBots(serverPath(), text(key, 12), { house: options?.house !== false }); return done; })); return { ...(await realmsStatus()), purged: done }; });
   // Reset the world (Squid World only): what it erases, the reset itself (saved first), its saved copies and restoring one.
   handle('realms:resetPreview', key => withMysql(() => realms.worldPreview(serverPath(), text(key, 12))));
-  handle('realms:reset', async (key, confirmName) => { let done = null; await oneServerJob(`resetting ${realms.MODES[text(key, 12)]?.title || key}`, () => withMysql(async () => { done = await realms.resetWorld(serverPath(), text(key, 12), { confirmName: text(confirmName, 64) }); })); return { ...(await realmsStatus()), reset: done }; });
+  handle('realms:reset', async (key, confirmName) => { let done = null; await loggedTask(`reset ${text(key, 12)} (typed « ${text(confirmName, 64)} »)`, () => oneServerJob(`resetting ${realms.MODES[text(key, 12)]?.title || key}`, () => withMysql(async () => { done = await realms.resetWorld(serverPath(), text(key, 12), { confirmName: text(confirmName, 64) }); return done; }))); return { ...(await realmsStatus()), reset: done }; });
   handle('realms:backups', key => realms.realmBackups(serverPath(), text(key, 12)));
-  handle('realms:restore', async (key, id) => { let done = null; await oneServerJob(`restoring ${realms.MODES[text(key, 12)]?.title || key}`, () => withMysql(async () => { done = await realms.restoreRealm(serverPath(), text(key, 12), text(id, 120)); })); return { ...(await realmsStatus()), restored: done }; });
+  handle('realms:restore', async (key, id) => { let done = null; await loggedTask(`restore ${text(key, 12)} from ${text(id, 120)}`, () => oneServerJob(`restoring ${realms.MODES[text(key, 12)]?.title || key}`, () => withMysql(async () => { done = await realms.restoreRealm(serverPath(), text(key, 12), text(id, 120)); return done; }))); return { ...(await realmsStatus()), restored: done }; });
   handle('realms:disable', async (key, off) => { await withMysql(() => realms.setDisabled(serverPath(), text(key, 12), off === true)); return realmsStatus(); });
   handle('realms:openLogs', async key => { const error = await shell.openPath(path.join(serverPath(), 'Royaumes', text(key, 12).replace(/[^a-z]/g, ''), 'Logs')); if (error) throw new Error(error); });
   // The world console only reads and writes a bare file name (PlayerDump.DisallowPaths = 1), in the worldserver's own

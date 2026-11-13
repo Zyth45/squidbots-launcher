@@ -90,3 +90,16 @@ test('the live authserver config is reported changed when a card changes, and on
   await cards.save(root, { ...cards.DEFAULTS, realms: { ...cards.DEFAULTS.realms, living: { ...cards.DEFAULTS.realms.living, image: 'Elune' } } });
   assert.deepEqual(await cards.apply(root, { coa: 1, living: 5 }), ['Core/configs/authserver.conf']);
 });
+
+// 13/11: « Élune du Soir » was saved as an empty name while the card said « Saved »: now refused with a reason.
+test('a realm name the list cannot take is refused with a reason, not dropped', async () => {
+  const fsx = require('node:fs');
+  const os = require('node:os');
+  const pathx = require('node:path');
+  const cardsModule = require('../src/realm-cards.cjs');
+  const root = fsx.mkdtempSync(pathx.join(os.tmpdir(), 'cards-'));
+  await assert.rejects(cardsModule.save(root, { realms: { living: { name: 'Élune du Soir' } } }), /cannot be a realm name/);
+  await assert.rejects(cardsModule.save(root, { realms: { living: { name: 'Elune - du Soir' } } }), /cannot be a realm name/);
+  const saved = await cardsModule.save(root, { realms: { living: { name: 'Elune du Soir' } } });
+  assert.equal(saved.realms.living.name, 'Elune du Soir');
+});

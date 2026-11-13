@@ -78,6 +78,13 @@ async function read(root) {
 }
 
 async function save(root, value) {
+  // A name or a subtitle the realm list cannot take is refused with a reason, never dropped in silence (13/11: « Élune du
+  // Soir » was saved as an empty name and the card said « Saved »).
+  for (const realm of Object.values(value?.realms || {})) {
+    for (const field of ['name', 'subtitle']) {
+      if (typeof realm?.[field] === 'string' && !NAME.test(realm[field].trim())) throw new Error(`« ${realm[field].trim().slice(0, 40)} » cannot be a realm name: up to 24 letters without accents, digits, spaces, ' ( ) and . (no « - »).`);
+    }
+  }
   const cards = { version: VERSION, ...clean(value) };
   await fsp.mkdir(path.join(root, 'Settings'), { recursive: true });
   const file = path.join(root, FILE);

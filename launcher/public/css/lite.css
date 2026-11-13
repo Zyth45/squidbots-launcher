@@ -444,3 +444,53 @@ summary.damage-row::-webkit-details-marker { display: none; }
 .realm-off small { font-size: 11.5px; line-height: 1.35; }
 .check-line { display: flex; gap: 8px; align-items: center; margin-top: 4px; }
 .reset-list { margin: 4px 0 8px 18px; max-height: 180px; overflow: auto; }
+
+/* Realms page by tabs (user, 13/11): a bar with one button per realm and its state, then ONE realm shown wide. */
+.realms-page .realms-lead { margin: 0 0 16px; position: relative; z-index: 1; }
+.realm-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; }
+.realm-tab { flex: 1 1 160px; min-width: 0; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; text-align: left; color: var(--muted); background: var(--panel); border: 1px solid var(--line); transition: border-color .15s, background .15s; }
+.realm-tab:hover { border-color: color-mix(in srgb, var(--realm) 45%, var(--line)); color: var(--text); }
+.realm-tab.active { color: var(--text); border-color: color-mix(in srgb, var(--realm) 70%, transparent); background: linear-gradient(180deg, color-mix(in srgb, var(--realm) 16%, var(--panel)), var(--panel)); box-shadow: 0 0 0 1px color-mix(in srgb, var(--realm) 25%, transparent); }
+.realm-tab-text { display: grid; min-width: 0; flex: 1; }
+.realm-tab-text strong { font: 700 14px var(--display); letter-spacing: .02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: inherit; }
+.realm-tab-text small { font-size: 11.5px; color: var(--realm); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.realm-tab-text .pill { justify-self: start; margin-top: 5px; font-size: 11px; padding-top: 2px; padding-bottom: 2px; }
+.realm-tab.st-disabled { opacity: .78; border-style: dashed; }
+.realm-tab.st-disabled .realm-emblem svg { filter: saturate(.55); }
+
+.realm-panel { position: relative; display: grid; gap: 16px; padding: 22px 24px; border-radius: var(--radius); background: linear-gradient(180deg, color-mix(in srgb, var(--realm) 9%, var(--panel)) 0%, var(--panel) 45%); border: 1px solid color-mix(in srgb, var(--realm) 30%, var(--line)); backdrop-filter: blur(6px); min-width: 0; }
+.realm-panel::before { content: ''; position: absolute; inset: 0 0 auto; height: 3px; border-radius: var(--radius) var(--radius) 0 0; background: linear-gradient(90deg, transparent, var(--realm), transparent); }
+.realm-panel.on { border-color: color-mix(in srgb, var(--realm) 60%, transparent); box-shadow: 0 0 0 1px color-mix(in srgb, var(--realm) 22%, transparent), 0 14px 50px -24px var(--realm); }
+.realm-panel.absent { background: var(--panel); border-style: dashed; }
+.realm-panel-head { display: flex; align-items: flex-start; gap: 16px; min-width: 0; }
+.realm-panel-head .realm-name { flex: 1; display: grid; gap: 2px; }
+.realm-panel-head .realm-name h2 { font-size: 24px; }
+.realm-listname { display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; color: var(--text); font-size: 13px; }
+.realm-listname .icon { width: 14px; height: 14px; color: var(--realm); }
+.realm-panel-head .realm-side { margin-left: auto; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; max-width: none; }
+.realm-panel .realm-about { max-width: 900px; }
+.realm-panel-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.realm-panel-main, .realm-panel-side { display: grid; gap: 14px; min-width: 0; }
+.realm-main-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+.realm-main-buttons .button { flex: 1 1 130px; justify-content: center; }
+.realm-group { display: grid; gap: 8px; padding: 14px 16px; border-radius: 12px; background: var(--well, rgba(0,0,0,.22)); border: 1px solid var(--line); min-width: 0; }
+.realm-group h3 { margin: 0; display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); }
+.realm-group h3 .icon { width: 14px; height: 14px; }
+.realm-group .realm-quick { display: grid; gap: 8px; margin: 0; }
+.realm-group .realm-quick-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.realm-group .realm-quick small, .realm-group > small { font-size: 12px; line-height: 1.4; }
+.realm-tool-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+.realm-tool-buttons .button { flex: 1 1 170px; justify-content: center; white-space: nowrap; }
+.realm-danger { border-color: color-mix(in srgb, var(--bad) 35%, var(--line)); background: color-mix(in srgb, var(--bad) 5%, var(--well, rgba(0,0,0,.22))); }
+.realm-danger h3 { color: color-mix(in srgb, var(--bad) 75%, var(--text)); }
+.button.danger-ghost { background: transparent; border: 1px solid color-mix(in srgb, var(--bad) 55%, var(--line)); color: color-mix(in srgb, var(--bad) 80%, var(--text)); }
+.button.danger-ghost:hover:not(:disabled) { background: color-mix(in srgb, var(--bad) 14%, transparent); }
+.realm-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.realm-panel .realm-promise { font-size: 14px; }
+.result-line { display: flex; gap: 12px; align-items: flex-start; }
+.result-line > .icon { width: 22px; height: 22px; flex: none; margin-top: 2px; }
+.result-line.success > .icon { color: var(--ok); }
+.result-line.error > .icon { color: var(--bad); }
+.result-line p { margin: 0 0 6px; overflow-wrap: anywhere; }
+.reset-name-shown strong { font-size: 18px; color: var(--text); }
+@media (max-width: 1100px) { .realm-panel-grid { grid-template-columns: minmax(0, 1fr); } }
