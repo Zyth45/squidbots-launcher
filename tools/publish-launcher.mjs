@@ -28,6 +28,13 @@ const hash = crypto.createHash('sha512');
 for await (const chunk of fs.createReadStream(path.join(dist, installer))) hash.update(chunk);
 const sha512 = hash.digest('base64');
 if (sha512 !== listed) { console.error(`${installer} does not match the SHA-512 in latest.yml: rebuild the launcher.`); process.exit(1); }
+// No installer leaves without a proof that this very file installs and starts (tools/prove-launcher.mjs).
+const proofFile = path.join(dist, `${installer}.proof.json`);
+const proof = fs.existsSync(proofFile) ? JSON.parse(fs.readFileSync(proofFile, 'utf8')) : null;
+if (!proof || proof.sha512 !== sha512 || proof.version !== version || !proof.home) {
+  console.error(`REFUSED: no proof for this ${installer}. Run first: node tools/prove-launcher.mjs ${path.join(dist, installer)} --dir <empty folder> --previous <published app.asar>`);
+  process.exit(2);
+}
 
 fs.mkdirSync(output, { recursive: true });
 // Installer first, then the signed launcher.json, latest.yml last: a launcher never sees a
