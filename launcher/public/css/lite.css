@@ -337,7 +337,9 @@ dialog::backdrop { background: var(--backdrop); backdrop-filter: blur(3px); }
 .page-head h1 .pill { vertical-align: middle; margin-left: 8px; font-family: var(--body, inherit); letter-spacing: 0; }
 .realm-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); column-gap: 18px; row-gap: 18px; align-items: stretch; }
 /* Each card spans the same 5 rows of the grid (subgrid): header, text, figures, buttons, footer line up from card to card. */
-.realm-card { position: relative; display: grid; grid-row: span 5; grid-template-rows: subgrid; row-gap: 12px; padding: 20px; border-radius: var(--radius); background: linear-gradient(180deg, color-mix(in srgb, var(--realm) 9%, var(--panel)) 0%, var(--panel) 55%); border: 1px solid color-mix(in srgb, var(--realm) 28%, var(--line)); backdrop-filter: blur(6px); transition: border-color .2s, box-shadow .2s; }
+/* One column as wide as the card (minmax(0, 1fr)): without it, the widest line inside (the links of a Squid World,
+   4 since 0.4.3) stretched the whole content past the card's frame. */
+.realm-card { position: relative; display: grid; grid-row: span 5; grid-template-rows: subgrid; grid-template-columns: minmax(0, 1fr); row-gap: 12px; padding: 20px; border-radius: var(--radius); background: linear-gradient(180deg, color-mix(in srgb, var(--realm) 9%, var(--panel)) 0%, var(--panel) 55%); border: 1px solid color-mix(in srgb, var(--realm) 28%, var(--line)); backdrop-filter: blur(6px); transition: border-color .2s, box-shadow .2s; }
 .realm-card::before { content: ''; position: absolute; inset: 0 0 auto; height: 3px; border-radius: var(--radius) var(--radius) 0 0; background: linear-gradient(90deg, transparent, var(--realm), transparent); opacity: .55; }
 .realm-card.on { border-color: color-mix(in srgb, var(--realm) 60%, transparent); box-shadow: 0 0 0 1px color-mix(in srgb, var(--realm) 25%, transparent), 0 10px 40px -18px var(--realm); }
 .realm-card.on::before { opacity: 1; }
@@ -356,9 +358,10 @@ dialog::backdrop { background: var(--backdrop); backdrop-filter: blur(3px); }
 .realm-buttons > small { grid-column: span 3; }
 .realm-card .button.primary { background: linear-gradient(180deg, color-mix(in srgb, var(--realm) 85%, white) 0%, var(--realm) 60%, color-mix(in srgb, var(--realm) 70%, black) 100%); color: #140c02; border-color: color-mix(in srgb, var(--realm) 70%, white); box-shadow: 0 6px 20px -10px var(--realm); }
 .realm-more { display: grid; gap: 8px; align-self: start; padding-top: 10px; border-top: 1px solid var(--line); font-size: 12.5px; }
-/* the three links line up under the three buttons */
-.realm-links { display: flex; justify-content: space-between; gap: 8px; }
-.realm-links .link-button { justify-content: center; display: inline-flex; align-items: center; gap: 5px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+/* the realm's links (logs, new bots, reset, restore) go to the next line when the card is narrow */
+.realm-links { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); column-gap: 14px; row-gap: 4px; }
+.realm-links .link-button { justify-content: flex-start; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; max-width: 100%; }
+.realm-more .realm-links .link-button:not(:disabled) { color: var(--text); }
 .realm-links .icon { width: 13px; height: 13px; flex: 0 0 auto; }
 .realm-more .link-button.danger:hover:not(:disabled) { color: var(--bad); }
 .realm-more .link-button { color: var(--muted); }
