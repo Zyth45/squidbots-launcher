@@ -42,7 +42,24 @@
   "AiPlayerbot.CoaEconomy.LaunchCurve.Enable",
   "AiPlayerbot.CoaCombat.PullGuardSight.Enable",
   "AiPlayerbot.CoaLive.ChannelQuestions.Enable",
-  "AiPlayerbot.CoaWorld.Guilds.AnswerAsk"
+  "AiPlayerbot.CoaWorld.Guilds.AnswerAsk",
+  "AiPlayerbot.CoaCombat.BreathGuard.Enable",
+  "AiPlayerbot.CoaEconomy.Artisans.Enable",
+  "AiPlayerbot.CoaEconomy.CraftOrders.Enable",
+  "AiPlayerbot.CoaEconomy.Artisans.RecursiveCost.Enable",
+  "AiPlayerbot.CoaEconomy.Artisans.Stock.Enable",
+  "AiPlayerbot.CoaEconomy.Materials.Enable",
+  "AiPlayerbot.CoaEconomy.Artisans.Addon",
+  "AiPlayerbot.CoaEconomy.AHBot.Enable",
+  "AiPlayerbot.CoaEconomy.Filter.Enable",
+  "AiPlayerbot.CoaEconomy.Buyer.Enable",
+  "AiPlayerbot.CoaEconomy.Market.Enable",
+  "AiPlayerbot.CoaEconomy.Rarity.Enable",
+  "AiPlayerbot.CoaEconomy.RpgSell.Enable",
+  "AiPlayerbot.CoaEconomy.BotAuctions.Enable",
+  "AiPlayerbot.CoaEconomy.BotAuctions.RealHousePrices",
+  "AiPlayerbot.CoaEconomy.DataFile.Enable",
+  "AiPlayerbot.CoaEconomy.AuctionClock.Enable"
  ],
  "groups": [
   {
@@ -859,7 +876,7 @@
    "when": "restart",
    "key": "AiPlayerbot.CoaCombat.BreathGuard.Enable",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "label": {
     "en": "Bots surface before drowning",
     "fr": "Les bots remontent avant de se noyer",
@@ -867,10 +884,10 @@
     "zh": "机器人溺水前上浮"
    },
    "help": {
-    "en": "Off by default. On: outside a Dungeon Clear run too, a grouped bot in a dungeon, out of combat, under water for 90 s is brought back up beside its tank. Always on in a Dungeon Clear run.",
-    "fr": "Désactivé par défaut. Activé : même hors d'un run Dungeon Clear, un bot en groupe dans un donjon, hors combat, sous l'eau depuis 90 s est ramené à la surface près de son tank. Toujours actif pendant un run Dungeon Clear.",
-    "ru": "Выключено по умолчанию. Включено: и вне забега Dungeon Clear бот в группе в подземелье, вне боя, пробывший под водой 90 с, поднимается рядом со своим танком. Всегда включено в забеге Dungeon Clear.",
-    "zh": "默认关闭。开启后：即使不在 Dungeon Clear 中，副本里组队、脱战且在水下 90 秒的机器人会被拉回到坦克身边。Dungeon Clear 副本中始终开启。"
+    "en": "On by default (3.1). Bots following a player come back up for air in dungeons (Blackfathom Deeps) instead of drowning: outside a Dungeon Clear run too, a grouped bot under water for 90 s, out of combat, is brought back up beside its tank. Always on in a Dungeon Clear run.",
+    "fr": "Activé par défaut (3.1). Les bots qui suivent un joueur remontent respirer en donjon (Profondeurs de Brassenoire) au lieu de se noyer : hors Dungeon Clear aussi, un bot groupé sous l'eau depuis 90 s, hors combat, est remonté à côté de son tank. Toujours actif pendant un run Dungeon Clear.",
+    "ru": "Включено по умолчанию (3.1). Боты, следующие за игроком, всплывают за воздухом в подземельях (Непроглядная Пучина), а не тонут: и вне Dungeon Clear бот в группе, пробывший под водой 90 с вне боя, поднимается рядом со своим танком. В забеге Dungeon Clear включено всегда.",
+    "zh": "默认开启（3.1）。跟随玩家的机器人在地下城（黑暗深渊）中会上浮换气，而不会淹死：在 Dungeon Clear 之外也一样，组队机器人在非战斗状态下水下停留 90 秒后会被带回坦克身边。Dungeon Clear 期间始终开启。"
    }
   },
   {
@@ -1248,7 +1265,7 @@
    "file": "playerbots.conf",
    "group": "lw-population",
    "type": "int",
-   "default": 30,
+   "default": 120,
    "min": 0,
    "max": 1800,
    "when": "reload",
@@ -1814,7 +1831,7 @@
    "file": "playerbots.conf",
    "group": "lw-crafting",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "classic": false,
    "key": "AiPlayerbot.CoaEconomy.Artisans.Enable",
@@ -1841,7 +1858,7 @@
    "file": "playerbots.conf",
    "group": "lw-crafting",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "classic": false,
    "key": "AiPlayerbot.CoaEconomy.CraftOrders.Enable",
@@ -1869,7 +1886,7 @@
    "file": "playerbots.conf",
    "group": "lw-crafting",
    "type": "int",
-   "default": 0,
+   "default": 8,
    "min": 0,
    "max": 1440,
    "when": "reload",
@@ -1898,7 +1915,7 @@
    "file": "playerbots.conf",
    "group": "lw-crafting",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "idleWhen": {
     "key": "AiPlayerbot.CoaEconomy.Artisans.Enable",
@@ -1925,7 +1942,7 @@
    "file": "playerbots.conf",
    "group": "lw-crafting",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "idleWhen": {
     "key": "AiPlayerbot.CoaEconomy.Artisans.Enable",
@@ -2052,7 +2069,7 @@
    "file": "playerbots.conf",
    "group": "lw-crafting",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "idleWhen": {
     "key": "AiPlayerbot.CoaEconomy.BotAuctions.Enable",
@@ -2079,7 +2096,7 @@
    "file": "playerbots.conf",
    "group": "lw-crafting",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "idleWhen": {
     "key": "AiPlayerbot.CoaEconomy.Artisans.Enable",
@@ -3552,7 +3569,7 @@
    "file": "playerbots.conf",
    "group": "lw-economy",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "label": {
     "en": "SquidBots-AH: the auction house bot",
@@ -3572,7 +3589,7 @@
    "file": "playerbots.conf",
    "group": "lw-economy",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "reload",
    "label": {
     "en": "Auction house: CoA sellable items only",
@@ -3598,7 +3615,7 @@
    "file": "playerbots.conf",
    "group": "lw-economy",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "reload",
    "idleWhen": {
     "key": "AiPlayerbot.CoaEconomy.AHBot.Enable",
@@ -3655,7 +3672,7 @@
    "file": "playerbots.conf",
    "group": "lw-economy",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "label": {
     "en": "Market prices learned from real sales",
@@ -3812,7 +3829,7 @@
    "file": "playerbots.conf",
    "group": "lw-economy",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "reload",
    "idleWhen": {
     "key": "AiPlayerbot.CoaEconomy.AHBot.Enable",
@@ -3837,7 +3854,7 @@
    "file": "playerbots.conf",
    "group": "lw-economy",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "key": "AiPlayerbot.CoaEconomy.RpgSell.Enable",
    "label": {
@@ -3858,7 +3875,7 @@
    "file": "playerbots.conf",
    "group": "lw-economy",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "key": "AiPlayerbot.CoaEconomy.BotAuctions.Enable",
    "label": {
@@ -3880,7 +3897,7 @@
    "file": "playerbots.conf",
    "group": "lw-economy",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "reload",
    "classic": false,
    "idleWhen": {
@@ -3901,7 +3918,7 @@
    "file": "playerbots.conf",
    "group": "lw-economy",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "hidden": true,
    "label": {
@@ -3922,7 +3939,7 @@
    "file": "playerbots.conf",
    "group": "lw-economy",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "label": {
     "en": "Auctions pause while the server is off",
