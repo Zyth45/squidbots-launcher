@@ -162,14 +162,39 @@ const OLD_CREATION_DEFAULTS = [
   // Squid World made before 0.4.3 (livingOwn of 0.4.0 wrote 100, the first betas 150): no launch premium (Economie, 13/11).
   { id: 'launch-premium-0', key: 'living', file: 'playerbots.conf', setting: 'AiPlayerbot.CoaEconomy.LaunchCurve.LaunchPremiumPercent', old: ['100', '150'], now: '0' },
 ];
+// The Classic pack of 0.4.2 wrote these at their 0.4.2 defaults, which 3.1 turns on (Pilote, 14/11). A realm's value
+// moves to the 3.1 default only when the pack's own trace proves the pack wrote it (.coa-launcher\living-pack-undo.json:
+// the realm's entry is « classic » and lists the key) and the value is still the pack's; without a trace, nothing. The
+// main conf (target « coa ») is the Builder's update tool, which reads the same trace.
+const CLASSIC_042 = [
+  ...['AHBot', 'Filter', 'Buyer', 'Market', 'Rarity', 'DataFile', 'AuctionClock', 'LaunchCurve'].map(name => [`AiPlayerbot.CoaEconomy.${name}.Enable`, '0', '1']),
+  ['AiPlayerbot.CoaCombat.BreathGuard.Enable', '0', '1'],
+  ['AiPlayerbot.CoaWorld.Recovery.NoProgressSeconds', '30', '120'],
+].map(([setting, old, now]) => ({ file: 'playerbots.conf', setting, old, now }));
+const CLASSIC_ID = 'classic-pack-3.1';
 async function moveOldDefaults(root, key, own, saved) {
   const done = new Set(Array.isArray(saved.moved) ? saved.moved : []);
   const due = OLD_CREATION_DEFAULTS.filter(item => item.key === key && !done.has(item.id));
-  if (!due.length) return false;
+  const classicDue = !done.has(CLASSIC_ID);
+  if (!due.length && !classicDue) return false;
+  const lines = [];
   for (const item of due) {
     const value = own[item.file]?.[item.setting];
-    if (value !== undefined && item.old.includes(String(value).trim())) own[item.file][item.setting] = item.now;
+    if (value !== undefined && item.old.includes(String(value).trim())) { own[item.file][item.setting] = item.now; lines.push(`${item.setting} ${value} -> ${item.now}`); }
     done.add(item.id);
+  }
+  if (classicDue) {
+    const trace = (await readJson(path.join(root, '.coa-launcher', 'living-pack-undo.json')))?.[key];
+    const listed = new Set(trace?.id === 'classic' && Array.isArray(trace.previous) ? trace.previous.map(item => item?.key) : []);
+    for (const item of CLASSIC_042) {
+      const value = own[item.file]?.[item.setting];
+      if (listed.has(item.setting) && value !== undefined && String(value).trim() === item.old) { own[item.file][item.setting] = item.now; lines.push(`${item.setting} ${item.old} -> ${item.now} (Classic pack of 0.4.2)`); }
+    }
+    done.add(CLASSIC_ID);
+  }
+  if (lines.length) {
+    await fsp.mkdir(path.join(root, 'logs'), { recursive: true }).catch(() => {});
+    await fsp.appendFile(path.join(root, 'logs', 'launcher-realms.log'), lines.map(line => `${new Date().toISOString()} old default moved in ${key}: ${line}\n`).join('')).catch(() => {});
   }
   await writeOwn(root, key, own);
   const fresh = (await realmFile(root, key)) || saved;
