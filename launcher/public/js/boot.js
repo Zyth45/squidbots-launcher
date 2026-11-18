@@ -177,13 +177,16 @@ function showWhatsNew(list) {
   const lang = App.state.settings.language;
   const pick = value => (value?.[lang] ?? value?.en);
   const bullets = items => `<ul>${(pick(items) || []).map(item => `<li>${esc(item)}</li>`).join('')}</ul>`;
+  // A version that announces a Discord gets a button to it next to « Got it » (the edition's discordUrl).
+  const discord = App.state.config.discord && list.some(entry => entry.discord);
   // A version can come with the server release it goes with: a title and one list per part (core, bots, launcher...).
   const block = entry => `<section class="whats-new"><h3>${esc(pick(entry.title) || t('whatsNew.version', 'Launcher {version}', { version: entry.version }))}</h3>${entry.sections ? entry.sections.map(part => `<h4>${esc(pick(part.title))}</h4>${bullets(part.items)}`).join('') : bullets(entry.items)}</section>`;
-  dialog.open(`${dialog.header(t('whatsNew.title', 'What is new'), App.state.config.appName)}<div class="dialog-content">${list.map(block).join('')}</div><footer class="dialog-foot"><button class="button primary" data-action="whats-new-ok">${esc(t('whatsNew.ok', 'Got it'))}</button></footer>`, 'form');
+  dialog.open(`${dialog.header(t('whatsNew.title', 'What is new'), App.state.config.appName)}<div class="dialog-content">${list.map(block).join('')}</div><footer class="dialog-foot">${discord ? `<button class="button ghost" data-action="whats-new-discord">${icon('discord')}${esc(t('home.discordJoin', 'Join the Discord'))}</button>` : ''}<button class="button primary" data-action="whats-new-ok">${esc(t('whatsNew.ok', 'Got it'))}</button></footer>`, 'form');
   const element = $('#dialog');
   element.addEventListener('close', () => App.api.whatsNewSeen().catch(() => {}), { once: true });
 }
 App.actions['whats-new-ok'] = () => dialog.close();
+App.actions['whats-new-discord'] = () => { App.api.openDiscord().catch(() => {}); dialog.close(); };
 
 (async function boot() {
   $('#settings-button').innerHTML = icon('settings');

@@ -49,4 +49,4 @@ Everything the launcher reads (feed, updates, launcher updates) is signed with E
 The launcher and the assembler are MIT. The server executables are built from GPL-2.0 sources (AzerothCore and the
 CoA core; sources public at the commits given in each release). MySQL, OpenSSL and Python keep their own licences.
 
-Discussions: CoA Modding Community — https://discord.gg/Vhg9NktJf
+Discussions: SquidBots Discord — https://discord.gg/vBgHuef9k

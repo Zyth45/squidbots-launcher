@@ -2,7 +2,7 @@
   "appName": "SquidBots Server",
   "launcherUpdateUrl": "https://github.com/Zyth45/squidbots-updates/releases/download/launcher/",
   "launcherUpdateKey": "AX5UARixwzb0fFDAnLbdKS0Se+NBpl00eVdzgwlghfQ=",
-  "discordUrl": "https://discord.gg/Vhg9NktJf",
+  "discordUrl": "https://discord.gg/vBgHuef9k",
   "trustedLocalHosts": [
     "127.0.0.1",
     "localhost"

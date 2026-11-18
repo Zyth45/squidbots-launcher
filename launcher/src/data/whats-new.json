@@ -1,5 +1,41 @@
 [
     {
+        "version": "0.4.4",
+        "title": {
+            "en": "SquidBots has its own Discord",
+            "fr": "SquidBots a son propre Discord",
+            "ru": "У SquidBots теперь свой Discord",
+            "zh": "SquidBots 有了自己的 Discord"
+        },
+        "discord": true,
+        "items": {
+            "en": [
+                "SquidBots now has its own Discord: help, news, bug reports and ideas, all in one place. Join us: https://discord.gg/vBgHuef9k",
+                "The Squid has left the CoA Modding Discord. The bots go on as before: work continues, every source stays on GitHub, and updates keep coming through this launcher.",
+                "Thanks to everyone who helped, tested, reported and shared ideas: the bots look a bit like you (sometimes they play better, but don't tell them). 🐙",
+                "The Discord buttons of the launcher now open the new server."
+            ],
+            "fr": [
+                "SquidBots a maintenant son propre Discord : aide, nouveautés, rapports de bugs et idées, tout au même endroit. Rejoignez-nous : https://discord.gg/vBgHuef9k",
+                "Le Squid a quitté le Discord CoA Modding. Les bots continuent comme avant : le travail se poursuit, toutes les sources restent sur GitHub et les mises à jour arrivent toujours par ce launcher.",
+                "Merci à toutes celles et ceux qui ont aidé, testé, signalé et proposé des idées : les bots vous ressemblent un peu (parfois ils jouent mieux, mais ne leur dites pas). 🐙",
+                "Les boutons Discord du launcher ouvrent maintenant le nouveau serveur."
+            ],
+            "ru": [
+                "У SquidBots теперь свой Discord: помощь, новости, сообщения об ошибках и идеи — всё в одном месте. Присоединяйтесь: https://discord.gg/vBgHuef9k",
+                "Squid покинул Discord CoA Modding. Боты продолжают работать как прежде: разработка идёт, все исходники остаются на GitHub, а обновления по-прежнему приходят через этот лаунчер.",
+                "Спасибо всем, кто помогал, тестировал, сообщал об ошибках и делился идеями: боты немного похожи на вас (иногда играют лучше, но не говорите им). 🐙",
+                "Кнопки Discord в лаунчере теперь открывают новый сервер."
+            ],
+            "zh": [
+                "SquidBots 现在有了自己的 Discord：帮助、新闻、错误报告和建议，都在一个地方。欢迎加入：https://discord.gg/vBgHuef9k",
+                "Squid 已离开 CoA Modding Discord。机器人一切照旧：开发继续进行，所有源代码仍在 GitHub 上，更新也照常通过本启动器推送。",
+                "感谢所有帮助、测试、报告问题和分享想法的人：机器人有点像你们（有时候它们玩得更好，但别告诉它们）。🐙",
+                "启动器中的 Discord 按钮现在会打开新的服务器。"
+            ]
+        }
+    },
+    {
         "version": "0.4.3",
         "items": {
             "en": [
