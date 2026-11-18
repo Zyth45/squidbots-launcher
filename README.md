@@ -6,7 +6,7 @@ the bots, without editing config files by hand.
 
 - **Install**: download [`SquidBots-Server-Setup.exe`](https://github.com/Zyth45/squidbots-updates/releases/download/launcher/SquidBots-Server-Setup.exe)
   (Windows 10/11, x64) and point it at your up-to-date Conquest of Azeroth client.
-- **Discord**: help, news, bug reports and ideas: https://discord.gg/vBgHuef9k
+- **Discord**: help, news, bug reports and ideas: https://discord.gg/DTJceaG9Ky
 - **Release notes**: [squidbots-updates releases](https://github.com/Zyth45/squidbots-updates/releases)
 
 ## What it does

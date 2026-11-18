@@ -436,7 +436,10 @@ App.actions['game-play'] = button => guard(async () => {
 // Top links of the home: the bots help, and the Discord of the edition (its discordUrl, always shown; the feed's
 // invite only when the edition has none).
 function homeLinks() {
-  return `<span class="news-links"><button class="link-button" data-action="source-link" data-id="botsHelp">${icon('book')}${esc(t('home.botsHelp', 'Bots help'))}</button>${App.state.config?.discord ? `<button class="link-button" data-action="discord">${icon('discord')}${esc(t('home.discordJoin', 'Join the Discord'))}</button>` : App.state.feed?.discord?.invite ? `<button class="link-button" data-action="feed-open" data-kind="discord">${icon('discord')}${esc(t('home.discordJoin', 'Join the Discord'))}</button>` : ''}</span>`;
+  const help = `<button class="link-button" data-action="source-link" data-id="botsHelp">${icon('book')}${esc(t('home.botsHelp', 'Bots help'))}</button>`;
+  const discord = App.state.config?.discord ? `<button class="link-button" data-action="discord">${icon('discord')}${esc(t('home.joinDiscord', 'Join Discord'))}</button>`
+    : App.state.feed?.discord?.invite ? `<button class="link-button" data-action="feed-open" data-kind="discord">${icon('discord')}${esc(t('home.joinDiscord', 'Join Discord'))}</button>` : '';
+  return `<span class="news-links">${discord}${help}</span>`;
 }
 
 function feedNewsRow(links = true) {
