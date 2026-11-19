@@ -50,7 +50,7 @@ function state(folder) {
     extracted: !!steps.dbc?.fingerprint,
     skipped: saved.db?.skipped || [],
     // Progress in tiles while the current map is built (its finished tiles are counted in the work folder).
-    mmaps: { done, total, tiles: (mm.tilesDone || 0) + workTiles(folder), tilesTotal: mm.tilesTotal || 0, running: !!mm.running && pidAlive(mm.pid), paused: !!mm.paused && !(mm.running && pidAlive(mm.pid)), current: mm.current ?? null, published: mm.published || '', complete: (total > 0 && done >= total) || (existing && fs.existsSync(path.join(folder, 'Data', 'mmaps'))) },
+    mmaps: { done, total, tiles: (mm.tilesDone || 0) + workTiles(folder), tilesTotal: mm.tilesTotal || 0, running: !!mm.running && pidAlive(mm.pid), paused: !!mm.paused && !(mm.running && pidAlive(mm.pid)), current: mm.current ?? null, published: mm.published || '', error: mm.error || '', errorAt: mm.errorAt || 0, failed: Object.keys(mm.failed || {}).length, complete: (total > 0 && done >= total) || (existing && fs.existsSync(path.join(folder, 'Data', 'mmaps'))) },
   };
 }
 
@@ -196,7 +196,8 @@ function missingMmaps(folder) {
   const mm = readJson(path.join(folder, '.state', 'assemble.json'))?.mmaps || {};
   let have = new Set();
   try { have = new Set(fs.readdirSync(path.join(folder, 'Data', 'mmaps')).map(name => /^(\d{3,})\.mmap$/i.exec(name)).filter(Boolean).map(m => Number(m[1]))); } catch {}
-  return [...mapIds(folder)].filter(id => !have.has(id) && !(String(id) in (mm.maps || {})) && !(String(id) in (mm.failed || {}))).sort((a, b) => a - b);
+  // A map that could not be built is missing too: « Add missing » tries it again (SupportDesk, 19/11).
+  return [...mapIds(folder)].filter(id => !have.has(id) && !(String(id) in (mm.maps || {}))).sort((a, b) => a - b);
 }
 
 // Only the maps without navigation are built: every other map here is taken as built from the data as they are now,
@@ -209,7 +210,10 @@ function buildMissingMmaps(folder) {
   const mm = saved.mmaps = saved.mmaps || {};
   mm.maps = mm.maps || {};
   for (const id of mapIds(folder)) if (!missing.has(id) && !(String(id) in (mm.failed || {}))) mm.maps[String(id)] = mapHash(folder, id);
+  for (const id of missing) if (mm.failed) delete mm.failed[String(id)];
   delete mm.paused;
+  delete mm.error;
+  delete mm.errorAt;
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, JSON.stringify(saved, null, 1));
   mmapsStarted.delete(path.resolve(folder));

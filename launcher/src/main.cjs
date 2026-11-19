@@ -825,7 +825,13 @@ function registerIpc() {
             if (line && line !== shown) { shown = line; send('assemble:progress', { event: 'detail', text: line.slice(0, 100) }); }
           } finally { await handle.close().catch(() => {}); }
         }, 3000);
-        try { await assembler.assemble(folder, client, onEvent, todo); } finally { stopWatch(); clearInterval(detail); }
+        // The terrain taken again while the navigation maps are built: the build is paused first (its generator would
+        // find Data\maps gone for a moment and give up every map), and goes on afterwards.
+        const mmapsPaused = todo.some(step => step === 'maps' || step === 'vmaps') && assembler.pauseForUpdate(folder);
+        try { await assembler.assemble(folder, client, onEvent, todo); } finally {
+          stopWatch(); clearInterval(detail);
+          if (mmapsPaused && steps) Promise.resolve(assembler.startMmaps(folder)).catch(() => {});
+        }
       }
       // The bots go in at once, on the new database.
       // A new database (first one, or one built again after a cut) needs them again even when their files are there.

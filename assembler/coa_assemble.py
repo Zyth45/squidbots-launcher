@@ -319,18 +319,69 @@ def pid_alive(pid):
     return str(pid) in out
 
 
+def is_junction(path):
+    """Jonction (ou lien) : retirer le lien ne touche jamais au dossier vers lequel il mène."""
+    if hasattr(os.path, "isjunction") and os.path.isjunction(path):
+        return True
+    try:
+        return bool(getattr(os.lstat(path), "st_file_attributes", 0) & 0x400) or os.path.islink(path)
+    except OSError:
+        return False
+
+
 def junction(link, target):
-    if link.exists():
-        return
+    """Jonction de travail link -> target, vérifiée à chaque lancement : une jonction laissée par un autre dossier (repack
+    déplacé ou copié, lettre de lecteur changée) mène ailleurs, souvent vers un dossier vide, et chaque carte échoue
+    alors avec « 'maps' directory is empty or does not exist » (joueur, 19/11). Elle est retirée (le lien seul, jamais
+    sa cible) et refaite ; un vrai dossier à sa place est mis de côté, jamais effacé."""
+    link, target = Path(link), Path(target)
+    want = os.path.normcase(os.path.realpath(target))
+    if os.path.lexists(link):
+        try:
+            if os.path.isdir(link) and os.path.normcase(os.path.realpath(link)) == want:
+                return
+        except OSError:
+            pass
+        if is_junction(link):
+            os.rmdir(link)
+        else:
+            os.replace(link, link.with_name(f"{link.name}-mis-de-cote-{int(time.time())}"))
+        emit("log", step="mmaps", text=f"Work link {link.name} led elsewhere: made again to {target}.")
     subprocess.run(["cmd", "/c", "mklink", "/J", str(link), str(target)], capture_output=True, check=True,
                    creationflags=HIDDEN)
+    if os.path.normcase(os.path.realpath(link)) != want:
+        raise Fail(f"The work link {link} does not lead to {target}.")
+
+
+def has_terrain(folder):
+    """Au moins une tuile de terrain (.map) : sans elles, le générateur refuse toutes les cartes."""
+    return any(True for _ in Path(folder).glob("*.map"))
+
+
+TERRAIN_GONE = ("The terrain the navigation maps are built from (Data\\maps) is empty or unreachable. "
+                "Take the data from your game again (Verification), then build the navigation maps again.")
 
 
 def step_mmaps(threads):
+    """Une construction arrêtée garde sa raison dans l'état (le launcher l'affiche, au lieu d'un arrêt qui ressemble à
+    une pause)."""
+    try:
+        _step_mmaps(threads)
+    except Fail as error:
+        state = load_state()
+        state.setdefault("mmaps", {}).update({"error": str(error)[:300], "errorAt": int(time.time() * 1000),
+                                              "running": False})
+        save_state(state)
+        raise
+
+
+def _step_mmaps(threads):
     """Cartes de navigation des bots : une carte à la fois dans Data/.work-mmaps, puis déplacée dans Data/mmaps.
     Reprend là où elle s'est arrêtée ; ne refait que les cartes dont maps/vmaps ont changé."""
     if not (DATA / "maps").is_dir() or not (DATA / "vmaps").is_dir():
         raise Fail("Extract the maps and vmaps first.")
+    if not has_terrain(DATA / "maps"):
+        raise Fail(TERRAIN_GONE)
     # Une seule construction à la fois (plusieurs clics sur « Build them now » en lançaient plusieurs).
     lock = ROOT / ".state" / "mmaps.lock"
     lock.parent.mkdir(parents=True, exist_ok=True)
@@ -362,7 +413,11 @@ def step_mmaps(threads):
     config.write_text((BIN / "mmaps-config.yaml").read_text(encoding="utf-8"), encoding="utf-8")
     tiles_total = sum(n for h, n in sizes.values() if n)
     tiles_done = sum(sizes[int(m)][1] for m in done if m.isdigit() and int(m) in sizes)
+    if not has_terrain(work / "maps"):
+        raise Fail(TERRAIN_GONE)
     state["mmaps"].pop("paused", None)
+    state["mmaps"].pop("error", None)
+    state["mmaps"].pop("errorAt", None)
     state["mmaps"].update({"total": total, "running": True, "pid": os.getpid(), "tilesTotal": tiles_total,
                            "tilesDone": tiles_done})
     save_state(state)
@@ -385,12 +440,24 @@ def step_mmaps(threads):
                     break
                 except Fail as error:
                     failed = str(error)
+                    # Le terrain a disparu ou n'est plus joignable (extraction refaite pendant la construction, jonction
+                    # cassée) : ce n'est pas la faute de cette carte, la construction s'arrête avec la raison.
+                    if not has_terrain(DATA / "maps"):
+                        raise Fail(TERRAIN_GONE) from error
+                    if not has_terrain(work / "maps"):
+                        junction(work / "maps", DATA / "maps")
+                        if not has_terrain(work / "maps"):
+                            raise Fail(TERRAIN_GONE) from error
             if failed:
                 emit("log", step="mmaps", text=f"map {mid} skipped: {failed}")
                 state = load_state()
                 state.setdefault("mmaps", {}).setdefault("failed", {})[str(mid)] = failed[:200]
                 save_state(state)
                 continue
+            # Sans terrain, le générateur peut aussi sortir sans erreur avec une carte vide (le .mmap sans ses tuiles) :
+            # elle ne doit pas être comptée comme faite.
+            if not has_terrain(work / "maps"):
+                raise Fail(TERRAIN_GONE)
             for p in final.glob(f"{mid:03d}*"):
                 if p.name == f"{mid:03d}.mmap" or (p.suffix == ".mmtile" and p.stem[:-4] == f"{mid:03d}"):
                     p.unlink()
