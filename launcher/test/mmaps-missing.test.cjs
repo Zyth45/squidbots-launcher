@@ -27,3 +27,29 @@ test('maps new in the game are the only ones without navigation; the hash is the
   assert.equal(mapHash(root, 13), expected);
   fs.rmSync(root, { recursive: true, force: true });
 });
+
+// SupportDesk, 19/11: a work link of Data/.work-mmaps left by a moved or copied repack led to an empty folder and every
+// map failed. Before each build the launcher removes a link that leads elsewhere (the link only: its target keeps its
+// files), keeps a good one, and sets a real folder aside instead of deleting it.
+test('work links of the navigation maps: one leading elsewhere is removed, never its target; a good one is kept', () => {
+  const { checkWorkLinks } = require('../src/assembler.cjs');
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'mmaps-links-'));
+  const put = (file, text = 'x') => { fs.mkdirSync(path.dirname(path.join(root, file)), { recursive: true }); fs.writeFileSync(path.join(root, file), text); };
+  put('Data/maps/0473131.map');
+  put('Data/vmaps/047.vmtree');
+  put('old/Data/maps/witness.txt', 'keep me');
+  const work = path.join(root, 'Data', '.work-mmaps');
+  fs.mkdirSync(work, { recursive: true });
+  fs.symlinkSync(path.join(root, 'old', 'Data', 'maps'), path.join(work, 'maps'), 'junction');
+  fs.symlinkSync(path.join(root, 'Data', 'vmaps'), path.join(work, 'vmaps'), 'junction');
+  assert.deepEqual(checkWorkLinks(root), ['maps']);
+  assert.equal(fs.existsSync(path.join(work, 'maps')), false);
+  assert.equal(fs.readFileSync(path.join(root, 'old/Data/maps/witness.txt'), 'utf8'), 'keep me');
+  assert.equal(fs.realpathSync.native(path.join(work, 'vmaps')).toLowerCase(), fs.realpathSync.native(path.join(root, 'Data', 'vmaps')).toLowerCase());
+  // A real (empty) folder where the link should be: set aside, not deleted.
+  fs.mkdirSync(path.join(work, 'maps'));
+  assert.deepEqual(checkWorkLinks(root), ['maps']);
+  assert.equal(fs.readdirSync(work).filter(name => name.startsWith('maps-set-aside-')).length, 1);
+  assert.deepEqual(checkWorkLinks(root), []);
+  fs.rmSync(root, { recursive: true, force: true });
+});

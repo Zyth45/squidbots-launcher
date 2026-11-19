@@ -105,6 +105,32 @@ function run(folder, args, onEvent = () => {}, { detached = false } = {}) {
 // The whole first assembly, or only some steps (after a client patch: dbc,maps,vmaps).
 const assemble = (folder, client, onEvent, steps) => run(folder, ['run', '--client', client, ...(steps ? ['--steps', steps.join(',')] : [])], onEvent);
 
+// The generator works in Data/.work-mmaps through two junctions to Data/maps and Data/vmaps. The script of a package
+// (2.8.4 and later, never replaced by the launcher's copy) keeps a junction that exists, wherever it leads: one left by
+// a moved or copied repack leads elsewhere and every map fails (SupportDesk, 19/11). Checked here before each build: a
+// link that leads elsewhere is removed (the link only, never its target) and the script makes it again; a real folder
+// in its place is set aside, never deleted.
+function checkWorkLinks(folder) {
+  const work = path.join(folder, 'Data', '.work-mmaps');
+  const fixed = [];
+  for (const name of ['maps', 'vmaps']) {
+    const link = path.join(work, name);
+    let info;
+    try { info = fs.lstatSync(link); } catch { continue; }
+    let leads = '';
+    try { leads = fs.realpathSync.native(link); } catch {}
+    let want = '';
+    try { want = fs.realpathSync.native(path.join(folder, 'Data', name)); } catch {}
+    if (leads && want && leads.toLowerCase() === want.toLowerCase()) continue;
+    try {
+      if (info.isSymbolicLink()) fs.rmdirSync(link);
+      else fs.renameSync(link, `${link}-set-aside-${Date.now()}`);
+      fixed.push(name);
+    } catch {}
+  }
+  return fixed;
+}
+
 // The navigation maps keep being generated when the launcher closes; the next start reads their progress.
 const mmapsStarted = new Map();
 function startMmaps(folder, threads) {
@@ -113,6 +139,7 @@ function startMmaps(folder, threads) {
   const last = mmapsStarted.get(path.resolve(folder)) || 0;
   if (current.mmaps.running || Date.now() - last < 60000) return Promise.resolve({ pid: null, already: true });
   mmapsStarted.set(path.resolve(folder), Date.now());
+  checkWorkLinks(folder);
   return run(folder, ['mmaps', ...(threads ? ['--threads', String(threads)] : [])], undefined, { detached: true });
 }
 
@@ -275,4 +302,4 @@ function clientKept(folder, client) {
 }
 function forgetKept(folder) { try { fs.rmSync(path.join(folder, KEPT), { force: true }); } catch {} }
 
-module.exports = { state, assemble, refreshScript, startMmaps, stopMmaps, pauseForUpdate, rebuildMmaps, clientChanged, keepClient, clientKept, forgetKept, clientPrint, worldImport, fetchMmaps, missingMmaps, buildMissingMmaps, mapHash, STEPS, busy };
+module.exports = { state, assemble, refreshScript, startMmaps, stopMmaps, pauseForUpdate, rebuildMmaps, clientChanged, keepClient, clientKept, forgetKept, clientPrint, worldImport, fetchMmaps, missingMmaps, buildMissingMmaps, mapHash, checkWorkLinks, STEPS, busy };
