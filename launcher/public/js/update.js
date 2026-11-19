@@ -165,16 +165,24 @@ function showUpdate() {
   const head = running
     ? `<header class="dialog-head"><div><h2>${esc(t('update.running', 'Updating your server…'))}</h2><p>${esc(t('update.dontClose', 'Do not close the launcher until it is done.'))}</p></div></header>`
     : dialog.header(m ? t('update.title', 'CoA Bots {version}', { version: m.version }) : t('update.titleNone', 'Server update'), u.here?.release ? t('update.from', 'Installed: {release}', { release: u.here.release }) : '');
+  // A launcher too old for this update (or a new launcher on its way): every path to this window (home card, side card,
+  // Check for updates) leads to the launcher first, never to an Update button the server would refuse (Pilote, 19/11).
+  const first = !running && u.state === 'available' && !u.last?.error ? launcherFirst(u) : '';
+  const phase = App.state.launcherUpdate?.phase;
   let body;
   if (running) body = `<div id="update-live">${updateLive()}</div>`;
   else if (u.last && (u.last.error || u.state !== 'available')) body = updateResultView();
+  else if (first) body = `<div class="update-card info">${icon('refresh')}<span>${esc(first)}</span></div>${updateNotes(m)}`;
   else body = `<p class="update-facts">${icon('download')}<span>${esc(t('update.bigDownload', 'Download: about {size}.', { size: formatBytes(updateSize(m)) }))}</span></p>
       <p class="muted">${esc(t('update.short', 'The launcher backs up your server, installs the update and keeps your settings: about 5 to 20 minutes. If anything goes wrong, your server is put back as it was.'))}</p>
       <div class="line-action">${icon('addons')}<span>${u.addonClient ? esc(t('update.addonTo', 'The SquidBots addon is also installed in your game: {path}', { path: u.addonClient })) : esc(t('update.addonNone', 'SquidBots addon: choose your game folder to install it too (otherwise it is left as it is).'))}</span><button class="button ghost small" data-action="update-client">${esc(u.addonClient ? t('update.addonChange', 'Change') : t('update.addonPick', 'Choose the game folder'))}</button></div>
       ${updateNotes(m)}`;
-  const big = !running && u.state === 'available' && !u.last?.error ? bigUpdate(u) : null;
+  const big = !running && !first && u.state === 'available' && !u.last?.error ? bigUpdate(u) : null;
   if (big) body = big.html + body;
-  const foot = running ? '' : u.state === 'available' && !u.last?.error && !big?.blocked
+  const launcherButton = phase === 'downloaded' ? `<button class="button primary" data-action="launcher-install">${icon('refresh')}${esc(t('home.launcherRestart', 'Restart and update'))}</button>`
+    : phase === 'downloading' || phase === 'checking' ? '' : `<button class="button primary" data-action="launcher-check">${icon('refresh')}${esc(t('settings.checkLauncher', 'Check for a launcher update'))}</button>`;
+  const foot = running ? '' : first ? `<footer class="dialog-foot"><button class="button ghost" data-action="dialog-close">${esc(t('common.later', 'Later'))}</button>${launcherButton}</footer>`
+    : u.state === 'available' && !u.last?.error && !big?.blocked
     ? `<footer class="dialog-foot"><button class="button ghost" data-action="dialog-close">${esc(t('common.later', 'Later'))}</button><button class="button primary" data-action="update-start">${icon('download')}${esc(t('update.start', 'Update now'))}</button></footer>`
     : `<footer class="dialog-foot"><button class="button ghost" data-action="dialog-close">${esc(t('common.close', 'Close'))}</button></footer>`;
   dialog.open(`${head}<div class="dialog-content update">${body}</div>${foot}`, 'wide', 'update');

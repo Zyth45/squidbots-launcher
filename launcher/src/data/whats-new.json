@@ -9,6 +9,7 @@
         },
         "items": {
             "en": [
+                "The server update window is shorter (what is new is folded), its buttons always stay in view, even on a small screen, and the launcher stays locked on it while the update runs.",
                 "New settings of the bots: pets wait when bots stay, bots hearth with you, the Mute button and \"Give to alt\" of the addon, the trust bar, long posts and fishing in the cities. On a self-found realm, a bot left with no weapon gets its starting weapon once.",
                 "Ten combat options are on by default since 3.1.6 (stuck fights, raids, gear score…). A realm set with the Classic pack follows these new defaults once; a value you change afterwards stays yours.",
                 "On a self-found realm, \"Random bots' bags\" is greyed: there the bots always keep their bags.",
@@ -16,6 +17,7 @@
                 "Moving to a new server folder and the settings profile now carry the values your files really hold."
             ],
             "fr": [
+                "La fenêtre de mise à jour du serveur est plus courte (les nouveautés sont repliées), ses boutons restent toujours visibles, même sur un petit écran, et le launcher reste bloqué sur elle pendant la mise à jour.",
                 "Nouveaux réglages des bots : les familiers attendent quand les bots restent, les bots utilisent leur pierre de foyer avec vous, le bouton Muet et « Donner à un alt » de l'addon, la barre de confiance, les longues haltes et la pêche en ville. Sur un royaume self-found, un bot sans arme reçoit une fois son arme de départ.",
                 "Dix options de combat sont activées par défaut depuis la 3.1.6 (combats bloqués, raids, score d'équipement…). Un royaume réglé avec le pack Classique suit ces nouveaux défauts une fois ; une valeur que vous changez ensuite reste la vôtre.",
                 "Sur un royaume self-found, « Sacs des bots aléatoires » est grisé : les bots y gardent toujours leurs sacs.",
@@ -23,6 +25,7 @@
                 "Le passage à un nouveau dossier de serveur et le profil de réglages reprennent maintenant les valeurs que vos fichiers contiennent vraiment."
             ],
             "ru": [
+                "Окно обновления сервера стало короче (список изменений свёрнут), его кнопки всегда видны, даже на маленьком экране, а лаунчер остаётся заблокирован на нём, пока идёт обновление.",
                 "Новые настройки ботов: питомцы ждут, когда боты стоят, боты возвращаются камнем вместе с вами, кнопка «Без звука» и «Передать альту» в аддоне, шкала доверия, долгие стоянки и рыбалка в городах. На мире self-found бот без оружия один раз получает стартовое оружие.",
                 "Десять боевых опций включены по умолчанию с версии 3.1.6 (застрявшие бои, рейды, оценка снаряжения…). Мир с набором «Классика» один раз переходит на эти новые значения; значение, которое вы измените потом, останется вашим.",
                 "На мире self-found настройка «Сумки случайных ботов» неактивна: там боты всегда сохраняют сумки.",
@@ -30,6 +33,7 @@
                 "Переход в новую папку сервера и профиль настроек теперь переносят значения, которые действительно записаны в ваших файлах."
             ],
             "zh": [
+                "服务器更新窗口更简洁（更新内容默认折叠），按钮始终可见，即使在小屏幕上也是如此；更新进行时启动器会锁定在该窗口上。",
                 "机器人的新设置：机器人原地等待时宠物也等待、机器人随你使用炉石、插件的静音按钮和“给小号”、信任条、城中长时间停留和钓鱼。在 self-found 服务器上，没有武器的机器人会获得一次初始武器。",
                 "自 3.1.6 起，十个战斗选项默认开启（卡住的战斗、团队副本、装备评分……）。使用“经典”预设的服务器会一次性采用这些新默认值；之后你修改的值保持不变。",
                 "在 self-found 服务器上，“随机机器人的背包”变为灰色：那里的机器人始终保留背包。",

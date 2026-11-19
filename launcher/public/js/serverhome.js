@@ -915,6 +915,8 @@ Object.assign(App.actions, {
     App.state.launcherUpdate = status;
     const kind = status?.phase === 'error' ? 'error' : status?.phase === 'unavailable' ? 'info' : 'success';
     toast(status?.phase === 'unavailable' ? t('settings.launcherUnavailable', 'The launcher update is not available right now. You can keep playing: it will be tried again later.') : status?.phase === 'downloading' || status?.phase === 'downloaded' ? t('settings.launcherFound', 'A new launcher is being downloaded: the home page tells when it is ready.') : status?.phase === 'ready' ? t('settings.launcherUpToDateServer', 'Launcher {version}: up to date. The server has its own updates, on the home page.', { version: App.state.version }) : status?.message || t('settings.launcherUpToDate', 'Your launcher is up to date.'), kind);
+    // The server update window, if open, follows the launcher (a « Restart and update » once it is downloaded).
+    if ($('#dialog[open] .dialog-content.update')) showUpdate();
     // The server update card waits for this check: it is drawn again, and so is the About line.
     const line = $('#launcher-line');
     if (line) line.textContent = `${App.state.config.appName} · ${launcherLine(App.state.version, status)}`;
