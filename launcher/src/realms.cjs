@@ -146,12 +146,22 @@ function changedCount(key, own) {
   return Object.entries(own).reduce((sum, [file, keys]) => sum + Object.entries(keys).filter(([name, value]) => String(value) !== start[file]?.[name]).length, 0);
 }
 async function realmFile(root, key) { return readJson(path.join(dirOf(root, key), 'realm.json')); }
-async function ownSettings(root, key) {
+// One read at a time per realm: the status reads a realm's settings many times at once, and each read could see the
+// migration not yet marked in realm.json and run it again (0.4.5 test, 19/11: 18 runs in the same millisecond).
+const reading = new Map();
+function ownSettings(root, key) {
+  const id = dirOf(root, key).toLowerCase();
+  const next = (reading.get(id) || Promise.resolve()).catch(() => {}).then(() => readOwn(root, key));
+  reading.set(id, next);
+  next.catch(() => {}).finally(() => { if (reading.get(id) === next) reading.delete(id); });
+  return next;
+}
+async function readOwn(root, key) {
   const own = (await readJson(path.join(dirOf(root, key), 'settings.json'))) || {};
   // Realms made by the first beta kept their number of bots in realm.json.
   const saved = await realmFile(root, key);
   if (saved?.bots !== undefined && !own['playerbots.conf']?.[BOT_COUNT[1]]) own['playerbots.conf'] = { ...own['playerbots.conf'], [BOT_COUNT[0]]: String(saved.bots), [BOT_COUNT[1]]: String(saved.bots) };
-  if (saved && await moveOldDefaults(root, key, own, saved)) return ownSettings(root, key);
+  if (saved && await moveOldDefaults(root, key, own, saved)) return readOwn(root, key);
   return own;
 }
 

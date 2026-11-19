@@ -101,3 +101,14 @@ test('values the Classic pack wrote at the old combat defaults move to the 3.1.6
   await realms.status(bare.root, { live: false }).catch(() => null);
   assert.deepEqual(own(bare.dir), { [STUCK]: '0', [PCT]: '0' });
 });
+
+// 0.4.5 test, 19/11: the status read a realm's settings many times at once and the migration ran 18 times in the same
+// millisecond (one log line per run). Reads of one realm now wait for each other: one run, one line.
+test('many reads of a realm at once move an old default once, with one log line', async () => {
+  const { root, dir } = realm('100');
+  const all = await Promise.all(Array.from({ length: 5 }, () => realms.status(root, { live: false }).catch(e => e)));
+  assert.equal(all.length, 5);
+  assert.equal(JSON.parse(fs.readFileSync(path.join(dir, 'settings.json'), 'utf8'))['playerbots.conf'][KEY], '0');
+  const lines = fs.readFileSync(path.join(root, 'logs', 'launcher-realms.log'), 'utf8').split('\n').filter(l => l.includes(KEY));
+  assert.equal(lines.length, 1);
+});
