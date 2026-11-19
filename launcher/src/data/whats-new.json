@@ -1,5 +1,44 @@
 [
     {
+        "version": "0.4.5",
+        "title": {
+            "en": "The settings of CoA Bots 3.1.6",
+            "fr": "Les réglages de CoA Bots 3.1.6",
+            "ru": "Настройки CoA Bots 3.1.6",
+            "zh": "CoA Bots 3.1.6 的设置"
+        },
+        "items": {
+            "en": [
+                "New settings of the bots: pets wait when bots stay, bots hearth with you, the Mute button and \"Give to alt\" of the addon, the trust bar, long posts and fishing in the cities. On a self-found realm, a bot left with no weapon gets its starting weapon once.",
+                "Ten combat options are on by default since 3.1.6 (stuck fights, raids, gear score…). A realm set with the Classic pack follows these new defaults once; a value you change afterwards stays yours.",
+                "On a self-found realm, \"Random bots' bags\" is greyed: there the bots always keep their bags.",
+                "A realm created with the launcher no longer stops the next server update with \"Duplicate column\".",
+                "Moving to a new server folder and the settings profile now carry the values your files really hold."
+            ],
+            "fr": [
+                "Nouveaux réglages des bots : les familiers attendent quand les bots restent, les bots utilisent leur pierre de foyer avec vous, le bouton Muet et « Donner à un alt » de l'addon, la barre de confiance, les longues haltes et la pêche en ville. Sur un royaume self-found, un bot sans arme reçoit une fois son arme de départ.",
+                "Dix options de combat sont activées par défaut depuis la 3.1.6 (combats bloqués, raids, score d'équipement…). Un royaume réglé avec le pack Classique suit ces nouveaux défauts une fois ; une valeur que vous changez ensuite reste la vôtre.",
+                "Sur un royaume self-found, « Sacs des bots aléatoires » est grisé : les bots y gardent toujours leurs sacs.",
+                "Un royaume créé avec le launcher n'arrête plus la mise à jour suivante du serveur avec « Duplicate column ».",
+                "Le passage à un nouveau dossier de serveur et le profil de réglages reprennent maintenant les valeurs que vos fichiers contiennent vraiment."
+            ],
+            "ru": [
+                "Новые настройки ботов: питомцы ждут, когда боты стоят, боты возвращаются камнем вместе с вами, кнопка «Без звука» и «Передать альту» в аддоне, шкала доверия, долгие стоянки и рыбалка в городах. На мире self-found бот без оружия один раз получает стартовое оружие.",
+                "Десять боевых опций включены по умолчанию с версии 3.1.6 (застрявшие бои, рейды, оценка снаряжения…). Мир с набором «Классика» один раз переходит на эти новые значения; значение, которое вы измените потом, останется вашим.",
+                "На мире self-found настройка «Сумки случайных ботов» неактивна: там боты всегда сохраняют сумки.",
+                "Мир, созданный лаунчером, больше не останавливает следующее обновление сервера ошибкой «Duplicate column».",
+                "Переход в новую папку сервера и профиль настроек теперь переносят значения, которые действительно записаны в ваших файлах."
+            ],
+            "zh": [
+                "机器人的新设置：机器人原地等待时宠物也等待、机器人随你使用炉石、插件的静音按钮和“给小号”、信任条、城中长时间停留和钓鱼。在 self-found 服务器上，没有武器的机器人会获得一次初始武器。",
+                "自 3.1.6 起，十个战斗选项默认开启（卡住的战斗、团队副本、装备评分……）。使用“经典”预设的服务器会一次性采用这些新默认值；之后你修改的值保持不变。",
+                "在 self-found 服务器上，“随机机器人的背包”变为灰色：那里的机器人始终保留背包。",
+                "用启动器创建的服务器不再因“Duplicate column”而中断下一次服务器更新。",
+                "迁移到新的服务器文件夹和设置档案现在会带上你的文件中真正保存的值。"
+            ]
+        }
+    },
+    {
         "version": "0.4.4",
         "title": {
             "en": "SquidBots has its own Discord",
