@@ -171,26 +171,33 @@ const CLASSIC_042 = [
   ['AiPlayerbot.CoaCombat.BreathGuard.Enable', '0', '1'],
   ['AiPlayerbot.CoaWorld.Recovery.NoProgressSeconds', '30', '120'],
 ].map(([setting, old, now]) => ({ file: 'playerbots.conf', setting, old, now }));
-const CLASSIC_ID = 'classic-pack-3.1';
+// 3.1.6 turns on the combat options the Classic pack wrote off (user's decision, SquidBot f4ba8b1a): same rule, same trace.
+const CLASSIC_316 = [
+  ...['StuckCombat', 'CombatPurge', 'SunkenTemple', 'CallOfTheGrave', 'PlayerLed', 'GearScore', 'BlackwingLair', 'ZulGurub', 'AhnQiraj'].map(name => [`AiPlayerbot.CoaCombat.${name}.Enable`, '0', '1']),
+  ['AiPlayerbot.CoaCombat.LootNeedMinUpgradePct', '0', '10'],
+].map(([setting, old, now]) => ({ file: 'playerbots.conf', setting, old, now }));
+const CLASSIC_MOVES = [{ id: 'classic-pack-3.1', items: CLASSIC_042, note: 'Classic pack of 0.4.2' }, { id: 'classic-pack-3.1.6', items: CLASSIC_316, note: 'Classic pack, 3.1.6 defaults' }];
 async function moveOldDefaults(root, key, own, saved) {
   const done = new Set(Array.isArray(saved.moved) ? saved.moved : []);
   const due = OLD_CREATION_DEFAULTS.filter(item => item.key === key && !done.has(item.id));
-  const classicDue = !done.has(CLASSIC_ID);
-  if (!due.length && !classicDue) return false;
+  const classicDue = CLASSIC_MOVES.filter(move => !done.has(move.id));
+  if (!due.length && !classicDue.length) return false;
   const lines = [];
   for (const item of due) {
     const value = own[item.file]?.[item.setting];
     if (value !== undefined && item.old.includes(String(value).trim())) { own[item.file][item.setting] = item.now; lines.push(`${item.setting} ${value} -> ${item.now}`); }
     done.add(item.id);
   }
-  if (classicDue) {
+  if (classicDue.length) {
     const trace = (await readJson(path.join(root, '.coa-launcher', 'living-pack-undo.json')))?.[key];
     const listed = new Set(trace?.id === 'classic' && Array.isArray(trace.previous) ? trace.previous.map(item => item?.key) : []);
-    for (const item of CLASSIC_042) {
-      const value = own[item.file]?.[item.setting];
-      if (listed.has(item.setting) && value !== undefined && String(value).trim() === item.old) { own[item.file][item.setting] = item.now; lines.push(`${item.setting} ${item.old} -> ${item.now} (Classic pack of 0.4.2)`); }
+    for (const move of classicDue) {
+      for (const item of move.items) {
+        const value = own[item.file]?.[item.setting];
+        if (listed.has(item.setting) && value !== undefined && String(value).trim() === item.old) { own[item.file][item.setting] = item.now; lines.push(`${item.setting} ${item.old} -> ${item.now} (${move.note})`); }
+      }
+      done.add(move.id);
     }
-    done.add(CLASSIC_ID);
   }
   if (lines.length) {
     await fsp.mkdir(path.join(root, 'logs'), { recursive: true }).catch(() => {});
@@ -569,6 +576,13 @@ async function create(root, key, { bots = key === 'living' ? LIVING_BOTS : DEFAU
     for (const table of REALM_STATE_TABLES) if (present.has(table)) await run.sql(root, `TRUNCATE ${botsDb}.${table}`);
     // The players' own strategies of the CoA realm (owner <> 0); the factory rotations (owner 0) stay.
     if (present.has('playerbots_custom_strategy')) await run.sql(root, `DELETE FROM ${botsDb}.playerbots_custom_strategy WHERE owner <> 0`);
+    // The bot SQL files acore_playerbots already has are in this copy: marked as applied to it, so the next CoA Bots
+    // update does not play them again (3.1.5: « Duplicate column 'asked' » on a realm made after the 3.1.4 install).
+    // The update tool keeps this list in acore_playerbots; without its two tables (a repack before 3.0), nothing.
+    const tables = await run.sql(root, "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'acore_playerbots' AND table_name IN ('coa_bots_installed', 'coa_bots_realm_sql')");
+    if (Number(String(tables).trim()) === 2) {
+      await run.sql(root, `INSERT IGNORE INTO acore_playerbots.coa_bots_realm_sql (file, db) SELECT file, '${botsDb}' FROM acore_playerbots.coa_bots_installed WHERE REPLACE(file, CHAR(92), '/') LIKE 'playerbots/updates/%' OR REPLACE(file, CHAR(92), '/') LIKE 'playerbots/custom/%'`);
+    }
   }
   // The worldserver logs in as the user of its DatabaseInfo, which only has rights on the repack's own databases.
   const ws = await fsp.readFile(path.join(BOTS_CONFIGS(root), 'worldserver.conf'), 'utf8');

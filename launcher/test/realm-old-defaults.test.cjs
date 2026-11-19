@@ -30,7 +30,7 @@ test('an old launch premium of a Squid World moves to 0 once; another value, and
     const changed = JSON.parse(fs.readFileSync(path.join(dir, 'settings.json'), 'utf8'));
     assert.equal(changed['playerbots.conf'][KEY], after, `${before} -> ${after}`);
     assert.equal(changed['playerbots.conf']['AiPlayerbot.CoaEconomy.LaunchCurve.LevelMargin'], '5');
-    assert.deepEqual(JSON.parse(fs.readFileSync(path.join(dir, 'realm.json'), 'utf8')).moved, ['launch-premium-0', 'classic-pack-3.1']);
+    assert.deepEqual(JSON.parse(fs.readFileSync(path.join(dir, 'realm.json'), 'utf8')).moved, ['launch-premium-0', 'classic-pack-3.1', 'classic-pack-3.1.6']);
     // The player sets 100 again afterwards: kept.
     changed['playerbots.conf'][KEY] = '100';
     fs.writeFileSync(path.join(dir, 'settings.json'), JSON.stringify(changed));
@@ -79,4 +79,25 @@ test('values the 0.4.2 Classic pack wrote in a realm move to the 3.1 defaults on
     await realms.status(root, { live: false }).catch(() => null);
     assert.deepEqual(own(dir), { [AH]: '0', [BREATH]: '0' }, JSON.stringify(trace));
   }
+});
+
+// 3.1.6 (SquidBot f4ba8b1a, user's decision): the combat options the Classic pack wrote off move to their new defaults, with
+// the pack's trace; a realm that already had the 0.4.2 move still gets this one; a value the player changed stays.
+test('values the Classic pack wrote at the old combat defaults move to the 3.1.6 defaults once', async () => {
+  const STUCK = 'AiPlayerbot.CoaCombat.StuckCombat.Enable', ZG = 'AiPlayerbot.CoaCombat.ZulGurub.Enable', PCT = 'AiPlayerbot.CoaCombat.LootNeedMinUpgradePct';
+  const { root, dir } = classicRealm('wildcard', { [STUCK]: '0', [ZG]: '1', [PCT]: '0', [BREATH]: '1' },
+    { wildcard: { id: 'classic', previous: previous([STUCK, ZG, PCT, BREATH]) } });
+  const realm = JSON.parse(fs.readFileSync(path.join(dir, 'realm.json'), 'utf8'));
+  fs.writeFileSync(path.join(dir, 'realm.json'), JSON.stringify({ ...realm, moved: ['classic-pack-3.1'] }));
+  await realms.status(root, { live: false }).catch(() => null);
+  assert.deepEqual(own(dir), { [STUCK]: '1', [ZG]: '1', [PCT]: '10', [BREATH]: '1' });
+  assert.ok(JSON.parse(fs.readFileSync(path.join(dir, 'realm.json'), 'utf8')).moved.includes('classic-pack-3.1.6'));
+  assert.match(fs.readFileSync(path.join(root, 'logs', 'launcher-realms.log'), 'utf8'), /LootNeedMinUpgradePct 0 -> 10 [(]Classic pack, 3[.]1[.]6 defaults[)]/);
+  fs.writeFileSync(path.join(dir, 'settings.json'), JSON.stringify({ 'playerbots.conf': { ...own(dir), [STUCK]: '0' } }));
+  await realms.status(root, { live: false }).catch(() => null);
+  assert.equal(own(dir)[STUCK], '0');
+  // Without the trace: nothing moves.
+  const bare = classicRealm('wildcard', { [STUCK]: '0', [PCT]: '0' }, null);
+  await realms.status(bare.root, { live: false }).catch(() => null);
+  assert.deepEqual(own(bare.dir), { [STUCK]: '0', [PCT]: '0' });
 });

@@ -301,6 +301,7 @@ function fakeMysql() {
         statements.push(query);
         if (/^SELECT id, name FROM acore_auth\.realmlist/.test(query)) return '1\tConquest of Azeroth';
         if (/information_schema\.tables WHERE table_schema = 'acore_characters'/.test(query)) return 'characters\nupdates\nworldstates\nauctionhouse';
+        if (/^SELECT COUNT\(\*\) FROM information_schema\.tables WHERE table_schema = 'acore_playerbots' AND table_name IN \('coa_bots_installed'/.test(query)) return '2';
         if (/information_schema\.tables/.test(query)) return 'playerbots_random_bots\nplayerbots_names\ncoa_world_server_first\ncoa_economy_market\nplayerbots_coa_soul\nplayerbots_custom_strategy\nplayerbots_coa_live_lines';
         if (/^SELECT host FROM mysql\.user/.test(query)) return 'localhost';
         return '';
@@ -326,6 +327,8 @@ test('the new living server: its own databases only, the launch mode imposed, it
     assert.ok(/acore_(characters|playerbots)_living\b/.test(query) || /^REPLACE INTO acore_auth\.realmlist .* SELECT 5,'Azeroth Reborn'/.test(query), query);
   }
   assert.ok(mysql.dumps.every(dump => /^acore_(characters|playerbots)_living$/.test(dump.target)));
+  // The bot SQL files of the copy are marked as applied to it, in the update tool's list (3.1.5 « Duplicate column »).
+  assert.ok(writes.some(query => /^INSERT IGNORE INTO acore_playerbots\.coa_bots_realm_sql \(file, db\) SELECT file, 'acore_playerbots_living' FROM acore_playerbots\.coa_bots_installed WHERE/.test(query)));
   // The per-realm state copied from CoA starts empty (server firsts, learned prices, souls, the players' strategies);
   // the data tables (names, live lines) stay.
   for (const table of ['playerbots_random_bots', 'coa_world_server_first', 'coa_economy_market', 'playerbots_coa_soul']) assert.ok(writes.includes(`TRUNCATE acore_playerbots_living.${table}`), table);

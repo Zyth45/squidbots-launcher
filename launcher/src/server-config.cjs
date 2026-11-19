@@ -282,8 +282,26 @@ class ServerConfig {
       const shipped = parseValues(await this.read(file.dist));
       for (const [key, { value }] of mine) if (shipped.has(key) && shipped.get(key).value.trim() !== value.trim()) keep(file.id, key, value);
     }
-    for (const [id, value] of Object.entries((await readJson(this.resolve(CHANGES))) || {})) { const [file, key] = id.split('|'); keep(file, key, value); }
+    for (const { file, key, value } of await this.recorded()) keep(file, key, value);
     return [...out.values()];
+  }
+
+  // The changes made through the launcher, with the value the file holds now: a file put back by a backup, an update or a
+  // hand edit wins over the record (an audit, 18/11: CoaSelfFound 1 and XPRate 2 recorded, 0 and 1.0 in the .conf). A
+  // recorded key the file no longer has is left out.
+  async recorded() {
+    const list = [];
+    const files = new Map((await this.files()).map(file => [file.id, file]));
+    const cache = new Map();
+    for (const id of Object.keys((await readJson(this.resolve(CHANGES))) || {})) {
+      const [file, key] = id.split('|');
+      const known = files.get(file);
+      if (!known) continue;
+      if (!cache.has(file)) cache.set(file, parseValues(await this.read(known.path).catch(() => '')));
+      const now = cache.get(file).get(key);
+      if (now) list.push({ file, key, value: now.value.trim() });
+    }
+    return list;
   }
 
   // Every key of every settings file (the search of the settings page): its file, value, default and description.
@@ -428,7 +446,7 @@ class ServerConfig {
 
   // The changes made through the launcher, applied again to another install (an upgraded repack).
   async carryTo(target) {
-    const recorded = (await readJson(this.resolve(CHANGES))) || {};
+    const recorded = Object.fromEntries((await this.recorded()).map(({ file, key, value }) => [`${file}|${key}`, value]));
     const other = new ServerConfig(target);
     const files = new Set((await other.files()).map(file => file.id));
     const changes = [];

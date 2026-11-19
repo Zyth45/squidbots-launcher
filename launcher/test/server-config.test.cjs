@@ -100,6 +100,22 @@ test('recorded changes are carried to an upgraded repack', async () => {
   assert.match(fs.readFileSync(path.join(newRoot, 'CoA-Bots/Core/configs/modules/playerbots.conf'), 'utf8'), /^AiPlayerbot\.BroadcastWorldChannelName = "Monde"$/m);
 });
 
+test('a recorded change the file no longer holds is never carried nor exported (audit 18/11)', async () => {
+  const oldRoot = await copyRepack();
+  const newRoot = await copyRepack();
+  const bots = path.join(oldRoot, 'CoA-Bots/Core/configs/modules/playerbots.conf');
+  await new ServerConfig(oldRoot).save([{ file: 'playerbots.conf', key: 'AiPlayerbot.RandomBotAutologin', value: '0' }, { file: 'worldserver.conf', key: 'Rate.XP.Kill', value: '3' }]);
+  // The file put back by hand (or a backup, an update): the record says 0, the file says 1 again.
+  fs.writeFileSync(bots, fs.readFileSync(bots, 'utf8').replace(/^AiPlayerbot\.RandomBotAutologin = 0$/m, 'AiPlayerbot.RandomBotAutologin = 1'));
+  const recorded = await new ServerConfig(oldRoot).recorded();
+  assert.deepEqual(recorded.find(item => item.key === 'AiPlayerbot.RandomBotAutologin')?.value, '1');
+  const profile = await new ServerConfig(oldRoot).profile();
+  assert.ok(!profile.some(item => item.key === 'AiPlayerbot.RandomBotAutologin' && item.value === '0'));
+  await new ServerConfig(oldRoot).carryTo(newRoot);
+  assert.match(fs.readFileSync(path.join(newRoot, 'CoA-Bots/Core/configs/modules/playerbots.conf'), 'utf8'), /^AiPlayerbot\.RandomBotAutologin = 1$/m);
+  assert.match(fs.readFileSync(path.join(newRoot, 'Settings/worldserver.conf.template'), 'utf8'), /^Rate\.XP\.Kill\s*=\s*3$/m);
+});
+
 test('a reinstall carries the values changed by hand, never a shipped default nor a path of the old folder', async () => {
   const oldRoot = await copyRepack();
   const newRoot = await copyRepack();

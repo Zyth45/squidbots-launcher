@@ -1585,6 +1585,32 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaSelfFound.StarterWeapon",
+   "file": "playerbots.conf",
+   "group": "selffound",
+   "kind": "bool",
+   "when": "reload",
+   "default": "1",
+   "offWhen": {
+    "key": "AiPlayerbot.CoaSelfFound",
+    "values": [
+     "0"
+    ]
+   },
+   "label": {
+    "en": "Starter weapon for weaponless bots (once)",
+    "fr": "Arme de départ pour les bots sans arme (une fois)",
+    "ru": "Стартовое оружие для ботов без оружия (один раз)",
+    "zh": "为没有武器的机器人提供初始武器（一次）"
+   },
+   "help": {
+    "en": "On a self-found realm, a random bot left with no weapon at all gets its class starting weapon once in its life; nothing else is given.",
+    "fr": "Sur un royaume self-found, un bot aléatoire qui n'a plus aucune arme reçoit l'arme de départ de sa classe, une seule fois dans sa vie ; rien d'autre n'est donné.",
+    "ru": "На мире self-found случайный бот, у которого совсем не осталось оружия, один раз за жизнь получает стартовое оружие своего класса; больше ничего не выдаётся.",
+    "zh": "在 self-found 服务器上，完全没有武器的随机机器人一生中会获得一次其职业的初始武器；不会给予其他任何东西。"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaSelfFoundBotsPercent",
    "file": "playerbots.conf",
    "group": "selffound",

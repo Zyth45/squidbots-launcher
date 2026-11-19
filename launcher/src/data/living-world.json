@@ -59,7 +59,19 @@
   "AiPlayerbot.CoaEconomy.BotAuctions.Enable",
   "AiPlayerbot.CoaEconomy.BotAuctions.RealHousePrices",
   "AiPlayerbot.CoaEconomy.DataFile.Enable",
-  "AiPlayerbot.CoaEconomy.AuctionClock.Enable"
+  "AiPlayerbot.CoaEconomy.AuctionClock.Enable",
+  "AiPlayerbot.CoaMute.Enable",
+  "AiPlayerbot.CoaGiveToAlt.Enable",
+  "AiPlayerbot.CoaTrust.Enable",
+  "AiPlayerbot.CoaCombat.StuckCombat.Enable",
+  "AiPlayerbot.CoaCombat.CombatPurge.Enable",
+  "AiPlayerbot.CoaCombat.SunkenTemple.Enable",
+  "AiPlayerbot.CoaCombat.CallOfTheGrave.Enable",
+  "AiPlayerbot.CoaCombat.PlayerLed.Enable",
+  "AiPlayerbot.CoaCombat.GearScore.Enable",
+  "AiPlayerbot.CoaCombat.BlackwingLair.Enable",
+  "AiPlayerbot.CoaCombat.ZulGurub.Enable",
+  "AiPlayerbot.CoaCombat.AhnQiraj.Enable"
  ],
  "groups": [
   {
@@ -896,7 +908,7 @@
    "when": "restart",
    "key": "AiPlayerbot.CoaCombat.StuckCombat.Enable",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "label": {
     "en": "Break phantom combat",
     "fr": "Casser les combats fantômes",
@@ -904,10 +916,10 @@
     "zh": "打破幽灵战斗"
    },
    "help": {
-    "en": "Off by default. On: outside a Dungeon Clear run too, a bot held in combat by nothing it can reach or that is coming for it has its combat cleared after the timeout. Never during a raid boss. Always on in a Dungeon Clear run.",
-    "fr": "Désactivé par défaut. Activé : même hors d'un run Dungeon Clear, un bot retenu en combat par rien qu'il puisse atteindre ou qui vienne vers lui sort du combat après le délai. Jamais pendant un boss de raid. Toujours actif pendant un run Dungeon Clear.",
-    "ru": "Выключено по умолчанию. Включено: и вне забега Dungeon Clear бот, удерживаемый в бою тем, до чего не может дотянуться и что к нему не идёт, выходит из боя после задержки. Никогда во время босса рейда. Всегда включено в забеге Dungeon Clear.",
-    "zh": "默认关闭。开启后：即使不在 Dungeon Clear 中，被够不着、也不会靠近的目标卡在战斗中的机器人会在超时后脱战。团队副本首领战中绝不触发。Dungeon Clear 副本中始终开启。"
+    "en": "On by default since 3.1.6. On: outside a Dungeon Clear run too, a bot held in combat by nothing it can reach or that is coming for it has its combat cleared after the timeout. Never during a raid boss. Always on in a Dungeon Clear run.",
+    "fr": "Activé par défaut depuis la 3.1.6. Activé : même hors d'un run Dungeon Clear, un bot retenu en combat par rien qu'il puisse atteindre ou qui vienne vers lui sort du combat après le délai. Jamais pendant un boss de raid. Toujours actif pendant un run Dungeon Clear.",
+    "ru": "Включено по умолчанию с версии 3.1.6. Включено: и вне забега Dungeon Clear бот, удерживаемый в бою тем, до чего не может дотянуться и что к нему не идёт, выходит из боя после задержки. Никогда во время босса рейда. Всегда включено в забеге Dungeon Clear.",
+    "zh": "自 3.1.6 起默认开启。开启后：即使不在 Dungeon Clear 中，被够不着、也不会靠近的目标卡在战斗中的机器人会在超时后脱战。团队副本首领战中绝不触发。Dungeon Clear 副本中始终开启。"
    }
   },
   {
@@ -944,7 +956,7 @@
    "when": "restart",
    "key": "AiPlayerbot.CoaCombat.CombatPurge.Enable",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "label": {
     "en": "Drop unwinnable combat",
     "fr": "Abandonner les combats impossibles",
@@ -952,10 +964,10 @@
     "zh": "放弃无法结束的战斗"
    },
    "help": {
-    "en": "Off by default. On: outside a Dungeon Clear run too, a known creature that holds the group in a combat it can never finish (Shadowfang Keep's Vial Bunny, Dire Maul's Crystal Totem) is dropped from it. Always on in a Dungeon Clear run.",
-    "fr": "Désactivé par défaut. Activé : même hors d'un run Dungeon Clear, une créature connue qui retient le groupe dans un combat impossible à finir (le Vial Bunny du donjon d'Ombrecroc, le Totem de cristal de Hache-Tripes) en est retirée. Toujours actif pendant un run Dungeon Clear.",
-    "ru": "Выключено по умолчанию. Включено: и вне забега Dungeon Clear известное существо, удерживающее группу в бою, который нельзя закончить (Vial Bunny в Крепости Темного Клыка, Кристальный тотем в Забытом Городе), исключается из боя. Всегда включено в забеге Dungeon Clear.",
-    "zh": "默认关闭。开启后：即使不在 Dungeon Clear 中，已知会让队伍卡在无法结束的战斗中的生物（影牙城堡的 Vial Bunny、厄运之槌的水晶图腾）会被移出战斗。Dungeon Clear 副本中始终开启。"
+    "en": "On by default since 3.1.6. On: outside a Dungeon Clear run too, a known creature that holds the group in a combat it can never finish (Shadowfang Keep's Vial Bunny, Dire Maul's Crystal Totem) is dropped from it. Always on in a Dungeon Clear run.",
+    "fr": "Activé par défaut depuis la 3.1.6. Activé : même hors d'un run Dungeon Clear, une créature connue qui retient le groupe dans un combat impossible à finir (le Vial Bunny du donjon d'Ombrecroc, le Totem de cristal de Hache-Tripes) en est retirée. Toujours actif pendant un run Dungeon Clear.",
+    "ru": "Включено по умолчанию с версии 3.1.6. Включено: и вне забега Dungeon Clear известное существо, удерживающее группу в бою, который нельзя закончить (Vial Bunny в Крепости Темного Клыка, Кристальный тотем в Забытом Городе), исключается из боя. Всегда включено в забеге Dungeon Clear.",
+    "zh": "自 3.1.6 起默认开启。开启后：即使不在 Dungeon Clear 中，已知会让队伍卡在无法结束的战斗中的生物（影牙城堡的 Vial Bunny、厄运之槌的水晶图腾）会被移出战斗。Dungeon Clear 副本中始终开启。"
    }
   },
   {
@@ -964,7 +976,7 @@
    "when": "restart",
    "key": "AiPlayerbot.CoaCombat.SunkenTemple.Enable",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "label": {
     "en": "Sunken Temple: Avatar of Hakkar",
     "fr": "Temple englouti : Avatar d'Hakkar",
@@ -972,10 +984,10 @@
     "zh": "沉没的神庙：哈卡的化身"
    },
    "help": {
-    "en": "Off by default. On: outside a Dungeon Clear run too, the bots stop the Hakkari Suppressors, loot the Hakkari Blood and douse the four flames that bring the Avatar. Always on in a Dungeon Clear run.",
-    "fr": "Désactivé par défaut. Activé : même hors d'un run Dungeon Clear, les bots arrêtent les Suppresseurs hakkari, ramassent le Sang hakkari et éteignent les quatre flammes qui font venir l'Avatar. Toujours actif pendant un run Dungeon Clear.",
-    "ru": "Выключено по умолчанию. Включено: и вне забега Dungeon Clear боты останавливают подавителей Хаккари, подбирают кровь Хаккари и гасят четыре пламени, призывающих Аватару. Всегда включено в забеге Dungeon Clear.",
-    "zh": "默认关闭。开启后：即使不在 Dungeon Clear 中，机器人也会阻止哈卡莱抑制者、拾取哈卡莱之血并熄灭召唤化身的四团火焰。Dungeon Clear 副本中始终开启。"
+    "en": "On by default since 3.1.6. On: outside a Dungeon Clear run too, the bots stop the Hakkari Suppressors, loot the Hakkari Blood and douse the four flames that bring the Avatar. Always on in a Dungeon Clear run.",
+    "fr": "Activé par défaut depuis la 3.1.6. Activé : même hors d'un run Dungeon Clear, les bots arrêtent les Suppresseurs hakkari, ramassent le Sang hakkari et éteignent les quatre flammes qui font venir l'Avatar. Toujours actif pendant un run Dungeon Clear.",
+    "ru": "Включено по умолчанию с версии 3.1.6. Включено: и вне забега Dungeon Clear боты останавливают подавителей Хаккари, подбирают кровь Хаккари и гасят четыре пламени, призывающих Аватару. Всегда включено в забеге Dungeon Clear.",
+    "zh": "自 3.1.6 起默认开启。开启后：即使不在 Dungeon Clear 中，机器人也会阻止哈卡莱抑制者、拾取哈卡莱之血并熄灭召唤化身的四团火焰。Dungeon Clear 副本中始终开启。"
    }
   },
   {
@@ -1083,7 +1095,7 @@
    "file": "playerbots.conf",
    "group": "lw-combat",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "label": {
     "en": "Blackwing Lair: improved boss tactics",
@@ -1092,10 +1104,10 @@
     "zh": "黑翼之巢：改进的首领战术"
    },
    "help": {
-    "en": "Off by default. On: tank swaps on Firemaw and Ebonroc, the raid behind Chromaggus with the Red affliction cured first, no area spells near Nefarian's Dominion clones.",
-    "fr": "Désactivé par défaut. Activé : changements de tank sur Gueule-de-feu et Rochébène, le raid derrière Chromaggus avec l'affliction rouge soignée en premier, aucun sort de zone près des clones de Domination de Nefarian.",
-    "ru": "Выключено по умолчанию. Включено: смена танков на Огнечреве и Черноскале, рейд за спиной Хромаггуса с первоочерёдным снятием красного недуга, никаких заклинаний по области рядом с клонами Господства Нефариана.",
-    "zh": "默认关闭。开启后：费尔默和埃博诺克战斗中换坦，团队站在克洛玛古斯身后并优先驱散红色痛苦，在奈法利安的支配克隆体附近不使用范围法术。"
+    "en": "On by default since 3.1.6. On: tank swaps on Firemaw and Ebonroc, the raid behind Chromaggus with the Red affliction cured first, no area spells near Nefarian's Dominion clones.",
+    "fr": "Activé par défaut depuis la 3.1.6. Activé : changements de tank sur Gueule-de-feu et Rochébène, le raid derrière Chromaggus avec l'affliction rouge soignée en premier, aucun sort de zone près des clones de Domination de Nefarian.",
+    "ru": "Включено по умолчанию с версии 3.1.6. Включено: смена танков на Огнечреве и Черноскале, рейд за спиной Хромаггуса с первоочерёдным снятием красного недуга, никаких заклинаний по области рядом с клонами Господства Нефариана.",
+    "zh": "自 3.1.6 起默认开启。开启后：费尔默和埃博诺克战斗中换坦，团队站在克洛玛古斯身后并优先驱散红色痛苦，在奈法利安的支配克隆体附近不使用范围法术。"
    }
   },
   {
@@ -1103,7 +1115,7 @@
    "file": "playerbots.conf",
    "group": "lw-combat",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "label": {
     "en": "Zul'Gurub: improved boss tactics",
@@ -1112,10 +1124,10 @@
     "zh": "祖尔格拉布：改进的首领战术"
    },
    "help": {
-    "en": "Off by default. On: Mandokir's gaze respected, Hakkar's heart and poison pools during Blood Siphon, kill orders on Thekal's zealots and Jin'do's totems, Gri'lek's prey runs.",
-    "fr": "Désactivé par défaut. Activé : le regard de Mandokir respecté, le cœur d'Hakkar et les flaques de poison pendant Siphon de sang, ordre d'élimination des fanatiques de Thekal et des totems de Jin'do, la proie de Gri'lek qui s'enfuit.",
-    "ru": "Выключено по умолчанию. Включено: взгляд Мандокира соблюдается, сердце Хаккара и ядовитые лужи во время Вытягивания крови, порядок убийства фанатиков Текала и тотемов Джин'до, жертва Гри'лека убегает.",
-    "zh": "默认关闭。开启后：遵守曼多基尔的凝视，在血液虹吸期间处理哈卡之心和毒池，按顺序击杀塞卡尔的狂热者和金度的图腾，被格里雷克盯上的人会逃跑。"
+    "en": "On by default since 3.1.6. On: Mandokir's gaze respected, Hakkar's heart and poison pools during Blood Siphon, kill orders on Thekal's zealots and Jin'do's totems, Gri'lek's prey runs.",
+    "fr": "Activé par défaut depuis la 3.1.6. Activé : le regard de Mandokir respecté, le cœur d'Hakkar et les flaques de poison pendant Siphon de sang, ordre d'élimination des fanatiques de Thekal et des totems de Jin'do, la proie de Gri'lek qui s'enfuit.",
+    "ru": "Включено по умолчанию с версии 3.1.6. Включено: взгляд Мандокира соблюдается, сердце Хаккара и ядовитые лужи во время Вытягивания крови, порядок убийства фанатиков Текала и тотемов Джин'до, жертва Гри'лека убегает.",
+    "zh": "自 3.1.6 起默认开启。开启后：遵守曼多基尔的凝视，在血液虹吸期间处理哈卡之心和毒池，按顺序击杀塞卡尔的狂热者和金度的图腾，被格里雷克盯上的人会逃跑。"
    }
   },
   {
@@ -1123,7 +1135,7 @@
    "file": "playerbots.conf",
    "group": "lw-combat",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "label": {
     "en": "Ahn'Qiraj: improved boss tactics",
@@ -1143,7 +1155,7 @@
    "file": "playerbots.conf",
    "group": "lw-combat",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "label": {
     "en": "Dire Maul: Call of the Grave handled",
@@ -1163,7 +1175,7 @@
    "file": "playerbots.conf",
    "group": "lw-combat",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "label": {
     "en": "Bots follow your lead (Main Tank bar)",
@@ -2163,7 +2175,7 @@
    "file": "playerbots.conf",
    "group": "lw-loot",
    "type": "bool",
-   "default": 0,
+   "default": 1,
    "when": "restart",
    "label": {
     "en": "Set bonuses and raid tokens in gear choice",
@@ -2172,10 +2184,10 @@
     "zh": "选择装备时考虑套装加成和团本代币"
    },
    "help": {
-    "en": "Off by default. On: a set piece counts the set bonus it unlocks (and swapping it out costs that bonus), and a bot rolls Need on a raid token only when one of the pieces it gives its class is an upgrade. The raid token part needs \"Bots need items\" on Need: on Greed, bots roll Greed even on a token that upgrades them.",
-    "fr": "Désactivé par défaut. Activé : une pièce d'ensemble compte le bonus d'ensemble qu'elle débloque (et la retirer fait perdre ce bonus), et un bot ne joue Besoin sur un jeton de raid que si l'une des pièces qu'il donne à sa classe l'améliore. La partie jetons de raid demande « Les bots prennent Besoin » sur Besoin : sur Cupidité, les bots jouent Cupidité même sur un jeton qui les améliore.",
-    "ru": "Выключено по умолчанию. Включено: предмет комплекта учитывает бонус, который он открывает (и снять его — значит потерять бонус), а бот бросает «Нужно» на рейдовый жетон, только если одна из вещей, которые он даёт его классу, является улучшением. Часть про жетоны требует, чтобы «Боты бросают «Нужно»» было на «Нужно»: на «Не откажусь» боты бросают «Не откажусь» даже на улучшающий их жетон.",
-    "zh": "默认关闭。开启后：套装部件会计入其解锁的套装加成（换下它会失去该加成），机器人只有在团本代币可兑换的本职业装备中有提升时才掷需求。团本代币部分需要将“机器人需求物品”设为需求：设为贪婪时，机器人即使遇到能提升自己的代币也只掷贪婪。"
+    "en": "On by default since 3.1.6. On: a set piece counts the set bonus it unlocks (and swapping it out costs that bonus), and a bot rolls Need on a raid token only when one of the pieces it gives its class is an upgrade. The raid token part needs \"Bots need items\" on Need: on Greed, bots roll Greed even on a token that upgrades them.",
+    "fr": "Activé par défaut depuis la 3.1.6. Activé : une pièce d'ensemble compte le bonus d'ensemble qu'elle débloque (et la retirer fait perdre ce bonus), et un bot ne joue Besoin sur un jeton de raid que si l'une des pièces qu'il donne à sa classe l'améliore. La partie jetons de raid demande « Les bots prennent Besoin » sur Besoin : sur Cupidité, les bots jouent Cupidité même sur un jeton qui les améliore.",
+    "ru": "Включено по умолчанию с версии 3.1.6. Включено: предмет комплекта учитывает бонус, который он открывает (и снять его — значит потерять бонус), а бот бросает «Нужно» на рейдовый жетон, только если одна из вещей, которые он даёт его классу, является улучшением. Часть про жетоны требует, чтобы «Боты бросают «Нужно»» было на «Нужно»: на «Не откажусь» боты бросают «Не откажусь» даже на улучшающий их жетон.",
+    "zh": "自 3.1.6 起默认开启。开启后：套装部件会计入其解锁的套装加成（换下它会失去该加成），机器人只有在团本代币可兑换的本职业装备中有提升时才掷需求。团本代币部分需要将“机器人需求物品”设为需求：设为贪婪时，机器人即使遇到能提升自己的代币也只掷贪婪。"
    }
   },
   {
@@ -2211,7 +2223,7 @@
    "file": "playerbots.conf",
    "group": "lw-loot",
    "type": "float",
-   "default": 0,
+   "default": 10,
    "min": 0,
    "max": 100,
    "when": "restart",
@@ -3416,6 +3428,216 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaPetPassiveOnStay",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "bool",
+   "default": 1,
+   "when": "reload",
+   "label": {
+    "en": "Pets wait when bots stay",
+    "fr": "Les familiers attendent quand les bots restent",
+    "ru": "Питомцы ждут, когда боты стоят",
+    "zh": "机器人原地等待时宠物也等待"
+   },
+   "help": {
+    "en": "A bot told \"stay\" sets its pets and guardians passive, so they do not run off to fight while it holds its place; \"follow\" gives each one back the stance it had before.",
+    "fr": "Un bot à qui l'on dit « stay » met ses familiers et gardiens en passif : ils ne partent pas se battre pendant qu'il tient sa place ; « follow » rend à chacun la posture qu'il avait avant.",
+    "ru": "Бот, получивший команду «stay», переводит своих питомцев и стражей в пассивный режим, чтобы они не убегали драться, пока он стоит на месте; «follow» возвращает каждому прежнюю стойку.",
+    "zh": "收到“stay”命令的机器人会把宠物和守护者设为被动，使它们在它原地等待时不会跑去战斗；“follow”会让每只宠物恢复之前的姿态。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaHearthWithMaster",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "bool",
+   "default": 1,
+   "when": "reload",
+   "label": {
+    "en": "Bots hearth with you",
+    "fr": "Les bots utilisent leur pierre de foyer avec vous",
+    "ru": "Боты возвращаются камнем с вами",
+    "zh": "机器人随你使用炉石"
+   },
+   "help": {
+    "en": "When you use your hearthstone, your bots within 30 yards, out of combat and with their own hearthstone ready, cast theirs with you and arrive next to you a moment later. A bot whose hearthstone is on cooldown stays where it is.",
+    "fr": "Quand vous utilisez votre pierre de foyer, vos bots à moins de 30 mètres, hors combat et dont la pierre est prête, utilisent la leur avec vous et arrivent à côté de vous un instant après. Un bot dont la pierre est en recharge reste où il est.",
+    "ru": "Когда вы используете камень возвращения, ваши боты в пределах 30 ярдов, вне боя и с готовым камнем, используют свой вместе с вами и через мгновение появляются рядом с вами. Бот, чей камень на перезарядке, остаётся на месте.",
+    "zh": "当你使用炉石时，30 码内、未在战斗中且炉石可用的机器人会和你一起使用炉石，片刻后出现在你身边。炉石在冷却中的机器人会留在原地。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaMute.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "bool",
+   "default": 1,
+   "when": "reload",
+   "label": {
+    "en": "Addon Mute button",
+    "fr": "Bouton Muet de l'addon",
+    "ru": "Кнопка «Без звука» в аддоне",
+    "zh": "插件的静音按钮"
+   },
+   "help": {
+    "en": "The Mute button of the SquidBots addon silences the chatter of all your bots at once, alts and recruited, and stays on between sessions. A muted bot still answers your orders and questions. Off: the button is greyed.",
+    "fr": "Le bouton Muet de l'addon SquidBots fait taire d'un coup tous vos bots, alts et recrutés, et le reste d'une session à l'autre. Un bot muet répond toujours à vos ordres et à vos questions. Désactivé : le bouton est grisé.",
+    "ru": "Кнопка «Без звука» аддона SquidBots разом заглушает болтовню всех ваших ботов, альтов и нанятых, и сохраняется между сессиями. Заглушённый бот по-прежнему отвечает на ваши приказы и вопросы. Выключено: кнопка неактивна.",
+    "zh": "SquidBots 插件的静音按钮可一次让你所有机器人（小号和招募的）停止闲聊，并在会话之间保持。被静音的机器人仍会回应你的命令和提问。关闭时按钮变灰。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaGiveToAlt.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "bool",
+   "default": 1,
+   "when": "reload",
+   "label": {
+    "en": "Give items between alts",
+    "fr": "Donner des objets entre alts",
+    "ru": "Передача предметов между альтами",
+    "zh": "小号之间赠送物品"
+   },
+   "help": {
+    "en": "\"Give to alt\" in the SquidBots addon: an alt gives items from its bags to another of your alts, bag to bag. Both alts must be in your group; never a recruited bot. Items bound to a character are refused, items bound to the account are fine.",
+    "fr": "« Donner à un alt » dans l'addon SquidBots : un alt donne des objets de ses sacs à un autre de vos alts, de sac à sac. Les deux alts doivent être dans votre groupe ; jamais un bot recruté. Les objets liés au personnage sont refusés, ceux liés au compte passent.",
+    "ru": "«Передать альту» в аддоне SquidBots: альт передаёт предметы из своих сумок другому вашему альту, из сумки в сумку. Оба альта должны быть в вашей группе; нанятые боты не участвуют. Предметы, привязанные к персонажу, не передаются, привязанные к учётной записи — можно.",
+    "zh": "SquidBots 插件中的“给小号”：一个小号把背包里的物品直接给你的另一个小号。两个小号都必须在你的队伍中；招募的机器人不行。绑定角色的物品会被拒绝，绑定账号的物品可以。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaTrust.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "bool",
+   "default": 1,
+   "when": "reload",
+   "label": {
+    "en": "Trust bar",
+    "fr": "Barre de confiance",
+    "ru": "Шкала доверия",
+    "zh": "信任条"
+   },
+   "help": {
+    "en": "Your trust in each of your bots, shown in the addon's Info tab as a rank and a bar, grows with the monsters, bosses and raid bosses you kill together. Shown only: no rank opens or locks anything. Off: the scores stop growing and the addon hides the bar.",
+    "fr": "Votre confiance en chacun de vos bots, affichée dans l'onglet Info de l'addon sous forme de rang et de barre, grandit avec les monstres, boss et boss de raid tués ensemble. Simple affichage : aucun rang n'ouvre ni ne bloque rien. Désactivé : les scores ne grandissent plus et l'addon cache la barre.",
+    "ru": "Ваше доверие к каждому боту, показанное на вкладке «Инфо» аддона как ранг и шкала, растёт с монстрами, боссами и рейдовыми боссами, убитыми вместе. Только для отображения: ранги ничего не открывают и не запрещают. Выключено: очки перестают расти, аддон скрывает шкалу.",
+    "zh": "你对每个机器人的信任会以等级和进度条显示在插件的信息页中，随你们一起击杀的怪物、首领和团队首领增长。仅作显示：任何等级都不会解锁或限制内容。关闭时分数停止增长，插件隐藏进度条。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaTrust.Kill",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "int",
+   "default": 1,
+   "min": 0,
+   "max": 1000,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaTrust.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Trust per monster",
+    "fr": "Confiance par monstre",
+    "ru": "Доверие за монстра",
+    "zh": "每个怪物的信任"
+   },
+   "help": {
+    "en": "Trust gained for a monster killed together (0: none).",
+    "fr": "Confiance gagnée pour un monstre tué ensemble (0 : aucune).",
+    "ru": "Доверие за монстра, убитого вместе (0: нисколько).",
+    "zh": "一起击杀一个怪物获得的信任（0：不获得）。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaTrust.Boss",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "int",
+   "default": 25,
+   "min": 0,
+   "max": 10000,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaTrust.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Trust per boss",
+    "fr": "Confiance par boss",
+    "ru": "Доверие за босса",
+    "zh": "每个首领的信任"
+   },
+   "help": {
+    "en": "Trust gained for a dungeon or world boss killed together (0: none).",
+    "fr": "Confiance gagnée pour un boss de donjon ou du monde tué ensemble (0 : aucune).",
+    "ru": "Доверие за босса подземелья или мира, убитого вместе (0: нисколько).",
+    "zh": "一起击杀一个地下城或世界首领获得的信任（0：不获得）。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaTrust.RaidBoss",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "int",
+   "default": 100,
+   "min": 0,
+   "max": 100000,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaTrust.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Trust per raid boss",
+    "fr": "Confiance par boss de raid",
+    "ru": "Доверие за рейдового босса",
+    "zh": "每个团队首领的信任"
+   },
+   "help": {
+    "en": "Trust gained for a raid boss killed together (0: none).",
+    "fr": "Confiance gagnée pour un boss de raid tué ensemble (0 : aucune).",
+    "ru": "Доверие за рейдового босса, убитого вместе (0: нисколько).",
+    "zh": "一起击杀一个团队首领获得的信任（0：不获得）。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaTrust.Ranks",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "text",
+   "default": "0,100,500,1500,4000,10000",
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaTrust.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Trust rank thresholds",
+    "fr": "Seuils des rangs de confiance",
+    "ru": "Пороги рангов доверия",
+    "zh": "信任等级门槛"
+   },
+   "help": {
+    "en": "Where each of the six ranks starts (stranger, acquaintance, companion, friend, trusted, sworn): six rising numbers from 0, separated by commas. A wrong list keeps the default ranks.",
+    "fr": "Où commence chacun des six rangs (inconnu, connaissance, compagnon, ami, de confiance, juré) : six nombres croissants à partir de 0, séparés par des virgules. Une liste fausse garde les rangs par défaut.",
+    "ru": "С какого значения начинается каждый из шести рангов (незнакомец, знакомый, спутник, друг, доверенный, побратим): шесть возрастающих чисел от 0 через запятую. При неверном списке остаются ранги по умолчанию.",
+    "zh": "六个等级（陌生人、相识、同伴、朋友、可信、誓约）各自的起点：从 0 开始的六个递增数字，用逗号分隔。列表有误时使用默认等级。"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaLive.City.Enable",
    "file": "playerbots.conf",
    "group": "lw-citylife",
@@ -3481,6 +3703,118 @@
     "fr": "Au plus ce nombre de bots pêchent en même temps pour 1000 bots connectés (25 par défaut).",
     "ru": "Не больше стольких ботов рыбачат одновременно на каждую 1000 ботов онлайн (по умолчанию 25).",
     "zh": "每 1000 名在线机器人中，同时钓鱼的机器人最多为此数量（默认 25）。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaLive.City.PostChancePct",
+   "file": "playerbots.conf",
+   "group": "lw-citylife",
+   "type": "int",
+   "default": 25,
+   "min": 0,
+   "max": 100,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaLive.City.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Long city posts (%)",
+    "fr": "Longues haltes en ville (%)",
+    "ru": "Долгие стоянки в городе (%)",
+    "zh": "城中长时间停留（%）"
+   },
+   "help": {
+    "en": "At the inn, a seat, a forge or a dummy, this many stops in a hundred last much longer (see below), and the city visit lasts as long, so you meet the same faces at the same places. 0: no long post.",
+    "fr": "À l'auberge, sur un siège, à la forge ou au mannequin, ce nombre d'arrêts sur cent durent bien plus longtemps (voir ci-dessous), et la visite de la ville aussi : on retrouve les mêmes visages aux mêmes endroits. 0 : aucune longue halte.",
+    "ru": "В таверне, на сиденье, у кузницы или манекена столько остановок из ста длятся гораздо дольше (см. ниже), и визит в город тоже: вы встречаете те же лица в тех же местах. 0: без долгих стоянок.",
+    "zh": "在旅店、座位、锻造炉或训练假人处，每一百次停留中有这么多次会持续更久（见下方），整个城中拜访也同样延长，你会在同一地点见到同样的面孔。0：没有长时间停留。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaLive.City.PostMinMinutes",
+   "file": "playerbots.conf",
+   "group": "lw-citylife",
+   "type": "int",
+   "default": 20,
+   "min": 1,
+   "max": 240,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaLive.City.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Long post, min minutes",
+    "fr": "Longue halte, minutes min.",
+    "ru": "Долгая стоянка, мин. минут",
+    "zh": "长时间停留，最少分钟"
+   },
+   "help": {
+    "en": "Shortest length of a long post, in minutes.",
+    "fr": "Durée la plus courte d'une longue halte, en minutes.",
+    "ru": "Самая короткая долгая стоянка, в минутах.",
+    "zh": "长时间停留的最短时长（分钟）。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaLive.City.PostMaxMinutes",
+   "file": "playerbots.conf",
+   "group": "lw-citylife",
+   "type": "int",
+   "default": 60,
+   "min": 1,
+   "max": 240,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaLive.City.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Long post, max minutes",
+    "fr": "Longue halte, minutes max.",
+    "ru": "Долгая стоянка, макс. минут",
+    "zh": "长时间停留，最多分钟"
+   },
+   "help": {
+    "en": "Longest length of a long post, in minutes.",
+    "fr": "Durée la plus longue d'une longue halte, en minutes.",
+    "ru": "Самая длинная долгая стоянка, в минутах.",
+    "zh": "长时间停留的最长时长（分钟）。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaLive.City.FishingPct",
+   "file": "playerbots.conf",
+   "group": "lw-citylife",
+   "type": "int",
+   "default": 10,
+   "min": 0,
+   "max": 100,
+   "when": "reload",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaLive.City.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Fishing in cities (%)",
+    "fr": "Pêche en ville (%)",
+    "ru": "Рыбалка в городах (%)",
+    "zh": "城中钓鱼（%）"
+   },
+   "help": {
+    "en": "This many stops in a hundred, a bot that knows fishing fishes at the water of the city for 4 to 15 minutes instead, and its visit ends there. Needs \"Bots fish on the shores\", and counts in its limit. 0: no fishing in the cities.",
+    "fr": "Ce nombre d'arrêts sur cent, un bot qui connaît la pêche va plutôt pêcher au bord de l'eau de la ville, de 4 à 15 minutes, et sa visite s'arrête là. Demande « Les bots pêchent au bord de l'eau » et compte dans sa limite. 0 : pas de pêche en ville.",
+    "ru": "Столько остановок из ста бот, знающий рыбалку, вместо этого рыбачит у воды в городе от 4 до 15 минут, и на этом его визит заканчивается. Требует «Боты рыбачат на берегу» и учитывается в его лимите. 0: без рыбалки в городах.",
+    "zh": "每一百次停留中有这么多次，会钓鱼的机器人改为在城中水边钓鱼 4 到 15 分钟，拜访就此结束。需要开启“机器人在岸边钓鱼”，并计入其上限。0：城中不钓鱼。"
    }
   },
   {
@@ -3551,6 +3885,12 @@
      }
     }
    ],
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaSelfFound",
+    "values": [
+     1
+    ]
+   },
    "label": {
     "en": "Random bots' bags",
     "fr": "Sacs des bots aléatoires",
@@ -3558,10 +3898,10 @@
     "zh": "随机机器人的背包"
    },
    "help": {
-    "en": "Emptied (the module default): a random bot loses its bag contents when it is refreshed. Kept: bots keep their loot, so they have something to sell at vendors and at the auction house.",
-    "fr": "Vidés (le défaut du module) : un bot aléatoire perd le contenu de ses sacs quand il est rafraîchi. Gardés : les bots gardent leur butin, et ont donc de quoi vendre aux marchands et à l'hôtel des ventes.",
-    "ru": "Очищаются (по умолчанию в модуле): случайный бот теряет содержимое сумок при обновлении. Сохраняются: боты хранят добычу, и им есть что продать торговцам и на аукционе.",
-    "zh": "清空（模块默认）：随机机器人刷新时会失去背包中的物品。保留：机器人保留战利品，因此有东西可以卖给商人和拍卖行。"
+    "en": "Emptied (the module default): a random bot loses its bag contents when it is refreshed. Kept: bots keep their loot, so they have something to sell at vendors and at the auction house. No effect on a self-found realm: there the bots keep their bags at every level and sell their surplus.",
+    "fr": "Vidés (le défaut du module) : un bot aléatoire perd le contenu de ses sacs quand il est rafraîchi. Gardés : les bots gardent leur butin, et ont donc de quoi vendre aux marchands et à l'hôtel des ventes. Sans effet sur un royaume self-found : les bots y gardent leurs sacs à tous les niveaux et vendent leur surplus.",
+    "ru": "Очищаются (по умолчанию в модуле): случайный бот теряет содержимое сумок при обновлении. Сохраняются: боты хранят добычу, и им есть что продать торговцам и на аукционе. Не действует на мире self-found: там боты сохраняют сумки на любом уровне и продают излишки.",
+    "zh": "清空（模块默认）：随机机器人刷新时会失去背包中的物品。保留：机器人保留战利品，因此有东西可以卖给商人和拍卖行。在 self-found 服务器上无效：那里的机器人在任何等级都保留背包，并出售多余物品。"
    }
   },
   {
@@ -4471,7 +4811,12 @@
     "AiPlayerbot.CoaLive.ChannelQuestions.Enable": 1,
     "AiPlayerbot.CoaFreshStart.CatchUp.Enable": 1,
     "AiPlayerbot.CoaFreshStart.CatchUp.CountGameMasters": 1,
-    "AiPlayerbot.CoaAltBags.Enable": 1
+    "AiPlayerbot.CoaAltBags.Enable": 1,
+    "AiPlayerbot.CoaPetPassiveOnStay": 1,
+    "AiPlayerbot.CoaHearthWithMaster": 1,
+    "AiPlayerbot.CoaMute.Enable": 1,
+    "AiPlayerbot.CoaGiveToAlt.Enable": 1,
+    "AiPlayerbot.CoaTrust.Enable": 1
    }
   }
  ]
