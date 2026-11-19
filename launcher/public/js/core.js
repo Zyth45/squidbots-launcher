@@ -107,14 +107,20 @@ async function guard(action, button) {
   }
 }
 
+// A locked dialog (the server update while it runs) is not closed by a click beside it, Escape or its buttons, and no
+// other dialog replaces it: only its owner opens it again, and close(true) or lock('') ends it.
 const dialog = {
-  open(html, className = '') {
+  locked: '',
+  open(html, className = '', owner = '') {
+    if (dialog.locked && owner !== dialog.locked) return false;
     const element = $('#dialog');
     element.className = `dialog ${className}`;
     $('#dialog-body').innerHTML = html;
     if (!element.open) element.showModal();
+    return true;
   },
-  close() { const element = $('#dialog'); if (element.open) element.close(); },
+  close(force = false) { if (dialog.locked && !force) return; const element = $('#dialog'); if (element.open) element.close(); },
+  lock(owner) { dialog.locked = owner || ''; $('#dialog').classList.toggle('locked', !!dialog.locked); },
   header(title, subtitle = '') {
     return `<header class="dialog-head"><div><h2>${esc(title)}</h2>${subtitle ? `<p>${esc(subtitle)}</p>` : ''}</div><button class="icon-button" data-action="dialog-close" aria-label="${esc(t('common.close', 'Close'))}">${icon('close')}</button></header><div class="inline-error" data-error hidden></div>`;
   },
@@ -132,7 +138,7 @@ function holdDialog(title, body) {
 
 function confirmDialog({ title, body, confirm, danger = false }) {
   return new Promise(resolve => {
-    dialog.open(`${dialog.header(title)}<div class="dialog-content"><p>${body}</p></div><footer class="dialog-foot"><button class="button ghost" data-choice="no">${esc(t('common.cancel', 'Cancel'))}</button><button class="button ${danger ? 'danger' : 'primary'}" data-choice="yes">${esc(confirm)}</button></footer>`, 'small');
+    if (!dialog.open(`${dialog.header(title)}<div class="dialog-content"><p>${body}</p></div><footer class="dialog-foot"><button class="button ghost" data-choice="no">${esc(t('common.cancel', 'Cancel'))}</button><button class="button ${danger ? 'danger' : 'primary'}" data-choice="yes">${esc(confirm)}</button></footer>`, 'small')) return resolve(false);
     const element = $('#dialog');
     const done = value => { element.removeEventListener('click', onClick); element.removeEventListener('close', onClose); dialog.close(); resolve(value); };
     const onClick = event => { const choice = event.target.closest('[data-choice]')?.dataset.choice; if (choice) done(choice === 'yes'); };
@@ -146,7 +152,7 @@ function confirmDialog({ title, body, confirm, danger = false }) {
 // kind 'success' or 'error'; body is HTML already escaped by the caller.
 function resultDialog({ title, body, kind = 'success' }) {
   return new Promise(resolve => {
-    dialog.open(`${dialog.header(title)}<div class="dialog-content"><div class="result-line ${kind}">${icon(kind === 'error' ? 'warning' : 'check')}<div>${body}</div></div></div><footer class="dialog-foot"><button class="button primary" data-choice="ok">${esc(t('common.ok', 'OK'))}</button></footer>`, 'small');
+    if (!dialog.open(`${dialog.header(title)}<div class="dialog-content"><div class="result-line ${kind}">${icon(kind === 'error' ? 'warning' : 'check')}<div>${body}</div></div></div><footer class="dialog-foot"><button class="button primary" data-choice="ok">${esc(t('common.ok', 'OK'))}</button></footer>`, 'small')) return resolve(false);
     const element = $('#dialog');
     const done = () => { element.removeEventListener('click', onClick); element.removeEventListener('close', onClose); dialog.close(); resolve(); };
     const onClick = event => { if (event.target.closest('[data-choice="ok"]')) done(); };

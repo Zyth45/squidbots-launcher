@@ -12,7 +12,10 @@ document.addEventListener('click', event => {
   if (data.action && App.actions[data.action]) App.actions[data.action](target, event);
 });
 $('#dialog').addEventListener('click', event => { if (event.target.id === 'dialog') dialog.close(); });
-$('#dialog').addEventListener('close', () => { if (!$('#dialog').open) $('#dialog-body').innerHTML = ''; });
+// A locked dialog ignores Escape; if Chromium closes it anyway (a second Escape), it opens again with its content.
+$('#dialog').addEventListener('cancel', event => { if (dialog.locked) event.preventDefault(); });
+document.addEventListener('keydown', event => { if (event.key === 'Escape' && dialog.locked) event.preventDefault(); }, true);
+$('#dialog').addEventListener('close', () => { if (dialog.locked) { $('#dialog').showModal(); return; } if (!$('#dialog').open) $('#dialog-body').innerHTML = ''; });
 
 function subscribe() {
   const api = App.api;
@@ -114,7 +117,7 @@ function subscribe() {
   api.onAddonProgress(({ done, total }) => { if (total) toast(t('addon.downloading', 'Downloading addons… {pct}%', { pct: Math.floor((100 * done) / total) })); });
   api.onRepackNotice(notice => toast(t(notice.key, notice.text), 'success'));
   api.onComponents(state => { App.state.components = state; if (App.state.tab === 'home' && !$('#dialog').open) App.render(); });
-  api.onUpdateState(state => { App.state.update.state = state; if (App.state.tab === 'home' && !$('#dialog').open) App.render(); });
+  api.onUpdateState(state => { App.state.update.state = state; followUpdate(state); if (App.state.tab === 'home' && !$('#dialog').open) App.render(); });
   api.onUpdateEvent(event => onUpdateEvent(event));
   api.onFeed(feed => { App.state.feed = feed; if (['home', 'server'].includes(App.state.tab) && !$('#dialog').open) App.render(); });
   api.onLauncherUpdate(status => {
@@ -215,6 +218,8 @@ App.actions['whats-new-discord'] = () => { App.api.openDiscord().catch(() => {})
   if (data.whatsNew?.length) showWhatsNew(data.whatsNew);
   if (isClassic() && data.config.edition !== 'server') loadNews();
   // Compare the game with its latest release at start (nothing is downloaded without asking).
+  // An update still running in the main process (the page was reloaded): its window comes back, locked.
+  if (data.config.edition === 'server') App.api.updateState().then(state => { if (state?.busy) { App.state.update.state = state; followUpdate(state); } }).catch(() => {});
   if (data.config.edition === 'server') { refreshAddon(true); App.api.updateRefresh().then(state => { if (state) { App.state.update.state = state; if (App.state.tab === 'home') App.render(); } }).catch(() => {}); App.api.componentsRefresh().then(state => { App.state.components = state; if (App.state.tab === 'home') App.render(); }).catch(() => {}); App.api.notes().then(notes => { App.state.notes = notes; if (App.state.tab === 'home') App.render(); }).catch(() => {}); App.api.updateState().then(state => { if (!App.state.update.state) App.state.update.state = state; if (App.state.tab === 'home') App.render(); }).catch(() => {}); loadNews(); App.api.feed().then(feed => { App.state.feed = feed; if (App.state.tab === 'home') App.render(); }).catch(() => {}); }
   else if (data.client.installed && data.config.game.hasClient) checkClient(false, true).catch(error => { App.state.client.progress = { phase: 'error', message: error.message }; App.refresh('play'); });
   if (data.config.edition !== 'server' && data.config.game.hasAddons && (data.settings.autoCheckAddons || data.client.installed)) loadAddons();

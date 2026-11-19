@@ -807,6 +807,7 @@
   "update.step.files": "Nouveaux fichiers",
   "update.step.test": "Démarrage de contrôle",
   "update.time": "Environ 5 à 20 minutes. Si quelque chose se passe mal, votre serveur est remis comme avant.",
+  "update.short": "Le launcher sauvegarde votre serveur, installe la mise à jour et garde vos réglages : environ 5 à 20 minutes. Si quelque chose se passe mal, votre serveur est remis comme avant.",
   "update.title": "CoA Bots {version}",
   "update.titleNone": "Mise à jour du serveur",
   "update.undo": "Annuler la mise à jour",

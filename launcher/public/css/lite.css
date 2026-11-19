@@ -257,7 +257,11 @@ dialog { overflow: hidden; border: 1px solid var(--line-strong); border-radius: 
 dialog.wide { width: min(760px, 94vw); }
 dialog.small { width: min(460px, 92vw); }
 dialog::backdrop { background: var(--backdrop); backdrop-filter: blur(3px); }
-#dialog-body { display: grid; max-height: 86vh; grid-template-rows: auto auto minmax(0, 1fr) auto; }
+/* Header and footer always in view, only the content scrolls, whatever the number of blocks (the hidden inline error
+   took no grid row: the content fell in an auto row and the footer shrank to 0, user 19/11: « je ne vois pas le bouton update »). */
+#dialog-body { display: flex; flex-direction: column; max-height: 86vh; }
+#dialog-body > * { flex: none; }
+#dialog-body > .dialog-content { flex: 1 1 auto; min-height: 0; }
 .dialog-head { display: flex; justify-content: space-between; gap: 12px; padding: 18px 20px 12px; border-bottom: 1px solid var(--line); }
 .dialog-head h2 { font: 700 18px var(--display); letter-spacing: .03em; }
 .dialog-head p { color: var(--muted); font-size: 13px; }

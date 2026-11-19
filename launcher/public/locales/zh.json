@@ -1310,6 +1310,7 @@
   "update.testLine": "服务器会启动一次以确认一切正常（已用 {time}）。更新后的首次启动需要 5 到 15 分钟；之后服务器会被正常关闭。",
   "update.theDisk": "服务器所在磁盘",
   "update.time": "约 5 到 20 分钟。如果出现问题，服务器会恢复原状。",
+  "update.short": "启动器会备份您的服务器、安装更新并保留您的设置：大约 5 到 20 分钟。如果出现问题，服务器会恢复原状。",
   "update.title": "CoA Bots {version}",
   "update.titleNone": "服务器更新",
   "update.undo": "撤销更新",

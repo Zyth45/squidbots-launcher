@@ -179,6 +179,11 @@
 .update-result pre { max-height: 180px; overflow: auto; padding: 10px; border-radius: 8px; background: var(--log-bg, rgba(0, 0, 0, .4)); font: 12px/1.45 var(--mono); white-space: pre-wrap; }
 .update-result summary, .update-notes summary { cursor: pointer; color: var(--muted); font-size: 13px; }
 .update-notes .patch-notes { max-height: 260px; overflow: auto; margin-top: 8px; }
+/* The window before an update: one line for the download, the notice and the notes folded (user, 19/11). */
+.update-facts { display: flex; align-items: center; gap: 8px; margin: 0; font-weight: 600; }
+.update-facts .icon { color: var(--accent); width: 18px; height: 18px; }
+.update-notes .update-notice { margin: 8px 0 0; white-space: pre-line; color: var(--text); font-size: 13.5px; }
+.update-notes summary { font-size: 14px; color: var(--accent); }
 .update-card { grid-column: 1 / -1; display: flex; align-items: center; gap: 12px; padding: 11px 13px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent); background: color-mix(in srgb, var(--accent) 12%, rgba(12, 8, 5, .72)); }
 .update-card > .icon { width: 26px; height: 26px; color: var(--accent); flex: none; }
 .update-card > span { flex: 1; display: grid; min-width: 0; }
@@ -525,8 +530,6 @@ label.switch input:checked + span::after, button.switch.on span::before { conten
 .realm-side .card-gear { margin: 0; }
 .realm-side { max-width: 48%; min-width: 0; }
 .realm-card header .realm-side .pill { max-width: 100%; margin-left: 0; }
-/* A form dialog: header, its content (scrolls), its footer with Save always in view. */
-.dialog.form #dialog-body { grid-template-rows: auto minmax(0, 1fr) auto; }
 .ah-row select:disabled { opacity: .45; }
 /* What is new, once after an update of the launcher. */
 .whats-new h3 { margin: 0 0 6px; font: 700 15px var(--display); color: var(--accent); }

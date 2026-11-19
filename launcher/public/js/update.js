@@ -168,17 +168,16 @@ function showUpdate() {
   let body;
   if (running) body = `<div id="update-live">${updateLive()}</div>`;
   else if (u.last && (u.last.error || u.state !== 'available')) body = updateResultView();
-  else body = `<p>${esc(t('update.what', 'The launcher takes care of everything, in this order:'))}</p>
-      <ol class="notes"><li>${esc(t('update.what1', 'downloads the update and checks its signature;'))}</li><li>${esc(t('update.what2', 'makes a full backup (database and files);'))}</li><li>${esc(t('update.what3', 'stops the server cleanly, installs the new version and keeps your settings;'))}</li><li>${esc(t('update.what4', 'starts the server once to check it.'))}</li></ol>
+  else body = `<p class="update-facts">${icon('download')}<span>${esc(t('update.bigDownload', 'Download: about {size}.', { size: formatBytes(updateSize(m)) }))}</span></p>
+      <p class="muted">${esc(t('update.short', 'The launcher backs up your server, installs the update and keeps your settings: about 5 to 20 minutes. If anything goes wrong, your server is put back as it was.'))}</p>
       <div class="line-action">${icon('addons')}<span>${u.addonClient ? esc(t('update.addonTo', 'The SquidBots addon is also installed in your game: {path}', { path: u.addonClient })) : esc(t('update.addonNone', 'SquidBots addon: choose your game folder to install it too (otherwise it is left as it is).'))}</span><button class="button ghost small" data-action="update-client">${esc(u.addonClient ? t('update.addonChange', 'Change') : t('update.addonPick', 'Choose the game folder'))}</button></div>
-      <p class="muted">${esc(t('update.time', 'About 5 to 20 minutes. If anything goes wrong, your server is put back as it was.'))}</p>
-      ${m?.notes ? `<details class="update-notes"><summary>${esc(t('update.notes', 'What is new'))}</summary><div class="patch-notes">${markdownLite(m.notesI18n?.[App.state.settings.language] || m.notes)}</div></details>` : ''}`;
+      ${updateNotes(m)}`;
   const big = !running && u.state === 'available' && !u.last?.error ? bigUpdate(u) : null;
   if (big) body = big.html + body;
   const foot = running ? '' : u.state === 'available' && !u.last?.error && !big?.blocked
     ? `<footer class="dialog-foot"><button class="button ghost" data-action="dialog-close">${esc(t('common.later', 'Later'))}</button><button class="button primary" data-action="update-start">${icon('download')}${esc(t('update.start', 'Update now'))}</button></footer>`
     : `<footer class="dialog-foot"><button class="button ghost" data-action="dialog-close">${esc(t('common.close', 'Close'))}</button></footer>`;
-  dialog.open(`${head}<div class="dialog-content update">${body}</div>${foot}`, 'wide');
+  dialog.open(`${head}<div class="dialog-content update">${body}</div>${foot}`, 'wide', 'update');
 }
 
 // ---------------------------------------------------------------- the SquidBots addon in the game
@@ -269,20 +268,28 @@ function updateCard() {
   return '';
 }
 
+// The page came back (reloaded) while an update runs in the main process: its window comes back, locked, until it ends.
+// An update this page started is followed by runUpdate itself.
+function followUpdate(state) {
+  if (App.state.update.run) return;
+  if (state?.busy && dialog.locked !== 'update') { dialog.lock('update'); showUpdate(); }
+  else if (!state?.busy && dialog.locked === 'update') { dialog.lock(''); App.reloadAll().then(() => showUpdate()).catch(() => showUpdate()); }
+}
+
 async function runUpdate(call) {
   App.state.update.run = { step: 'download', line: '', done: 0, total: 0 };
   App.state.update.state = { ...(App.state.update.state || {}), busy: true, last: null };
+  // While it runs the window cannot be closed (click beside, Escape) nor covered by another one; the launcher behind it
+  // is inert (modal). User, 19/11: a click beside it went back to the launcher with the update running unseen.
+  dialog.lock('update');
   showUpdate();
-  const element = $('#dialog');
-  const block = event => event.preventDefault();
-  element.addEventListener('cancel', block);
   try {
     const state = await call();
     if (state) App.state.update.state = state;
   } catch (error) {
     App.state.update.state = { ...(App.state.update.state || {}), busy: false, last: { error: { code: 'launcher', text: translateError(error.message) }, details: [] } };
   } finally {
-    element.removeEventListener('cancel', block);
+    dialog.lock('');
     App.state.update.run = null;
     App.state.verify = null;
   }
@@ -323,19 +330,28 @@ Object.assign(App.actions, {
   'update-log': () => guard(() => App.api.updateOpenLog()),
 });
 
-// A big update (or one with a notice) says so before the click: what it does, the download, the disk space needed.
+// A big update (500 MB or more, or maps in parts) says so before the click, with the disk space it needs; not enough free
+// space shows at once and the update is not offered. A notice alone is not a big update (a 70 MB patch was titled
+// « Big update », user 19/11): it is folded with the notes.: what it does, the download, the disk space needed.
 // Not enough free space: the update is not offered (the tool would stop at its checks anyway).
 const BIG_UPDATE = 500 * 1024 * 1024;
+function updateSize(m) { return (m?.package?.size || 0) + (m?.package?.parts || []).reduce((sum, part) => sum + part.size, 0); }
+function updateNotes(m) {
+  const lang = App.state.settings.language;
+  const notice = m?.notice ? m.notice[lang] || m.notice[I18N.lang] || m.notice.en || '' : '';
+  const notes = m?.notesI18n?.[lang] || m?.notes || '';
+  if (!notice && !notes) return '';
+  return `<details class="update-notes"><summary>${esc(t('update.notes', 'What is new'))}</summary>${notice ? `<p class="update-notice">${esc(notice)}</p>` : ''}${notes ? `<div class="patch-notes">${markdownLite(notes)}</div>` : ''}</details>`;
+}
 function bigUpdate(u) {
   const m = u.manifest || {};
-  const notice = m.notice ? m.notice[I18N.lang] || m.notice.en || '' : '';
-  const size = (m.package?.size || 0) + (m.package?.parts || []).reduce((sum, part) => sum + part.size, 0);
-  if (!notice && !(size >= BIG_UPDATE) && !m.diskBytes) return null;
   const need = m.diskBytes || 0;
   const blocked = need > 0 && typeof u.diskFree === 'number' && u.diskFree < need;
-  const facts = [t('update.bigDownload', 'Download: about {size}.', { size: formatBytes(size) })];
+  const big = updateSize(m) >= BIG_UPDATE || (m.package?.parts || []).length > 0;
+  if (!blocked && !big) return null;
+  const facts = [];
   if (need) facts.push(t('update.bigDisk', 'Free disk space needed: about {need} (free now: {free}).', { need: formatBytes(need), free: typeof u.diskFree === 'number' ? formatBytes(u.diskFree) : '?' }));
-  const html = `<div class="update-card ${blocked ? 'bad' : 'info'} big-update">${icon(blocked ? 'warning' : 'info')}<span><strong>${esc(blocked ? t('update.bigBlocked', 'Not enough free disk space for this update.') : t('update.bigTitle', 'Big update'))}</strong>${notice ? `<small>${esc(notice)}</small>` : ''}<small>${esc(facts.join(' '))}</small></span></div>`;
+  const html = `<div class="update-card ${blocked ? 'bad' : 'info'} big-update">${icon(blocked ? 'warning' : 'info')}<span><strong>${esc(blocked ? t('update.bigBlocked', 'Not enough free disk space for this update.') : t('update.bigTitle', 'Big update'))}</strong>${facts.length ? `<small>${esc(facts.join(' '))}</small>` : ''}</span></div>`;
   return { html, blocked };
 }
 
