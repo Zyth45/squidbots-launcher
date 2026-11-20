@@ -28,6 +28,7 @@ const network = require('./network.cjs');
 const repackImport = require('./repack-import.cjs');
 const { cleanFeed } = require('./feed.cjs');
 const repackUpdate = require('./repack-update.cjs');
+const updateBackups = require('./update-backups.cjs');
 const addonSync = require('./addon-sync.cjs');
 const manastormClient = require('./manastorm-client.cjs');
 const components = require('./components.cjs');
@@ -995,6 +996,9 @@ function registerIpc() {
       // The extra realms use the same worldserver and MySQL: stopped before the update, started again after it.
       // A realm still saving stops the update before anything is changed (MySQL must stay up for it).
       await realms.stopAll(serverPath()).catch(error => { throw Object.assign(new Error(error.message), { launcherCode: 'realm' }); });
+      // The older update backups go first (user's rule, 20/11): the newest stays for Undo, so two remain after this one.
+      const freed = await updateBackups.removeOlder(folder).catch(() => []);
+      if (freed.length) send('update:event', { event: 'info', text: `${freed.length} older update backup(s) deleted (${Math.round(freed.reduce((sum, item) => sum + item.bytes, 0) / 1073741824 * 10) / 10} GB): ${freed.map(item => item.name).join(', ')}` });
       const wanted = repackUpdate.forRelease(update.manifest, state.here?.release);
       phase('download', { total: repackUpdate.packageSize(wanted) });
       const controller = new AbortController();
@@ -1354,6 +1358,14 @@ function registerIpc() {
   });
   handle('update:clearClient', async () => { const paths = { ...settings.installPaths }; delete paths.addon; await persist({ ...settings, installPaths: paths }); return ''; });
   handle('update:report', () => { clipboard.writeText(supportReport()); return true; });
+  // « Delete the older backups » of the code 17 window: the same rule as before an update (the newest one stays).
+  handle('update:freeBackups', async () => {
+    const folder = serverPath();
+    if (!folder) throw new Error('Choose the server folder first.');
+    if (update.busy) throw new Error('An update is already running.');
+    const removed = await updateBackups.removeOlder(folder);
+    return { removed: removed.length, bytes: removed.reduce((sum, item) => sum + item.bytes, 0), state: repackUpdateState() };
+  });
   handle('update:openLog', async () => { if (update.last?.logFile) shell.showItemInFolder(update.last.logFile); });
   handle('feed:open', async kind => {
     const key = text(kind, 20);
@@ -2359,6 +2371,8 @@ function repackUpdateState() {
   if (demoUpdate()) return { busy: update.busy, phase: update.phase, last: update.last, state: update.last && !update.last.error ? 'current' : demoUpdate(), here: { release: 'main-20261014-ad8370da', bots: '2.3' }, manifest: DEMO_MANIFEST };
   const folder = serverPath();
   const base = { busy: update.busy, phase: update.phase, last: update.last, listError: update.error, addonClient: settings.installPaths.addon || '' };
+  // The older update backups an update deletes first (said in its window, and offered in the code 17 window).
+  if (folder && fs_exists(folder)) { try { base.oldBackups = updateBackups.summary(folder); } catch {} }
   let diskFree = null;
   try { const disk = require('node:fs').statfsSync(folder); diskFree = disk.bavail * disk.bsize; } catch {}
   return folder && fs_exists(folder) ? { ...base, diskFree, ...repackUpdate.status(folder, update.manifest) } : { ...base, state: 'noserver', manifest: update.manifest };

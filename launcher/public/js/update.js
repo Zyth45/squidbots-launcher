@@ -145,12 +145,14 @@ function updateResultView() {
   const drive = (App.state.server?.path || '').slice(0, 2) || t('update.theDisk', 'the server disk');
   const title = space ? t('update.err.17space', 'Free at least {more} GB more on {drive} ({free} GB free, {need} GB needed), then try again.', { more: gb(Math.max(102, space[2] - space[1])), drive, free: gb(space[1]), need: gb(space[2]) }) : t(key, fallback);
   const canUndo = ['changed', 'broken', 'unknown'].includes(changed) && last.error.code !== 60;
+  const old = String(last.error.code) === '17' ? App.state.update.state?.oldBackups : null;
   return `<div class="update-result bad">${icon('warning')}<div>
       <strong>${esc(title)}</strong>
       <small>${esc(t(changedKey, changedText))} ${esc(t('update.code', 'Code {code}.', { code: last.error.code }))}</small>
       <details><summary>${esc(t('update.details', 'Details for the support'))}</summary><pre>${esc([last.error.text, ...(last.details || [])].join('\n'))}</pre></details>
       <div class="button-row">
-        ${['none', 'restored'].includes(changed) ? `<button class="button primary small" data-action="update-start">${icon('refresh')}${esc(t('update.retry', 'Try again'))}</button>` : ''}
+        ${old?.count ? `<button class="button primary small" data-action="update-free-backups">${icon('folder')}${esc(t('update.freeBackups', 'Delete the {count} older update backup(s) ({size})', { count: old.count, size: formatBytes(old.bytes) }))}</button>` : ''}
+        ${['none', 'restored'].includes(changed) ? `<button class="button ${old?.count ? 'ghost' : 'primary'} small" data-action="update-start">${icon('refresh')}${esc(t('update.retry', 'Try again'))}</button>` : ''}
         ${canUndo ? `<button class="button ${['none', 'restored'].includes(changed) ? 'ghost' : 'primary'} small" data-action="update-undo">${icon('refresh')}${esc(t('update.undo', 'Undo the update'))}</button>` : ''}
         <button class="button ghost small" data-action="update-report">${icon('copy')}${esc(t('update.report', 'Copy the report'))}</button>
         <button class="button ghost small" data-action="update-log">${icon('folder')}${esc(t('update.log', 'Open the log'))}</button>
@@ -175,6 +177,7 @@ function showUpdate() {
   else if (first) body = `<div class="update-card info">${icon('refresh')}<span>${esc(first)}</span></div>${updateNotes(m)}`;
   else body = `<p class="update-facts">${icon('download')}<span>${esc(t('update.bigDownload', 'Download: about {size}.', { size: formatBytes(updateSize(m)) }))}</span></p>
       <p class="muted">${esc(t('update.short', 'The launcher backs up your server, installs the update and keeps your settings: about 5 to 20 minutes. If anything goes wrong, your server is put back as it was.'))}</p>
+      ${u.oldBackups?.count ? `<p class="muted small update-old-backups">${icon('folder')}<span>${esc(t('update.oldBackups', '{count} older update backup(s) ({size}) are deleted first, to make room; the latest one stays for Undo the update.', { count: u.oldBackups.count, size: formatBytes(u.oldBackups.bytes) }))}</span></p>` : ''}
       <div class="line-action">${icon('addons')}<span>${u.addonClient ? esc(t('update.addonTo', 'The SquidBots addon is also installed in your game: {path}', { path: u.addonClient })) : esc(t('update.addonNone', 'SquidBots addon: choose your game folder to install it too (otherwise it is left as it is).'))}</span><button class="button ghost small" data-action="update-client">${esc(u.addonClient ? t('update.addonChange', 'Change') : t('update.addonPick', 'Choose the game folder'))}</button></div>
       ${updateNotes(m)}`;
   const big = !running && !first && u.state === 'available' && !u.last?.error ? bigUpdate(u) : null;
@@ -334,6 +337,12 @@ Object.assign(App.actions, {
   'update-finish': () => runUpdate(() => App.api.updateUndo('finish')),
   'update-undo-cut': () => runUpdate(() => App.api.updateUndo('undo-cut')),
   'update-client': button => guard(async () => { const folder = await App.api.updatePickClient(); App.state.update.state = { ...(App.state.update.state || {}), addonClient: folder }; showUpdate(); }, button),
+  'update-free-backups': button => guard(async () => {
+    const result = await App.api.updateFreeBackups();
+    if (result?.state) App.state.update.state = result.state;
+    toast(t('update.freedBackups', '{count} older update backup(s) deleted: {size} freed. Try the update again.', { count: result?.removed || 0, size: formatBytes(result?.bytes || 0) }), 'success');
+    showUpdate();
+  }, button),
   'update-report': button => guard(async () => { await App.api.updateReport(); toast(t('update.copied', 'Report copied: paste it on the support Discord.'), 'success'); }, button),
   'update-log': () => guard(() => App.api.updateOpenLog()),
 });

@@ -67,6 +67,7 @@ contextBridge.exposeInMainWorld('launcher', Object.freeze({
   updateUndo: mode => call('update:undo', mode),
   updateUndoInfo: () => call('update:undoInfo'),
   updateReport: () => call('update:report'),
+  updateFreeBackups: () => call('update:freeBackups'),
   updatePickClient: () => call('update:pickClient'),
   gamePlay: options => call('game:play', options),
   charsList: () => call('chars:list'),

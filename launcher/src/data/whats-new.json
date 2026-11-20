@@ -9,21 +9,25 @@
         },
         "items": {
             "en": [
+                "Old server update backups no longer pile up (about 15 GB each): before an update only the latest one is kept, the window says how much is freed, and a \"not enough disk space\" stop offers to delete them.",
                 "\"Bots need items\" now says what the bots really do: by default they leave the items to the players and pass, they do not roll Greed.",
                 "When the navigation maps of the bots stop, the reason is given in your language.",
                 "The Join Discord and Bots help links no longer cover a banner on the home page."
             ],
             "fr": [
+                "Les anciennes sauvegardes de mise à jour du serveur ne s'accumulent plus (environ 15 Go chacune) : avant une mise à jour, seule la plus récente est gardée, la fenêtre dit la place libérée, et un arrêt pour manque d'espace propose de les supprimer.",
                 "« Les bots prennent Besoin » dit maintenant ce que font vraiment les bots : par défaut, ils laissent les objets aux joueurs et passent, ils ne jouent pas Cupidité.",
                 "Quand les cartes de navigation des bots s'arrêtent, la raison est donnée dans votre langue.",
                 "Les liens Rejoindre Discord et Aide des bots ne recouvrent plus un bandeau de l'accueil."
             ],
             "ru": [
+                "Старые резервные копии обновлений сервера (около 15 ГБ каждая) больше не накапливаются: перед обновлением остаётся только самая новая, окно показывает освобождаемое место, а при нехватке места предлагается их удалить.",
                 "«Боты бросают «Нужно»» теперь описывает, что боты делают на самом деле: по умолчанию они оставляют предметы игрокам и пасуют, а не бросают «Не откажусь».",
                 "Если построение карт навигации ботов останавливается, причина указана на вашем языке.",
                 "Ссылки «Discord» и «Помощь по ботам» больше не перекрывают баннер на главной странице."
             ],
             "zh": [
+                "旧的服务器更新备份（每个约 15 GB）不再堆积：更新前只保留最新的一个，窗口会显示释放的空间；因磁盘空间不足而停止时，会提供删除它们的选项。",
                 "“机器人需求物品”现在如实说明机器人的行为：默认情况下，它们把物品留给玩家并选择放弃，不掷贪婪。",
                 "机器人导航地图停止生成时，会用您的语言说明原因。",
                 "“加入 Discord”和“机器人帮助”链接不再遮挡主页上的横幅。"
