@@ -700,6 +700,12 @@ function clientBanner(asm) {
   if (!asm.clientChanged) return '';
   return `<div class="update-banner"><i class="dot"></i><span>${esc(t('assemble.clientChanged', 'Your game was updated since the server data were taken from it. Take them again (about 30 minutes, server stopped) so the server matches your game.'))}</span><button class="button ghost small" data-action="assemble-refresh">${esc(t('assemble.refresh', 'Update the data'))}</button><button class="button ghost small subtle" data-action="assemble-keep-client">${esc(t('assemble.keepClient', 'Keep my modified files'))}</button></div>`;
 }
+// The reasons the assembler writes (in English), said in the launcher's language; an unknown one stays as written.
+function mmapsReason(text) {
+  if (/^The terrain the navigation maps are built from/.test(text)) return t('assemble.mmapsTerrainGone', 'The terrain the navigation maps are built from (Data\\maps) is empty or unreachable. Take the data from your game again (Verification), then build the navigation maps again.');
+  if (/^Extract the maps and vmaps first/.test(text)) return t('assemble.mmapsExtractFirst', 'Take the data from your game first (maps and vmaps), then build the navigation maps.');
+  return text;
+}
 function mmapsBanner(mm) {
   if (!mm || mm.complete) return '';
   const pct = mm.tilesTotal ? Math.min(99, Math.floor((100 * mm.tiles) / mm.tilesTotal)) : mm.total ? Math.floor((100 * mm.done) / mm.total) : 0;
@@ -707,7 +713,7 @@ function mmapsBanner(mm) {
   const asked = App.state.mmapsAsked || 0;
   if (!mm.running && !(mm.error && mm.errorAt >= asked) && Date.now() - asked < 60000) mm = { ...mm, running: true };
   // Stopped with a reason: said as it is, not as a pause (SupportDesk, 19/11).
-  if (mm.error && !mm.running) return `<div class="update-banner bad"><i class="dot"></i><span>${esc(t('assemble.mmapsStopped', 'Navigation maps of the bots: stopped at {done} of {total} maps. {error}', { done: mm.done, total: mm.total || '…', error: mm.error }))}</span><button class="button ghost small" data-action="assemble-mmaps">${esc(t('assemble.mmapsRetry', 'Try again'))}</button></div>`;
+  if (mm.error && !mm.running) return `<div class="update-banner bad"><i class="dot"></i><span>${esc(t('assemble.mmapsStopped', 'Navigation maps of the bots: stopped at {done} of {total} maps. {error}', { done: mm.done, total: mm.total || '…', error: mmapsReason(mm.error) }))}</span><button class="button ghost small" data-action="assemble-mmaps">${esc(t('assemble.mmapsRetry', 'Try again'))}</button></div>`;
   if (mm.paused && !mm.running) return `<div class="update-banner"><i class="dot"></i><span>${esc(t('assemble.mmapsPausedText', 'Navigation maps of the bots: paused at {done} of {total} maps. Resume when you like; the maps already built are kept.', { done: mm.done, total: mm.total || '…' }))}</span><button class="button ghost small" data-action="assemble-mmaps">${esc(t('assemble.mmapsContinue', 'Resume'))}</button></div>`;
   return `<div class="update-banner"><i class="dot"></i><span>${esc(mm.running ? t('assemble.mmapsRunning2', 'Navigation maps of the bots: {pct}% of the work done ({done} of {total} maps, the large continents come last), built in the background.', { done: mm.done, total: mm.total || '…', pct }) : t('assemble.mmapsPaused', 'Navigation maps of the bots: {done} of {total} maps. Until they are all built, bots may walk in straight lines.', { done: mm.done, total: mm.total || '…' }) + (mm.failed ? ` ${t('assemble.mmapsFailedCount', '{count} could not be built: Build them now tries them again.', { count: mm.failed })}` : ''))}</span>${mm.running ? `<button class="button ghost small" data-action="assemble-mmaps-pause">${esc(t('assemble.mmapsPause', 'Pause'))}</button>` : `<button class="button ghost small" data-action="assemble-mmaps">${esc(mm.paused ? t('assemble.mmapsContinue', 'Resume') : t('assemble.mmapsResume', 'Build them now'))}</button>`}</div>`;
 }

@@ -1271,6 +1271,8 @@
   "assemble.maps": "Terrain et caméras",
   "assemble.mmapsPaused": "Cartes de navigation des bots : {done} sur {total} cartes. Tant qu'elles ne sont pas toutes faites, les bots peuvent marcher en ligne droite.",
   "assemble.mmapsStopped": "Cartes de navigation des bots : arrêtées à {done} sur {total} cartes. {error}",
+  "assemble.mmapsTerrainGone": "Le terrain dont sont faites les cartes de navigation (Data\\maps) est vide ou introuvable. Reprenez les données de votre jeu (Vérification), puis relancez la construction des cartes de navigation.",
+  "assemble.mmapsExtractFirst": "Reprenez d'abord les données de votre jeu (maps et vmaps), puis construisez les cartes de navigation.",
   "assemble.mmapsRetry": "Réessayer",
   "assemble.mmapsFailedCount": "{count} n’ont pas pu être construites : « Les construire maintenant » les réessaie.",
   "assemble.mmapsResume": "Les construire maintenant",

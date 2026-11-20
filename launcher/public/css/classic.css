@@ -370,6 +370,9 @@ label.switch input:checked + span::after, button.switch.on span::before { conten
 @media (max-width: 1100px) { .live-body { grid-template-columns: 1fr; } }
 /* Home: help and Discord above the server card, the patch note column narrower with its title inside. */
 .classic-hero > .news-links { position: absolute; top: -44px; right: 56px; display: flex; gap: 14px; }
+/* A banner just before the hero (navigation maps, game patched): room for the links above the hero, which overlapped
+   the bottom of a two-line banner (0.4.5). */
+.page.classic > .update-banner + .classic-hero { margin-top: 26px; }
 .news-row > .news-links { justify-self: end; }
 .news-live { grid-template-columns: minmax(0, 300px) minmax(0, 1fr); }
 .news-art { position: relative; }

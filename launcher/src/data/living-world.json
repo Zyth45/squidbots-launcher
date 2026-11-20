@@ -2141,10 +2141,10 @@
     {
      "value": "1",
      "label": {
-      "en": "Greed (polite)",
-      "fr": "Cupidité (poli)",
-      "ru": "Не откажусь (вежливо)",
-      "zh": "贪婪（礼让）"
+      "en": "Polite: pass",
+      "fr": "Poli : passer",
+      "ru": "Вежливо: пас",
+      "zh": "礼让：放弃"
      }
     },
     {
@@ -2164,10 +2164,10 @@
     "zh": "机器人需求物品"
    },
    "help": {
-    "en": "Greed (default): bots roll Greed even on their upgrades and leave Need to players. Need: a bot rolls Need on an item that really upgrades it (an epic weapon in an instance, for example) and equips it if it wins.",
-    "fr": "Cupidité (par défaut) : les bots jouent Cupidité même sur leurs améliorations et laissent le Besoin aux joueurs. Besoin : un bot joue Besoin sur un objet qui l'améliore vraiment (une arme épique en instance, par exemple) et l'équipe s'il le gagne.",
-    "ru": "«Не откажусь» (по умолчанию): боты бросают «Не откажусь» даже на улучшения и оставляют «Нужно» игрокам. «Нужно»: бот бросает «Нужно» на предмет, который действительно его улучшает (например, эпическое оружие в подземелье), и надевает его при выигрыше.",
-    "zh": "贪婪（默认）：机器人即使遇到提升也只掷贪婪，把需求留给玩家。需求：物品确实能提升机器人时（例如副本中的史诗武器），机器人掷需求，赢得后装备。"
+    "en": "Polite (default): bots leave every item to the players and pass (they roll Greed only if AiPlayerbot.LootGreedRollLevel is 1 in playerbots.conf; it is 0 by default). Need: a bot rolls Need on an item that really upgrades it (an epic weapon in an instance, for example) and equips it if it wins; where it would only roll Greed, it passes the same way.",
+    "fr": "Poli (par défaut) : les bots laissent tous les objets aux joueurs et passent (ils ne jouent Cupidité que si AiPlayerbot.LootGreedRollLevel vaut 1 dans playerbots.conf ; il vaut 0 par défaut). Besoin : un bot joue Besoin sur un objet qui l'améliore vraiment (une arme épique en instance, par exemple) et l'équipe s'il le gagne ; là où il ne jouerait que Cupidité, il passe de la même façon.",
+    "ru": "«Вежливо» (по умолчанию): боты оставляют все предметы игрокам и пасуют («Не откажусь» бросают, только если AiPlayerbot.LootGreedRollLevel = 1 в playerbots.conf; по умолчанию 0). «Нужно»: бот бросает «Нужно» на предмет, который действительно его улучшает (например, эпическое оружие в подземелье), и надевает его, если выиграет; там, где он бросил бы только «Не откажусь», он так же пасует.",
+    "zh": "礼让（默认）：机器人把所有物品留给玩家并选择放弃（只有当 playerbots.conf 中的 AiPlayerbot.LootGreedRollLevel 为 1 时才掷贪婪；默认为 0）。需求：物品确实能提升机器人时（例如副本中的史诗武器），机器人掷需求，赢得后装备；本该只掷贪婪时，同样放弃。"
    }
   },
   {
