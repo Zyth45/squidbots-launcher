@@ -77,4 +77,41 @@ async function removeOlder(folder) {
   return removed;
 }
 
-module.exports = { list, older, summary, removeOlder, NAME };
+// The play set aside by an undone update (3.2.1, Builder and Pilote 21/11): Backups\<backup>\after-<v>-<date>-<time>,
+// what was played after that update, database included (about 3 GB or more). Listed with its size on the Backups
+// page; only the player deletes one, by clicking and confirming. Never deleted by the launcher on its own.
+const AFTER = /^after-(\d+(?:\.\d+)*[\w.-]*)-(\d{8})-(\d{6})$/i;
+function playSaved(folder) {
+  const out = [];
+  for (const backup of list(folder)) {
+    let entries = [];
+    try { entries = fs.readdirSync(backup.dir, { withFileTypes: true }); } catch { continue; }
+    for (const entry of entries) {
+      const match = AFTER.exec(entry.name);
+      if (!match || !entry.isDirectory() || entry.isSymbolicLink()) continue;
+      const dir = path.join(backup.dir, entry.name);
+      if (!sizes.has(dir)) sizes.set(dir, folderBytes(dir));
+      const [, version, day, time] = match;
+      out.push({ backup: backup.name, name: entry.name, version, at: `${day.slice(0, 4)}-${day.slice(4, 6)}-${day.slice(6)}T${time.slice(0, 2)}:${time.slice(2, 4)}:${time.slice(4)}`, bytes: sizes.get(dir) });
+    }
+  }
+  return out.sort((a, b) => b.at.localeCompare(a.at));
+}
+
+// Deletes one of them, named by the page (both names checked against the list: nothing else can be reached). Renamed
+// first, as an older backup, then deleted; written in logs/launcher-backups.log.
+async function removePlay(folder, backupName, name) {
+  const item = playSaved(folder).find(entry => entry.backup === backupName && entry.name === name);
+  if (!item) throw new Error('This saved play is no longer there.');
+  const dir = path.join(folder, 'Backups', item.backup, item.name);
+  const doomed = `${dir}.deleting`;
+  await fs.promises.rename(dir, doomed);
+  await fs.promises.rm(doomed, { recursive: true, force: true });
+  sizes.delete(dir);
+  const log = path.join(folder, 'logs', 'launcher-backups.log');
+  await fs.promises.mkdir(path.dirname(log), { recursive: true }).catch(() => {});
+  await fs.promises.appendFile(log, `${new Date().toISOString()} play saved after an undone update deleted by the player: ${item.backup}\\${item.name} (${Math.round(item.bytes / 1048576)} MB)\n`).catch(() => {});
+  return item;
+}
+
+module.exports = { list, older, summary, removeOlder, playSaved, removePlay, NAME };

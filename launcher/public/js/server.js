@@ -129,6 +129,7 @@ function installView(info) {
 // ---------------------------------------------------------------- backups
 async function loadBackups() {
   App.api.updateUndoInfo().then(info => { App.state.undoInfo = info; App.refresh('server'); }).catch(() => {});
+  App.api.updatePlaySaved().then(list => { App.state.playSaved = list; App.refresh('server'); }).catch(() => { App.state.playSaved = []; });
   try { App.state.backups = await App.api.backups(); }
   catch (error) { App.state.backups = { error: translateError(error.message) }; }
   App.refresh('server');
@@ -141,7 +142,10 @@ function backupsView() {
   const task = App.state.task && ['backup', 'restore'].includes(App.state.task.phase) ? `<div class="task-line">${icon('refresh')}<span>${esc(taskText(App.state.task))}</span></div>` : '';
   // The last CoA Bots update can be undone from here too (not only after an error).
   const undo = App.state.undoInfo?.available ? `<section class="panel undo-panel"><header><h2>${icon('refresh')}${esc(t('update.undoLastTitle', 'Undo the last update'))}</h2><button class="button ghost small" data-action="update-undo">${icon('refresh')}${esc(t('update.undo', 'Undo the update'))}</button></header><p class="muted">${esc(t('update.undoLastText', 'Puts the server back exactly as it was before the CoA Bots {version} update of {at} (database and files). What was played since is kept aside in its backup.', { version: App.state.undoInfo.version, at: App.state.undoInfo.at }))}</p></section>` : '';
-  return `${undo}<section class="panel"><header><h2>${icon('database')}${esc(t('backup.title', 'Database backups'))}</h2><div class="button-row"><button class="button ghost small" data-action="backup-folder">${icon('folder')}${esc(t('backup.folder', 'Folder'))}</button><button class="button primary small" data-action="backup-create">${icon('download')}${esc(t('backup.now', 'Back up now'))}</button></div></header>
+  // What was played after an undone update, kept aside by the undo: the player alone deletes it (3.2.1).
+  const saved = App.state.playSaved || [];
+  const play = saved.length ? `<section class="panel play-saved"><header><h2>${icon('folder')}${esc(t('playSaved.title', 'Play kept after an undone update'))}</h2></header><p class="muted">${esc(t('playSaved.text', 'When an update is undone, what was played after it (characters, bots, the database) is kept here. The launcher never deletes it: delete one only if you will not need it again.'))}</p><div class="backup-list">${saved.map(item => `<div class="backup"><div><strong>${esc(t('playSaved.item', 'Played on version {version}, set aside on {date}', { version: item.version, date: formatDate(item.at, true) }))}</strong><small>${esc(item.backup)} · ${esc(formatBytes(item.bytes))}</small></div><button class="button ghost small" data-action="play-remove" data-backup="${esc(item.backup)}" data-name="${esc(item.name)}" data-size="${esc(formatBytes(item.bytes))}">${icon('trash')}${esc(t('common.remove', 'Remove'))}</button></div>`).join('')}</div></section>` : '';
+  return `${undo}${play}<section class="panel"><header><h2>${icon('database')}${esc(t('backup.title', 'Database backups'))}</h2><div class="button-row"><button class="button ghost small" data-action="backup-folder">${icon('folder')}${esc(t('backup.folder', 'Folder'))}</button><button class="button primary small" data-action="backup-create">${icon('download')}${esc(t('backup.now', 'Back up now'))}</button></div></header>
     <p class="muted">${esc(t('backup.hint', 'Accounts, characters and bots, compressed, in the Backups folder of the server. One is also made before every restore and every new version.'))}</p>
     <label class="check"><input type="checkbox" id="backup-world"><span>${esc(t('backup.world', 'Also the world database (large, only if you changed it)'))}</span></label>
     <div class="lighten"><div><strong>${esc(t('ach.title', 'Lighter database: achievements of the bots'))}</strong><small>${esc(App.state.achSize ? t('ach.size', 'Now {mb} MB in the achievement progress table.', { mb: App.state.achSize.reduce((sum, item) => sum + item.mb, 0) }) : t('ach.hint', 'Older versions of the bots wrote millions of achievement rows nobody reads. The rows of the random bots are deleted (a backup first); yours stay.'))}</small></div><button class="button ghost small" data-action="ach-clean">${icon('trash')}${esc(t('ach.button', 'Clean'))}</button></div>
@@ -1013,6 +1017,13 @@ Object.assign(App.actions, {
   'backup-remove': button => guard(async () => {
     if (!await confirmDialog({ title: t('backup.removeTitle', 'Delete this backup?'), body: esc(button.dataset.name), confirm: t('common.remove', 'Remove'), danger: true })) return;
     await App.api.removeBackup(button.dataset.name);
+    await loadBackups();
+  }, button),
+  'play-remove': button => guard(async () => {
+    const { backup, name, size } = button.dataset;
+    if (!await confirmDialog({ title: t('playSaved.removeTitle', 'Delete this saved play?'), body: `${esc(t('playSaved.removeBody', 'What was played after the undone update ({size}) is deleted for good: it cannot be brought back.', { size }))}<br><small class="muted">${esc(backup)}\\${esc(name)}</small>`, confirm: t('common.remove', 'Remove'), danger: true })) return;
+    const result = await App.api.updateRemovePlay(backup, name);
+    toast(t('playSaved.removed', 'Deleted: {size} freed.', { size: formatBytes(result?.bytes || 0) }), 'success');
     await loadBackups();
   }, button),
   'backup-folder': () => guard(() => App.api.openBackupsFolder()),

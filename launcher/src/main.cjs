@@ -1367,6 +1367,15 @@ function registerIpc() {
     const removed = await updateBackups.removeOlder(folder);
     return { removed: removed.length, bytes: removed.reduce((sum, item) => sum + item.bytes, 0), state: repackUpdateState() };
   });
+  // The play set aside by an undone update (after-* folders): listed on the Backups page, deleted only by the player.
+  handle('update:playSaved', () => { const folder = serverPath(); return folder ? updateBackups.playSaved(folder) : []; });
+  handle('update:removePlay', async (backup, name) => {
+    const folder = serverPath();
+    if (!folder) throw new Error('Choose the server folder first.');
+    if (update.busy) throw new Error('An update is already running.');
+    const removed = await updateBackups.removePlay(folder, text(backup, 120), text(name, 120));
+    return { bytes: removed.bytes };
+  });
   handle('update:openLog', async () => { if (update.last?.logFile) shell.showItemInFolder(update.last.logFile); });
   handle('feed:open', async kind => {
     const key = text(kind, 20);

@@ -47,3 +47,27 @@ test('a single update backup, or none, is never deleted', async () => {
   assert.ok(fs.existsSync(path.join(root, 'Backups', '3.1.6-20261120-101010', 'backup.json')));
   fs.rmSync(root, { recursive: true, force: true });
 });
+
+// 3.2.1 (Builder and Pilote, 21/11): the play set aside by an undone update is listed with its size and deleted only
+// when the player asks, one folder at a time, named from the list (nothing else can be reached).
+test('the play kept after an undone update: listed with its size, deleted only on request, nothing else touched', async () => {
+  const root = repack();
+  fs.mkdirSync(path.join(root, 'Backups/3.1.6-20261120-101010/after-3.1.6-20261121-201030/mysql-data'), { recursive: true });
+  fs.writeFileSync(path.join(root, 'Backups/3.1.6-20261120-101010/after-3.1.6-20261121-201030/mysql-data/c.ibd'), Buffer.alloc(70));
+  fs.mkdirSync(path.join(root, 'Backups/3.1.6-20261120-101010/after-notes'));
+  const list = backups.playSaved(root);
+  assert.deepEqual(list.map(item => [item.backup, item.name, item.version, item.at, item.bytes]), [
+    ['3.1.6-20261120-101010', 'after-3.1.6-20261121-201030', '3.1.6', '2026-11-21T20:10:30', 70],
+    ['3.1.4-20261115-090000', 'after-3.1.4-20261116-120000', '3.1.4', '2026-11-16T12:00:00', 50],
+  ]);
+  // A name not in the list, or a path, is refused.
+  for (const [backup, name] of [['3.1.6-20261120-101010', 'after-notes'], ['3.1.6-20261120-101010', '..'], ['..', 'Backups'], ['3.1.6-20261120-101010', 'after-3.1.6-20261121-201030\..\..']]) await assert.rejects(backups.removePlay(root, backup, name), /no longer there/);
+  const removed = await backups.removePlay(root, '3.1.6-20261120-101010', 'after-3.1.6-20261121-201030');
+  assert.equal(removed.bytes, 70);
+  assert.ok(!fs.existsSync(path.join(root, 'Backups/3.1.6-20261120-101010/after-3.1.6-20261121-201030')));
+  assert.ok(fs.existsSync(path.join(root, 'Backups/3.1.6-20261120-101010/backup.json')), 'the backup itself stays');
+  assert.ok(fs.existsSync(path.join(root, 'Backups/3.1.6-20261120-101010/after-notes')));
+  assert.deepEqual(backups.playSaved(root).map(item => item.name), ['after-3.1.4-20261116-120000']);
+  assert.match(fs.readFileSync(path.join(root, 'logs/launcher-backups.log'), 'utf8'), /deleted by the player: 3\.1\.6-20261120-101010[\\/]after-3\.1\.6-20261121-201030 /);
+  fs.rmSync(root, { recursive: true, force: true });
+});
