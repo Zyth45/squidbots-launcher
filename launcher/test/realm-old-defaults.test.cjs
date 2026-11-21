@@ -30,13 +30,37 @@ test('an old launch premium of a Squid World moves to 0 once; another value, and
     const changed = JSON.parse(fs.readFileSync(path.join(dir, 'settings.json'), 'utf8'));
     assert.equal(changed['playerbots.conf'][KEY], after, `${before} -> ${after}`);
     assert.equal(changed['playerbots.conf']['AiPlayerbot.CoaEconomy.LaunchCurve.LevelMargin'], '5');
-    assert.deepEqual(JSON.parse(fs.readFileSync(path.join(dir, 'realm.json'), 'utf8')).moved, ['launch-premium-0', 'classic-pack-3.1', 'classic-pack-3.1.6']);
+    assert.deepEqual(JSON.parse(fs.readFileSync(path.join(dir, 'realm.json'), 'utf8')).moved, ['launch-premium-0', 'bgsim-3.2', 'classic-pack-3.1', 'classic-pack-3.1.6']);
     // The player sets 100 again afterwards: kept.
     changed['playerbots.conf'][KEY] = '100';
     fs.writeFileSync(path.join(dir, 'settings.json'), JSON.stringify(changed));
     await realms.status(root, { live: false }).catch(() => null);
     assert.equal(JSON.parse(fs.readFileSync(path.join(dir, 'settings.json'), 'utf8'))['playerbots.conf'][KEY], '100');
   }
+});
+
+// Pilote, 21/11 (users' rule of 13/11): a Squid World made before 0.4.7 had no BgSim value of its own (it followed CoA,
+// off by default). It gets 1 once; a value of its own (set by the player or a pack) stays, and so does a later 0.
+test('simulated battlegrounds reach an existing Squid World once; a value of its own stays', async () => {
+  const BG = 'AiPlayerbot.CoaWorld.BgSim.Enable';
+  for (const [before, after] of [[undefined, '1'], ['0', '0'], ['1', '1']]) {
+    const { root, dir } = realm('0');
+    const start = JSON.parse(fs.readFileSync(path.join(dir, 'settings.json'), 'utf8'));
+    if (before !== undefined) start['playerbots.conf'][BG] = before;
+    fs.writeFileSync(path.join(dir, 'settings.json'), JSON.stringify(start));
+    await realms.status(root, { live: false }).catch(() => null);
+    const changed = own(dir);
+    assert.equal(changed[BG], after, String(before));
+    if (before === undefined) assert.match(fs.readFileSync(path.join(root, 'logs', 'launcher-realms.log'), 'utf8'), /BgSim\.Enable \(as CoA\) -> 1/);
+    changed[BG] = '0';
+    fs.writeFileSync(path.join(dir, 'settings.json'), JSON.stringify({ 'playerbots.conf': changed }));
+    await realms.status(root, { live: false }).catch(() => null);
+    assert.equal(own(dir)[BG], '0', 'a 0 set afterwards stays');
+  }
+  // Another realm never gets it.
+  const { root, dir } = classicRealm('wildcard', { 'AiPlayerbot.MaxRandomBots': '50' });
+  await realms.status(root, { live: false }).catch(() => null);
+  assert.equal(own(dir)[BG], undefined);
 });
 
 // Pilote, 14/11: the Classic pack of 0.4.2 wrote AHBot, Market... at 0 and BreathGuard at 0, Recovery 30. In a realm,

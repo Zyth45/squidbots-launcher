@@ -171,6 +171,9 @@ async function readOwn(root, key) {
 const OLD_CREATION_DEFAULTS = [
   // Squid World made before 0.4.3 (livingOwn of 0.4.0 wrote 100, the first betas 150): no launch premium (Economie, 13/11).
   { id: 'launch-premium-0', key: 'living', file: 'playerbots.conf', setting: 'AiPlayerbot.CoaEconomy.LaunchCurve.LaunchPremiumPercent', old: ['100', '150'], now: '0' },
+  // 3.2: simulated battlegrounds on Squid World (Pilote 21/11, by the users' rule of 13/11). Before 0.4.7 its creation
+  // wrote nothing, so the realm followed CoA (off by default): no value of its own means never edited for it.
+  { id: 'bgsim-3.2', key: 'living', file: 'playerbots.conf', setting: 'AiPlayerbot.CoaWorld.BgSim.Enable', old: [], absent: true, now: '1' },
 ];
 // The Classic pack of 0.4.2 wrote these at their 0.4.2 defaults, which 3.1 turns on (Pilote, 14/11). A realm's value
 // moves to the 3.1 default only when the pack's own trace proves the pack wrote it (.coa-launcher\living-pack-undo.json:
@@ -195,7 +198,7 @@ async function moveOldDefaults(root, key, own, saved) {
   const lines = [];
   for (const item of due) {
     const value = own[item.file]?.[item.setting];
-    if (value !== undefined && item.old.includes(String(value).trim())) { own[item.file][item.setting] = item.now; lines.push(`${item.setting} ${value} -> ${item.now}`); }
+    if (value === undefined ? item.absent : item.old.includes(String(value).trim())) { own[item.file] = { ...own[item.file], [item.setting]: item.now }; lines.push(`${item.setting} ${value ?? '(as CoA)'} -> ${item.now}`); }
     done.add(item.id);
   }
   if (classicDue.length) {
