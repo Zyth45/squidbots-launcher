@@ -29,6 +29,7 @@ const repackImport = require('./repack-import.cjs');
 const { cleanFeed } = require('./feed.cjs');
 const repackUpdate = require('./repack-update.cjs');
 const updateBackups = require('./update-backups.cjs');
+const settingsSince = require('./settings-since.cjs');
 const addonSync = require('./addon-sync.cjs');
 const manastormClient = require('./manastorm-client.cjs');
 const components = require('./components.cjs');
@@ -407,7 +408,7 @@ realms.setPinner((pid, name) => numa.pin(pid, name, settings.numaNode));
 
 function registerIpc() {
   handle('numa:nodes', () => numa.nodes());
-  handle('bootstrap', async () => ({ config: publicConfig(), settings, client: await clientInfo(), version: app.getVersion(), launcherUpdate: launcherUpdates.status, smoke: !!smokeDir, whatsNew: whatsNew() }));
+  handle('bootstrap', async () => ({ config: publicConfig(), settings, client: await clientInfo(), version: app.getVersion(), launcherUpdate: launcherUpdates.status, smoke: !!smokeDir, whatsNew: whatsNew(), settingsSince: settingsSinceList() }));
   handle('whatsnew:seen', async () => { await persist({ ...settings, lastSeenVersion: app.getVersion() }); return true; });
   handle('window', action => {
     if (action === 'minimize') window.minimize();
@@ -2545,6 +2546,11 @@ async function closeWithNotice() {
   window?.close();
 }
 
+// The settings added or whose default changed since the player's previous launcher (the What's new tab, 3.2).
+function settingsSinceList() {
+  try { return settingsSince.since(require('./data/settings-since.json'), settings.previousVersion); } catch { return []; }
+}
+
 // The notes of the launcher versions newer than the one the player last saw, newest first. A player updating from
 // a launcher that did not record it sees the current version's notes; a fresh install sees none.
 let firstRunOfLauncher = false;
@@ -2568,6 +2574,9 @@ async function main() {
   // A fresh install has nothing « new » to show: this version counts as seen.
   firstRunOfLauncher = firstRun;
   if (firstRun) settings.lastSeenVersion = app.getVersion();
+  // After an update of the launcher: the version seen before it, kept until the next update (What's new of the settings).
+  const previous = settingsSince.previousOnStart(settings, app.getVersion(), firstRun);
+  if (previous) { settings = previous; await writeSettings(settingsFile, settings).catch(() => {}); }
   if (firstRun) {
     const locale = app.getLocale().toLowerCase();
     settings.language = locale.startsWith('fr') ? 'fr' : locale.startsWith('ru') ? 'ru' : locale.startsWith('zh') ? 'zh' : 'en';

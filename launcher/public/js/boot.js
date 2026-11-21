@@ -199,7 +199,7 @@ App.actions['whats-new-discord'] = () => { App.api.openDiscord().catch(() => {})
   $('#win-max').innerHTML = icon('maximize');
   $('#win-close').innerHTML = icon('close');
   const data = await App.api.bootstrap();
-  Object.assign(App.state, { config: data.config, settings: data.settings, client: data.client, version: data.version, launcherUpdate: data.launcherUpdate });
+  Object.assign(App.state, { config: data.config, settings: data.settings, client: data.client, version: data.version, launcherUpdate: data.launcherUpdate, settingsSince: data.settingsSince || [] });
   applyTheme(data.settings.theme);
   await loadLocale(data.settings.language);
   $('#settings-button').title = t('settings.title', 'Settings');

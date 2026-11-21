@@ -498,3 +498,10 @@ summary.damage-row::-webkit-details-marker { display: none; }
 .result-line p { margin: 0 0 6px; overflow-wrap: anywhere; }
 .reset-name-shown strong { font-size: 18px; color: var(--text); }
 @media (max-width: 1100px) { .realm-panel-grid { grid-template-columns: minmax(0, 1fr); } }
+/* What's new of the settings (3.2): the pill on a row, the lines of the tab, the row reached from it. */
+.since-pill { margin-left: 8px; vertical-align: 1px; }
+.since-line { display: flex; align-items: center; gap: 10px; width: 100%; }
+.since-line > span:first-child { flex: 1 1 auto; text-align: left; }
+.since-line > .pill { flex: none; }
+.conf-pane .preset-head .icon { margin-right: 6px; vertical-align: -2px; }
+.conf-row.since-flash { outline: 2px solid var(--accent, #6cf); outline-offset: 2px; transition: outline-color 1.2s; }

@@ -643,6 +643,8 @@ function livingOwn({ ahMerged = true } = {}) {
   put('playerbots.conf', 'AiPlayerbot.CoaWorld.Guilds.AnswerAsk', 1);
   // Bots need items: Need on real upgrades (user, 11/11); the other realms keep Greed.
   put('playerbots.conf', 'AiPlayerbot.LootNeedRollLevel', 2);
+  // Simulated battlegrounds (3.2, PERIMETRE-3.2 B5): self-loot bots earn honor and PvP pieces. At creation only.
+  put('playerbots.conf', 'AiPlayerbot.CoaWorld.BgSim.Enable', 1);
   for (const part of ['Filter', 'Buyer', 'Market', 'Rarity']) put('playerbots.conf', `${E}${part}.Enable`, 1);
   put('playerbots.conf', `${E}LaunchCurve.LevelMargin`, 5);
   put('playerbots.conf', `${E}LaunchCurve.StartStockPercent`, 15);

@@ -192,6 +192,7 @@ Object.assign(App.actions, { 'realm-view': button => { App.state.realmView = but
 // Two quick switches per realm: Bot chat and Self-loot, the same keys as in Server settings, in this realm's own values.
 // Self-loot changes only what comes next (no bot is made again, nothing is taken off). Applied at the realm's next start.
 const SELFLOOT_KEY = 'AiPlayerbot.CoaSelfFound';
+// Auto-gear at 60 (3.2): MAXLEVEL_KEY of server.js, 59 = geared as usual at 60, 80 = self-loot at every level.
 // Bots catch up with the players (SquidBot 5576aa9f): only on the Squid World realm, where CoaFreshStart is on.
 const CATCHUP_KEY = 'AiPlayerbot.CoaFreshStart.CatchUp.Enable';
 // A realm's Bot chat and Self-loot values ('' = the main realm), read once, then kept until a save.
@@ -202,7 +203,7 @@ function quickOf(target) {
     App.api.serverSettings(target).then(conf => {
       const value = key => String(conf.settings.find(setting => setting.key === key)?.value ?? '').trim();
       const has = key => conf.settings.some(setting => setting.key === key);
-      cache[target] = { chat: value(CHAT_KEY), selfloot: value(SELFLOOT_KEY), catchup: value(CATCHUP_KEY), hasChat: has(CHAT_KEY), hasLoot: has(SELFLOOT_KEY), hasCatchup: has(CATCHUP_KEY) };
+      cache[target] = { chat: value(CHAT_KEY), selfloot: value(SELFLOOT_KEY), maxLevel: value(MAXLEVEL_KEY), hasMaxLevel: has(MAXLEVEL_KEY), catchup: value(CATCHUP_KEY), hasChat: has(CHAT_KEY), hasLoot: has(SELFLOOT_KEY), hasCatchup: has(CATCHUP_KEY) };
       App.refresh('realms'); App.refresh('server');
     }).catch(() => { cache[target] = { error: true }; });
   }
@@ -216,15 +217,19 @@ function realmQuick(realm) {
   const row = (action, on, disabled, title, hint) => `<div class="realm-quick-row"><span title="${esc(hint)}">${esc(title)}</span>${moduleSwitch(action, on, disabled).replace('<button', `<button data-key="${esc(target)}"`)}</div>`;
   const chat = q.hasChat ? row('realm-chat', CHAT_READY && q.chat === '1', !CHAT_READY, t('lw.chat', 'Bot chat'), CHAT_READY ? t('lw.chatText', 'Bots talk in the chat channels, greet and answer. Off: they stay silent, everything else goes on.') : t('lw.chatSoon', 'Coming with the next bots build.')) : '';
   const loot = q.hasLoot ? row('realm-selfloot', locked || q.selfloot === '1', locked, t('gear.selfloot', 'Self-loot'), locked ? t('realms.selflootLocked', 'Always on for the Squid World realm.') : t('gear.note', 'Your bots keep their level and what they wear today: only what comes next changes. Then Save.')) : '';
-  const help = loot && !locked ? ` ${t('realms.selflootHelp', 'Self-loot until level 59; at 60 bots are geared as usual.')}` : '';
+  // Auto-gear at 60 (3.2): off when CoaSelfFoundMaxLevel is 60 or more (80 by its switch on this card).
+  const at60 = !(Number(q.maxLevel) >= 60);
+  const gear60 = q.hasMaxLevel && (locked || q.selfloot === '1') ? row('realm-at60', at60, false, t('gear.at60', 'Auto-gear at level 60'), t('gear.at60Text', 'On: at 60 the bots are geared as usual for the endgame. Off: self-loot at every level, even at 60.')) : '';
+  const help = loot && !locked ? ` ${at60 ? t('realms.selflootHelp', 'Self-loot until level 59; at 60 bots are geared as usual.') : t('realms.selflootHelpAll', 'Self-loot at every level, even at 60.')}` : '';
   const catchup = locked && q.hasCatchup ? row('realm-catchup', q.catchup === '1', false, t('realms.catchup', 'Bots catch up with players'), t('realms.catchupHint', 'Random bots behind the human players earn more experience.')) : '';
-  return chat || loot || catchup ? `<div class="realm-quick">${chat}${loot}${catchup}<small class="muted">${esc(t('realms.quickNext', 'Applied at the next start of this realm.') + help)}</small></div>` : '';
+  return chat || loot || catchup ? `<div class="realm-quick">${chat}${loot}${gear60}${catchup}<small class="muted">${esc(t('realms.quickNext', 'Applied at the next start of this realm.') + help)}</small></div>` : '';
 }
 // Bot chat and the bots' catch-up are read again by a running world (.reload config): applied at once. Self-loot is read
 // at the start of the world only.
 const QUICK_RELOAD = ['AiPlayerbot.CoaLive.Chat.Enable', 'AiPlayerbot.CoaFreshStart.CatchUp.Enable'];
-async function realmQuickSet(target, key, on) {
-  await App.api.saveServerSettings([{ file: 'playerbots.conf', key, value: on ? '1' : '0' }], target);
+async function realmQuickSet(target, key, on, values = ['0', '1']) {
+  const value = on ? values[1] : values[0];
+  await App.api.saveServerSettings([{ file: 'playerbots.conf', key, value }], target);
   delete App.state.realmQuick?.[target];
   const running = target ? realmList().some(item => item.key === target && item.state === 'running') : worldRunning(App.state.server);
   if (running && QUICK_RELOAD.includes(key)) {
@@ -233,13 +238,14 @@ async function realmQuickSet(target, key, on) {
       .catch(() => toast(t('conf.reloadFailed', 'The server did not answer: these settings apply at its next start.'), 'info'));
   } else if (running) toast(t('realms.quickNextStart', 'Saved: it applies at the next start of this realm.'), 'info');
   // Server settings of that realm show the new value too.
-  if (App.state.conf && !App.state.conf.error && confRealm() === target) for (const setting of App.state.conf.settings) if (setting.key === key) setting.value = on ? '1' : '0';
+  if (App.state.conf && !App.state.conf.error && confRealm() === target) for (const setting of App.state.conf.settings) if (setting.key === key) setting.value = value;
   App.refresh('realms'); App.refresh('server');
 }
 Object.assign(App.actions, {
   'realm-chat': button => guard(() => realmQuickSet(button.dataset.key, CHAT_KEY, button.dataset.on !== '1'), button),
   'realm-catchup': button => guard(() => realmQuickSet(button.dataset.key, CATCHUP_KEY, button.dataset.on !== '1'), button),
   'realm-selfloot': button => guard(() => realmQuickSet(button.dataset.key, SELFLOOT_KEY, button.dataset.on !== '1'), button),
+  'realm-at60': button => guard(() => realmQuickSet(button.dataset.key, MAXLEVEL_KEY, button.dataset.on !== '1', ['80', '59']), button),
 });
 
 // Eco mode (CoA Bots 2.9.1 and later): the bots far from players mostly sleep while nobody plays on this realm.

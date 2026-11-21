@@ -483,13 +483,14 @@ function settingsView() {
   const allTabs = groups.map(group => ({ id: group.id, icon: group.icon, label: loc(group.label) }));
   // Essentials (default): a few entries a player understands; Advanced shows every tab as before. A tab opened from
   // the Living world page stays open even when its entry is not in the column.
-  const tabs = advanced ? allTabs : essentialTabs(allTabs);
+  const fresh = sinceList();
+  const tabs = [...(fresh.length ? [{ id: 'whats-new', icon: 'star', label: VIRTUAL_TABS['whats-new'].label() }] : []), ...(advanced ? allTabs : essentialTabs(allTabs))];
   if (!tabs.some(tab => tab.id === App.state.confGroup) && !(App.state.confGroup && allTabs.some(tab => tab.id === App.state.confGroup))) App.state.confGroup = tabs[0]?.id;
   const changedIn = id => conf.settings.filter(setting => setting.group === id && App.state.pending[pendingKey(setting.file, setting.key)] !== undefined).length;
   const tabButton = tab => `<button class="conf-tab${App.state.confGroup === tab.id && !confSearching() ? ' active' : ''}" data-action="conf-group" data-id="${esc(tab.id)}">${icon(tab.icon)}<span>${esc(tab.label)}</span>${changedIn(tab.id) ? `<em>${changedIn(tab.id)}</em>` : ''}${(tab.id === 'presets' && isNew('wizard')) || (tab.id === 'damage' && isNew('damage')) || (tab.id === 'progression' && isNew('progression')) ? newDot() : ''}</button>`;
   // The tabs in sections (Start, Bots, World, Tools); a tab of no section goes at the end of the list.
   const placed = new Set((conf.sections || []).flatMap(section => section.groups));
-  const sections = advanced ? [...(conf.sections || []).map(section => ({ label: loc(section.label), tabs: section.groups.map(id => tabs.find(tab => tab.id === id)).filter(Boolean) })), { label: '', tabs: tabs.filter(tab => !placed.has(tab.id)) }].filter(section => section.tabs.length) : [{ label: '', tabs }];
+  const sections = advanced ? [...(fresh.length ? [{ label: '', tabs: [tabs[0]] }] : []), ...(conf.sections || []).map(section => ({ label: loc(section.label), tabs: section.groups.map(id => tabs.find(tab => tab.id === id)).filter(Boolean) })), { label: '', tabs: tabs.filter(tab => !placed.has(tab.id) && tab.id !== 'whats-new') }].filter(section => section.tabs.length) : [{ label: '', tabs }];
   const switchAdvanced = `<label class="check conf-advanced"><input type="checkbox" data-setting="advancedSettings" data-page-setting="1" ${advanced ? 'checked' : ''}><span>${esc(t('conf.advanced', 'Advanced settings'))}</span></label>`;
   const nav = `<nav class="conf-nav" id="conf-nav">${sections.map(section => `${section.label ? `<div class="conf-section">${esc(section.label)}</div>` : ''}${section.tabs.map(tabButton).join('')}`).join('')}${switchAdvanced}</nav>`;
   // A card announced for later (soon) shows greyed out, next to the recipe it belongs to, and writes nothing.
@@ -634,7 +635,7 @@ function settingRow(setting) {
   const conf = App.state.conf;
   const warn = warnings(setting.key);
   const changed = App.state.pending[pendingKey(setting.file, setting.key)] !== undefined;
-  return `<div class="conf-row${changed ? ' changed' : ''}${setting.group === 'levels' && !setting.selfFoundOk && selfFoundOn() ? ' self-found-off' : ''}${settingOff(setting) ? ' conf-off' : ''}${setting.hideOff ? ' conf-hide' : ''}${setting.origin ? ` from-${setting.origin}` : ''}"${setting.offWhen ? ` data-off-file="${esc(setting.file)}" data-off-key="${esc(setting.key)}"` : ''}><div class="conf-label"><strong>${esc(loc(setting.label))}</strong>${originTag(setting)}<p>${esc(loc(setting.help))}</p><small class="when">${icon('refresh')}${esc(loc(conf.when?.[setting.when]))}</small><div class="conf-warn" data-warn="${esc(setting.key)}" ${warn.length ? '' : 'hidden'}>${icon('info')}<span class="conf-warn-text">${warnHtml(setting.key)}</span></div></div><div class="conf-control">${control(setting)}</div></div>`;
+  return `<div data-row="${esc(setting.file)}|${esc(setting.key)}" class="conf-row${changed ? ' changed' : ''}${setting.group === 'levels' && !setting.selfFoundOk && selfFoundOn() ? ' self-found-off' : ''}${settingOff(setting) ? ' conf-off' : ''}${setting.hideOff ? ' conf-hide' : ''}${setting.origin ? ` from-${setting.origin}` : ''}"${setting.offWhen ? ` data-off-file="${esc(setting.file)}" data-off-key="${esc(setting.key)}"` : ''}><div class="conf-label"><strong>${esc(loc(setting.label))}</strong>${sincePill(setting)}${originTag(setting)}<p>${esc(loc(setting.help))}</p><small class="when">${icon('refresh')}${esc(loc(conf.when?.[setting.when]))}</small><div class="conf-warn" data-warn="${esc(setting.key)}" ${warn.length ? '' : 'hidden'}>${icon('info')}<span class="conf-warn-text">${warnHtml(setting.key)}</span></div></div><div class="conf-control">${control(setting)}</div></div>`;
 }
 
 // ---------------------------------------------------------------- search in the settings
@@ -1336,6 +1337,7 @@ const VIRTUAL_TABS = {
       const selfloot = pendingOr(setting) === '1';
       const card = (value, on, title, text) => `<div class="recipe-cell"><button class="recipe${on ? ' selected' : ''}" data-action="gear-pick" data-value="${value}"><strong>${on ? icon('check') : ''}${esc(title)}</strong><small>${esc(text)}</small></button></div>`;
       return `<div class="recipes">${card('0', !selfloot, t('gear.classic', 'Classic'), t('gear.classicText', 'Bots get gear made for their level (our item level rules).'))}${card('1', selfloot, t('gear.selfloot', 'Self-loot'), t('gear.selflootText', 'Bots only wear what they loot or craft; nothing is generated.'))}</div>
+        ${selfloot ? gearAt60() : ''}
         <p class="status-line">${icon('info')}${esc(t('gear.note', 'Your bots keep their level and what they wear today: only what comes next changes. Then Save.'))}</p>`;
     },
   },
@@ -1356,11 +1358,65 @@ const VIRTUAL_TABS = {
     },
   },
 };
+// Self-loot: auto-gear at 60 or not (3.2). CoaSelfFoundMaxLevel 59: bots are geared as usual at 60; 80: self-loot at
+// every level. Any value under 60 counts as on; turning it off writes 80, on writes 59.
+const MAXLEVEL_KEY = 'AiPlayerbot.CoaSelfFoundMaxLevel';
+const at60On = setting => { const level = Number(pendingOr(setting)); return !Number.isFinite(level) || pendingOr(setting) === '' || level < 60; };
+function gearAt60() {
+  const setting = settingOf(MAXLEVEL_KEY);
+  if (!setting) return '';
+  return `<div class="preset-card gear-at60"><div><strong>${icon('shield')}${esc(t('gear.at60', 'Auto-gear at level 60'))}</strong><p>${esc(t('gear.at60Text', 'On: at 60 the bots are geared as usual for the endgame. Off: self-loot at every level, even at 60.'))}</p></div>${moduleSwitch('gear-at60', at60On(setting), false)}</div>`;
+}
+// What's new (3.2): the settings added or whose default changed since the player's previous launcher, from the table
+// shipped with the launcher (scripts/settings-since.cjs). Only those this server shows; display only, nothing written.
+function sinceList() {
+  const conf = App.state.conf;
+  if (!conf?.settings) return [];
+  return (App.state.settingsSince || []).map(entry => ({ ...entry, setting: conf.settings.find(setting => setting.file === entry.file && setting.key === entry.key) })).filter(entry => entry.setting);
+}
+function sinceText(entry) {
+  if (entry.kind === 'new') return t('since.new', 'New');
+  if (entry.setting?.kind === 'bool' && ['0', '1'].includes(entry.to)) return entry.to === '1' ? t('since.nowOn', 'Now on by default') : t('since.nowOff', 'Now off by default');
+  return t('since.default', 'Default: {from} → {to}', { from: entry.from, to: entry.to });
+}
+function sincePill(setting) {
+  const entry = (App.state.settingsSince || []).find(item => item.file === setting.file && item.key === setting.key);
+  return entry ? `<span class="pill info since-pill" title="${esc(t('since.hint', 'Since your previous launcher ({version})', { version: App.state.settings?.previousVersion || '' }))}">${esc(sinceText({ ...entry, setting }))}</span>` : '';
+}
+VIRTUAL_TABS['whats-new'] = {
+  icon: 'star', label: () => t('since.title', "What's new"),
+  view() {
+    const groups = App.state.conf.groups;
+    const list = sinceList();
+    const byGroup = new Map();
+    for (const entry of list) byGroup.set(entry.setting.group, [...(byGroup.get(entry.setting.group) || []), entry]);
+    const blocks = [...byGroup].map(([id, entries]) => {
+      const group = groups.find(item => item.id === id);
+      return `<h4 class="preset-head">${icon(group?.icon || 'settings')}${esc(loc(group?.label) || id)}</h4>${entries.map(entry => `<button class="line-action since-line" data-action="since-goto" data-group="${esc(id)}" data-row="${esc(entry.file)}|${esc(entry.key)}"><span>${esc(loc(entry.setting.label))}</span><span class="pill info">${esc(sinceText(entry))}</span>${icon('arrow')}</button>`).join('')}`;
+    }).join('');
+    return `<p class="muted">${esc(t('since.lead', 'Settings added or whose default changed since your previous launcher ({version}). Your own values are never changed: a new setting starts at its default.', { version: App.state.settings?.previousVersion || '' }))}</p>${blocks}`;
+  },
+};
 // The bot chat switch: CoaLive.Chat.Enable (CoA SquidBot 4555e923): the bots write no line any more (channels, guild,
 // night bank, whisper answers, Trade); everything else goes on. Default on (user's decision, 11/11).
 const CHAT_KEY = 'AiPlayerbot.CoaLive.Chat.Enable';
 const CHAT_READY = true;
 Object.assign(App.actions, {
+  'since-goto': button => {
+    App.state.confGroup = button.dataset.group;
+    App.state.confSearch = '';
+    App.refresh('server');
+    const row = [...document.querySelectorAll('[data-row]')].find(item => item.dataset.row === button.dataset.row && item.classList.contains('conf-row'));
+    if (row) { row.scrollIntoView({ block: 'center' }); row.classList.add('since-flash'); setTimeout(() => row.classList.remove('since-flash'), 1600); }
+  },
+  'gear-at60': button => {
+    const setting = settingOf(MAXLEVEL_KEY);
+    if (!setting) return;
+    const value = button.dataset.on === '1' ? '80' : '59';
+    const k = pendingKey(setting.file, setting.key);
+    if (String(setting.value ?? '').trim() === value) delete App.state.pending[k]; else App.state.pending[k] = value;
+    App.refresh('server');
+  },
   'gear-pick': button => {
     const setting = settingOf('AiPlayerbot.CoaSelfFound');
     if (!setting) return;

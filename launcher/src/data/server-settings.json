@@ -1578,10 +1578,10 @@
     "zh": "自给自足生效至等级"
    },
    "help": {
-    "en": "Highest level self-found applies to: above it, bots are geared as usual for the endgame. 59 by default (geared at 60).",
-    "fr": "Plus haut niveau concerné par le self-found : au-dessus, les bots sont équipés comme d'habitude pour la fin de jeu. 59 par défaut (équipés à 60).",
-    "ru": "Самый высокий уровень self-found: выше боты экипируются как обычно для эндгейма. По умолчанию 59 (экипировка на 60).",
-    "zh": "自给自足适用的最高等级：高于此等级，机器人照常配备终局装备。默认 59（60 级配装）。"
+    "en": "Highest level self-found applies to: above it, bots are geared as usual for the endgame. 59 by default (geared at 60). 80: self-loot at every level (the \"Auto-gear at level 60\" switch of Bot gear).",
+    "fr": "Plus haut niveau concerné par le self-found : au-dessus, les bots sont équipés comme d'habitude pour la fin de jeu. 59 par défaut (équipés à 60). 80 : self-loot à tous les niveaux (l'interrupteur « Équipement automatique au niveau 60 » d'Équipement des bots).",
+    "ru": "Самый высокий уровень self-found: выше боты экипируются как обычно для эндгейма. По умолчанию 59 (экипировка на 60). 80: self-loot на всех уровнях (переключатель «Автоэкипировка на 60-м уровне» в «Снаряжении ботов»).",
+    "zh": "自给自足适用的最高等级：高于此等级，机器人照常配备终局装备。默认 59（60 级配装）。 80：所有等级都自给自足（“机器人装备”中的“60 级自动配装”开关）。"
    }
   },
   {

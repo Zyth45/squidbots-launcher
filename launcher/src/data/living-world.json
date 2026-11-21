@@ -71,7 +71,12 @@
   "AiPlayerbot.CoaCombat.GearScore.Enable",
   "AiPlayerbot.CoaCombat.BlackwingLair.Enable",
   "AiPlayerbot.CoaCombat.ZulGurub.Enable",
-  "AiPlayerbot.CoaCombat.AhnQiraj.Enable"
+  "AiPlayerbot.CoaCombat.AhnQiraj.Enable",
+  "AiPlayerbot.CoaSelfFound.Rolls",
+  "AiPlayerbot.CoaEconomy.CraftForSelf.Enable",
+  "AiPlayerbot.CoaEconomy.EnchantForSelf.Enable",
+  "AiPlayerbot.CoaEconomy.SelfStudy.Enable",
+  "AiPlayerbot.CoaWhy.Enable"
  ],
  "groups": [
   {
@@ -184,6 +189,16 @@
     "fr": "Performances (beaucoup de bots)",
     "ru": "Производительность (много ботов)",
     "zh": "性能（大量机器人）"
+   }
+  },
+  {
+   "id": "lw-diagnostics",
+   "icon": "info",
+   "label": {
+    "en": "Diagnostics",
+    "fr": "Diagnostic",
+    "ru": "Диагностика",
+    "zh": "诊断"
    }
   }
  ],
@@ -2131,6 +2146,204 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaEconomy.CraftForSelf.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "type": "bool",
+   "default": 1,
+   "when": "restart",
+   "label": {
+    "en": "Bots craft upgrades for themselves",
+    "fr": "Les bots fabriquent leurs propres améliorations",
+    "ru": "Боты создают улучшения для себя",
+    "zh": "机器人为自己制作提升装备"
+   },
+   "help": {
+    "en": "New in 3.2. A bot with a profession makes for itself the best upgrade among its recipes and wears it. Self-found and classic bots alike.",
+    "fr": "Nouveau en 3.2. Un bot qui a un métier fabrique pour lui-même la meilleure amélioration parmi ses recettes et la porte. Bots self-found et classiques.",
+    "ru": "Новое в 3.2. Бот с профессией создаёт для себя лучшее улучшение из своих рецептов и надевает его. Для ботов self-found и обычных.",
+    "zh": "3.2 新增。有专业技能的机器人会用自己的配方为自己制作最好的提升装备并穿上。自给自足和经典机器人都适用。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.EnchantForSelf.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "type": "bool",
+   "default": 1,
+   "when": "restart",
+   "label": {
+    "en": "Enchanter bots enchant their own gear",
+    "fr": "Les bots enchanteurs enchantent leur équipement",
+    "ru": "Боты-зачарователи зачаровывают своё снаряжение",
+    "zh": "附魔师机器人为自己的装备附魔"
+   },
+   "help": {
+    "en": "New in 3.2. An enchanter bot puts on a piece it wears the best permanent enchantment it knows, never replacing a better or equal one.",
+    "fr": "Nouveau en 3.2. Un bot enchanteur met sur une pièce qu'il porte le meilleur enchantement permanent qu'il connaît, sans jamais remplacer un enchantement meilleur ou égal.",
+    "ru": "Новое в 3.2. Бот-зачарователь накладывает на надетый предмет лучшее известное ему постоянное зачарование, никогда не заменяя лучшее или равное.",
+    "zh": "3.2 新增。附魔师机器人会给身上的装备附上它会的最好的永久附魔，绝不替换更好或相同的附魔。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.SelfStudy.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "type": "bool",
+   "default": 1,
+   "when": "restart",
+   "label": {
+    "en": "Hourly craft study in a capital",
+    "fr": "Étude des métiers en capitale, une fois par heure",
+    "ru": "Ежечасное изучение ремёсел в столице",
+    "zh": "在主城每小时研究制作"
+   },
+   "help": {
+    "en": "New in 3.2. Once an hour in a capital, a random bot studies what it could craft or enchant for itself.",
+    "fr": "Nouveau en 3.2. Une fois par heure, en capitale, un bot aléatoire étudie ce qu'il pourrait fabriquer ou enchanter pour lui-même.",
+    "ru": "Новое в 3.2. Раз в час в столице случайный бот изучает, что он мог бы создать или зачаровать для себя.",
+    "zh": "3.2 新增。随机机器人每小时在主城研究一次可以为自己制作或附魔的东西。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.SelfStudy.IntervalMinutes",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "type": "int",
+   "default": 60,
+   "when": "restart",
+   "min": 5,
+   "max": 1440,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.SelfStudy.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Minutes between two studies",
+    "fr": "Minutes entre deux études",
+    "ru": "Минут между двумя изучениями",
+    "zh": "两次研究间隔（分钟）"
+   },
+   "help": {
+    "en": "How often a bot studies (at least 5 minutes).",
+    "fr": "Fréquence de l'étude d'un bot (au moins 5 minutes).",
+    "ru": "Как часто бот проводит изучение (не менее 5 минут).",
+    "zh": "机器人研究的频率（至少 5 分钟）。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.SelfStudy.BuyReagents",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "type": "bool",
+   "default": 1,
+   "when": "restart",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.SelfStudy.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Buy missing reagents",
+    "fr": "Acheter les composants manquants",
+    "ru": "Покупать недостающие реагенты",
+    "zh": "购买缺少的材料"
+   },
+   "help": {
+    "en": "The study buys the reagents a bot lacks, a vendor's first, the auction house's next. Reagents only, never a finished item. Off: only the reagents it holds.",
+    "fr": "L'étude achète les composants qui manquent au bot, chez un marchand d'abord, à l'hôtel des ventes ensuite. Des composants seulement, jamais un objet fini. Désactivé : seulement les composants qu'il a.",
+    "ru": "Изучение покупает недостающие боту реагенты: сначала у торговца, затем на аукционе. Только реагенты, никогда готовые предметы. Выключено: только имеющиеся реагенты.",
+    "zh": "研究会购买机器人缺少的材料，先从商人处购买，再从拍卖行购买。只买材料，绝不买成品。关闭：只用身上已有的材料。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.SelfStudy.MaxGoldPercent",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "type": "int",
+   "default": 10,
+   "when": "restart",
+   "min": 0,
+   "max": 100,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.SelfStudy.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Reagent budget (percent of gold)",
+    "fr": "Budget des composants (% de l'or)",
+    "ru": "Бюджет на реагенты (% золота)",
+    "zh": "材料预算（金币百分比）"
+   },
+   "help": {
+    "en": "One study spends at most this share of the bot's gold on reagents.",
+    "fr": "Une étude dépense au plus cette part de l'or du bot en composants.",
+    "ru": "За одно изучение тратится не больше этой доли золота бота на реагенты.",
+    "zh": "一次研究最多花费机器人这一比例的金币购买材料。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.SelfStudy.MaxCopperPerLevel",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "type": "int",
+   "default": 2500,
+   "when": "restart",
+   "min": 0,
+   "max": 1000000,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.SelfStudy.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Reagent budget per level (copper)",
+    "fr": "Budget des composants par niveau (cuivre)",
+    "ru": "Бюджет на реагенты за уровень (медь)",
+    "zh": "每级材料预算（铜币）"
+   },
+   "help": {
+    "en": "One study spends at most this many copper times the bot's level (2500: 15 gold at level 60).",
+    "fr": "Une étude dépense au plus ce nombre de pièces de cuivre multiplié par le niveau du bot (2500 : 15 pièces d'or au niveau 60).",
+    "ru": "За одно изучение тратится не больше этого числа медяков, умноженного на уровень бота (2500: 15 золотых на 60-м уровне).",
+    "zh": "一次研究最多花费此铜币数乘以机器人等级（2500：60 级时 15 金）。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.SelfStudy.MinGainPercent",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "type": "int",
+   "default": 5,
+   "when": "restart",
+   "min": 0,
+   "max": 100,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.SelfStudy.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Minimum gain to buy reagents (%)",
+    "fr": "Gain minimum pour acheter des composants (%)",
+    "ru": "Минимальный прирост для покупки реагентов (%)",
+    "zh": "购买材料的最低提升（%）"
+   },
+   "help": {
+    "en": "Reagents are bought only when the piece gains at least this percent over what it replaces.",
+    "fr": "Les composants ne sont achetés que si la pièce apporte au moins ce pourcentage de plus que celle qu'elle remplace.",
+    "ru": "Реагенты покупаются, только если предмет лучше заменяемого хотя бы на этот процент.",
+    "zh": "只有当新装备比被替换的装备至少提升这个百分比时才购买材料。"
+   }
+  },
+  {
    "key": "AiPlayerbot.LootNeedRollLevel",
    "file": "playerbots.conf",
    "group": "lw-loot",
@@ -2168,6 +2381,26 @@
     "fr": "Poli (par défaut) : les bots laissent tous les objets aux joueurs et passent (ils ne jouent Cupidité que si AiPlayerbot.LootGreedRollLevel vaut 1 dans playerbots.conf ; il vaut 0 par défaut). Besoin : un bot joue Besoin sur un objet qui l'améliore vraiment (une arme épique en instance, par exemple) et l'équipe s'il le gagne ; là où il ne jouerait que Cupidité, il passe de la même façon.",
     "ru": "«Вежливо» (по умолчанию): боты оставляют все предметы игрокам и пасуют («Не откажусь» бросают, только если AiPlayerbot.LootGreedRollLevel = 1 в playerbots.conf; по умолчанию 0). «Нужно»: бот бросает «Нужно» на предмет, который действительно его улучшает (например, эпическое оружие в подземелье), и надевает его, если выиграет; там, где он бросил бы только «Не откажусь», он так же пасует.",
     "zh": "礼让（默认）：机器人把所有物品留给玩家并选择放弃（只有当 playerbots.conf 中的 AiPlayerbot.LootGreedRollLevel 为 1 时才掷贪婪；默认为 0）。需求：物品确实能提升机器人时（例如副本中的史诗武器），机器人掷需求，赢得后装备；本该只掷贪婪时，同样放弃。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaSelfFound.Rolls",
+   "file": "playerbots.conf",
+   "group": "lw-loot",
+   "type": "bool",
+   "default": 1,
+   "when": "restart",
+   "label": {
+    "en": "Self-found bots roll Need on upgrades",
+    "fr": "Les bots self-found font Besoin sur leurs améliorations",
+    "ru": "Боты self-found бросают «Нужно» на улучшения",
+    "zh": "自给自足机器人对提升装备掷“需求”"
+   },
+   "help": {
+    "en": "New in 3.2. A self-found bot lives on what it loots: at a group roll it rolls Need on an upgrade (after the real players have voted) and Greed on the rest, whatever the Need and Greed settings say; never Need against a real player who rolled Need. The dungeon simulation gives its loot to the member it upgrades. Other bots keep the Need and Greed settings. Off: as before (with the defaults, self-found bots pass on everything).",
+    "fr": "Nouveau en 3.2. Un bot self-found vit de ce qu'il ramasse : à un jet de groupe, il fait Besoin sur une amélioration (après le vote des vrais joueurs) et Cupidité sur le reste, quels que soient les réglages Besoin et Cupidité ; jamais Besoin contre un vrai joueur qui a fait Besoin. La simulation de donjon donne son butin au membre qu'il améliore. Les autres bots suivent les réglages Besoin et Cupidité. Désactivé : comme avant (avec les défauts, les bots self-found passent sur tout).",
+    "ru": "Новое в 3.2. Бот self-found живёт тем, что добывает: при групповом розыгрыше он бросает «Нужно» на улучшение (после голосования настоящих игроков) и «Не откажусь» на остальное, независимо от настроек «Нужно» и «Не откажусь»; никогда «Нужно» против настоящего игрока, выбравшего «Нужно». Симуляция подземелья отдаёт добычу тому участнику, кому она лучше. Остальные боты следуют настройкам. Выключено: как раньше (с настройками по умолчанию боты self-found пасуют на всё).",
+    "zh": "3.2 新增。自给自足机器人靠拾取为生：团队掷骰时，它对提升装备掷“需求”（在真实玩家投票之后），其余掷“贪婪”，不受“需求”和“贪婪”设置影响；绝不与已掷“需求”的真实玩家争“需求”。副本模拟会把战利品分给能提升的成员。其他机器人照常遵循这些设置。关闭：与以前相同（默认设置下，自给自足机器人全部放弃）。"
    }
   },
   {
@@ -3638,6 +3871,28 @@
    }
   },
   {
+   "key": "AiPlayerbot.Coa.HideLoginAchievementsMinutes",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "int",
+   "default": 3,
+   "when": "restart",
+   "min": 0,
+   "max": 60,
+   "label": {
+    "en": "Hide achievements of a bot coming online (minutes)",
+    "fr": "Cacher les hauts faits d'un bot qui se connecte (minutes)",
+    "ru": "Скрывать достижения бота при входе (минуты)",
+    "zh": "隐藏机器人上线时的成就（分钟）"
+   },
+   "help": {
+    "en": "New in 3.2. The achievements a random bot earns in its first minutes online stay earned but are not announced (guild, nearby, realm). Never a real player or a player's alts. 0: every achievement announced.",
+    "fr": "Nouveau en 3.2. Les hauts faits qu'un bot aléatoire obtient dans ses premières minutes en ligne restent acquis mais ne sont pas annoncés (guilde, alentours, royaume). Jamais un vrai joueur ni les alts d'un joueur. 0 : tous les hauts faits sont annoncés.",
+    "ru": "Новое в 3.2. Достижения, полученные случайным ботом в первые минуты в сети, засчитываются, но не объявляются (гильдии, окружающим, миру). Никогда для настоящих игроков и их альтов. 0: объявляются все достижения.",
+    "zh": "3.2 新增。随机机器人上线最初几分钟内获得的成就仍然有效，但不会公告（公会、附近、国度）。真实玩家和玩家的小号不受影响。0：所有成就都会公告。"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaLive.City.Enable",
    "file": "playerbots.conf",
    "group": "lw-citylife",
@@ -4706,6 +4961,206 @@
     "ru": "Имена аккаунтов через запятую: продавец аукциона (AHBOT) и водитель dungeon clear (DCDRIVER) не являются игроками.",
     "zh": "账号名，以逗号分隔：拍卖行卖家（AHBOT）和副本清理驱动（DCDRIVER）不是玩家。"
    }
+  },
+  {
+   "key": "AiPlayerbot.CoaWhy.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-diagnostics",
+   "type": "bool",
+   "default": 1,
+   "when": "restart",
+   "label": {
+    "en": ".squidbots why",
+    "fr": ".squidbots why",
+    "ru": ".squidbots why",
+    "zh": ".squidbots why"
+   },
+   "help": {
+    "en": "New in 3.2. \".squidbots why [name]\" on a selected bot tells what it is doing (status, destination, path, last move, how long it has stood still) in the chat and in the why file, to send to the SquidBots team.",
+    "fr": "Nouveau en 3.2. « .squidbots why [nom] » sur un bot ciblé dit ce qu'il fait (état, destination, chemin, dernier déplacement, depuis combien de temps il est immobile) dans le chat et dans le fichier why, à envoyer à l'équipe SquidBots.",
+    "ru": "Новое в 3.2. «.squidbots why [имя]» для выбранного бота сообщает, что он делает (состояние, цель, путь, последнее перемещение, как долго стоит на месте), в чате и в файле why, который можно отправить команде SquidBots.",
+    "zh": "3.2 新增。对选中的机器人使用“.squidbots why [名字]”，会在聊天和 why 文件中说明它在做什么（状态、目的地、路径、最后一次移动、静止了多久），可发送给 SquidBots 团队。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWhy.File",
+   "file": "playerbots.conf",
+   "group": "lw-diagnostics",
+   "type": "text",
+   "default": "squidbots_why.log",
+   "when": "restart",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWhy.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Why file",
+    "fr": "Fichier why",
+    "ru": "Файл why",
+    "zh": "why 文件"
+   },
+   "help": {
+    "en": "The file .squidbots why writes to, in the server's logs folder.",
+    "fr": "Le fichier où écrit .squidbots why, dans le dossier des journaux du serveur.",
+    "ru": "Файл, в который пишет .squidbots why, в папке журналов сервера.",
+    "zh": ".squidbots why 写入的文件，位于服务器日志文件夹中。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWhy.GmOnly",
+   "file": "playerbots.conf",
+   "group": "lw-diagnostics",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWhy.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": ".squidbots why for game masters only",
+    "fr": ".squidbots why réservé aux maîtres du jeu",
+    "ru": ".squidbots why только для ГМ",
+    "zh": ".squidbots why 仅限游戏管理员"
+   },
+   "help": {
+    "en": "On: only game master accounts may use .squidbots why; the others are told so.",
+    "fr": "Activé : seuls les comptes de maître du jeu peuvent utiliser .squidbots why ; les autres en sont avertis.",
+    "ru": "Включено: только учётные записи ГМ могут использовать .squidbots why; остальным об этом сообщается.",
+    "zh": "开启：只有游戏管理员账号可以使用 .squidbots why；其他人会收到提示。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWhy.Cooldown",
+   "file": "playerbots.conf",
+   "group": "lw-diagnostics",
+   "type": "int",
+   "default": 5,
+   "when": "restart",
+   "min": 0,
+   "max": 3600,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaWhy.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": ".squidbots why cooldown (seconds)",
+    "fr": "Délai de .squidbots why (secondes)",
+    "ru": "Перезарядка .squidbots why (секунды)",
+    "zh": ".squidbots why 冷却（秒）"
+   },
+   "help": {
+    "en": "Seconds between two .squidbots why of one player.",
+    "fr": "Secondes entre deux .squidbots why d'un même joueur.",
+    "ru": "Секунд между двумя .squidbots why одного игрока.",
+    "zh": "同一玩家两次 .squidbots why 之间的秒数。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaSelfFound.RollLog",
+   "file": "playerbots.conf",
+   "group": "lw-diagnostics",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "label": {
+    "en": "Log self-found rolls",
+    "fr": "Journal des jets self-found",
+    "ru": "Журнал бросков self-found",
+    "zh": "记录自给自足掷骰"
+   },
+   "help": {
+    "en": "Diagnostic: each roll of a self-found bot in BotLoot.log.",
+    "fr": "Diagnostic : chaque jet d'un bot self-found dans BotLoot.log.",
+    "ru": "Диагностика: каждый бросок бота self-found в BotLoot.log.",
+    "zh": "诊断：自给自足机器人的每次掷骰写入 BotLoot.log。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.CraftForSelf.Log",
+   "file": "playerbots.conf",
+   "group": "lw-diagnostics",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "label": {
+    "en": "Log crafts for self",
+    "fr": "Journal des fabrications pour soi",
+    "ru": "Журнал создания для себя",
+    "zh": "记录为自己制作"
+   },
+   "help": {
+    "en": "Diagnostic: each piece a bot makes for itself, in BotLoot.log.",
+    "fr": "Diagnostic : chaque pièce qu'un bot fabrique pour lui-même, dans BotLoot.log.",
+    "ru": "Диагностика: каждый предмет, созданный ботом для себя, в BotLoot.log.",
+    "zh": "诊断：机器人为自己制作的每件装备写入 BotLoot.log。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.EnchantForSelf.Log",
+   "file": "playerbots.conf",
+   "group": "lw-diagnostics",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "label": {
+    "en": "Log enchantments for self",
+    "fr": "Journal des enchantements pour soi",
+    "ru": "Журнал зачарований для себя",
+    "zh": "记录为自己附魔"
+   },
+   "help": {
+    "en": "Diagnostic: each enchantment a bot puts on its own gear, in BotLoot.log.",
+    "fr": "Diagnostic : chaque enchantement qu'un bot met sur son équipement, dans BotLoot.log.",
+    "ru": "Диагностика: каждое зачарование, наложенное ботом на своё снаряжение, в BotLoot.log.",
+    "zh": "诊断：机器人给自己装备的每个附魔写入 BotLoot.log。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.SelfStudy.Log",
+   "file": "playerbots.conf",
+   "group": "lw-diagnostics",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "label": {
+    "en": "Log studies",
+    "fr": "Journal des études",
+    "ru": "Журнал изучений",
+    "zh": "记录研究"
+   },
+   "help": {
+    "en": "Diagnostic: each study and an hourly count (studies, crafts, enchantments, short of reagents, reagents bought, gold spent) in BotLoot.log.",
+    "fr": "Diagnostic : chaque étude et un compte par heure (études, fabrications, enchantements, composants manquants, composants achetés, or dépensé) dans BotLoot.log.",
+    "ru": "Диагностика: каждое изучение и ежечасный подсчёт (изучения, создания, зачарования, нехватка реагентов, купленные реагенты, потраченное золото) в BotLoot.log.",
+    "zh": "诊断：每次研究以及每小时统计（研究、制作、附魔、缺少材料、购买的材料、花费的金币）写入 BotLoot.log。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.BotAuctions.BuyLog",
+   "file": "playerbots.conf",
+   "group": "lw-diagnostics",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "label": {
+    "en": "Log auction house buys",
+    "fr": "Journal des achats à l'hôtel des ventes",
+    "ru": "Журнал покупок на аукционе",
+    "zh": "记录拍卖行购买"
+   },
+   "help": {
+    "en": "Diagnostic: each piece or bag a bot buys at the auction house, and an hourly count of self-found and classic bots apart, in BotLoot.log.",
+    "fr": "Diagnostic : chaque pièce ou sac qu'un bot achète à l'hôtel des ventes, et un compte par heure des bots self-found et classiques à part, dans BotLoot.log.",
+    "ru": "Диагностика: каждый предмет или сумка, купленные ботом на аукционе, и ежечасный подсчёт отдельно для ботов self-found и обычных, в BotLoot.log.",
+    "zh": "诊断：机器人在拍卖行购买的每件装备或背包，以及自给自足与经典机器人分开的每小时统计，写入 BotLoot.log。"
+   }
   }
  ],
  "packs": [
@@ -4816,7 +5271,12 @@
     "AiPlayerbot.CoaHearthWithMaster": 1,
     "AiPlayerbot.CoaMute.Enable": 1,
     "AiPlayerbot.CoaGiveToAlt.Enable": 1,
-    "AiPlayerbot.CoaTrust.Enable": 1
+    "AiPlayerbot.CoaTrust.Enable": 1,
+    "AiPlayerbot.CoaSelfFound.Rolls": 1,
+    "AiPlayerbot.CoaEconomy.CraftForSelf.Enable": 1,
+    "AiPlayerbot.CoaEconomy.EnchantForSelf.Enable": 1,
+    "AiPlayerbot.CoaEconomy.SelfStudy.Enable": 1,
+    "AiPlayerbot.CoaEconomy.SelfStudy.BuyReagents": 1
    }
   }
  ]

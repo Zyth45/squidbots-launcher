@@ -1,0 +1,871 @@
+{
+ "from": "0.3.59",
+ "next": "0.4.7",
+ "catalog": "567a6af6c38bd332",
+ "keys": {
+  "worldserver.conf|CharactersPerRealm": {
+   "added": "0.4.0"
+  },
+  "worldserver.conf|CharactersPerAccount": {
+   "added": "0.4.0"
+  },
+  "coa.conf|CoA.CharacterSelectionMaxActive": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaPets.AutoBooks": {
+   "added": "0.4.0"
+  },
+  "mod_dungeon_clear.conf|DungeonClear.PetsDefensiveBetweenFights": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Invasions.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Invasions.Auto": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Invasions.MinRealPlayers": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Invasions.WarningMinutes": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Invasions.DurationMinutes": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Invasions.HealthPct": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Invasions.BotsPct": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Invasions.BotsMax": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Invasions.OneAtATime": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Invasions.GapMinutesMin": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Invasions.GapMinutesMax": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Invasions.Scourge.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Invasions.Legion.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Invasions.AhnQiraj.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.ResourceRush.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.ResourceRush.Auto": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.ResourceRush.IntervalMin": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.ResourceRush.IntervalMax": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.ResourceRush.DurationMinutes": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.ResourceRush.BotsPct": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.ResourceRush.BotsMax": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.CapitalRaid.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.CapitalRaid.Auto": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.CapitalRaid.AutoHours": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.CapitalRaid.Attackers": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.CapitalRaid.Defenders": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.CapitalRaid.Minutes": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.CapitalRaid.GatherSeconds": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.CapitalRaid.KingHealthPct": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.CapitalRaid.MinLevel": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.CapitalRaid.RewardSilverPerLevel": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Events.Addon": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaCombat.BreathGuard.Enable": {
+   "added": "0.4.0",
+   "defaults": [
+    [
+     "0.4.3",
+     "0",
+     "1"
+    ]
+   ]
+  },
+  "playerbots.conf|AiPlayerbot.CoaCombat.StuckCombat.Enable": {
+   "added": "0.4.0",
+   "defaults": [
+    [
+     "0.4.5",
+     "0",
+     "1"
+    ]
+   ]
+  },
+  "playerbots.conf|AiPlayerbot.CoaCombat.StuckCombat.TimeoutSeconds": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaCombat.CombatPurge.Enable": {
+   "added": "0.4.0",
+   "defaults": [
+    [
+     "0.4.5",
+     "0",
+     "1"
+    ]
+   ]
+  },
+  "playerbots.conf|AiPlayerbot.CoaCombat.SunkenTemple.Enable": {
+   "added": "0.4.0",
+   "defaults": [
+    [
+     "0.4.5",
+     "0",
+     "1"
+    ]
+   ]
+  },
+  "playerbots.conf|AiPlayerbot.CoaCombat.Telegraph.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaCombat.PursuitStop.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaCombat.OffTank.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaCombat.MoltenCore.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaCombat.BlackwingLair.Enable": {
+   "added": "0.4.0",
+   "defaults": [
+    [
+     "0.4.5",
+     "0",
+     "1"
+    ]
+   ]
+  },
+  "playerbots.conf|AiPlayerbot.CoaCombat.ZulGurub.Enable": {
+   "added": "0.4.0",
+   "defaults": [
+    [
+     "0.4.5",
+     "0",
+     "1"
+    ]
+   ]
+  },
+  "playerbots.conf|AiPlayerbot.CoaCombat.AhnQiraj.Enable": {
+   "added": "0.4.0",
+   "defaults": [
+    [
+     "0.4.5",
+     "0",
+     "1"
+    ]
+   ]
+  },
+  "playerbots.conf|AiPlayerbot.CoaCombat.CallOfTheGrave.Enable": {
+   "added": "0.4.0",
+   "defaults": [
+    [
+     "0.4.5",
+     "0",
+     "1"
+    ]
+   ]
+  },
+  "playerbots.conf|AiPlayerbot.CoaCombat.PlayerLed.Enable": {
+   "added": "0.4.0",
+   "defaults": [
+    [
+     "0.4.5",
+     "0",
+     "1"
+    ]
+   ]
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.Sessions.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.DungeonSim.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.DungeonSim.GroupsPerFaction": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Recovery.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Recovery.NoProgressSeconds": {
+   "added": "0.4.0",
+   "defaults": [
+    [
+     "0.4.3",
+     "30",
+     "120"
+    ]
+   ]
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Recovery.OutOfRangeMinutes": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Recovery.OutOfRangeLevels": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.ServerFirst.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Density.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Density.FarSharePct": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Events.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.StateFile.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.DataFile.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Travel.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Travel.Hearthstone": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Leveling.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Leveling.SameContinentPct": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Leveling.AreaGuard": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Leveling.AreaGuardLevels": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.WorldPvp.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.WorldPvp.Skirmish.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.WorldPvp.CapitalDefence.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.WorldPvp.CapitalDefence.MinAttackers": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.BgSim.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.BgSim.ReplaceAutoJoin": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.BgSim.Matches": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.BgSim.IntervalSeconds": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.BgSim.BotCooldownMinutes": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.BgSim.Shop": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.BgSim.Announce": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.Artisans.Enable": {
+   "added": "0.4.0",
+   "defaults": [
+    [
+     "0.4.3",
+     "0",
+     "1"
+    ]
+   ]
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.CraftOrders.Enable": {
+   "added": "0.4.0",
+   "defaults": [
+    [
+     "0.4.3",
+     "0",
+     "1"
+    ]
+   ]
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.CraftOrders.AdvertiseMinutes": {
+   "added": "0.4.0",
+   "defaults": [
+    [
+     "0.4.3",
+     "0",
+     "8"
+    ]
+   ]
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.Artisans.RecursiveCost.Enable": {
+   "added": "0.4.0",
+   "defaults": [
+    [
+     "0.4.3",
+     "0",
+     "1"
+    ]
+   ]
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.Artisans.Stock.Enable": {
+   "added": "0.4.0",
+   "defaults": [
+    [
+     "0.4.3",
+     "0",
+     "1"
+    ]
+   ]
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.Materials.Enable": {
+   "added": "0.4.0",
+   "defaults": [
+    [
+     "0.4.3",
+     "0",
+     "1"
+    ]
+   ]
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.Artisans.Addon": {
+   "added": "0.4.0",
+   "defaults": [
+    [
+     "0.4.3",
+     "0",
+     "1"
+    ]
+   ]
+  },
+  "playerbots.conf|AiPlayerbot.LootNeedRollLevel": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaCombat.GearScore.Enable": {
+   "added": "0.4.0",
+   "defaults": [
+    [
+     "0.4.5",
+     "0",
+     "1"
+    ]
+   ]
+  },
+  "playerbots.conf|AiPlayerbot.CoaCombat.LootNeedWaitSeconds": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaCombat.LootNeedMinUpgradePct": {
+   "added": "0.4.0",
+   "defaults": [
+    [
+     "0.4.5",
+     "0",
+     "10"
+    ]
+   ]
+  },
+  "playerbots.conf|AiPlayerbot.CoaCombat.LootNeedEpicOnly": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.Chat.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.LegacyChat": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.Social.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.Social.InviteCooldownMinutes": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.NightBank.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.TradeMessagesPerMinute": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.NoAwayFlag": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaSoul.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaSoul.Weights": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaSoul.Addon": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.TypoChance": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.AbbrevChance": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.RareChance": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.GreetRange": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaBotSurname": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaBotSurnameList": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaBotIdentify": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Guilds.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Guilds.RecruitMinutes": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Guilds.Help": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Guilds.Orders": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Guilds.OrdersPerDay": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Guilds.OrderMaxQuality": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Guilds.OrderAuctionMaxGold": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Guilds.Gear": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Guilds.GearDays": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Guilds.GearQuality": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Guilds.GearAsk": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Guilds.LoginGraceSeconds": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Guilds.Addon": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Guilds.Catalog": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Guilds.Activities": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Guilds.ActivityCooldownMinutes": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Guilds.GatherMinutes": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Guilds.GatherBringSeconds": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Guilds.Charters": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Guilds.UnguildedPercent": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Guilds.CharterMinutes": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Guilds.Greetings": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Guilds.PlayerGuildOnline": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Guilds.PlayerGuildOnlinePercent": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.City.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.Immersion.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.Immersion.FishingPerThousand": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.Sheath.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.CleanWorld.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.RefreshClearsInventory": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.AHBot.Enable": {
+   "added": "0.4.0",
+   "defaults": [
+    [
+     "0.4.3",
+     "0",
+     "1"
+    ]
+   ]
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.Filter.Enable": {
+   "added": "0.4.0",
+   "defaults": [
+    [
+     "0.4.3",
+     "0",
+     "1"
+    ]
+   ]
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.Buyer.Enable": {
+   "added": "0.4.0",
+   "defaults": [
+    [
+     "0.4.3",
+     "0",
+     "1"
+    ]
+   ]
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.Market.Enable": {
+   "added": "0.4.0",
+   "defaults": [
+    [
+     "0.4.3",
+     "0",
+     "1"
+    ]
+   ]
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.LaunchCurve.Enable": {
+   "added": "0.4.0",
+   "defaults": [
+    [
+     "0.4.3",
+     "0",
+     "1"
+    ]
+   ]
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.Rarity.Enable": {
+   "added": "0.4.0",
+   "defaults": [
+    [
+     "0.4.3",
+     "0",
+     "1"
+    ]
+   ]
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.RpgSell.Enable": {
+   "added": "0.4.0",
+   "defaults": [
+    [
+     "0.4.3",
+     "0",
+     "1"
+    ]
+   ]
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.BotAuctions.Enable": {
+   "added": "0.4.0",
+   "defaults": [
+    [
+     "0.4.3",
+     "0",
+     "1"
+    ]
+   ]
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.BotAuctions.RealHousePrices": {
+   "added": "0.4.0",
+   "defaults": [
+    [
+     "0.4.3",
+     "0",
+     "1"
+    ]
+   ]
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.DataFile.Enable": {
+   "added": "0.4.0",
+   "defaults": [
+    [
+     "0.4.3",
+     "0",
+     "1"
+    ]
+   ]
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.AuctionClock.Enable": {
+   "added": "0.4.0",
+   "defaults": [
+    [
+     "0.4.3",
+     "0",
+     "1"
+    ]
+   ]
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.TalentsPerUpdate": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.TrainerDedup": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.MaintenanceSpread": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.HeavyRefreshPerTick": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.SlowIdleTriggers": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.DpsTargetCache": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.BotOnlyBgPace.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.BotOnlyBgPace.IntervalMs": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.AiBudgetMs": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaFreshStart.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaFreshStart.CatchUp.Enable": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaFreshStart.CatchUp.MarginLevels": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaFreshStart.CatchUp.StepPercent": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaFreshStart.CatchUp.MaxRate": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaFreshStart.CatchUp.MinHumans": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaFreshStart.CatchUp.CountGameMasters": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaFreshStart.CatchUp.MaxTotalRate": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaFreshStart.CatchUp.ActiveDays": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaFreshStart.CatchUp.ServiceAccounts": {
+   "added": "0.4.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaTankNormalDungeonOnly": {
+   "added": "0.4.3"
+  },
+  "playerbots.conf|AiPlayerbot.CoaCombat.PullGuardSight.Enable": {
+   "added": "0.4.3"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.Artisans.MaterialsOnDelivery": {
+   "added": "0.4.3"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.Artisans.LearnRareRecipes.Enable": {
+   "added": "0.4.3"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.Artisans.LearnRareRecipes.Percent": {
+   "added": "0.4.3"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.Artisans.LearnRareRecipes.EpicPercent": {
+   "added": "0.4.3"
+  },
+  "playerbots.conf|AiPlayerbot.CoaAltBags.Enable": {
+   "added": "0.4.3"
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.ChannelQuestions.Enable": {
+   "added": "0.4.3"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.Guilds.AnswerAsk": {
+   "added": "0.4.3"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.PriceScalePercent": {
+   "added": "0.4.3"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.BotStartGoldPercent": {
+   "added": "0.4.3"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.BotLevelGold": {
+   "added": "0.4.3"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.LaunchCurve.UnitPriceCapGold": {
+   "added": "0.4.3"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.LaunchCurve.UnitPriceCapUntilLevel": {
+   "added": "0.4.3"
+  },
+  "playerbots.conf|AiPlayerbot.CoaSelfFound.StarterWeapon": {
+   "added": "0.4.5"
+  },
+  "playerbots.conf|AiPlayerbot.CoaPetPassiveOnStay": {
+   "added": "0.4.5"
+  },
+  "playerbots.conf|AiPlayerbot.CoaHearthWithMaster": {
+   "added": "0.4.5"
+  },
+  "playerbots.conf|AiPlayerbot.CoaMute.Enable": {
+   "added": "0.4.5"
+  },
+  "playerbots.conf|AiPlayerbot.CoaGiveToAlt.Enable": {
+   "added": "0.4.5"
+  },
+  "playerbots.conf|AiPlayerbot.CoaTrust.Enable": {
+   "added": "0.4.5"
+  },
+  "playerbots.conf|AiPlayerbot.CoaTrust.Kill": {
+   "added": "0.4.5"
+  },
+  "playerbots.conf|AiPlayerbot.CoaTrust.Boss": {
+   "added": "0.4.5"
+  },
+  "playerbots.conf|AiPlayerbot.CoaTrust.RaidBoss": {
+   "added": "0.4.5"
+  },
+  "playerbots.conf|AiPlayerbot.CoaTrust.Ranks": {
+   "added": "0.4.5"
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.City.PostChancePct": {
+   "added": "0.4.5"
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.City.PostMinMinutes": {
+   "added": "0.4.5"
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.City.PostMaxMinutes": {
+   "added": "0.4.5"
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.City.FishingPct": {
+   "added": "0.4.5"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.CraftForSelf.Enable": {
+   "added": "0.4.7"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.EnchantForSelf.Enable": {
+   "added": "0.4.7"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.SelfStudy.Enable": {
+   "added": "0.4.7"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.SelfStudy.IntervalMinutes": {
+   "added": "0.4.7"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.SelfStudy.BuyReagents": {
+   "added": "0.4.7"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.SelfStudy.MaxGoldPercent": {
+   "added": "0.4.7"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.SelfStudy.MaxCopperPerLevel": {
+   "added": "0.4.7"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.SelfStudy.MinGainPercent": {
+   "added": "0.4.7"
+  },
+  "playerbots.conf|AiPlayerbot.CoaSelfFound.Rolls": {
+   "added": "0.4.7"
+  },
+  "playerbots.conf|AiPlayerbot.Coa.HideLoginAchievementsMinutes": {
+   "added": "0.4.7"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWhy.Enable": {
+   "added": "0.4.7"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWhy.File": {
+   "added": "0.4.7"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWhy.GmOnly": {
+   "added": "0.4.7"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWhy.Cooldown": {
+   "added": "0.4.7"
+  },
+  "playerbots.conf|AiPlayerbot.CoaSelfFound.RollLog": {
+   "added": "0.4.7"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.CraftForSelf.Log": {
+   "added": "0.4.7"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.EnchantForSelf.Log": {
+   "added": "0.4.7"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.SelfStudy.Log": {
+   "added": "0.4.7"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.BotAuctions.BuyLog": {
+   "added": "0.4.7"
+  }
+ }
+}
