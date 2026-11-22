@@ -12,25 +12,33 @@
                 "Server settings open on a new \"What's new\" tab: the settings added or whose default changed since your previous launcher, each with a pill; a click takes you to it. Your own values are never changed.",
                 "The settings of SquidBots 3.2: self-found bots roll Need on their upgrades, bots craft and enchant their own gear, an hourly craft study in the capitals, achievements of bots coming online kept quiet, and a Diagnostics tab (.squidbots why, the logs to send us).",
                 "Realm card: under Self-loot, \"Auto-gear at level 60\": on, bots are geared as usual at 60; off, self-loot at every level.",
-                "Squid World: simulated battlegrounds are on (honor and PvP pieces for the bots), on a new realm and on an existing one that never set them."
+                "Squid World: simulated battlegrounds are on (honor and PvP pieces for the bots), on a new realm and on an existing one that never set them.",
+                "Also in 3.2: bots go shopping at the auction house, and buy and list their loot there from afar; one bot achievement announced a minute (each bot and the whole realm).",
+                "Backups page: the play kept after an undone update is listed with its size; only you delete it, after a confirmation."
             ],
             "fr": [
                 "Les réglages du serveur s'ouvrent sur un nouvel onglet « Nouveautés » : les réglages ajoutés ou dont le défaut a changé depuis votre launcher précédent, chacun avec une pastille ; un clic vous y mène. Vos propres valeurs ne sont jamais modifiées.",
                 "Les réglages de SquidBots 3.2 : les bots self-found font Besoin sur leurs améliorations, les bots fabriquent et enchantent leur propre équipement, une étude des métiers chaque heure en capitale, les hauts faits des bots qui se connectent passés sous silence, et un onglet Diagnostic (.squidbots why, les journaux à nous envoyer).",
                 "Carte du royaume : sous Self-loot, « Équipement automatique au niveau 60 » : activé, les bots sont équipés comme d'habitude au 60 ; désactivé, self-loot à tous les niveaux.",
-                "Squid World : les champs de bataille simulés sont activés (honneur et pièces JcJ pour les bots), sur un nouveau royaume et sur un royaume existant qui ne les avait jamais réglés."
+                "Squid World : les champs de bataille simulés sont activés (honneur et pièces JcJ pour les bots), sur un nouveau royaume et sur un royaume existant qui ne les avait jamais réglés.",
+                "Aussi en 3.2 : les bots vont faire leurs achats à l'hôtel des ventes, et y achètent et y vendent leur butin à distance ; un haut fait de bot annoncé par minute (par bot et pour tout le royaume).",
+                "Page des sauvegardes : la partie gardée après une mise à jour annulée est affichée avec sa taille ; vous seul la supprimez, après une confirmation."
             ],
             "ru": [
                 "Настройки сервера открываются на новой вкладке «Что нового»: настройки, добавленные или с изменённым значением по умолчанию с вашего предыдущего лаунчера, каждая с отметкой; щелчок ведёт к ней. Ваши собственные значения никогда не меняются.",
                 "Настройки SquidBots 3.2: боты self-found бросают «Нужно» на улучшения, боты создают и зачаровывают своё снаряжение, ежечасное изучение ремёсел в столицах, достижения входящих в сеть ботов не объявляются, и вкладка «Диагностика» (.squidbots why, журналы для отправки нам).",
                 "Карточка мира: под Self-loot — «Автоэкипировка на 60-м уровне»: включено — боты экипируются как обычно на 60-м; выключено — self-loot на всех уровнях.",
-                "Squid World: симулированные поля боя включены (честь и PvP-предметы для ботов) — в новом мире и в существующем, где они никогда не настраивались."
+                "Squid World: симулированные поля боя включены (честь и PvP-предметы для ботов) — в новом мире и в существующем, где они никогда не настраивались.",
+                "Также в 3.2: боты ходят за покупками на аукцион, покупают и выставляют там добычу издалека; одно объявление достижения ботов в минуту (на бота и на весь мир).",
+                "Страница резервных копий: игра, сохранённая после отменённого обновления, показана с размером; удалить её можете только вы, после подтверждения."
             ],
             "zh": [
                 "服务器设置现在先打开新的“新内容”页：自你上一个启动器版本以来新增或默认值改变的设置，每项都有标记，点击即可前往。你自己的值永远不会被修改。",
                 "SquidBots 3.2 的设置：自给自足机器人对提升装备掷“需求”，机器人为自己制作和附魔装备，主城每小时的制作研究，机器人上线时的成就不再公告，以及“诊断”页（.squidbots why，可发送给我们的日志）。",
                 "国度卡片：在 Self-loot 下新增“60 级自动配装”：开启时机器人在 60 级照常配装；关闭时所有等级都自给自足。",
-                "Squid World：模拟战场已开启（为机器人提供荣誉和 PvP 装备），适用于新国度以及从未设置过它的现有国度。"
+                "Squid World：模拟战场已开启（为机器人提供荣誉和 PvP 装备），适用于新国度以及从未设置过它的现有国度。",
+                "3.2 还新增：机器人会去拍卖行购物，并远程购买和上架战利品；机器人成就每分钟最多公告一次（每个机器人和整个国度）。",
+                "备份页面：撤销更新后保留的游戏进度会显示其大小；只有你能在确认后删除它。"
             ]
         }
     },

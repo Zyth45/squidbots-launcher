@@ -76,7 +76,10 @@
   "AiPlayerbot.CoaEconomy.CraftForSelf.Enable",
   "AiPlayerbot.CoaEconomy.EnchantForSelf.Enable",
   "AiPlayerbot.CoaEconomy.SelfStudy.Enable",
-  "AiPlayerbot.CoaWhy.Enable"
+  "AiPlayerbot.CoaWhy.Enable",
+  "AiPlayerbot.CoaEconomy.BotAuctions.Shop.Enable",
+  "AiPlayerbot.CoaEconomy.RemoteBuy.Enable",
+  "AiPlayerbot.CoaEconomy.RemoteSell.Enable"
  ],
  "groups": [
   {
@@ -3893,6 +3896,50 @@
    }
   },
   {
+   "key": "AiPlayerbot.Coa.AchievementAnnounceGapSeconds",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "int",
+   "default": 60,
+   "when": "restart",
+   "min": 0,
+   "max": 3600,
+   "label": {
+    "en": "One achievement announced per bot every (seconds)",
+    "fr": "Un haut fait annoncé par bot toutes les (secondes)",
+    "ru": "Одно объявление достижения на бота раз в (секунд)",
+    "zh": "每个机器人每隔多少秒公告一次成就"
+   },
+   "help": {
+    "en": "New in 3.2. A random bot announces at most one achievement in this many seconds; the others are earned without a word. Simulated battleground and dungeon credits are never announced. Never a real player or a player's alts. 0: every achievement announced.",
+    "fr": "Nouveau en 3.2. Un bot aléatoire annonce au plus un haut fait pendant ce nombre de secondes ; les autres sont obtenus sans un mot. Les crédits des champs de bataille et donjons simulés ne sont jamais annoncés. Jamais un vrai joueur ni les alts d'un joueur. 0 : tous les hauts faits sont annoncés.",
+    "ru": "Новое в 3.2. Случайный бот объявляет не больше одного достижения за это число секунд; остальные засчитываются молча. Зачёты симулированных полей боя и подземелий никогда не объявляются. Никогда для настоящих игроков и их альтов. 0: объявляются все достижения.",
+    "zh": "3.2 新增。随机机器人在这段秒数内最多公告一个成就，其余的默默获得。模拟战场和副本的成就从不公告。真实玩家和玩家的小号不受影响。0：所有成就都会公告。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.Coa.AchievementAnnounceRealmGapSeconds",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "int",
+   "default": 60,
+   "when": "restart",
+   "min": 0,
+   "max": 3600,
+   "label": {
+    "en": "One bot achievement announced on the realm every (seconds)",
+    "fr": "Un haut fait de bot annoncé sur le royaume toutes les (secondes)",
+    "ru": "Одно объявление достижения ботов на мир раз в (секунд)",
+    "zh": "整个国度每隔多少秒公告一次机器人成就"
+   },
+   "help": {
+    "en": "New in 3.2. Across the whole realm, the bots announce at most one achievement in this many seconds; the others are earned without a word. Never a real player or a player's alts. 0: no realm-wide limit.",
+    "fr": "Nouveau en 3.2. Sur tout le royaume, les bots annoncent au plus un haut fait pendant ce nombre de secondes ; les autres sont obtenus sans un mot. Jamais un vrai joueur ni les alts d'un joueur. 0 : pas de limite pour le royaume.",
+    "ru": "Новое в 3.2. Во всём мире боты объявляют не больше одного достижения за это число секунд; остальные засчитываются молча. Никогда для настоящих игроков и их альтов. 0: без ограничения на мир.",
+    "zh": "3.2 新增。在整个国度内，机器人在这段秒数内最多公告一个成就，其余的默默获得。真实玩家和玩家的小号不受影响。0：国度不设限制。"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaLive.City.Enable",
    "file": "playerbots.conf",
    "group": "lw-citylife",
@@ -4547,6 +4594,228 @@
     "fr": "La durée des enchères suit le temps de jeu : le temps où le serveur était éteint est rendu au démarrage, enchères des joueurs comprises.",
     "ru": "Таймеры аукционов идут по игровому времени: время простоя возвращается при запуске, включая лоты игроков.",
     "zh": "拍卖计时按游戏时间进行：启动时会补回停机时间，玩家的拍卖也一样。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.BotAuctions.Shop.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-economy",
+   "type": "bool",
+   "default": 1,
+   "when": "restart",
+   "label": {
+    "en": "Bots go to the auction house to buy",
+    "fr": "Les bots vont acheter à l'hôtel des ventes",
+    "ru": "Боты ходят за покупками на аукцион",
+    "zh": "机器人去拍卖行购物"
+   },
+   "help": {
+    "en": "New in 3.2. A bot with nothing to sell still goes to the auction house to buy an upgrade or a bag when it has gold enough, at most once an hour.",
+    "fr": "Nouveau en 3.2. Un bot qui n'a rien à vendre va quand même à l'hôtel des ventes acheter une amélioration ou un sac quand il a assez d'or, au plus une fois par heure.",
+    "ru": "Новое в 3.2. Бот, которому нечего продавать, всё равно идёт на аукцион купить улучшение или сумку, когда у него достаточно золота, не чаще раза в час.",
+    "zh": "3.2 新增。即使没有东西要卖，机器人在金币足够时也会去拍卖行购买提升装备或背包，最多每小时一次。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.BotAuctions.Shop.MinCopperPerLevel",
+   "file": "playerbots.conf",
+   "group": "lw-economy",
+   "type": "int",
+   "default": 200,
+   "when": "restart",
+   "min": 0,
+   "max": 1000000,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.BotAuctions.Shop.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Shopping budget per level (copper)",
+    "fr": "Budget d'achat par niveau (cuivre)",
+    "ru": "Бюджет покупок за уровень (медь)",
+    "zh": "每级购物预算（铜币）"
+   },
+   "help": {
+    "en": "A bot goes shopping when what it may spend in a visit reaches its level times this many copper (200: 40 silver at level 20, about 2 gold carried).",
+    "fr": "Un bot va faire ses achats quand ce qu'il peut dépenser en une visite atteint son niveau multiplié par ce nombre de pièces de cuivre (200 : 40 pièces d'argent au niveau 20, environ 2 pièces d'or en poche).",
+    "ru": "Бот идёт за покупками, когда сумма, которую он может потратить за визит, достигает его уровня, умноженного на это число медяков (200: 40 серебра на 20-м уровне, около 2 золотых при себе).",
+    "zh": "当机器人一次可花费的金额达到其等级乘以此铜币数时，它会去购物（200：20 级时 40 银，身上约 2 金）。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.BotAuctions.Shop.IntervalMinutes",
+   "file": "playerbots.conf",
+   "group": "lw-economy",
+   "type": "int",
+   "default": 60,
+   "when": "restart",
+   "min": 5,
+   "max": 1440,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.BotAuctions.Shop.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Minutes between two shopping visits",
+    "fr": "Minutes entre deux visites pour acheter",
+    "ru": "Минут между двумя походами за покупками",
+    "zh": "两次购物间隔（分钟）"
+   },
+   "help": {
+    "en": "Least time between two shopping visits of a bot (at least 5).",
+    "fr": "Temps minimum entre deux visites d'achat d'un bot (au moins 5).",
+    "ru": "Наименьшее время между двумя походами бота за покупками (не менее 5).",
+    "zh": "机器人两次购物之间的最短时间（至少 5 分钟）。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.RemoteBuy.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-economy",
+   "type": "bool",
+   "default": 1,
+   "when": "restart",
+   "label": {
+    "en": "Bots buy upgrades from afar",
+    "fr": "Les bots achètent leurs améliorations à distance",
+    "ru": "Боты покупают улучшения издалека",
+    "zh": "机器人远程购买提升装备"
+   },
+   "help": {
+    "en": "New in 3.2. Random bots buy at their faction's auction house from where they are, once an hour: the best upgrade they can afford, worn at once. Real auctions: the seller is paid.",
+    "fr": "Nouveau en 3.2. Les bots aléatoires achètent à l'hôtel des ventes de leur faction depuis l'endroit où ils sont, une fois par heure : la meilleure amélioration qu'ils peuvent se payer, portée aussitôt. De vraies enchères : le vendeur est payé.",
+    "ru": "Новое в 3.2. Случайные боты раз в час покупают на аукционе своей фракции, не сходя с места, лучшее доступное им улучшение и сразу его надевают. Настоящие лоты: продавец получает деньги.",
+    "zh": "3.2 新增。随机机器人每小时在原地从本阵营拍卖行购买一次买得起的最好的提升装备，并立即穿上。都是真实拍卖：卖家会收到钱。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.RemoteBuy.IntervalMinutes",
+   "file": "playerbots.conf",
+   "group": "lw-economy",
+   "type": "int",
+   "default": 60,
+   "when": "restart",
+   "min": 5,
+   "max": 1440,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.RemoteBuy.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Minutes between two remote buys",
+    "fr": "Minutes entre deux achats à distance",
+    "ru": "Минут между двумя покупками издалека",
+    "zh": "两次远程购买间隔（分钟）"
+   },
+   "help": {
+    "en": "How often a bot buys from afar (at least 5).",
+    "fr": "Fréquence des achats à distance d'un bot (au moins 5).",
+    "ru": "Как часто бот покупает издалека (не менее 5).",
+    "zh": "机器人远程购买的频率（至少 5 分钟）。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.RemoteSell.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-economy",
+   "type": "bool",
+   "default": 1,
+   "when": "restart",
+   "label": {
+    "en": "Bots list loot from afar",
+    "fr": "Les bots mettent leur butin en vente à distance",
+    "ru": "Боты выставляют добычу издалека",
+    "zh": "机器人远程上架战利品"
+   },
+   "help": {
+    "en": "New in 3.2. Random bots list a few items at their faction's auction house from where they are, every two hours, at the usual price, only when the house pays more than the vendor.",
+    "fr": "Nouveau en 3.2. Les bots aléatoires mettent quelques objets en vente à l'hôtel des ventes de leur faction depuis l'endroit où ils sont, toutes les deux heures, au prix habituel, seulement quand l'hôtel paie plus que le marchand.",
+    "ru": "Новое в 3.2. Случайные боты раз в два часа выставляют несколько предметов на аукцион своей фракции, не сходя с места, по обычной цене и только если аукцион платит больше торговца.",
+    "zh": "3.2 新增。随机机器人每两小时在原地把几件物品以常规价格上架到本阵营拍卖行，仅当拍卖行出价高于商人时。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.RemoteSell.IntervalMinutes",
+   "file": "playerbots.conf",
+   "group": "lw-economy",
+   "type": "int",
+   "default": 120,
+   "when": "restart",
+   "min": 5,
+   "max": 1440,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.RemoteSell.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Minutes between two remote listings",
+    "fr": "Minutes entre deux mises en vente à distance",
+    "ru": "Минут между двумя выставлениями издалека",
+    "zh": "两次远程上架间隔（分钟）"
+   },
+   "help": {
+    "en": "How often a bot lists from afar (at least 5).",
+    "fr": "Fréquence des mises en vente à distance d'un bot (au moins 5).",
+    "ru": "Как часто бот выставляет предметы издалека (не менее 5).",
+    "zh": "机器人远程上架的频率（至少 5 分钟）。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.RemoteSell.MaxItems",
+   "file": "playerbots.conf",
+   "group": "lw-economy",
+   "type": "int",
+   "default": 2,
+   "when": "restart",
+   "min": 0,
+   "max": 50,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.RemoteSell.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Items listed from afar",
+    "fr": "Objets mis en vente à distance",
+    "ru": "Предметов, выставляемых издалека",
+    "zh": "远程上架的物品数"
+   },
+   "help": {
+    "en": "Items a bot lists at most from afar each time.",
+    "fr": "Nombre maximum d'objets qu'un bot met en vente à distance à chaque fois.",
+    "ru": "Сколько предметов бот выставляет издалека за раз, не больше.",
+    "zh": "机器人每次远程上架的最多物品数。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.RemoteTrade.MaxBotsPerPass",
+   "file": "playerbots.conf",
+   "group": "lw-economy",
+   "type": "int",
+   "default": 20,
+   "when": "restart",
+   "min": 1,
+   "max": 500,
+   "label": {
+    "en": "Bots per remote trade pass",
+    "fr": "Bots par passage des échanges à distance",
+    "ru": "Ботов за проход удалённой торговли",
+    "zh": "每轮远程交易处理的机器人数"
+   },
+   "help": {
+    "en": "Bots served per pass of the remote buys and listings (one pass every 30 seconds); the others keep their turn for the next pass.",
+    "fr": "Bots servis à chaque passage des achats et ventes à distance (un passage toutes les 30 secondes) ; les autres gardent leur tour pour le passage suivant.",
+    "ru": "Сколько ботов обслуживается за один проход удалённых покупок и продаж (проход каждые 30 секунд); остальные ждут следующего прохода.",
+    "zh": "每轮远程购买和上架处理的机器人数（每 30 秒一轮）；其余机器人留到下一轮。"
    }
   },
   {
@@ -5276,7 +5545,10 @@
     "AiPlayerbot.CoaEconomy.CraftForSelf.Enable": 1,
     "AiPlayerbot.CoaEconomy.EnchantForSelf.Enable": 1,
     "AiPlayerbot.CoaEconomy.SelfStudy.Enable": 1,
-    "AiPlayerbot.CoaEconomy.SelfStudy.BuyReagents": 1
+    "AiPlayerbot.CoaEconomy.SelfStudy.BuyReagents": 1,
+    "AiPlayerbot.CoaEconomy.BotAuctions.Shop.Enable": 1,
+    "AiPlayerbot.CoaEconomy.RemoteBuy.Enable": 1,
+    "AiPlayerbot.CoaEconomy.RemoteSell.Enable": 1
    }
   }
  ]

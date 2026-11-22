@@ -1,7 +1,7 @@
 {
  "from": "0.3.59",
  "next": "0.4.7",
- "catalog": "567a6af6c38bd332",
+ "catalog": "64830ea14709b910",
  "keys": {
   "worldserver.conf|CharactersPerRealm": {
    "added": "0.4.0"
@@ -838,6 +838,39 @@
    "added": "0.4.7"
   },
   "playerbots.conf|AiPlayerbot.Coa.HideLoginAchievementsMinutes": {
+   "added": "0.4.7"
+  },
+  "playerbots.conf|AiPlayerbot.Coa.AchievementAnnounceGapSeconds": {
+   "added": "0.4.7"
+  },
+  "playerbots.conf|AiPlayerbot.Coa.AchievementAnnounceRealmGapSeconds": {
+   "added": "0.4.7"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.BotAuctions.Shop.Enable": {
+   "added": "0.4.7"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.BotAuctions.Shop.MinCopperPerLevel": {
+   "added": "0.4.7"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.BotAuctions.Shop.IntervalMinutes": {
+   "added": "0.4.7"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.RemoteBuy.Enable": {
+   "added": "0.4.7"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.RemoteBuy.IntervalMinutes": {
+   "added": "0.4.7"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.RemoteSell.Enable": {
+   "added": "0.4.7"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.RemoteSell.IntervalMinutes": {
+   "added": "0.4.7"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.RemoteSell.MaxItems": {
+   "added": "0.4.7"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.RemoteTrade.MaxBotsPerPass": {
    "added": "0.4.7"
   },
   "playerbots.conf|AiPlayerbot.CoaWhy.Enable": {
