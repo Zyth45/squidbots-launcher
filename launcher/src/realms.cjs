@@ -142,7 +142,8 @@ function copyDump(root, args, target) {
 // at its creation and left as they were are its starting values, not changes (0.4.1-beta.9 showed « 101 » on a realm
 // nobody had touched).
 function changedCount(key, own) {
-  const start = key === 'living' ? livingOwn() : {};
+  // Auto-gear at 60 off is written at the creation of every realm (3.2.2): not a change of the player either.
+  const start = key === 'living' ? livingOwn() : { 'playerbots.conf': { [AT60_OFF[0]]: AT60_OFF[1] } };
   return Object.entries(own).reduce((sum, [file, keys]) => sum + Object.entries(keys).filter(([name, value]) => String(value) !== start[file]?.[name]).length, 0);
 }
 async function realmFile(root, key) { return readJson(path.join(dirOf(root, key), 'realm.json')); }
@@ -168,12 +169,19 @@ async function readOwn(root, key) {
 // The creation values of a realm that later became the new defaults (users' rule, 13/11: an improvement reaches every
 // realm). A value still at an old creation default moves to the new one, once; any other value is the player's and stays.
 // The realm's settings.json is written into its configs at each start: the Builder's merge_conf cannot change it.
+// « Auto-gear at level 60 » off (3.2.2, user 24/11: « prochaine update on force ce champs à OFF pas d'autogear du tout
+// quand que le joueur le sélectionne pas »): CoaSelfFoundMaxLevel 80, self-loot at every level.
+const AT60_OFF = ['AiPlayerbot.CoaSelfFoundMaxLevel', '80'];
 const OLD_CREATION_DEFAULTS = [
   // Squid World made before 0.4.3 (livingOwn of 0.4.0 wrote 100, the first betas 150): no launch premium (Economie, 13/11).
   { id: 'launch-premium-0', key: 'living', file: 'playerbots.conf', setting: 'AiPlayerbot.CoaEconomy.LaunchCurve.LaunchPremiumPercent', old: ['100', '150'], now: '0' },
   // 3.2: simulated battlegrounds on Squid World (Pilote 21/11, by the users' rule of 13/11). Before 0.4.7 its creation
   // wrote nothing, so the realm followed CoA (off by default): no value of its own means never edited for it.
   { id: 'bgsim-3.2', key: 'living', file: 'playerbots.conf', setting: 'AiPlayerbot.CoaWorld.BgSim.Enable', old: [], absent: true, now: '1' },
+  // 3.2.2: Auto-gear at level 60 off on EVERY realm, once, whatever its value (the user's explicit decision, over the
+  // rule that an edited value stays). Marked in realm.json: a player who turns it on again afterwards is never undone.
+  // A realm made later gets it at its first read, so off is its creation default too.
+  { id: 'at60-off-3.2.2', key: '*', file: 'playerbots.conf', setting: AT60_OFF[0], force: true, now: AT60_OFF[1] },
 ];
 // The Classic pack of 0.4.2 wrote these at their 0.4.2 defaults, which 3.1 turns on (Pilote, 14/11). A realm's value
 // moves to the 3.1 default only when the pack's own trace proves the pack wrote it (.coa-launcher\living-pack-undo.json:
@@ -192,13 +200,14 @@ const CLASSIC_316 = [
 const CLASSIC_MOVES = [{ id: 'classic-pack-3.1', items: CLASSIC_042, note: 'Classic pack of 0.4.2' }, { id: 'classic-pack-3.1.6', items: CLASSIC_316, note: 'Classic pack, 3.1.6 defaults' }];
 async function moveOldDefaults(root, key, own, saved) {
   const done = new Set(Array.isArray(saved.moved) ? saved.moved : []);
-  const due = OLD_CREATION_DEFAULTS.filter(item => item.key === key && !done.has(item.id));
+  const due = OLD_CREATION_DEFAULTS.filter(item => (item.key === key || item.key === '*') && !done.has(item.id));
   const classicDue = CLASSIC_MOVES.filter(move => !done.has(move.id));
   if (!due.length && !classicDue.length) return false;
   const lines = [];
   for (const item of due) {
     const value = own[item.file]?.[item.setting];
-    if (value === undefined ? item.absent : item.old.includes(String(value).trim())) { own[item.file] = { ...own[item.file], [item.setting]: item.now }; lines.push(`${item.setting} ${value ?? '(as CoA)'} -> ${item.now}`); }
+    const moves = item.force ? String(value ?? '').trim() !== item.now : value === undefined ? item.absent : item.old.includes(String(value).trim());
+    if (moves) { own[item.file] = { ...own[item.file], [item.setting]: item.now }; lines.push(`${item.setting} ${value ?? '(as CoA)'} -> ${item.now}`); }
     done.add(item.id);
   }
   if (classicDue.length) {
@@ -641,6 +650,8 @@ function livingOwn({ ahMerged = true } = {}) {
   put('playerbots.conf', 'AiPlayerbot.CoaFreshStart.Enable', 1);
   put('playerbots.conf', `${E}LaunchCurve.Enable`, 1);
   put('playerbots.conf', 'AiPlayerbot.CoaSelfFound', 1);
+  // Self-loot at every level: Auto-gear at level 60 is off until the player turns it on (3.2.2).
+  put('playerbots.conf', AT60_OFF[0], AT60_OFF[1]);
   put('playerbots.conf', 'AiPlayerbot.CoaLive.Chat.Enable', 1);
   // Guild officers answer players looking for a guild: on Squid World only, at its creation (Pilote, 13/11); 0 elsewhere.
   put('playerbots.conf', 'AiPlayerbot.CoaWorld.Guilds.AnswerAsk', 1);

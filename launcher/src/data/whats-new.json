@@ -1,5 +1,28 @@
 [
     {
+        "version": "0.4.9",
+        "title": {
+            "en": "Self-loot at level 60 too",
+            "fr": "Le self-loot aussi au niveau 60",
+            "ru": "Self-loot и на 60-м уровне",
+            "zh": "60 级同样自给拾取"
+        },
+        "items": {
+            "en": [
+                "\"Auto-gear at level 60\" is now off by default, and this update turns it off once on every realm: bots keep self-looting at 60 and wear only what they find. Turn it on again on the realm card if you want them fully geared at 60; the launcher will not change it back. Bots already geared at 60 keep their gear."
+            ],
+            "fr": [
+                "« Équipement automatique au niveau 60 » est désormais désactivé par défaut, et cette mise à jour le désactive une fois sur chaque royaume : au niveau 60, les bots continuent le self-loot et ne portent que ce qu'ils trouvent. Réactivez-le sur la carte du royaume si vous les voulez entièrement équipés au 60 ; le launcher n'y reviendra plus. Les bots déjà équipés au 60 gardent leur équipement."
+            ],
+            "ru": [
+                "«Автоэкипировка на 60-м уровне» теперь по умолчанию выключена, и это обновление один раз выключает её во всех мирах: на 60-м уровне боты продолжают self-loot и носят только найденное. Включите её снова в карточке мира, если хотите полностью экипированных ботов на 60-м; лаунчер больше не будет её менять. Уже экипированные на 60-м боты сохраняют свою экипировку."
+            ],
+            "zh": [
+                "“60 级自动配装”现在默认关闭，本次更新会在每个世界中将其关闭一次：60 级时机器人继续自给拾取，只穿戴自己找到的装备。如果希望机器人在 60 级时全身配装，可在世界卡片上重新开启；启动器之后不会再改动它。已在 60 级配装的机器人保留其装备。"
+            ]
+        }
+    },
+    {
         "version": "0.4.8",
         "title": {
             "en": "Maps of the game, step by step",

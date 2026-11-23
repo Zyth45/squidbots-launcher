@@ -1559,10 +1559,10 @@
     "zh": "自给自足机器人"
    },
    "help": {
-    "en": "Below level 60, no gear is ever generated for bots: they only wear what they loot, earn from quests or get from you, and new bots level up by playing. At 60, bots are geared as usual for endgame. Off by default.",
-    "fr": "Sous le niveau 60, aucun équipement n'est fabriqué pour les bots : ils portent ce qu'ils ramassent, gagnent en quête ou reçoivent de vous, et les nouveaux bots montent en jouant. Au niveau 60, ils sont équipés comme d'habitude pour la fin de jeu. Désactivé par défaut.",
-    "ru": "До 60-го уровня ботам никогда не создаётся экипировка: они носят только то, что добыли, получили за задания или от вас, а новые боты растут, играя. На 60-м уровне боты экипируются как обычно для эндгейма. По умолчанию выключено.",
-    "zh": "60 级以下永远不为机器人生成装备：它们只穿戴拾取的、任务获得的或你给的装备，新机器人通过游玩升级。到 60 级时，机器人照常配备终局装备。默认关闭。"
+    "en": "No gear is ever generated for bots: they only wear what they loot, earn from quests or get from you, and new bots level up by playing. At 60 too, unless \"Auto-gear at level 60\" is on for the realm. Off by default.",
+    "fr": "Aucun équipement n'est fabriqué pour les bots : ils portent ce qu'ils ramassent, gagnent en quête ou reçoivent de vous, et les nouveaux bots montent en jouant. Au niveau 60 aussi, sauf si « Équipement automatique au niveau 60 » est activé pour le royaume. Désactivé par défaut.",
+    "ru": "Ботам никогда не создаётся экипировка: они носят только то, что добыли, получили за задания или от вас, а новые боты растут, играя. На 60-м уровне тоже, если для мира не включена «Автоэкипировка на 60-м уровне». По умолчанию выключено.",
+    "zh": "永远不为机器人生成装备：它们只穿戴拾取的、任务获得的或你给的装备，新机器人通过游玩升级。60 级时也是如此，除非该世界开启了“60 级自动配装”。默认关闭。"
    }
   },
   {
@@ -4298,14 +4298,14 @@
     "zh": "单人自给自足（1-59）"
    },
    "summary": {
-    "en": "Bots level up by playing from level 1 to 59: their gear is never generated, they wear what they loot in the world and in dungeons, earn from quests or get from you. 20 % of them clear the dungeons of their level in parties of five (up to 4 parties at once). At 60 they are geared as usual for endgame. Random bots are recreated at level 1 (one-time, after a backup). Bot experience speed ×2. Every value is in the Solo self-found tab.",
-    "fr": "Les bots montent en jouant du niveau 1 au niveau 59 : leur équipement n'est jamais fabriqué, ils portent ce qu'ils ramassent dans le monde et en donjon, gagnent en quête ou reçoivent de vous. 20 % d'entre eux font les donjons de leur niveau en groupes de cinq (jusqu'à 4 groupes à la fois). Au niveau 60, ils sont équipés comme d'habitude pour la fin de jeu. Les bots aléatoires sont recréés au niveau 1 (une seule fois, après une sauvegarde). Vitesse d'expérience des bots ×2. Chaque valeur est dans l'onglet Solo self-found.",
-    "ru": "Боты растут, играя, с 1 по 59 уровень: экипировка им никогда не создаётся, они носят то, что добыли в мире и в подземельях, получили за задания или от вас. 20 % из них проходят подземелья своего уровня группами по пять (до 4 групп сразу). На 60-м уровне они экипируются как обычно для эндгейма. Случайные боты создаются заново с 1 уровня (один раз, после резервной копии). Скорость опыта ботов ×2. Все значения — во вкладке Solo self-found.",
-    "zh": "机器人从 1 级到 59 级通过游玩升级：永远不生成装备，只穿戴在野外和副本中拾取的、任务获得的或你给的装备。其中 20 % 以五人小队刷对应等级的副本（最多同时 4 支小队）。到 60 级时照常配备终局装备。随机机器人会在 1 级重新创建（仅一次，先备份）。机器人经验速度 ×2。所有数值都在“单人自给自足”标签页中。"
+    "en": "Bots level up by playing from level 1: their gear is never generated, they wear what they loot in the world and in dungeons, earn from quests or get from you. 20 % of them clear the dungeons of their level in parties of five (up to 4 parties at once). Even at 60 they keep what they found; \"Auto-gear at level 60\" on the realm card gears them as usual for endgame. Random bots are recreated at level 1 (one-time, after a backup). Bot experience speed ×2. Every value is in the Solo self-found tab.",
+    "fr": "Les bots montent en jouant dès le niveau 1 : leur équipement n'est jamais fabriqué, ils portent ce qu'ils ramassent dans le monde et en donjon, gagnent en quête ou reçoivent de vous. 20 % d'entre eux font les donjons de leur niveau en groupes de cinq (jusqu'à 4 groupes à la fois). Même au niveau 60, ils gardent ce qu'ils ont trouvé ; « Équipement automatique au niveau 60 », sur la carte du royaume, les équipe comme d'habitude pour la fin de jeu. Les bots aléatoires sont recréés au niveau 1 (une seule fois, après une sauvegarde). Vitesse d'expérience des bots ×2. Chaque valeur est dans l'onglet Solo self-found.",
+    "ru": "Боты растут, играя, с 1 уровня: экипировка им никогда не создаётся, они носят то, что добыли в мире и в подземельях, получили за задания или от вас. 20 % из них проходят подземелья своего уровня группами по пять (до 4 групп сразу). Даже на 60-м уровне они сохраняют найденное; «Автоэкипировка на 60-м уровне» в карточке мира экипирует их как обычно для эндгейма. Случайные боты создаются заново с 1 уровня (один раз, после резервной копии). Скорость опыта ботов ×2. Все значения — во вкладке Solo self-found.",
+    "zh": "机器人从 1 级起通过游玩升级：永远不生成装备，只穿戴在野外和副本中拾取的、任务获得的或你给的装备。其中 20 % 以五人小队刷对应等级的副本（最多同时 4 支小队）。即使到 60 级也保留自己找到的装备；世界卡片上的“60 级自动配装”可照常为其配备终局装备。随机机器人会在 1 级重新创建（仅一次，先备份）。机器人经验速度 ×2。所有数值都在“单人自给自足”标签页中。"
    },
    "changes": {
     "AiPlayerbot.CoaSelfFound": "1",
-    "AiPlayerbot.CoaSelfFoundMaxLevel": "59",
+    "AiPlayerbot.CoaSelfFoundMaxLevel": "80",
     "AiPlayerbot.CoaSelfFoundBotsPercent": "20",
     "AiPlayerbot.RandomBotXPRate": "2",
     "DungeonClear.SelfFound.MaxGroups": "4",

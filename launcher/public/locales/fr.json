@@ -1722,6 +1722,7 @@
   "since.lead": "Les réglages ajoutés ou dont le défaut a changé depuis votre launcher précédent ({version}). Vos propres valeurs ne sont jamais modifiées : un nouveau réglage part de son défaut.",
   "gear.at60": "Équipement automatique au niveau 60",
   "gear.at60Text": "Activé : au 60, les bots sont équipés comme d'habitude pour la fin de jeu. Désactivé : self-loot à tous les niveaux, même au 60.",
+  "gear.at60Info": "Désactivé (par défaut) : au niveau 60 aussi, les bots continuent le self-loot et ne portent que ce qu'ils trouvent. Activé : au 60, ils reçoivent d'un coup un équipement complet de fin de jeu. Les bots déjà équipés gardent leur équipement.",
   "realms.selflootHelpAll": "Self-loot à tous les niveaux, même au 60.",
   "gear.note": "Tes bots gardent leur niveau et ce qu'ils portent aujourd'hui : seule la suite change. Puis Enregistrer.",
   "gear.missing": "Ce serveur n'a pas le réglage Self-loot (il arrive avec CoA Bots 2.9).",

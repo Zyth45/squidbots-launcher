@@ -7,6 +7,7 @@ const path = require('node:path');
 const realms = require('../src/realms.cjs');
 
 const KEY = 'AiPlayerbot.CoaEconomy.LaunchCurve.LaunchPremiumPercent';
+const AT60 = 'AiPlayerbot.CoaSelfFoundMaxLevel';
 function realm(value) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'old-defaults-'));
   const dir = path.join(root, 'Royaumes', 'living');
@@ -30,7 +31,7 @@ test('an old launch premium of a Squid World moves to 0 once; another value, and
     const changed = JSON.parse(fs.readFileSync(path.join(dir, 'settings.json'), 'utf8'));
     assert.equal(changed['playerbots.conf'][KEY], after, `${before} -> ${after}`);
     assert.equal(changed['playerbots.conf']['AiPlayerbot.CoaEconomy.LaunchCurve.LevelMargin'], '5');
-    assert.deepEqual(JSON.parse(fs.readFileSync(path.join(dir, 'realm.json'), 'utf8')).moved, ['launch-premium-0', 'bgsim-3.2', 'classic-pack-3.1', 'classic-pack-3.1.6']);
+    assert.deepEqual(JSON.parse(fs.readFileSync(path.join(dir, 'realm.json'), 'utf8')).moved, ['launch-premium-0', 'bgsim-3.2', 'at60-off-3.2.2', 'classic-pack-3.1', 'classic-pack-3.1.6']);
     // The player sets 100 again afterwards: kept.
     changed['playerbots.conf'][KEY] = '100';
     fs.writeFileSync(path.join(dir, 'settings.json'), JSON.stringify(changed));
@@ -88,7 +89,7 @@ test('values the 0.4.2 Classic pack wrote in a realm move to the 3.1 defaults on
   const traced = classicRealm('wildcard', { [AH]: '0', [MARKET]: '1', [BREATH]: '0', [RECOVERY]: '30', 'AiPlayerbot.CoaEconomy.Rarity.Enable': '0' },
     { wildcard: { id: 'classic', at: '2026-11-10T10:00:00Z', previous: previous([AH, MARKET, BREATH, RECOVERY]) } });
   await realms.status(traced.root, { live: false }).catch(() => null);
-  assert.deepEqual(own(traced.dir), { [AH]: '1', [MARKET]: '1', [BREATH]: '1', [RECOVERY]: '120', 'AiPlayerbot.CoaEconomy.Rarity.Enable': '0' });
+  assert.deepEqual(own(traced.dir), { [AH]: '1', [MARKET]: '1', [BREATH]: '1', [RECOVERY]: '120', 'AiPlayerbot.CoaEconomy.Rarity.Enable': '0', [AT60]: '80' });
   assert.ok(JSON.parse(fs.readFileSync(path.join(traced.dir, 'realm.json'), 'utf8')).moved.includes('classic-pack-3.1'));
   const log = fs.readFileSync(path.join(traced.root, 'logs', 'launcher-realms.log'), 'utf8');
   assert.match(log, /AHBot\.Enable 0 -> 1 \(Classic pack of 0\.4\.2\)/);
@@ -101,7 +102,7 @@ test('values the 0.4.2 Classic pack wrote in a realm move to the 3.1 defaults on
   for (const trace of [null, { wildcard: { id: 'living', previous: previous([AH]) } }, { coa: { id: 'classic', previous: previous([AH]) } }]) {
     const { root, dir } = classicRealm('wildcard', { [AH]: '0', [BREATH]: '0' }, trace);
     await realms.status(root, { live: false }).catch(() => null);
-    assert.deepEqual(own(dir), { [AH]: '0', [BREATH]: '0' }, JSON.stringify(trace));
+    assert.deepEqual(own(dir), { [AH]: '0', [BREATH]: '0', [AT60]: '80' }, JSON.stringify(trace));
   }
 });
 
@@ -114,7 +115,7 @@ test('values the Classic pack wrote at the old combat defaults move to the 3.1.6
   const realm = JSON.parse(fs.readFileSync(path.join(dir, 'realm.json'), 'utf8'));
   fs.writeFileSync(path.join(dir, 'realm.json'), JSON.stringify({ ...realm, moved: ['classic-pack-3.1'] }));
   await realms.status(root, { live: false }).catch(() => null);
-  assert.deepEqual(own(dir), { [STUCK]: '1', [ZG]: '1', [PCT]: '10', [BREATH]: '1' });
+  assert.deepEqual(own(dir), { [STUCK]: '1', [ZG]: '1', [PCT]: '10', [BREATH]: '1', [AT60]: '80' });
   assert.ok(JSON.parse(fs.readFileSync(path.join(dir, 'realm.json'), 'utf8')).moved.includes('classic-pack-3.1.6'));
   assert.match(fs.readFileSync(path.join(root, 'logs', 'launcher-realms.log'), 'utf8'), /LootNeedMinUpgradePct 0 -> 10 [(]Classic pack, 3[.]1[.]6 defaults[)]/);
   fs.writeFileSync(path.join(dir, 'settings.json'), JSON.stringify({ 'playerbots.conf': { ...own(dir), [STUCK]: '0' } }));
@@ -123,7 +124,7 @@ test('values the Classic pack wrote at the old combat defaults move to the 3.1.6
   // Without the trace: nothing moves.
   const bare = classicRealm('wildcard', { [STUCK]: '0', [PCT]: '0' }, null);
   await realms.status(bare.root, { live: false }).catch(() => null);
-  assert.deepEqual(own(bare.dir), { [STUCK]: '0', [PCT]: '0' });
+  assert.deepEqual(own(bare.dir), { [STUCK]: '0', [PCT]: '0', [AT60]: '80' });
 });
 
 // 0.4.5 test, 19/11: the status read a realm's settings many times at once and the migration ran 18 times in the same
@@ -135,4 +136,21 @@ test('many reads of a realm at once move an old default once, with one log line'
   assert.equal(JSON.parse(fs.readFileSync(path.join(dir, 'settings.json'), 'utf8'))['playerbots.conf'][KEY], '0');
   const lines = fs.readFileSync(path.join(root, 'logs', 'launcher-realms.log'), 'utf8').split('\n').filter(l => l.includes(KEY));
   assert.equal(lines.length, 1);
+});
+
+// 3.2.2 (user, 24/11: « prochaine update on force ce champs à OFF »): Auto-gear at level 60 goes off ONCE on every realm,
+// whatever its value (ON by the player included); turned on again afterwards, it stays on.
+test('Auto-gear at level 60 is turned off once on every realm, then the choice of the player stays', async () => {
+  for (const [key, before] of [['living', '59'], ['living', undefined], ['wildcard', '59'], ['reborn', '80'], ['wildcard', '70']]) {
+    const { root, dir } = classicRealm(key, before === undefined ? { 'AiPlayerbot.CoaSelfFound': '1' } : { [AT60]: before }, {});
+    await realms.status(root, { live: false }).catch(() => null);
+    assert.equal(own(dir)[AT60], '80', `${key} ${before} -> 80`);
+    assert.ok(JSON.parse(fs.readFileSync(path.join(dir, 'realm.json'), 'utf8')).moved.includes('at60-off-3.2.2'));
+    // The player turns it on again: never undone by a later read or update.
+    const values = JSON.parse(fs.readFileSync(path.join(dir, 'settings.json'), 'utf8'));
+    values['playerbots.conf'][AT60] = '59';
+    fs.writeFileSync(path.join(dir, 'settings.json'), JSON.stringify(values));
+    await realms.status(root, { live: false }).catch(() => null);
+    assert.equal(own(dir)[AT60], '59');
+  }
 });
