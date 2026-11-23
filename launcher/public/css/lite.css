@@ -505,3 +505,19 @@ summary.damage-row::-webkit-details-marker { display: none; }
 .since-line > .pill { flex: none; }
 .conf-pane .preset-head .icon { margin-right: 6px; vertical-align: -2px; }
 .conf-row.since-flash { outline: 2px solid var(--accent, #6cf); outline-offset: 2px; transition: outline-color 1.2s; }
+
+/* 0.4.8: the maps of the server in three steps (Verification) */
+.maps-steps { align-items: flex-start; }
+.maps-steps > .check-light { margin-top: 4px; }
+.map-steps { list-style: none; margin: 10px 0 4px; padding: 0; display: grid; gap: 8px; }
+.map-step { display: flex; gap: 10px; align-items: flex-start; }
+.map-step > div { display: grid; gap: 2px; flex: 1; min-width: 0; }
+.map-step b { font-weight: 600; font-size: 13px; }
+.map-step-num { flex: none; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 700; background: var(--tint-strong); color: var(--muted); }
+.map-step.ok .map-step-num { background: color-mix(in srgb, var(--ok) 25%, transparent); color: var(--ok); }
+.map-step.warn .map-step-num { background: color-mix(in srgb, var(--warn) 25%, transparent); color: var(--warn); }
+.map-step.bad .map-step-num { background: color-mix(in srgb, var(--bad) 25%, transparent); color: var(--bad); }
+.map-step.run .map-step-num, .map-step.info .map-step-num { background: color-mix(in srgb, var(--info) 25%, transparent); color: var(--info); }
+.map-step .progress { flex: none; margin: 4px 0 2px; }
+.map-step-how { opacity: .8; }
+.maps-steps .button-row { margin-top: 8px; flex-wrap: wrap; }

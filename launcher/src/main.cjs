@@ -241,10 +241,12 @@ let mmapsFetching = false;
 
 // Maps new in the game (a client patch: « Update the data » extracts them, the navigation maps were finished before)
 // get their navigation without touching any other map: ours are downloaded when they match this game, the rest is
-// built here in the background. Returns how many maps had none.
+// built here in the background. Says what is true (22/11: « added » was said with nothing built): how many maps had
+// none, how many were downloaded, and whether the build of the others is at work. Throws with the reason otherwise.
 async function fillMissingMmaps(folder, onEvent = () => {}) {
   const missing = assembler.missingMmaps(folder);
-  if (!missing.length || mmapsFetching) return 0;
+  if (!missing.length) return { missing: 0, downloaded: 0, building: false };
+  if (mmapsFetching) throw new Error('Another operation is running.');
   mmapsFetching = true;
   try {
     if (config.server.mmapsUrl && canFetchMmaps(folder)) {
@@ -257,8 +259,45 @@ async function fillMissingMmaps(folder, onEvent = () => {}) {
       }
     }
   } finally { mmapsFetching = false; }
-  if (assembler.missingMmaps(folder).length) await assembler.buildMissingMmaps(folder);
-  return missing.length;
+  const left = assembler.missingMmaps(folder);
+  const result = { missing: missing.length, downloaded: missing.length - left.length, building: false };
+  if (!left.length) return result;
+  const build = await assembler.buildMissingMmaps(folder);
+  if (build.started) return { ...result, building: true };
+  // Ended at once with nothing left to build: the maps are there.
+  if (!assembler.missingMmaps(folder).length) return { ...result, downloaded: result.downloaded };
+  throw new Error('The navigation of the new maps could not be started. See Assembler\logs\mmaps-run.log.');
+}
+
+// The three steps of the maps of a server assembled from the player's game, each with its state:
+// 1 the game (updated since the data were taken from it?), 2 the data of the server taken from it (tables, terrain,
+// buildings), 3 the navigation of the bots computed from those data (downloaded when ours match, built here otherwise).
+// todo: what the one button does, in this order: 'data', 'download', 'missing', 'resume'.
+async function mapSteps(folder) {
+  const asm = assembler.state(folder);
+  if (!asm.applies || (asm.needed && !asm.running)) return null;
+  const mm = asm.mmaps;
+  const drift = asm.needed ? null : await assemblyInfo(folder).catch(() => null);
+  const game = drift?.clientKept ? 'kept' : drift?.clientChanged ? 'changed' : 'ok';
+  const data = asm.running ? 'running' : game === 'changed' ? 'todo' : 'ok';
+  const missing = mm.complete && !mm.running && data === 'ok' ? assembler.missingMmaps(folder) : [];
+  let update = '';
+  if (data === 'ok' && !mm.running && canFetchMmaps(folder) && config.server.mmapsUrl) {
+    const published = await publishedMmaps().catch(() => null);
+    if (published?.version && published.version !== mm.published) update = published.version;
+  }
+  const pct = mm.tilesTotal ? Math.min(99, Math.floor((100 * mm.tiles) / mm.tilesTotal)) : mm.total ? Math.floor((100 * mm.done) / mm.total) : 0;
+  const nav = mmapsFetching ? 'running' : mm.running ? 'running' : mm.error ? 'error' : data !== 'ok' ? 'after' : !mm.complete ? 'todo' : missing.length ? 'missing' : update ? 'update' : 'ok';
+  const todo = [];
+  if (data === 'todo') todo.push('data');
+  if (nav !== 'running' && data !== 'running') {
+    if (update) todo.push('download');
+    if (missing.length) todo.push('missing');
+    if (nav === 'error' || nav === 'todo') todo.push(mm.complete ? 'missing' : 'resume');
+    if (data === 'todo') todo.push('missing');
+  }
+  const state = nav === 'error' ? 'bad' : todo.length ? 'warn' : 'info';
+  return { state, game, data, nav, todo: [...new Set(todo)], busy: data === 'running' || nav === 'running', done: mm.done, total: mm.total || mm.done, pct, missing: missing.slice(0, 8).join(', ') + (missing.length > 8 ? '…' : ''), count: missing.length, update, error: mm.error || '', failed: mm.failed || 0 };
 }
 
 async function serverInfo() {
@@ -554,22 +593,10 @@ function registerIpc() {
     try {
       const found = serverControl();
       const checks = await runChecks({ root: serverPath(), inspect: inspectRepack, control: found, backup: serverTools().backup, repack: repackUpdater, botsPackage: bots, deep: deep === true });
-      // The bots' navigation maps, built once from the player's game: rebuilt only on demand (bots walking oddly).
-      const asm = assembler.state(serverPath());
-      if (asm.applies && !asm.needed && asm.mmaps.done > 0) checks.push({ group: 'bots', id: 'bots.mmaps', state: 'info', data: { done: asm.mmaps.done, total: asm.mmaps.total || asm.mmaps.done }, action: asm.mmaps.running ? '' : 'mmaps-rebuild' });
-      // A newer set of our navigation maps than the one here (or than maps built here): offered, never forced.
-      if (asm.applies && !asm.needed && canFetchMmaps(serverPath())) {
-        const published = await publishedMmaps().catch(() => null);
-        if (published?.version && published.version !== asm.mmaps.published) checks.push({ group: 'bots', id: 'bots.mmapsUpdate', state: 'info', data: { version: published.version }, action: asm.mmaps.running || mmapsFetching ? '' : 'mmaps-update' });
-      }
-      // Maps new in the game with no navigation (bots walk there in straight lines): only those are added.
-      const missing = asm.applies && !asm.needed && asm.mmaps.complete && !asm.mmaps.running ? assembler.missingMmaps(serverPath()) : [];
-      if (missing.length) checks.push({ group: 'bots', id: 'bots.mmapsMissing', state: 'warn', data: { count: missing.length, maps: missing.slice(0, 8).join(', ') + (missing.length > 8 ? '…' : '') }, action: mmapsFetching ? '' : 'mmaps-missing' });
-      // Game files modified and kept by the player: the server data do not match them.
-      const drift = asm.applies && !asm.needed ? await assemblyInfo(serverPath()) : null;
-      if (drift?.clientKept) checks.push({ group: 'core', id: 'client.kept', state: 'warn', data: {}, action: 'assemble-refresh' });
-      // The map data (tables, terrain, vmaps) taken again from the game: after a game patch with a new zone.
-      else if (drift) checks.push({ group: 'bots', id: 'data.refresh', state: drift.clientChanged ? 'warn' : 'info', data: {}, action: asm.mmaps.running ? '' : 'assemble-refresh' });
+      // The maps of the game, in the order they depend on each other (user, 23/11: « 1 > update du client > generer
+      // les vmaps > generer les maps bots … c'est pas clair pour les gens »): one card, three steps, one button.
+      const steps = await mapSteps(serverPath());
+      if (steps) checks.push({ group: 'bots', id: 'maps.steps', state: steps.state, data: steps, action: steps.todo.length && !steps.busy ? 'maps-update-all' : '' });
       return { checks, summary: summary(checks), at: new Date().toISOString(), deep: deep === true };
     } finally { if (deep === true) busyFiles = false; }
   });
@@ -868,7 +895,8 @@ function registerIpc() {
   handle('assemble:run', () => assembleServer());
   // After a CoA patch of the game: its tables, terrain and vmaps extracted again (the database and the bots stay).
   // stop: asked from Verification, the server (and its realms) is stopped first instead of refusing.
-  handle('assemble:refreshData', async ({ stop = false } = {}) => {
+  // mmaps: false when the steps of Verification go on with the navigation themselves (they await it, and say it).
+  handle('assemble:refreshData', async ({ stop = false, mmaps = true } = {}) => {
     const running = async () => (await requireControl().status()).some(service => /world/i.test(service.id) && service.state !== 'stopped' && service.state !== 'foreign')
       || (await realms.status(serverPath(), { live: false })).realms.some(realm => ['running', 'starting'].includes(realm.state));
     if (stop && await running()) { await realms.stopAll(serverPath()); await requireControl().stopAll(); }
@@ -877,7 +905,7 @@ function registerIpc() {
       const done = await assembleServer(['dbc', 'maps', 'vmaps']);
       assembler.forgetKept(serverPath());
       // Navigation for the maps new in the game, never all of them again: in the background, the server can start.
-      if (assembler.state(serverPath()).mmaps.complete) fillMissingMmaps(serverPath(), event => send('assemble:mmaps', event)).catch(() => {});
+      if (mmaps && assembler.state(serverPath()).mmaps.complete) fillMissingMmaps(serverPath(), event => send('assemble:mmaps', event)).catch(() => {});
       return done;
     } finally { clientDrift = { key: '', at: 0, changed: false }; }
   });
@@ -889,7 +917,7 @@ function registerIpc() {
     assembler.keepClient(serverPath(), info.client);
     return serverInfo();
   });
-  handle('assemble:mmaps', async () => { await assembler.startMmaps(serverPath()); return assembler.state(serverPath()); });
+  handle('assemble:mmaps', async () => { await assembler.mmapsStart(serverPath()); return assembler.state(serverPath()); });
   handle('assemble:mmapsPause', () => assembler.stopMmaps(serverPath()));
   // Our latest navigation maps instead of those here (Verification): the build in progress is paused first, what is
   // not published for this game is built after.
@@ -910,8 +938,8 @@ function registerIpc() {
     const folder = serverPath();
     if (!folder) throw new Error('Choose the server folder first.');
     if (assembling || mmapsFetching) throw new Error('Another operation is running.');
-    await fillMissingMmaps(folder, event => send('assemble:mmaps', event));
-    return assembler.state(folder);
+    const result = await fillMissingMmaps(folder, event => send('assemble:mmaps', event));
+    return { ...result, assembly: assembler.state(folder) };
   });
   handle('assemble:mmapsRebuild', async () => { await assembler.rebuildMmaps(serverPath()); return assembler.state(serverPath()); });
   handle('feed:get', () => feed || refreshFeed());

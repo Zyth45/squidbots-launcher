@@ -187,6 +187,47 @@ function checkText(check) {
 
 const GROUPS = [['core', 'layers', 'Core'], ['bots', 'bot', 'Bots'], ['services', 'play', 'Services'], ['settings', 'settings', 'Settings'], ['database', 'database', 'Database'], ['setup', 'folder', 'Install'], ['health', 'shield', 'Health']];
 
+// The maps of the server in three steps, in the order each needs the one before (user, 23/11): the game, the data
+// of the server taken from it, the navigation of the bots computed from those data. One button does what is left.
+const MAP_STEP_TEXT = {
+  game: {
+    ok: 'The data of the server were taken from it as it is now.',
+    changed: 'Updated since the data of the server were taken from it: step 2 is to be done again.',
+    kept: 'Modified files that you chose to keep: the data of the server do not match them.',
+  },
+  data: {
+    ok: 'Up to date.',
+    todo: 'To take again from your game (about 30 minutes; the server is stopped first, your characters and bots stay).',
+    running: 'Being taken from your game… (progress on the home page)',
+  },
+  nav: {
+    ok: '{done} of {total} maps.',
+    missing: '{count} new map(s) without navigation ({maps}): bots walk there in straight lines.',
+    update: 'A newer navigation is published ({version}): only the maps that changed are downloaded.',
+    running: '{pct}% done, in the background (progress on the home page). The server can keep running.',
+    error: 'Stopped: {error}',
+    todo: '{done} of {total} maps: the others are still to build.',
+    after: 'Computed again for the new maps once step 2 is done.',
+  },
+};
+const MAP_STEP_LIGHT = { ok: 'ok', kept: 'warn', changed: 'warn', todo: 'warn', missing: 'warn', update: 'info', after: 'idle', running: 'run', error: 'bad' };
+function mapStepsView(check) {
+  const d = check.data;
+  const step = (n, id, name, value, extra = '') => `<li class="map-step ${MAP_STEP_LIGHT[value] || 'idle'}"><span class="map-step-num">${n}</span><div><b>${esc(name)}</b><small>${esc(t(`maps.${id}.${value}`, MAP_STEP_TEXT[id][value], { done: d.done, total: d.total, count: d.count, maps: d.missing, version: d.update, pct: d.pct, error: d.error ? mmapsReason(d.error) : '' }))}</small>${extra}</div></li>`;
+  const bar = d.nav === 'running' ? `<div class="progress"><span data-pct="${d.pct}"></span></div>` : '';
+  const how = `<small class="map-step-how">${esc(t('maps.navHow', 'Downloaded when ours match your game, built on this PC otherwise.'))}</small>`;
+  const label = d.todo.includes('data') ? t('maps.updateAll', 'Update (steps 2 and 3)') : t('maps.updateNav', 'Update the navigation (step 3)');
+  const button = check.action ? `<button class="button primary small" data-action="maps-update-all">${icon('refresh')}${esc(label)}</button>` : '';
+  const links = [
+    d.game === 'changed' && !d.busy ? `<button class="button ghost small subtle" data-action="assemble-keep-client">${esc(t('assemble.keepClient', 'Keep my modified files'))}</button>` : '',
+    d.game === 'kept' && !d.busy ? `<button class="button ghost small" data-action="assemble-refresh">${esc(t('assemble.refresh', 'Update the data'))}</button>` : '',
+    !d.busy && d.data === 'ok' && d.nav !== 'todo' ? `<button class="button ghost small subtle" data-action="mmaps-rebuild" title="${esc(t('maps.rebuildHint', 'Bots walking through walls, stuck or going in straight lines: every map is built again (about an hour, in the background).'))}">${esc(t('maps.rebuild', 'Rebuild all the navigation'))}</button>` : '',
+  ].join('');
+  return `<div class="check maps-steps ${check.state}"><span class="check-light"></span><div><strong>${esc(t('maps.title', 'Maps of the game and navigation of the bots'))}</strong><small>${esc(t('maps.lead', 'The server takes the data of its maps (terrain, buildings) from your game; the navigation of the bots is then computed from those data. Each step needs the one before it.'))}</small>
+    <ol class="map-steps">${step(1, 'game', t('maps.game', 'Your game'), d.game)}${step(2, 'data', t('maps.data', 'Data of the server (tables, terrain, buildings)'), d.data)}${step(3, 'nav', t('maps.nav', 'Navigation of the bots'), d.nav, bar + how)}</ol>
+    ${button || links ? `<div class="button-row">${button}${links}</div>` : ''}</div></div>`;
+}
+
 function verifyView() {
   const v = App.state.verify;
   const running = App.state.verifying;
@@ -199,8 +240,9 @@ function verifyView() {
     const list = v.checks.filter(check => check.group === id);
     if (!list.length) return;
     const col = cols[0].size <= cols[1].size ? cols[0] : cols[1];
-    col.size += 2 + list.reduce((sum, check) => sum + (check.state === 'ok' ? 1 : 2), 0);
+    col.size += 2 + list.reduce((sum, check) => sum + (check.id === 'maps.steps' ? 6 : check.state === 'ok' ? 1 : 2), 0);
     col.html += `<section class="panel verify-group"><header><h2>${icon(iconName)}${esc(t(`verify.group.${id}`, label))}</h2></header>${list.map(check => {
+      if (check.id === 'maps.steps') return mapStepsView(check);
       const [title, text] = checkText(check);
       const fix = check.action?.startsWith('fix:') ? check.action.slice(4) : '';
       const action = !fix && check.action && check.state !== 'ok' ? ACTIONS[check.action] : null;
@@ -707,6 +749,8 @@ function mmapsReason(text) {
   return text;
 }
 function mmapsBanner(mm) {
+  // Every map done, except the new ones whose build stopped with a reason: said on the home page too (22/11).
+  if (mm?.complete && mm.error && !mm.running) return `<div class="update-banner bad"><i class="dot"></i><span>${esc(t('assemble.mmapsNewStopped', 'Navigation of the new maps not built. {error}', { error: mmapsReason(mm.error) }))}</span><button class="button ghost small" data-action="assemble-mmaps">${esc(t('assemble.mmapsRetry', 'Try again'))}</button></div>`;
   if (!mm || mm.complete) return '';
   const pct = mm.tilesTotal ? Math.min(99, Math.floor((100 * mm.tiles) / mm.tilesTotal)) : mm.total ? Math.floor((100 * mm.done) / mm.total) : 0;
   // Shown as running for a minute after the click, unless the build has already stopped with a reason since.
@@ -823,6 +867,36 @@ Object.assign(App.actions, {
     toast(t('assemble.ready', 'The server is ready. Start it from the home page.'), 'success');
     App.render();
   }, button),
+  // The steps of the maps left to do, in their order (Verification): the data first when the game changed, then the
+  // navigation (newer one downloaded, new maps added, a build stopped taken up again). Said as it is at the end.
+  'maps-update-all': button => guard(async () => {
+    const steps = App.state.verify?.checks?.find(check => check.id === 'maps.steps')?.data;
+    if (!steps?.todo?.length) return;
+    const todo = steps.todo;
+    const lines = [];
+    if (todo.includes('data')) lines.push(t('maps.doData', '2 · The data of the server are taken again from your game: about 30 minutes, the server is stopped first. Your characters, the bots and the database stay.'));
+    if (todo.includes('download')) lines.push(t('maps.doDownload', '3 · The navigation that changed is downloaded ({version}).', { version: steps.update }));
+    if (todo.includes('missing') || todo.includes('resume')) lines.push(t('maps.doBuild', '3 · The navigation still missing is downloaded when ours matches your game, built here in the background otherwise.'));
+    if (!await confirmDialog({ title: t('maps.confirmTitle', 'Update the maps of the server?'), body: lines.map(esc).join('<br>'), confirm: t('maps.confirm', 'Update') })) return;
+    if (todo.includes('data')) {
+      App.state.assembleError = '';
+      App.state.assembleProgress = { step: 'dbc', text: t('assemble.starting', 'Starting…') };
+      if (App.state.server?.assembly) Object.assign(App.state.server.assembly, { needed: true, running: true, clientChanged: false });
+      App.render();
+      try { App.state.server = await App.api.assembleRefresh({ stop: true, mmaps: false }); } finally { if (App.state.server?.assembly?.running) App.state.server = await App.api.serverInfo(); }
+    }
+    App.state.mmapsAsked = Date.now();
+    let building = false;
+    try {
+      if (todo.includes('download')) await App.api.assembleMmapsUpdate();
+      if (todo.includes('missing') || todo.includes('data')) building = !!(await App.api.assembleMmapsMissing())?.building;
+      if (todo.includes('resume')) { await App.api.assembleMmaps(); building = true; }
+    } catch (error) { App.state.mmapsAsked = 0; App.state.server = await App.api.serverInfo().catch(() => App.state.server); runVerify(false); throw error; }
+    if (!building) App.state.mmapsAsked = 0;
+    App.state.server = await App.api.serverInfo();
+    toast(building ? t('maps.building', 'The navigation is being built in the background: its progress is on the home page.') : t('maps.done', 'The maps of the server are up to date.'), 'success');
+    runVerify(false);
+  }, button),
   'assemble-mmaps-pause': button => guard(async () => {
     App.state.mmapsAsked = 0;
     const asm = await App.api.assembleMmapsPause();
@@ -833,7 +907,7 @@ Object.assign(App.actions, {
     // Shown as running at once: the build takes a few seconds to say so itself.
     App.state.mmapsAsked = Date.now();
     App.render();
-    await App.api.assembleMmaps();
+    try { await App.api.assembleMmaps(); } catch (error) { App.state.mmapsAsked = 0; App.state.server = await App.api.serverInfo().catch(() => App.state.server); App.render(); throw error; }
     App.state.server = await App.api.serverInfo();
     App.render();
   }, button),
@@ -894,10 +968,13 @@ Object.assign(App.actions, {
     runVerify(false);
   }, button),
   'mmaps-missing': button => guard(async () => {
+    // Said as it is (22/11: « added » was shown with nothing built): downloaded, being built, or the reason.
     App.state.mmapsAsked = Date.now();
-    await App.api.assembleMmapsMissing();
+    let result;
+    try { result = await App.api.assembleMmapsMissing(); } catch (error) { App.state.mmapsAsked = 0; App.state.server = await App.api.serverInfo().catch(() => App.state.server); runVerify(false); throw error; }
     App.state.server = await App.api.serverInfo();
-    toast(t('verify.mmapsMissingDone', 'The navigation of the new maps is added: what was not downloaded is built in the background (progress on the home page).'), 'success');
+    if (result?.building) toast(t('verify.mmapsMissingBuilding', 'The navigation of the new maps is being built in the background: its progress is on the home page.'), 'success');
+    else { App.state.mmapsAsked = 0; toast(t('verify.mmapsMissingAdded', 'The navigation of the new maps is added ({count} downloaded).', { count: result?.downloaded || 0 }), 'success'); }
     runVerify(false);
   }, button),
   'mmaps-rebuild': button => guard(async () => {

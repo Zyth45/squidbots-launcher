@@ -72,11 +72,22 @@ function refreshScript(folder) {
 }
 
 // Runs the assembler with --json; each line it prints is an event ({ event, step, done, total, text, message }).
-function run(folder, args, onEvent = () => {}, { detached = false } = {}) {
+// Detached (the navigation maps, which outlive the launcher): what it prints goes to <log> instead of nowhere, and
+// `exit` is filled when it ends while the launcher runs (what it said: error, already running, done).
+function run(folder, args, onEvent = () => {}, { detached = false, log = '', onExit = null } = {}) {
   refreshScript(folder);
   const exe = path.join(folder, PYTHON);
-  const child = spawn(exe, ['-B', '-X', 'utf8', SCRIPT, '--json', ...args], { cwd: folder, windowsHide: true, detached, env: { ...process.env, PYTHONIOENCODING: 'utf-8' }, stdio: detached ? 'ignore' : ['ignore', 'pipe', 'pipe'] });
-  if (detached) { child.unref(); return Promise.resolve({ pid: child.pid }); }
+  let out = 'ignore';
+  if (detached && log) { try { fs.mkdirSync(path.dirname(log), { recursive: true }); out = fs.openSync(log, 'w'); } catch { out = 'ignore'; } }
+  const child = spawn(exe, ['-B', '-X', 'utf8', SCRIPT, '--json', ...args], { cwd: folder, windowsHide: true, detached, env: { ...process.env, PYTHONIOENCODING: 'utf-8' }, stdio: detached ? ['ignore', out, out] : ['ignore', 'pipe', 'pipe'] });
+  if (detached) {
+    if (typeof out === 'number') try { fs.closeSync(out); } catch {}
+    const info = { pid: child.pid, exit: null };
+    child.once('error', error => { info.exit = { code: -1, error: error.message }; onExit?.(info.exit); });
+    child.once('exit', code => { if (info.exit) return; info.exit = { code, ...readRunLog(log) }; onExit?.(info.exit); });
+    child.unref();
+    return Promise.resolve(info);
+  }
   return new Promise((resolve, reject) => {
     child.stdout.setEncoding('utf8');
     child.stderr.setEncoding('utf8');
@@ -133,22 +144,114 @@ function checkWorkLinks(folder) {
 
 // The navigation maps keep being generated when the launcher closes; the next start reads their progress.
 const mmapsStarted = new Map();
+// What the detached build printed (one JSON event per line): its error, « already being built », done.
+function readRunLog(log) {
+  const said = { error: '', already: false, done: false, tail: '' };
+  let text = '';
+  try { text = log ? fs.readFileSync(log, 'utf8') : ''; } catch {}
+  for (const line of text.split(/\r?\n/)) {
+    if (!line.trim()) continue;
+    let event = null;
+    try { event = JSON.parse(line); } catch { said.tail = line.trim(); continue; }
+    if (event.event === 'error') said.error = event.message || 'The navigation maps stopped.';
+    else if (event.event === 'done') said.done = true;
+    else if (event.event === 'log' && /already being built/i.test(event.text || '')) said.already = true;
+  }
+  return said;
+}
+
+const runLog = folder => path.join(folder, 'Assembler', 'logs', 'mmaps-run.log');
+const lockFile = folder => path.join(folder, '.state', 'mmaps.lock');
+// Builds stopped by the launcher itself (Pause, an update): their end is not an error.
+const mmapsStopped = new Map();
+
+// The build ended while the launcher runs: a reason is kept in the state, so that the home page says it (the script
+// of a package does not write it itself), unless another build has taken over since.
+function mmapsExited(folder, pid, exit) {
+  if (Date.now() - (mmapsStopped.get(path.resolve(folder)) || 0) < 120000) return;
+  const reason = exit.error || (exit.code && !exit.done ? (exit.tail || `The navigation maps stopped (code ${exit.code}).`) : '');
+  if (!reason) return;
+  const file = path.join(folder, '.state', 'assemble.json');
+  const saved = readJson(file) || {};
+  const mm = saved.mmaps = saved.mmaps || {};
+  if (mm.running && mm.pid !== pid && pidAlive(mm.pid)) return;
+  Object.assign(mm, { running: false, error: String(reason).slice(0, 300), errorAt: Date.now() });
+  try { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, JSON.stringify(saved, null, 1)); } catch {}
+}
+
 function startMmaps(folder, threads) {
   const current = state(folder);
   // A second click before the tool has written its state would start a second build: one per minute at most.
   const last = mmapsStarted.get(path.resolve(folder)) || 0;
   if (current.mmaps.running || Date.now() - last < 60000) return Promise.resolve({ pid: null, already: true });
   mmapsStarted.set(path.resolve(folder), Date.now());
+  mmapsStopped.delete(path.resolve(folder));
   checkWorkLinks(folder);
-  return run(folder, ['mmaps', ...(threads ? ['--threads', String(threads)] : [])], undefined, { detached: true });
+  clearStaleLock(folder);
+  // A reason given by a build before is no longer true once another one starts.
+  const file = path.join(folder, '.state', 'assemble.json');
+  const saved = readJson(file);
+  if (saved?.mmaps && (saved.mmaps.error || saved.mmaps.errorAt)) {
+    delete saved.mmaps.error;
+    delete saved.mmaps.errorAt;
+    try { fs.writeFileSync(file, JSON.stringify(saved, null, 1)); } catch {}
+  }
+  let info = null;
+  return run(folder, ['mmaps', ...(threads ? ['--threads', String(threads)] : [])], undefined, { detached: true, log: runLog(folder), onExit: exit => mmapsExited(folder, info?.pid, exit) })
+    .then(result => { info = result; return result; });
+}
+
+// Started, and seen at work: the build writes « running » with its pid once it has read the maps (a few seconds).
+// Throws with its reason when it ends first without having built anything (refused, failed). An end with « done »
+// before it was seen (nothing to build) is not an error.
+async function mmapsStart(folder, threads, { wait = 60000 } = {}) {
+  const started = await startMmaps(folder, threads);
+  if (started.already) return { started: state(folder).mmaps.running, already: true };
+  const begin = Date.now();
+  while (Date.now() - begin < wait) {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    const saved = readJson(path.join(folder, '.state', 'assemble.json'))?.mmaps || {};
+    if (saved.running && pidAlive(saved.pid)) return { started: true, pid: saved.pid };
+    if (started.exit) {
+      if (started.exit.error) throw new Error(started.exit.error);
+      if (started.exit.already) return { started: state(folder).mmaps.running, already: true };
+      if (started.exit.done) return { started: false, finished: true };
+      throw new Error(started.exit.tail || `The navigation maps did not start (code ${started.exit.code}).`);
+    }
+  }
+  return { started: pidAlive(started.pid), pid: started.pid };
+}
+
+// The processes of a build of this repack: the tool that builds the maps (python coa_assemble.py mmaps) and its
+// mmaps_generator.
+function mmapsProcesses(folder) {
+  const dir = path.resolve(folder).replace(/'/g, "''");
+  const script = `$dir = '${dir}\\'; Get-CimInstance Win32_Process | Where-Object { $_.ExecutablePath -and $_.ExecutablePath.StartsWith($dir, [StringComparison]::OrdinalIgnoreCase) -and ($_.Name -eq 'mmaps_generator.exe' -or ($_.Name -eq 'python.exe' -and $_.CommandLine -match 'coa_assemble\\.py.* mmaps( |$)')) } | ForEach-Object { $_.ProcessId }`;
+  try {
+    return String(require('node:child_process').execFileSync('powershell.exe', ['-NoProfile', '-Command', script], { windowsHide: true, encoding: 'utf8', timeout: 30000 }))
+      .split(/\s+/).filter(Boolean).map(Number).filter(Boolean);
+  } catch { return []; }
+}
+
+// The lock of a build that was killed before it could remove it (an update stopped it in its first seconds, 22/11 on
+// the user's PC): its pid is no build of this repack any more, maybe another program now. Removed, or the next build
+// would stop at once on « already being built » without a word.
+function clearStaleLock(folder, list = null) {
+  let pid = 0;
+  try { pid = Number(fs.readFileSync(lockFile(folder), 'utf8').trim()) || 0; } catch { return false; }
+  if (pid && pidAlive(pid) && (list || mmapsProcesses(folder)).includes(pid)) return false;
+  try { fs.rmSync(lockFile(folder), { force: true }); } catch {}
+  return true;
 }
 
 // A generator left behind (its tool killed or crashed, the state not written): a program of the repack still running,
-// which stops every update (code 13). Every mmaps_generator of this repack, and the tool that builds the maps.
+// which stops every update (code 13). Every mmaps_generator of this repack, and the tool that builds the maps. Returns
+// how many were stopped.
 function killStray(folder) {
-  const dir = path.resolve(folder).replace(/'/g, "''");
-  const script = `$dir = '${dir}\\'; Get-CimInstance Win32_Process | Where-Object { $_.ExecutablePath -and $_.ExecutablePath.StartsWith($dir, [StringComparison]::OrdinalIgnoreCase) -and ($_.Name -eq 'mmaps_generator.exe' -or ($_.Name -eq 'python.exe' -and $_.CommandLine -match 'coa_assemble\\.py.* mmaps( |$)')) } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }`;
-  try { require('node:child_process').execFileSync('powershell.exe', ['-NoProfile', '-Command', script], { windowsHide: true, stdio: 'ignore', timeout: 30000 }); } catch {}
+  const pids = mmapsProcesses(folder);
+  for (const pid of pids) { try { require('node:child_process').execFileSync('taskkill.exe', ['/PID', String(pid), '/T', '/F'], { windowsHide: true, stdio: 'ignore' }); } catch {} }
+  if (pids.length) mmapsStopped.set(path.resolve(folder), Date.now());
+  return pids.length;
 }
 
 // Pause: the build is stopped (its process tree: the tool and mmaps_generator); the maps already finished stay,
@@ -157,6 +260,7 @@ function stopMmaps(folder) {
   const file = path.join(folder, '.state', 'assemble.json');
   const saved = readJson(file) || {};
   const pid = saved.mmaps?.pid;
+  mmapsStopped.set(path.resolve(folder), Date.now());
   if (pid && pidAlive(pid)) {
     try { require('node:child_process').execFileSync('taskkill.exe', ['/PID', String(pid), '/T', '/F'], { windowsHide: true, stdio: 'ignore' }); } catch {}
   }
@@ -176,9 +280,12 @@ function stopMmaps(folder) {
 function pauseForUpdate(folder) {
   const saved = readJson(path.join(folder, '.state', 'assemble.json')) || {};
   const running = !!(saved.mmaps?.running && pidAlive(saved.mmaps.pid));
-  if (running) stopMmaps(folder);
-  else killStray(folder);
-  return running;
+  if (running) { stopMmaps(folder); return true; }
+  // A build in its first seconds has not written « running » yet (it reads the maps first): stopped too, and it goes
+  // on after the update like the others. Its lock goes with it (22/11: one left behind stopped the next build).
+  const starting = killStray(folder) > 0;
+  clearStaleLock(folder, []);
+  return starting;
 }
 
 // Every map built again from the start (asked from Verification when bots walk oddly). The maps in place stay in use
@@ -231,7 +338,7 @@ function missingMmaps(folder) {
 // so the generator leaves it as it is (even one whose data a client patch changed; Rebuild does every map again).
 function buildMissingMmaps(folder) {
   const missing = new Set(missingMmaps(folder));
-  if (!missing.size || state(folder).mmaps.running) return Promise.resolve({ pid: null, already: true });
+  if (!missing.size || state(folder).mmaps.running) return Promise.resolve({ started: state(folder).mmaps.running, already: true });
   const file = path.join(folder, '.state', 'assemble.json');
   const saved = readJson(file) || {};
   const mm = saved.mmaps = saved.mmaps || {};
@@ -244,7 +351,8 @@ function buildMissingMmaps(folder) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, JSON.stringify(saved, null, 1));
   mmapsStarted.delete(path.resolve(folder));
-  return startMmaps(folder);
+  // Said started only once the build is seen at work; its reason otherwise (22/11: « added » with nothing built).
+  return mmapsStart(folder);
 }
 
 // Our navigation maps, downloaded instead of built: the assembler takes only the maps whose maps/vmaps here are those
@@ -302,4 +410,4 @@ function clientKept(folder, client) {
 }
 function forgetKept(folder) { try { fs.rmSync(path.join(folder, KEPT), { force: true }); } catch {} }
 
-module.exports = { state, assemble, refreshScript, startMmaps, stopMmaps, pauseForUpdate, rebuildMmaps, clientChanged, keepClient, clientKept, forgetKept, clientPrint, worldImport, fetchMmaps, missingMmaps, buildMissingMmaps, mapHash, checkWorkLinks, STEPS, busy };
+module.exports = { state, assemble, refreshScript, startMmaps, mmapsStart, clearStaleLock, readRunLog, stopMmaps, pauseForUpdate, rebuildMmaps, clientChanged, keepClient, clientKept, forgetKept, clientPrint, worldImport, fetchMmaps, missingMmaps, buildMissingMmaps, mapHash, checkWorkLinks, STEPS, busy };

@@ -1,5 +1,36 @@
 [
     {
+        "version": "0.4.8",
+        "title": {
+            "en": "Maps of the game, step by step",
+            "fr": "Les cartes du jeu, étape par étape",
+            "ru": "Карты игры, шаг за шагом",
+            "zh": "游戏地图，一步一步"
+        },
+        "items": {
+            "en": [
+                "Verification: one card for the maps of the game, in three steps in their order: your game, the data of the server taken from it (terrain, buildings), then the navigation of the bots computed from those data. Each step says where it stands, and one button does what is left, in order.",
+                "Navigation of new maps (after a game patch): the launcher now says it is added only when it is; otherwise it says it is being built, with its progress on the home page, or why it stopped.",
+                "A build of the navigation cut by an update in its first seconds no longer blocks the next one, and goes on after the update."
+            ],
+            "fr": [
+                "Vérification : une seule carte pour les cartes du jeu, en trois étapes dans leur ordre : votre jeu, les données du serveur qui en sont tirées (terrain, bâtiments), puis la navigation des bots calculée à partir de ces données. Chaque étape dit où elle en est, et un seul bouton fait ce qui reste, dans l'ordre.",
+                "Navigation des nouvelles cartes (après un patch du jeu) : le launcher ne dit plus qu'elle est ajoutée que si c'est vrai ; sinon il dit qu'elle est en construction, avec sa progression sur l'accueil, ou pourquoi elle s'est arrêtée.",
+                "Une construction de la navigation coupée par une mise à jour dans ses premières secondes ne bloque plus la suivante, et reprend après la mise à jour."
+            ],
+            "ru": [
+                "Проверка: одна карточка для карт игры, в три шага по порядку: ваша игра, данные сервера, взятые из неё (рельеф, здания), затем навигация ботов, рассчитанная по этим данным. Каждый шаг показывает своё состояние, а одна кнопка делает оставшееся по порядку.",
+                "Навигация новых карт (после патча игры): лаунчер говорит, что она добавлена, только если это так; иначе — что она строится, с прогрессом на главной, или почему остановилась.",
+                "Построение навигации, прерванное обновлением в первые секунды, больше не блокирует следующее и продолжается после обновления."
+            ],
+            "zh": [
+                "检查页：游戏地图合并为一张卡片，按顺序分三步：您的游戏、从中提取的服务器数据（地形、建筑），以及根据这些数据计算的机器人导航。每一步都显示其状态，一个按钮按顺序完成剩下的步骤。",
+                "新地图的导航（游戏补丁之后）：启动器只有在真正添加后才会说已添加；否则会说正在生成（进度见主页），或说明停止的原因。",
+                "在最初几秒被更新中断的导航生成不再阻塞下一次，并会在更新后继续。"
+            ]
+        }
+    },
+    {
         "version": "0.4.7",
         "title": {
             "en": "Ready for SquidBots 3.2",
