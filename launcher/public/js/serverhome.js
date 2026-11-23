@@ -202,7 +202,8 @@ const MAP_STEP_TEXT = {
   },
   nav: {
     ok: '{done} of {total} maps.',
-    missing: '{count} new map(s) without navigation ({maps}): bots walk there in straight lines.',
+    missing: '{count} new maps without navigation ({maps}): bots walk there in straight lines.',
+    missing1: 'A new map without navigation ({maps}): bots walk there in straight lines.',
     update: 'A newer navigation is published ({version}): only the maps that changed are downloaded.',
     running: '{pct}% done, in the background (progress on the home page). The server can keep running.',
     error: 'Stopped: {error}',
@@ -210,7 +211,7 @@ const MAP_STEP_TEXT = {
     after: 'Computed again for the new maps once step 2 is done.',
   },
 };
-const MAP_STEP_LIGHT = { ok: 'ok', kept: 'warn', changed: 'warn', todo: 'warn', missing: 'warn', update: 'info', after: 'idle', running: 'run', error: 'bad' };
+const MAP_STEP_LIGHT = { ok: 'ok', kept: 'warn', changed: 'warn', todo: 'warn', missing: 'warn', missing1: 'warn', update: 'info', after: 'idle', running: 'run', error: 'bad' };
 function mapStepsView(check) {
   const d = check.data;
   const step = (n, id, name, value, extra = '') => `<li class="map-step ${MAP_STEP_LIGHT[value] || 'idle'}"><span class="map-step-num">${n}</span><div><b>${esc(name)}</b><small>${esc(t(`maps.${id}.${value}`, MAP_STEP_TEXT[id][value], { done: d.done, total: d.total, count: d.count, maps: d.missing, version: d.update, pct: d.pct, error: d.error ? mmapsReason(d.error) : '' }))}</small>${extra}</div></li>`;
@@ -224,7 +225,7 @@ function mapStepsView(check) {
     !d.busy && d.data === 'ok' && d.nav !== 'todo' ? `<button class="button ghost small subtle" data-action="mmaps-rebuild" title="${esc(t('maps.rebuildHint', 'Bots walking through walls, stuck or going in straight lines: every map is built again (about an hour, in the background).'))}">${esc(t('maps.rebuild', 'Rebuild all the navigation'))}</button>` : '',
   ].join('');
   return `<div class="check maps-steps ${check.state}"><span class="check-light"></span><div><strong>${esc(t('maps.title', 'Maps of the game and navigation of the bots'))}</strong><small>${esc(t('maps.lead', 'The server takes the data of its maps (terrain, buildings) from your game; the navigation of the bots is then computed from those data. Each step needs the one before it.'))}</small>
-    <ol class="map-steps">${step(1, 'game', t('maps.game', 'Your game'), d.game)}${step(2, 'data', t('maps.data', 'Data of the server (tables, terrain, buildings)'), d.data)}${step(3, 'nav', t('maps.nav', 'Navigation of the bots'), d.nav, bar + how)}</ol>
+    <ol class="map-steps">${step(1, 'game', t('maps.game', 'Your game'), d.game)}${step(2, 'data', t('maps.data', 'Data of the server (tables, terrain, buildings)'), d.data)}${step(3, 'nav', t('maps.nav', 'Navigation of the bots'), d.nav === 'missing' && d.count === 1 ? 'missing1' : d.nav, bar + how)}</ol>
     ${button || links ? `<div class="button-row">${button}${links}</div>` : ''}</div></div>`;
 }
 

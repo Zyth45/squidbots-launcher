@@ -1429,6 +1429,7 @@
   "maps.data.running": "正在从您的游戏提取…（进度见主页）",
   "maps.nav.ok": "{total} 张地图中已有 {done} 张。",
   "maps.nav.missing": "{count} 张新地图没有导航（{maps}）：机器人在那里走直线。",
+  "maps.nav.missing1": "1 张新地图没有导航（{maps}）：机器人在那里走直线。",
   "maps.nav.update": "已发布更新的导航（{version}）：只下载有变化的地图。",
   "maps.nav.running": "已完成 {pct}%，在后台进行（进度见主页）。服务器可以继续运行。",
   "maps.nav.error": "已停止：{error}",
