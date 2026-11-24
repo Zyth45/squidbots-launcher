@@ -2188,10 +2188,10 @@
     "zh": "地下城查找器机器人补位"
    },
    "help": {
-    "en": "New in 3.2.2. Bots fill the parties of the Dungeon Finder. Automatic: only while fewer real players than the number below are online (bots not counted). Automatic with 0 below turns the fill off.",
-    "fr": "Nouveau en 3.2.2. Des bots complètent les groupes de la recherche de donjon. Automatique : seulement tant que moins de vrais joueurs que le nombre ci-dessous sont en ligne (bots non comptés). Automatique avec 0 ci-dessous coupe le remplissage.",
-    "ru": "Новое в 3.2.2. Боты дополняют группы поиска подземелий. Автоматически: только пока в сети меньше настоящих игроков, чем число ниже (боты не считаются). Автоматически с 0 ниже — заполнение выключено.",
-    "zh": "3.2.2 新增。机器人为地下城查找器的队伍补位。自动：仅在在线真实玩家少于下方数值时（不计机器人）。自动且下方为 0 时关闭补位。"
+    "en": "New in 3.3. Bots fill the parties of the Dungeon Finder. Automatic: only while fewer real players than the number below are online (bots not counted). Automatic with 0 below turns the fill off.",
+    "fr": "Nouveau en 3.3. Des bots complètent les groupes de la recherche de donjon. Automatique : seulement tant que moins de vrais joueurs que le nombre ci-dessous sont en ligne (bots non comptés). Automatique avec 0 ci-dessous coupe le remplissage.",
+    "ru": "Новое в 3.3. Боты дополняют группы поиска подземелий. Автоматически: только пока в сети меньше настоящих игроков, чем число ниже (боты не считаются). Автоматически с 0 ниже — заполнение выключено.",
+    "zh": "3.3 新增。机器人为地下城查找器的队伍补位。自动：仅在在线真实玩家少于下方数值时（不计机器人）。自动且下方为 0 时关闭补位。"
    }
   },
   {
@@ -2216,10 +2216,10 @@
     "zh": "在线玩家少于此数时用机器人补位"
    },
    "help": {
-    "en": "New in 3.2.2. Real players only, bots not counted. 0 = never automatic. 5 by default.",
-    "fr": "Nouveau en 3.2.2. Vrais joueurs seulement, bots non comptés. 0 = jamais en automatique. 5 par défaut.",
-    "ru": "Новое в 3.2.2. Только настоящие игроки, боты не считаются. 0 = никогда автоматически. По умолчанию 5.",
-    "zh": "3.2.2 新增。只计真实玩家，不计机器人。0 = 从不自动。默认 5。"
+    "en": "New in 3.3. Real players only, bots not counted. 0 = never automatic. 5 by default.",
+    "fr": "Nouveau en 3.3. Vrais joueurs seulement, bots non comptés. 0 = jamais en automatique. 5 par défaut.",
+    "ru": "Новое в 3.3. Только настоящие игроки, боты не считаются. 0 = никогда автоматически. По умолчанию 5.",
+    "zh": "3.3 新增。只计真实玩家，不计机器人。0 = 从不自动。默认 5。"
    }
   },
   {
@@ -2408,10 +2408,10 @@
     "zh": "机器人使用坐骑的最低等级"
    },
    "help": {
-    "en": "From this level a bot uses its ground mount: in your group, it mounts up with you and gets off when you do. Lower it (for example to 1) so your low-level alts ride along with you. Default 5 (20 before 3.2.2).",
-    "fr": "À partir de ce niveau, un bot utilise sa monture terrestre : dans votre groupe, il monte avec vous et descend quand vous descendez. Baissez-le (par exemple à 1) pour que vos alts de bas niveau vous suivent à cheval. Par défaut 5 (20 avant la 3.2.2).",
-    "ru": "С этого уровня бот пользуется наземным ездовым животным: в вашей группе он садится верхом вместе с вами и спешивается, когда спешиваетесь вы. Понизьте (например, до 1), чтобы ваши альты низкого уровня ездили с вами. По умолчанию 5 (до 3.2.2 — 20).",
-    "zh": "从此等级起，机器人会使用地面坐骑：在你的队伍中，它会和你一起上坐骑，你下坐骑时它也下。调低（例如 1）可让你的低等级小号随你一起骑乘。默认 5（3.2.2 之前为 20）。"
+    "en": "From this level a bot uses its ground mount: in your group, it mounts up with you and gets off when you do. Lower it (for example to 1) so your low-level alts ride along with you. Default 5 (20 before 3.3).",
+    "fr": "À partir de ce niveau, un bot utilise sa monture terrestre : dans votre groupe, il monte avec vous et descend quand vous descendez. Baissez-le (par exemple à 1) pour que vos alts de bas niveau vous suivent à cheval. Par défaut 5 (20 avant la 3.3).",
+    "ru": "С этого уровня бот пользуется наземным ездовым животным: в вашей группе он садится верхом вместе с вами и спешивается, когда спешиваетесь вы. Понизьте (например, до 1), чтобы ваши альты низкого уровня ездили с вами. По умолчанию 5 (до 3.3 — 20).",
+    "zh": "从此等级起，机器人会使用地面坐骑：在你的队伍中，它会和你一起上坐骑，你下坐骑时它也下。调低（例如 1）可让你的低等级小号随你一起骑乘。默认 5（3.3 之前为 20）。"
    },
    "default": "5"
   },
@@ -2431,10 +2431,10 @@
     "zh": "机器人附魔装备的最低等级"
    },
    "help": {
-    "en": "From this level a bot gets the enchantments and gems of its level when its gear is looked after. Default 20 (60 before 3.2.2). Above the bots' highest level: no enchantment, no gem.",
-    "fr": "À partir de ce niveau, un bot reçoit les enchantements et les gemmes de son niveau quand son équipement est entretenu. Par défaut 20 (60 avant la 3.2.2). Au-dessus du niveau maximum des bots : ni enchantement ni gemme.",
-    "ru": "С этого уровня бот получает чары и камни своего уровня при обслуживании снаряжения. По умолчанию 20 (до 3.2.2 — 60). Выше максимального уровня ботов: ни чар, ни камней.",
-    "zh": "从此等级起，机器人在维护装备时会获得其等级的附魔和宝石。默认 20（3.2.2 之前为 60）。高于机器人最高等级：不附魔也不镶宝石。"
+    "en": "From this level a bot gets the enchantments and gems of its level when its gear is looked after. Default 20 (60 before 3.3). Above the bots' highest level: no enchantment, no gem.",
+    "fr": "À partir de ce niveau, un bot reçoit les enchantements et les gemmes de son niveau quand son équipement est entretenu. Par défaut 20 (60 avant la 3.3). Au-dessus du niveau maximum des bots : ni enchantement ni gemme.",
+    "ru": "С этого уровня бот получает чары и камни своего уровня при обслуживании снаряжения. По умолчанию 20 (до 3.3 — 60). Выше максимального уровня ботов: ни чар, ни камней.",
+    "zh": "从此等级起，机器人在维护装备时会获得其等级的附魔和宝石。默认 20（3.3 之前为 60）。高于机器人最高等级：不附魔也不镶宝石。"
    }
   },
   {
@@ -3045,10 +3045,10 @@
     "zh": "保存战场结果（30 天）"
    },
    "help": {
-    "en": "Each battleground is recorded (scores, winners) for the PvP page of the dashboard; the bots module deletes the games older than 30 days (AiPlayerbot.CoaLive.PvpStatsKeepDays). Turned on once by the 3.2.2 update; your choice is kept afterwards. Off, the PvP page stays empty.",
-    "fr": "Chaque champ de bataille est enregistré (scores, vainqueurs) pour la page JcJ du dashboard ; le module des bots supprime les parties de plus de 30 jours (AiPlayerbot.CoaLive.PvpStatsKeepDays). Activé une fois par la mise à jour 3.2.2 ; votre choix est ensuite respecté. Désactivé, la page JcJ reste vide.",
-    "ru": "Каждое поле боя записывается (счёт, победители) для страницы PvP дашборда; модуль ботов удаляет игры старше 30 дней (AiPlayerbot.CoaLive.PvpStatsKeepDays). Включено один раз обновлением 3.2.2; дальше ваш выбор сохраняется. Выключено — страница PvP пустая.",
-    "zh": "记录每场战场（比分、胜方），供仪表盘的 PvP 页面显示；机器人模块会删除超过 30 天的对局（AiPlayerbot.CoaLive.PvpStatsKeepDays）。3.2.2 更新会将其开启一次；之后保留你的选择。关闭后 PvP 页面为空。"
+    "en": "Each battleground is recorded (scores, winners) for the PvP page of the dashboard; the bots module deletes the games older than 30 days (AiPlayerbot.CoaLive.PvpStatsKeepDays). Turned on once by the 3.3 update; your choice is kept afterwards. Off, the PvP page stays empty.",
+    "fr": "Chaque champ de bataille est enregistré (scores, vainqueurs) pour la page JcJ du dashboard ; le module des bots supprime les parties de plus de 30 jours (AiPlayerbot.CoaLive.PvpStatsKeepDays). Activé une fois par la mise à jour 3.3 ; votre choix est ensuite respecté. Désactivé, la page JcJ reste vide.",
+    "ru": "Каждое поле боя записывается (счёт, победители) для страницы PvP дашборда; модуль ботов удаляет игры старше 30 дней (AiPlayerbot.CoaLive.PvpStatsKeepDays). Включено один раз обновлением 3.3; дальше ваш выбор сохраняется. Выключено — страница PvP пустая.",
+    "zh": "记录每场战场（比分、胜方），供仪表盘的 PvP 页面显示；机器人模块会删除超过 30 天的对局（AiPlayerbot.CoaLive.PvpStatsKeepDays）。3.3 更新会将其开启一次；之后保留你的选择。关闭后 PvP 页面为空。"
    }
   },
   {

@@ -183,7 +183,7 @@ class ServerConfig {
     const { backup } = await this.save([{ file: 'worldserver.conf', key: KEY, value: '1' }], { record: false });
     const log = this.resolve('logs/launcher-config.log');
     await fsp.mkdir(path.dirname(log), { recursive: true });
-    await fsp.appendFile(log, `${new Date().toISOString()} ${KEY} 0 -> 1 in ${file.path}, once (3.2.2; copy in ${BACKUPS}/${backup})\n`);
+    await fsp.appendFile(log, `${new Date().toISOString()} ${KEY} 0 -> 1 in ${file.path}, once (3.3; copy in ${BACKUPS}/${backup})\n`);
     return done(true);
   }
 

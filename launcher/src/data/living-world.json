@@ -1878,10 +1878,10 @@
     "zh": "战场统计保留天数"
    },
    "help": {
-    "en": "New in 3.2.2. Once a day, the battlegrounds older than this many days are deleted with their players' lines. 0 = never deleted. Used when \"Keep the battleground results\" is on (Dashboard live view).",
-    "fr": "Nouveau en 3.2.2. Une fois par jour, les champs de bataille plus anciens que ce nombre de jours sont supprimés avec les lignes de leurs joueurs. 0 = jamais supprimés. Sert quand « Garder les résultats des champs de bataille » est activé (Vue en direct du dashboard).",
-    "ru": "Новое в 3.2.2. Раз в день поля боя старше этого числа дней удаляются вместе со строками их игроков. 0 = никогда не удалять. Действует, когда включено «Сохранять результаты полей боя» (Живой вид панели).",
-    "zh": "3.2.2 新增。每天一次，删除超过此天数的战场及其玩家记录。0 = 永不删除。在开启“保存战场结果”（仪表盘实时视图）时生效。"
+    "en": "New in 3.3. Once a day, the battlegrounds older than this many days are deleted with their players' lines. 0 = never deleted. Used when \"Keep the battleground results\" is on (Dashboard live view).",
+    "fr": "Nouveau en 3.3. Une fois par jour, les champs de bataille plus anciens que ce nombre de jours sont supprimés avec les lignes de leurs joueurs. 0 = jamais supprimés. Sert quand « Garder les résultats des champs de bataille » est activé (Vue en direct du dashboard).",
+    "ru": "Новое в 3.3. Раз в день поля боя старше этого числа дней удаляются вместе со строками их игроков. 0 = никогда не удалять. Действует, когда включено «Сохранять результаты полей боя» (Живой вид панели).",
+    "zh": "3.3 新增。每天一次，删除超过此天数的战场及其玩家记录。0 = 永不删除。在开启“保存战场结果”（仪表盘实时视图）时生效。"
    }
   },
   {
@@ -2237,10 +2237,10 @@
     "zh": "附魔师机器人：每次研究附魔的装备数"
    },
    "help": {
-    "en": "New in 3.2.2. How many pieces an enchanter bot enchants in one study of its own gear (1 to 4).",
-    "fr": "Nouveau en 3.2.2. Le nombre de pièces qu'un bot enchanteur enchante en une étude de son équipement (1 à 4).",
-    "ru": "Новое в 3.2.2. Сколько предметов бот-зачарователь зачаровывает за одно изучение своего снаряжения (от 1 до 4).",
-    "zh": "3.2.2 新增。附魔师机器人一次研究自己装备时附魔的装备数量（1 到 4）。"
+    "en": "New in 3.3. How many pieces an enchanter bot enchants in one study of its own gear (1 to 4).",
+    "fr": "Nouveau en 3.3. Le nombre de pièces qu'un bot enchanteur enchante en une étude de son équipement (1 à 4).",
+    "ru": "Новое в 3.3. Сколько предметов бот-зачарователь зачаровывает за одно изучение своего снаряжения (от 1 до 4).",
+    "zh": "3.3 新增。附魔师机器人一次研究自己装备时附魔的装备数量（1 到 4）。"
    }
   },
   {
@@ -2263,10 +2263,10 @@
     "zh": "附魔师机器人保留材料，并分解本要出售的装备"
    },
    "help": {
-    "en": "New in 3.2.2. An enchanter bot keeps a stack of the reagents of its enchantments instead of selling them, and disenchants a piece it would sell when the dust is worth more.",
-    "fr": "Nouveau en 3.2.2. Un bot enchanteur garde une pile des composants de ses enchantements au lieu de les vendre, et désenchante une pièce qu'il vendrait quand la poussière vaut plus.",
-    "ru": "Новое в 3.2.2. Бот-зачарователь хранит стопку реагентов своих зачарований вместо продажи и распыляет предмет, который продал бы, если пыль стоит дороже.",
-    "zh": "3.2.2 新增。附魔师机器人保留一组自己附魔所需的材料而不出售，并在粉尘更值钱时分解本要出售的装备。"
+    "en": "New in 3.3. An enchanter bot keeps a stack of the reagents of its enchantments instead of selling them, and disenchants a piece it would sell when the dust is worth more.",
+    "fr": "Nouveau en 3.3. Un bot enchanteur garde une pile des composants de ses enchantements au lieu de les vendre, et désenchante une pièce qu'il vendrait quand la poussière vaut plus.",
+    "ru": "Новое в 3.3. Бот-зачарователь хранит стопку реагентов своих зачарований вместо продажи и распыляет предмет, который продал бы, если пыль стоит дороже.",
+    "zh": "3.3 新增。附魔师机器人保留一组自己附魔所需的材料而不出售，并在粉尘更值钱时分解本要出售的装备。"
    }
   },
   {
@@ -2447,10 +2447,10 @@
     "zh": "机器人也在城镇和旅店研究制作"
    },
    "help": {
-    "en": "New in 3.2.2. The study also happens in towns and inns, not only in capitals.",
-    "fr": "Nouveau en 3.2.2. L'étude a lieu aussi en ville et dans les auberges, pas seulement en capitale.",
-    "ru": "Новое в 3.2.2. Изучение проходит и в городах и тавернах, а не только в столицах.",
-    "zh": "3.2.2 新增。研究也会在城镇和旅店进行，而不只在主城。"
+    "en": "New in 3.3. The study also happens in towns and inns, not only in capitals.",
+    "fr": "Nouveau en 3.3. L'étude a lieu aussi en ville et dans les auberges, pas seulement en capitale.",
+    "ru": "Новое в 3.3. Изучение проходит и в городах и тавернах, а не только в столицах.",
+    "zh": "3.3 新增。研究也会在城镇和旅店进行，而不只在主城。"
    }
   },
   {
@@ -4240,10 +4240,10 @@
     "zh": "解救卡在城市地面中的机器人"
    },
    "help": {
-    "en": "New in 3.2.2. A random bot of a capital that stands inside the floor, or stands still for long on a walk that leads nowhere, is put back on the city's nearest checked arrival. Never in a fight, a battleground or a group with a player.",
-    "fr": "Nouveau en 3.2.2. Un bot aléatoire d'une capitale qui se tient dans le sol, ou reste longtemps immobile sur un trajet qui ne mène nulle part, est remis au point d'arrivée vérifié le plus proche de la ville. Jamais en combat, en champ de bataille ni dans un groupe avec un joueur.",
-    "ru": "Новое в 3.2.2. Случайный бот столицы, стоящий внутри пола или долго неподвижный на пути в никуда, переносится на ближайшую проверенную точку прибытия города. Никогда в бою, на поле боя или в группе с игроком.",
-    "zh": "3.2.2 新增。主城中的随机机器人若卡在地面里，或在无法到达的路线上长时间不动，会被放回城市最近的已校验到达点。战斗中、战场中或与玩家组队时不会处理。"
+    "en": "New in 3.3. A random bot of a capital that stands inside the floor, or stands still for long on a walk that leads nowhere, is put back on the city's nearest checked arrival. Never in a fight, a battleground or a group with a player.",
+    "fr": "Nouveau en 3.3. Un bot aléatoire d'une capitale qui se tient dans le sol, ou reste longtemps immobile sur un trajet qui ne mène nulle part, est remis au point d'arrivée vérifié le plus proche de la ville. Jamais en combat, en champ de bataille ni dans un groupe avec un joueur.",
+    "ru": "Новое в 3.3. Случайный бот столицы, стоящий внутри пола или долго неподвижный на пути в никуда, переносится на ближайшую проверенную точку прибытия города. Никогда в бою, на поле боя или в группе с игроком.",
+    "zh": "3.3 新增。主城中的随机机器人若卡在地面里，或在无法到达的路线上长时间不动，会被放回城市最近的已校验到达点。战斗中、战场中或与玩家组队时不会处理。"
    }
   },
   {
@@ -4268,10 +4268,10 @@
     "zh": "城市机器人静止多少分钟后被解救"
    },
    "help": {
-    "en": "New in 3.2.2. At least 5 minutes. 25 by default.",
-    "fr": "Nouveau en 3.2.2. Au moins 5 minutes. 25 par défaut.",
-    "ru": "Новое в 3.2.2. Не менее 5 минут. По умолчанию 25.",
-    "zh": "3.2.2 新增。至少 5 分钟。默认 25。"
+    "en": "New in 3.3. At least 5 minutes. 25 by default.",
+    "fr": "Nouveau en 3.3. Au moins 5 minutes. 25 par défaut.",
+    "ru": "Новое в 3.3. Не менее 5 минут. По умолчанию 25.",
+    "zh": "3.3 新增。至少 5 分钟。默认 25。"
    }
   },
   {
@@ -4288,10 +4288,10 @@
     "zh": "机器人在主城广场相聚"
    },
    "help": {
-    "en": "New in 3.2.2. Bots on a city visit now and then gather by two or three on the capitals' squares (between the auction house, the bank, the inn and the quest board), facing each other, sitting or talking for a few minutes.",
-    "fr": "Nouveau en 3.2.2. Les bots en visite en ville se retrouvent parfois à deux ou trois sur les places des capitales (entre l'hôtel des ventes, la banque, l'auberge et le tableau des quêtes), face à face, assis ou en train de parler quelques minutes.",
-    "ru": "Новое в 3.2.2. Боты, гуляющие по городу, иногда собираются по двое-трое на площадях столиц (между аукционом, банком, таверной и доской заданий), стоят друг напротив друга, сидят или беседуют несколько минут.",
-    "zh": "3.2.2 新增。在城里闲逛的机器人不时会两三成群地聚在主城广场（拍卖行、银行、旅店和任务板之间），面对面坐着或聊上几分钟。"
+    "en": "New in 3.3. Bots on a city visit now and then gather by two or three on the capitals' squares (between the auction house, the bank, the inn and the quest board), facing each other, sitting or talking for a few minutes.",
+    "fr": "Nouveau en 3.3. Les bots en visite en ville se retrouvent parfois à deux ou trois sur les places des capitales (entre l'hôtel des ventes, la banque, l'auberge et le tableau des quêtes), face à face, assis ou en train de parler quelques minutes.",
+    "ru": "Новое в 3.3. Боты, гуляющие по городу, иногда собираются по двое-трое на площадях столиц (между аукционом, банком, таверной и доской заданий), стоят друг напротив друга, сидят или беседуют несколько минут.",
+    "zh": "3.3 新增。在城里闲逛的机器人不时会两三成群地聚在主城广场（拍卖行、银行、旅店和任务板之间），面对面坐着或聊上几分钟。"
    }
   },
   {
@@ -4316,10 +4316,10 @@
     "zh": "每个广场的机器人数"
    },
    "help": {
-    "en": "New in 3.2.2. At most this many bots on one square of a capital (1 to 3). 3 by default.",
-    "fr": "Nouveau en 3.2.2. Au plus ce nombre de bots sur une place de capitale (1 à 3). 3 par défaut.",
-    "ru": "Новое в 3.2.2. Не больше стольких ботов на одной площади столицы (от 1 до 3). По умолчанию 3.",
-    "zh": "3.2.2 新增。一个主城广场上最多的机器人数（1 到 3）。默认 3。"
+    "en": "New in 3.3. At most this many bots on one square of a capital (1 to 3). 3 by default.",
+    "fr": "Nouveau en 3.3. Au plus ce nombre de bots sur une place de capitale (1 à 3). 3 par défaut.",
+    "ru": "Новое в 3.3. Не больше стольких ботов на одной площади столицы (от 1 до 3). По умолчанию 3.",
+    "zh": "3.3 新增。一个主城广场上最多的机器人数（1 到 3）。默认 3。"
    }
   },
   {
@@ -4336,10 +4336,10 @@
     "zh": "到达点落在城市地面上"
    },
    "help": {
-    "en": "New in 3.2.2. A bot sent to a capital (a banker, an innkeeper, a hub) lands on the floor the city walks on: an arrival on a cut-off patch is moved a few yards onto it, or no longer used. Each change is written in CoaBots.log.",
-    "fr": "Nouveau en 3.2.2. Un bot envoyé dans une capitale (un banquier, un aubergiste, un point de rendez-vous) arrive sur le sol où l'on marche : une arrivée sur un morceau isolé est déplacée de quelques mètres, ou n'est plus utilisée. Chaque changement est écrit dans CoaBots.log.",
-    "ru": "Новое в 3.2.2. Бот, отправленный в столицу (к банкиру, трактирщику, в центр), появляется на полу, по которому ходят в городе: точка на отрезанном участке сдвигается на несколько метров или больше не используется. Каждое изменение записывается в CoaBots.log.",
-    "zh": "3.2.2 新增。被派往主城（银行家、旅店老板、集合点）的机器人会落在城市可行走的地面上：位于孤立区域的到达点会挪动几码，或不再使用。每次改动都会写入 CoaBots.log。"
+    "en": "New in 3.3. A bot sent to a capital (a banker, an innkeeper, a hub) lands on the floor the city walks on: an arrival on a cut-off patch is moved a few yards onto it, or no longer used. Each change is written in CoaBots.log.",
+    "fr": "Nouveau en 3.3. Un bot envoyé dans une capitale (un banquier, un aubergiste, un point de rendez-vous) arrive sur le sol où l'on marche : une arrivée sur un morceau isolé est déplacée de quelques mètres, ou n'est plus utilisée. Chaque changement est écrit dans CoaBots.log.",
+    "ru": "Новое в 3.3. Бот, отправленный в столицу (к банкиру, трактирщику, в центр), появляется на полу, по которому ходят в городе: точка на отрезанном участке сдвигается на несколько метров или больше не используется. Каждое изменение записывается в CoaBots.log.",
+    "zh": "3.3 新增。被派往主城（银行家、旅店老板、集合点）的机器人会落在城市可行走的地面上：位于孤立区域的到达点会挪动几码，或不再使用。每次改动都会写入 CoaBots.log。"
    }
   },
   {
@@ -4356,10 +4356,10 @@
     "zh": "启动时检查主城路径"
    },
    "help": {
-    "en": "New in 3.2.2. Diagnostic, read only: once after the start, one line in CoaBots.log for each arrival of a capital that the navmesh does not join to an auctioneer, a banker or a flight master. The same at any time: .squidbots pathcheck. Off by default.",
-    "fr": "Nouveau en 3.2.2. Diagnostic, en lecture seule : une fois après le démarrage, une ligne dans CoaBots.log pour chaque arrivée d'une capitale que le navmesh ne relie pas à un commissaire-priseur, un banquier ou un maître de vol. La même chose à tout moment : .squidbots pathcheck. Coupé par défaut.",
-    "ru": "Новое в 3.2.2. Диагностика, только чтение: один раз после запуска — строка в CoaBots.log для каждой точки прибытия столицы, которую навсетка не соединяет с аукционистом, банкиром или распорядителем полётов. То же в любое время: .squidbots pathcheck. По умолчанию выключено.",
-    "zh": "3.2.2 新增。诊断，只读：启动后一次，对于每个导航网格未连到拍卖师、银行家或飞行管理员的主城到达点，在 CoaBots.log 写一行。随时可用：.squidbots pathcheck。默认关闭。"
+    "en": "New in 3.3. Diagnostic, read only: once after the start, one line in CoaBots.log for each arrival of a capital that the navmesh does not join to an auctioneer, a banker or a flight master. The same at any time: .squidbots pathcheck. Off by default.",
+    "fr": "Nouveau en 3.3. Diagnostic, en lecture seule : une fois après le démarrage, une ligne dans CoaBots.log pour chaque arrivée d'une capitale que le navmesh ne relie pas à un commissaire-priseur, un banquier ou un maître de vol. La même chose à tout moment : .squidbots pathcheck. Coupé par défaut.",
+    "ru": "Новое в 3.3. Диагностика, только чтение: один раз после запуска — строка в CoaBots.log для каждой точки прибытия столицы, которую навсетка не соединяет с аукционистом, банкиром или распорядителем полётов. То же в любое время: .squidbots pathcheck. По умолчанию выключено.",
+    "zh": "3.3 新增。诊断，只读：启动后一次，对于每个导航网格未连到拍卖师、银行家或飞行管理员的主城到达点，在 CoaBots.log 写一行。随时可用：.squidbots pathcheck。默认关闭。"
    }
   },
   {
@@ -4384,10 +4384,10 @@
     "zh": "启动后多久检查路径（秒）"
    },
    "help": {
-    "en": "New in 3.2.2. The wait before the path check, while the navmesh tiles load. 300 by default.",
-    "fr": "Nouveau en 3.2.2. L'attente avant la vérification des chemins, le temps que les tuiles du navmesh se chargent. 300 par défaut.",
-    "ru": "Новое в 3.2.2. Ожидание перед проверкой путей, пока загружаются тайлы навсетки. По умолчанию 300.",
-    "zh": "3.2.2 新增。检查路径前的等待时间，用于加载导航网格。默认 300。"
+    "en": "New in 3.3. The wait before the path check, while the navmesh tiles load. 300 by default.",
+    "fr": "Nouveau en 3.3. L'attente avant la vérification des chemins, le temps que les tuiles du navmesh se chargent. 300 par défaut.",
+    "ru": "Новое в 3.3. Ожидание перед проверкой путей, пока загружаются тайлы навсетки. По умолчанию 300.",
+    "zh": "3.3 新增。检查路径前的等待时间，用于加载导航网格。默认 300。"
    }
   },
   {
@@ -5736,10 +5736,10 @@
     "zh": "每小时附魔统计"
    },
    "help": {
-    "en": "New in 3.2.2. Once an hour, one line in the playerbots.coa log on what the enchanter bots did (online, tries, enchantments put on, disenchanted, refusals by cause).",
-    "fr": "Nouveau en 3.2.2. Une fois par heure, une ligne dans le journal playerbots.coa sur ce qu'ont fait les bots enchanteurs (en ligne, essais, enchantements posés, désenchantements, refus par cause).",
-    "ru": "Новое в 3.2.2. Раз в час одна строка в журнале playerbots.coa о том, что сделали боты-зачарователи (в сети, попытки, наложенные зачарования, распыления, отказы по причинам).",
-    "zh": "3.2.2 新增。每小时在 playerbots.coa 日志中写一行附魔师机器人的情况（在线、尝试、已附魔、已分解、按原因的拒绝）。"
+    "en": "New in 3.3. Once an hour, one line in the playerbots.coa log on what the enchanter bots did (online, tries, enchantments put on, disenchanted, refusals by cause).",
+    "fr": "Nouveau en 3.3. Une fois par heure, une ligne dans le journal playerbots.coa sur ce qu'ont fait les bots enchanteurs (en ligne, essais, enchantements posés, désenchantements, refus par cause).",
+    "ru": "Новое в 3.3. Раз в час одна строка в журнале playerbots.coa о том, что сделали боты-зачарователи (в сети, попытки, наложенные зачарования, распыления, отказы по причинам).",
+    "zh": "3.3 新增。每小时在 playerbots.coa 日志中写一行附魔师机器人的情况（在线、尝试、已附魔、已分解、按原因的拒绝）。"
    }
   },
   {
