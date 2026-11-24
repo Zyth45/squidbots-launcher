@@ -1070,7 +1070,8 @@ async function clearOffline(root, { coa = false } = {}) {
 // settings (settings.json: LaunchCurve.*, AuctionHouseBot.*, the player's choices) are kept. The state files the
 // modules and the dashboard write for this realm go too; they are made again at its start. Nothing is lost for good:
 // the saved copy (Backups\<key>-reset-<date>) can be put back by restoreRealm.
-const RESETTABLE = new Set(['living']);
+// 0.5.0: every extra realm (its two databases are its own); never the CoA realm, whose characters are the repack's.
+const RESETTABLE = new Set(['living', 'wildcard', 'reborn', 'dawnrise']);
 // The name typed to confirm a reset against the realm's own name (realm.json: the name in the game's realm list, which
 // the player may have changed, « Malfurion »). Case and outer spaces do not count, accents do. public/js/realms.js
 // compares the same way (13/11: the page asked for « Squid World » and this check wanted « Malfurion »).
@@ -1102,7 +1103,7 @@ const realIo = () => ({ sql, dumpTo, loadFrom, create });
 // What a reset would erase, to show before it is confirmed: the players' characters of this realm (name, level), and
 // how many bots, guilds, auctions, mails and achievements.
 async function worldPreview(root, key, { io = realIo() } = {}) {
-  if (!RESETTABLE.has(key)) throw new Error('Only Squid World can be reset.');
+  if (!RESETTABLE.has(key)) throw new Error('Only an extra realm can be reset, not Conquest of Azeroth.');
   const prefix = mode(key).prefix.toUpperCase();
   const c = `acore_characters_${key}`;
   const rows = (await io.sql(root, `SELECT c.name, c.level FROM ${c}.characters c JOIN acore_auth.account a ON a.id = c.account WHERE a.username NOT LIKE '${prefix}%' AND a.username NOT IN ('AHBOT', 'DCDRIVER') ORDER BY c.level DESC, c.name`))
@@ -1142,7 +1143,7 @@ async function backupRealm(root, key, { label = 'reset', io = realIo(), now = ne
 
 // The reset itself: the player retyped the realm's name; saved first, then made new.
 async function resetWorld(root, key, { confirmName, io = realIo(), now = new Date() } = {}) {
-  if (!RESETTABLE.has(key)) throw new Error('Only Squid World can be reset.');
+  if (!RESETTABLE.has(key)) throw new Error('Only an extra realm can be reset, not Conquest of Azeroth.');
   const saved = await stoppedRealm(root, key);
   // The realm list shows « Name - Subtitle » as the name and a line under it: either is accepted.
   const shown = String(saved.name || '').split(' - ')[0];
@@ -1177,7 +1178,7 @@ async function realmBackups(root, key) {
 // A saved copy put back: the realm as it is now is saved first (label before-restore), then its databases and its
 // folder are replaced by the copy's.
 async function restoreRealm(root, key, id, { io = realIo(), now = new Date() } = {}) {
-  if (!RESETTABLE.has(key)) throw new Error('Only Squid World can be reset.');
+  if (!RESETTABLE.has(key)) throw new Error('Only an extra realm can be reset, not Conquest of Azeroth.');
   if (!/^[A-Za-z0-9_.-]+$/.test(String(id || ''))) throw new Error('Unknown backup.');
   const dir = path.join(root, 'Backups', id);
   const info = await readJson(path.join(dir, 'backup.json'));

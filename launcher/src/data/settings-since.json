@@ -1,6 +1,6 @@
 {
  "from": "0.3.59",
- "next": "0.4.9",
+ "next": "0.5.0",
  "catalog": "0f417d6e641d285e",
  "keys": {
   "worldserver.conf|CharactersPerRealm": {
@@ -901,31 +901,31 @@
    "added": "0.4.7"
   },
   "mod_dungeon_clear.conf|DungeonClear.DungeonQueueFill.Enable": {
-   "added": "0.4.9"
+   "added": "0.5.0"
   },
   "mod_dungeon_clear.conf|DungeonClear.DungeonQueueFill.MaxHumansOnline": {
-   "added": "0.4.9"
+   "added": "0.5.0"
   },
   "playerbots.conf|AiPlayerbot.CoaLive.PvpStatsKeepDays": {
-   "added": "0.4.9"
+   "added": "0.5.0"
   },
   "playerbots.conf|AiPlayerbot.CoaEconomy.EnchantForSelf.PiecesPerStudy": {
-   "added": "0.4.9"
+   "added": "0.5.0"
   },
   "playerbots.conf|AiPlayerbot.CoaEconomy.EnchantForSelf.Reagents": {
-   "added": "0.4.9"
+   "added": "0.5.0"
   },
   "playerbots.conf|AiPlayerbot.CoaEconomy.SelfStudy.RestAreas": {
-   "added": "0.4.9"
+   "added": "0.5.0"
   },
   "playerbots.conf|AiPlayerbot.CoaLive.CityUnstick.Enable": {
-   "added": "0.4.9"
+   "added": "0.5.0"
   },
   "playerbots.conf|AiPlayerbot.CoaLive.CityUnstick.StillMinutes": {
-   "added": "0.4.9"
+   "added": "0.5.0"
   },
   "playerbots.conf|AiPlayerbot.CoaEconomy.EnchantForSelf.HourlyCount": {
-   "added": "0.4.9"
+   "added": "0.5.0"
   }
  }
 }

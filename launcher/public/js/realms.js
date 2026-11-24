@@ -169,8 +169,10 @@ function realmPanel(realm, busy) {
     ? `<label class="realm-auto"><input type="checkbox" data-action="realm-auto" data-key="coa" ${realm.autostart !== false ? 'checked' : ''}>${esc(t('realms.autostart', 'Start with the server'))}</label>${ecoSwitch(realm)}${realm.autostart === false && realmList().some(other => !other.main && other.autostart && !['absent', 'disabled'].includes(other.state)) ? `<small class="muted">${esc(t('realms.coaAlone', 'One start per realm: "Start" on the home page leaves this realm stopped; the realms ticked start without it.'))}</small>` : ''}<small class="muted">${esc(t('realms.mainFoot', 'Its settings are the base of the other realms.'))}</small>`
     : `<label class="realm-auto"><input type="checkbox" data-action="realm-auto" data-key="${realm.key}" ${realm.autostart ? 'checked' : ''}>${esc(t('realms.autostart', 'Start with the server'))}</label>${ecoSwitch(realm)}`;
   const stoppedFirst = on ? `<small class="muted">${esc(t('realms.stopFirst', 'Stop the realm to use the actions that change its bots or its world.'))}</small>` : '';
-  const tools = realm.main ? '' : group(t('realms.tools', 'Tools'), `<div class="realm-tool-buttons"><button class="button ghost" data-action="realm-logs" data-key="${realm.key}">${icon('book')}${esc(t('realms.logs', 'Logs'))}</button><button class="button ghost" data-action="realm-purge" data-key="${realm.key}" ${on || busy ? 'disabled' : ''} title="${esc(t('realms.purgeHint', 'Deletes the random bots of this realm only; they are made again at its next start.'))}">${icon('refresh')}${esc(t('realms.purge', 'New bots'))}</button>${realm.key === 'living' ? `<button class="button ghost" data-action="realm-restore" data-key="${realm.key}" ${on || busy ? 'disabled' : ''}>${icon('book')}${esc(t('realms.restore', 'Restore a backup'))}</button>` : ''}</div>${stoppedFirst}`);
-  const danger = realm.main ? '' : `<section class="realm-group realm-danger"><h3>${icon('warning')}${esc(t('realms.dangerZone', 'Actions that erase or hide'))}</h3><div class="realm-tool-buttons">${realm.key === 'living' ? `<button class="button danger-ghost" data-action="realm-reset" data-key="${realm.key}" ${on || busy ? 'disabled' : ''} title="${esc(t('realms.resetHint', 'A completely new run: bots, auction house, mail, guilds, the characters of this realm, achievements and server firsts start again. Saved first.'))}">${icon('refresh')}${esc(t('realms.reset', 'Reset the world'))}</button>` : ''}<button class="button danger-ghost" data-action="realm-disable" data-key="${realm.key}" ${busy ? 'disabled' : ''}>${icon('close')}${esc(t('realms.disable', 'Switch off'))}</button></div>${realm.key === 'living' ? `<small class="muted">${esc(t('realms.resetLine', 'Reset the world saves the whole realm first (Backups), then starts it again as new.'))}</small>` : ''}<small class="muted">${esc(t('realms.disableLine', 'Switch off takes it out of the realm list of the game, without deleting anything. Stopped, it stays in the list as Offline.'))}</small></section>`;
+  // 0.5.0: every extra realm can be reset (saved first, name typed again); the CoA realm not (not decided, 24/11).
+  const resettable = RESETTABLE_REALMS.includes(realm.key);
+  const tools = group(t('realms.tools', 'Tools'), `<div class="realm-tool-buttons"><button class="button ghost" data-action="${realm.main ? 'open-logs' : 'realm-logs'}" data-key="${realm.key}">${icon('book')}${esc(t('realms.logs', 'Logs'))}</button><button class="button ghost" data-action="realm-purge" data-key="${realm.key}" ${on || busy ? 'disabled' : ''} title="${esc(t('glance.purgeHint', 'Deletes the random bots of this realm only (saved first); they are made again at its next start.'))}">${icon('refresh')}${esc(t('glance.recreate', 'Recreate the bots'))}</button>${resettable ? `<button class="button ghost" data-action="realm-restore" data-key="${realm.key}" ${on || busy ? 'disabled' : ''}>${icon('book')}${esc(t('realms.restore', 'Restore a backup'))}</button>` : ''}</div>${stoppedFirst}`);
+  const danger = realm.main ? '' : `<section class="realm-group realm-danger"><h3>${icon('warning')}${esc(t('realms.dangerZone', 'Actions that erase or hide'))}</h3><div class="realm-tool-buttons">${resettable ? `<button class="button danger-ghost" data-action="realm-reset" data-key="${realm.key}" ${on || busy ? 'disabled' : ''} title="${esc(t('realms.resetHint', 'A completely new run: bots, auction house, mail, guilds, the characters of this realm, achievements and server firsts start again. Saved first.'))}">${icon('refresh')}${esc(t('realms.reset', 'Reset the world'))}</button>` : ''}<button class="button danger-ghost" data-action="realm-disable" data-key="${realm.key}" ${busy ? 'disabled' : ''}>${icon('close')}${esc(t('realms.disable', 'Switch off'))}</button></div>${resettable ? `<small class="muted">${esc(t('realms.resetLine', 'Reset the world saves the whole realm first (Backups), then starts it again as new.'))}</small>` : ''}<small class="muted">${esc(t('realms.disableLine', 'Switch off takes it out of the realm list of the game, without deleting anything. Stopped, it stays in the list as Offline.'))}</small></section>`;
   return `<article class="realm-panel realm-${realm.key}${on ? ' on' : ''}">${head}
     <div class="realm-panel-grid">
       <div class="realm-panel-main">${stats}${buttons}${group(t('glance.title', 'At a glance'), realmGlance(realm), 'realm-glance-group')}${tools}</div>
@@ -409,7 +411,7 @@ Object.assign(App.actions, {
   }, button),
   'glance-copy': button => guard(async () => {
     const line = button.dataset.line;
-    await navigator.clipboard.writeText(line);
+    await App.api.copyText(line);
     toast(t('net.copied', 'Copied: {line}', { line }), 'success');
   }, button),
   'realm-others': () => { App.state.realmOthers = !App.state.realmOthers; App.refresh('realms'); },
@@ -446,6 +448,8 @@ function realmsPage() {
   </div>`;
 }
 
+// The realms whose world can be reset (RESETTABLE of src/realms.cjs): not the CoA realm, its database is the repack's.
+const RESETTABLE_REALMS = ['living', 'wildcard', 'reborn', 'dawnrise'];
 // The two realms every player starts with (user, 24/11); the others are one click away.
 const MAIN_REALMS = ['coa', 'living'];
 // A small card of another realm type: what it is and its state; Open shows its full panel above.
@@ -537,24 +541,31 @@ Object.assign(App.actions, {
   'realm-logs': button => guard(() => App.api.realmsOpenLogs(button.dataset.key)),
   'realm-purge': button => guard(async () => {
     const key = button.dataset.key;
+    const main = key === 'coa';
     // Their auctions go with them; the auction house bot's ones too unless the box is unticked. Players' auctions stay.
+    // On the CoA realm the repack's own purge (coa_bots.py purge-bots) does it all: no box.
     let house = true;
     const onChange = event => { if (event.target?.id === 'purge-house') house = event.target.checked; };
     document.addEventListener('change', onChange);
-    const body = `${esc(t('realms.purgeBody2', 'The random bots of this realm are deleted with their auctions (players are not touched; a player who bid on one gets the bid back by mail). They are made again at its next start. The bots of the other realms stay.'))}</p><p><label class="check-line"><input type="checkbox" id="purge-house" checked> ${esc(t('realms.purgeHouse', 'Empty the auctions of the auction house bot too'))}</label>`;
+    const saved = `</p><p class="muted">${esc(t('glance.purgeSaved', 'The realm is saved first (Backups): it can be restored if needed.'))}`;
+    const body = main
+      ? `${esc(t('glance.purgeCoaBody', 'Every random bot of Conquest of Azeroth is deleted, then made again at the next start. Your characters, your alts and your accounts are not touched.'))}${saved}`
+      : `${esc(t('realms.purgeBody2', 'The random bots of this realm are deleted with their auctions (players are not touched; a player who bid on one gets the bid back by mail). They are made again at its next start. The bots of the other realms stay.'))}${saved}</p><p><label class="check-line"><input type="checkbox" id="purge-house" checked> ${esc(t('realms.purgeHouse', 'Empty the auctions of the auction house bot too'))}</label>`;
     let ok = false;
-    try { ok = await confirmDialog({ title: t('realms.purgeTitle', 'Recreate the bots of {name}?', { name: realmTitle(key) }), body, confirm: t('realms.purge', 'New bots'), danger: true }); } finally { document.removeEventListener('change', onChange); }
+    try { ok = await confirmDialog({ title: t('realms.purgeTitle', 'Recreate the bots of {name}?', { name: realmTitle(key) }), body, confirm: t('glance.recreate', 'Recreate the bots'), danger: true }); } finally { document.removeEventListener('change', onChange); }
     if (!ok) return;
     await destructiveTask({
       holdTitle: t('server.purgingTitle', 'Recreating the bots'),
-      holdBody: t('realms.purgingLong', 'Recreating the bots of {name}: the realm starts, deletes them and stops by itself (a few minutes).', { name: realmTitle(key) }),
+      holdBody: t('glance.purgingLong', 'Saving {name}, then recreating its bots: the realm starts, deletes them and stops by itself (a few minutes).', { name: realmTitle(key) }),
       errorTitle: t('realms.purgeFailed', 'The bots of {name} were not recreated', { name: realmTitle(key) }),
-      work: () => realmAction(key, () => App.api.realmsPurge(key, { house })),
+      work: () => (main ? realmAction(key, async () => ({ purged: await App.api.purgeBots({ backup: true }) })) : realmAction(key, () => App.api.realmsPurge(key, { house, backup: true }))),
       success: result => {
         const purged = result?.purged || null;
-        return { title: t('realms.purgeDoneTitle', 'Bots of {name} deleted', { name: realmTitle(key) }), body: `<p>${esc(purged ? t('realms.purged2', 'Done: the bots come back at the next start. {auctions} auction(s) removed, {refunds} bid(s) refunded by mail.', { auctions: purged.auctions || 0, refunds: purged.refunds || 0 }) : t('realms.purged', 'Done: the bots come back at the next start.'))}</p>` };
+        const where = purged?.backup ? `<p class="muted">${esc(t('realms.savedIn', 'Saved copy: {path}', { path: purged.backup }))}</p>` : '';
+        return { title: t('realms.purgeDoneTitle', 'Bots of {name} deleted', { name: realmTitle(key) }), body: `<p>${esc(purged && !main ? t('realms.purged2', 'Done: the bots come back at the next start. {auctions} auction(s) removed, {refunds} bid(s) refunded by mail.', { auctions: purged.auctions || 0, refunds: purged.refunds || 0 }) : t('realms.purged', 'Done: the bots come back at the next start.'))}</p>${where}` };
       },
     });
+    delete App.state.realmFacts?.backups?.[key];
   }, button),
   // Reset the world (Squid World only), in two steps: what will be erased, then the realm's name typed again.
   'realm-reset': button => guard(async () => {

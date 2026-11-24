@@ -494,7 +494,7 @@ test('New bots: the auctions of the realm\'s bots go with them, players\' auctio
   assert.throws(() => realms.auctionPurgeSql('coa'));
 });
 
-test('reset the world: Squid World only, its name typed again, saved whole first, then made new; a copy can be put back', async () => {
+test('reset the world: an extra realm only (never CoA), its name typed again, saved whole first, then made new; a copy can be put back', async () => {
   const root = repack();
   const dir = realmFolder(root, 'living', { id: 5, name: 'Malfurion', worldPort: 65511, raPort: 65512, autostart: false });
   fs.writeFileSync(path.join(dir, 'settings.json'), JSON.stringify({ 'playerbots.conf': { 'AiPlayerbot.CoaEconomy.LaunchCurve.Enable': '1' } }));
@@ -526,7 +526,8 @@ test('reset the world: Squid World only, its name typed again, saved whole first
     },
   };
   // Never the CoA realm nor another realm.
-  await assert.rejects(realms.resetWorld(root, 'wildcard', { confirmName: 'wildcard', io }), /Only Squid World/);
+  await assert.rejects(realms.resetWorld(root, 'coa', { confirmName: 'Conquest of Azeroth', io }), /Only an extra realm/);
+  assert.deepEqual([...realms.RESETTABLE].sort(), ['dawnrise', 'living', 'reborn', 'wildcard']);
   const preview = await realms.worldPreview(root, 'living', { io });
   assert.deepStrictEqual(preview, { players: [{ name: 'Squid World', level: 12 }, { name: 'Squid Alt', level: 3 }], bots: 3234, guilds: 21, auctions: 2293, mails: 2, achievements: 140 });
   // The name must be typed again.

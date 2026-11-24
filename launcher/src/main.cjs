@@ -1387,6 +1387,8 @@ function registerIpc() {
   });
   handle('update:clearClient', async () => { const paths = { ...settings.installPaths }; delete paths.addon; await persist({ ...settings, installPaths: paths }); return ''; });
   handle('update:report', () => { clipboard.writeText(supportReport()); return true; });
+  // A short line put on the clipboard by the main process (navigator.clipboard is refused when the window is not focused).
+  handle('clipboard:write', value => { clipboard.writeText(text(value, 500)); return true; });
   // « Delete the older backups » of the code 17 window: the same rule as before an update (the newest one stays).
   handle('update:freeBackups', async () => {
     const folder = serverPath();
@@ -1646,7 +1648,12 @@ function registerIpc() {
     try { const done = await work(); await realmsLog(`${what}: done ${JSON.stringify(done ?? {})}`); return done; }
     catch (error) { await realmsLog(`${what}: FAILED ${error?.stack || error?.message || error}`); throw error; }
   };
-  handle('realms:purge', async (key, options) => { let done = null; await loggedTask(`new bots ${text(key, 12)}`, () => onePurge(realms.MODES[text(key, 12)]?.title || key, async () => { done = await realms.purgeBots(serverPath(), text(key, 12), { house: options?.house !== false }); return done; })); return { ...(await realmsStatus()), purged: done }; });
+  handle('realms:purge', async (key, options) => { let done = null; await loggedTask(`new bots ${text(key, 12)}`, () => onePurge(realms.MODES[text(key, 12)]?.title || key, async () => {
+    // 0.5.0: the realm saved first (Backups, restorable), unless the caller saved it already.
+    const saved = options?.backup === true ? await realms.backupRealm(serverPath(), text(key, 12), { label: 'new-bots' }) : null;
+    done = { ...(await realms.purgeBots(serverPath(), text(key, 12), { house: options?.house !== false })), backup: saved?.dir || '' };
+    return done;
+  })); return { ...(await realmsStatus()), purged: done }; });
   // Reset the world (Squid World only): what it erases, the reset itself (saved first), its saved copies and restoring one.
   handle('realms:resetPreview', key => withMysql(() => realms.worldPreview(serverPath(), text(key, 12))));
   handle('realms:reset', async (key, confirmName) => { let done = null; await loggedTask(`reset ${text(key, 12)} (typed « ${text(confirmName, 64)} »)`, () => oneServerJob(`resetting ${realms.MODES[text(key, 12)]?.title || key}`, () => withMysql(async () => { done = await realms.resetWorld(serverPath(), text(key, 12), { confirmName: text(confirmName, 64) }); return done; }))); return { ...(await realmsStatus()), reset: done }; });
@@ -1716,11 +1723,16 @@ function registerIpc() {
     const error = await shell.openPath(serverPath());
     if (error) throw new Error(error);
   });
-  handle('repack:purgeBots', async () => {
+  handle('repack:purgeBots', async options => {
     const found = requireControl();
     if (!config.server.commands.purgeBots || !inspectRepack(serverPath()).bots) throw new Error('The bots are not installed in this server.');
     if ((await found.status()).some(service => service.id === 'world' && service.state !== 'stopped')) throw new Error('Stop the worldserver first.');
-    return onePurge('Conquest of Azeroth', () => found.run(config.server.commands.purgeBots, 'purge-bots'));
+    // 0.5.0: the server saved first (Backups, restorable) when asked (the realm card); the wizard saves on its own.
+    return onePurge('Conquest of Azeroth', async () => {
+      const saved = options?.backup === true ? await serverTools().backup.create({ label: 'new-bots', reason: 'automatic' }) : null;
+      const result = await found.run(config.server.commands.purgeBots, 'purge-bots');
+      return saved ? { ...(result && typeof result === 'object' ? result : {}), backup: saved.name || saved.file || '' } : result;
+    });
   });
 
   // ---- the bot package ----

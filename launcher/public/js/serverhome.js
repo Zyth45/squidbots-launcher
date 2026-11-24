@@ -1074,7 +1074,7 @@ Object.assign(App.actions, {
   'network-ip': button => { const input = $('#net-address'); if (input) input.value = button.dataset.ip; const open = $('input[name=net-mode][value=open]'); if (open) open.checked = true; friendsLine(); },
   'network-copy': async () => {
     const line = friendsLine();
-    try { await navigator.clipboard.writeText(line); toast(t('net.copied', 'Copied: {line}', { line }), 'success'); }
+    try { await App.api.copyText(line); toast(t('net.copied', 'Copied: {line}', { line }), 'success'); }
     catch { toast(line); }
   },
   'network-save': button => guard(async () => {

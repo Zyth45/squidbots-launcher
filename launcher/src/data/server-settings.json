@@ -1611,25 +1611,6 @@
    }
   },
   {
-   "key": "AiPlayerbot.CoaSelfFoundBotsPercent",
-   "file": "playerbots.conf",
-   "group": "selffound",
-   "kind": "int",
-   "when": "restart",
-   "label": {
-    "en": "Bots that clear dungeons (%)",
-    "fr": "Bots qui font les donjons (%)",
-    "ru": "Боты, проходящие подземелья (%)",
-    "zh": "刷副本的机器人（%）"
-   },
-   "help": {
-    "en": "Share of the random bots (0 to 100 %, always the same ones) that go through the dungeons of their level in parties of five, with Dungeon Clear, and wear what they loot. 0 = no party; -1 = automatic (20 on a self-found realm, 0 otherwise).",
-    "fr": "Part des bots aléatoires (0 à 100 %, toujours les mêmes) qui font les donjons de leur niveau en groupes de cinq, avec Dungeon Clear, et portent ce qu'ils y ramassent. 0 = aucun groupe ; -1 = automatique (20 en self-found, 0 sinon).",
-    "ru": "Доля случайных ботов (0–100 %, всегда одни и те же), которые проходят подземелья своего уровня группами по пять с Dungeon Clear и носят добытое. 0 = без групп; -1 = автоматически (20 в self-found, иначе 0).",
-    "zh": "随机机器人中（0 到 100 %，始终是同一批）以五人小队通过 Dungeon Clear 刷对应等级副本、并穿戴拾取装备的比例。0 = 不组队；-1 = 自动（自给自足国度为 20，否则为 0）。"
-   }
-  },
-  {
    "key": "DungeonClear.SelfFound.MaxGroups",
    "file": "mod_dungeon_clear.conf",
    "group": "selffound",
@@ -1842,6 +1823,25 @@
     "fr": "Votre groupe de bots nettoie un donjon tout seul : le tank mène, attire les monstres et ramasse (dc on dans le canal du groupe).",
     "ru": "Ваша группа ботов сама зачищает подземелье: танк ведёт, пуллит и собирает добычу (dc on в чате группы).",
     "zh": "你的机器人小队自行清理副本：坦克带路、拉怪并拾取（在小队聊天中输入 dc on）。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaSelfFoundBotsPercent",
+   "file": "playerbots.conf",
+   "group": "dungeonclear",
+   "kind": "int",
+   "when": "restart",
+   "label": {
+    "en": "Bots sent to real dungeons (%)",
+    "fr": "Bots envoyés en vrai donjon (%)",
+    "ru": "Ботов в настоящих подземельях (%)",
+    "zh": "派往真实副本的机器人（%）"
+   },
+   "help": {
+    "en": "Share of the random bots (always the same ones) that clear the dungeons of their level in parties of five with Dungeon Clear, and wear only what they loot, at every level. -1 = automatic: 20 on a self-gear realm, 0 otherwise. 0 = no party. It does not choose the gear of the other bots: that is \"Bot gear\" on the realm card.",
+    "fr": "Part des bots aléatoires (toujours les mêmes) qui font les donjons de leur niveau en groupes de cinq avec Dungeon Clear, et ne portent que ce qu'ils ramassent, à tout niveau. -1 = automatique : 20 sur un royaume en self-gear, 0 sinon. 0 = aucun groupe. Ce réglage ne choisit pas l'équipement des autres bots : c'est « Équipement des bots » sur la carte du royaume.",
+    "ru": "Доля случайных ботов (всегда одних и тех же), которые проходят подземелья своего уровня группами по пять с Dungeon Clear и на любом уровне носят только добытое. -1 = автоматически: 20 в мире self-gear, иначе 0. 0 = без групп. Это не выбор снаряжения остальных ботов: для этого «Снаряжение ботов» в карточке мира.",
+    "zh": "随机机器人中（始终是同一批）以五人小队通过 Dungeon Clear 刷对应等级副本、并在任何等级都只穿戴拾取装备的比例。-1 = 自动：自给装备国度为 20，否则为 0。0 = 不组队。它不决定其他机器人的装备：那是世界卡片上的“机器人装备”。"
    }
   },
   {
