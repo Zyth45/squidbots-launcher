@@ -84,7 +84,8 @@
   "AiPlayerbot.CoaLive.City.Squares",
   "AiPlayerbot.CoaArrivalCheck",
   "AiPlayerbot.CoaLfgRolePriority",
-  "AiPlayerbot.Coa.HideReplayedAchievements"
+  "AiPlayerbot.Coa.HideReplayedAchievements",
+  "AiPlayerbot.CoaLive.NpcStopAside"
  ],
  "groups": [
   {
@@ -4343,6 +4344,26 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaLive.NpcStopAside",
+   "file": "playerbots.conf",
+   "group": "lw-citylife",
+   "type": "bool",
+   "default": 1,
+   "when": "reload",
+   "label": {
+    "en": "Bots stand aside at NPCs",
+    "fr": "Les bots se placent à côté des PNJ",
+    "ru": "Боты встают сбоку от NPC",
+    "zh": "机器人站在 NPC 旁边"
+   },
+   "help": {
+    "en": "New in 3.3. A bot walking to a still NPC or object (trainer, banker, flight master, mailbox) stops off to its side instead of in front of it, so it no longer hides it from players.",
+    "fr": "Nouveau en 3.3. Un bot qui va vers un PNJ ou un objet immobile (maître, banquier, maître de vol, boîte aux lettres) s'arrête sur le côté au lieu de devant, pour ne plus le cacher aux joueurs.",
+    "ru": "Новое в 3.3. Бот, идущий к неподвижному NPC или объекту (наставнику, банкиру, распорядителю полётов, почтовому ящику), останавливается сбоку, а не перед ним, и больше не загораживает его от игроков.",
+    "zh": "3.3 新增。走向静止 NPC 或物体（训练师、银行家、飞行管理员、邮箱）的机器人会停在一旁而不是正前方，不再挡住玩家。"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaPathCheck",
    "file": "playerbots.conf",
    "group": "lw-diagnostics",
@@ -5906,7 +5927,8 @@
     "AiPlayerbot.CoaLive.City.Squares": "1",
     "AiPlayerbot.CoaArrivalCheck": "1",
     "AiPlayerbot.CoaLfgRolePriority": "1",
-    "AiPlayerbot.Coa.HideReplayedAchievements": "1"
+    "AiPlayerbot.Coa.HideReplayedAchievements": "1",
+    "AiPlayerbot.CoaLive.NpcStopAside": "1"
    }
   }
  ]

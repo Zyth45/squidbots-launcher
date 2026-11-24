@@ -1288,10 +1288,38 @@
     "zh": "机器人轮流上下线"
    },
    "help": {
-    "en": "The realm keeps more bots than are online (twice as many by default) and swaps who is online from time to time, like real players. More bot accounts are created at the next start.",
-    "fr": "Le royaume garde plus de bots qu'il n'y en a en ligne (deux fois plus par défaut) et change de temps en temps ceux qui sont connectés, comme de vrais joueurs. Des comptes de bots en plus sont créés au prochain démarrage.",
-    "ru": "В мире больше ботов, чем онлайн (по умолчанию вдвое), и время от времени меняется, кто в игре, как у настоящих игроков. Новые аккаунты ботов создаются при следующем запуске.",
-    "zh": "国度保留的机器人多于在线数量（默认两倍），并不时更换在线的机器人，就像真实玩家一样。下次启动时会创建更多机器人账号。"
+    "en": "The realm keeps more bots than are online (1.5 times as many by default since 3.3, twice before) and swaps who is online from time to time, like real players. More bot accounts are created at the next start.",
+    "fr": "Le royaume garde plus de bots qu'il n'y en a en ligne (1,5 fois plus par défaut depuis la 3.3, deux fois avant) et change de temps en temps ceux qui sont connectés, comme de vrais joueurs. Des comptes de bots en plus sont créés au prochain démarrage.",
+    "ru": "В мире больше ботов, чем онлайн (по умолчанию в 1,5 раза с 3.3, раньше вдвое), и время от времени меняется, кто в игре, как у настоящих игроков. Новые аккаунты ботов создаются при следующем запуске.",
+    "zh": "国度保留的机器人多于在线数量（自 3.3 起默认 1.5 倍，之前为两倍），并不时更换在线的机器人，就像真实玩家一样。下次启动时会创建更多机器人账号。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.PeriodicOnlineOfflineRatio",
+   "file": "playerbots.conf",
+   "group": "levels",
+   "kind": "float",
+   "when": "restart",
+   "min": 1,
+   "max": 5,
+   "default": "1.5",
+   "offWhen": {
+    "key": "AiPlayerbot.EnablePeriodicOnlineOffline",
+    "values": [
+     "0"
+    ]
+   },
+   "label": {
+    "en": "Bots kept per bot online",
+    "fr": "Bots gardés par bot en ligne",
+    "ru": "Ботов на одного в сети",
+    "zh": "每个在线机器人保留的机器人数"
+   },
+   "help": {
+    "en": "With bots logging in and out in turns: 1,000 bots online keep 1.5 × 1,000 = 1,500 bots. 1.5 by default (2.0 before 3.3). Existing bots and accounts are never deleted.",
+    "fr": "Avec les bots qui se connectent à tour de rôle : 1 000 bots en ligne en gardent 1,5 × 1 000 = 1 500. 1,5 par défaut (2,0 avant la 3.3). Les bots et comptes existants ne sont jamais supprimés.",
+    "ru": "Когда боты заходят по очереди: 1000 ботов онлайн — всего 1,5 × 1000 = 1500 ботов. По умолчанию 1,5 (до 3.3 — 2,0). Существующие боты и аккаунты никогда не удаляются.",
+    "zh": "机器人轮流上下线时：1000 个在线机器人共保留 1.5 × 1000 = 1500 个。默认 1.5（3.3 之前为 2.0）。已有的机器人和账号不会被删除。"
    }
   },
   {

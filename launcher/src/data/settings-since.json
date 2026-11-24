@@ -1,7 +1,7 @@
 {
  "from": "0.3.59",
  "next": "0.5.0",
- "catalog": "6fa9f8e37bb0ce7f",
+ "catalog": "bfc547bb11964be6",
  "keys": {
   "worldserver.conf|CharactersPerRealm": {
    "added": "0.4.0"
@@ -900,6 +900,9 @@
   "playerbots.conf|AiPlayerbot.CoaEconomy.BotAuctions.BuyLog": {
    "added": "0.4.7"
   },
+  "playerbots.conf|AiPlayerbot.PeriodicOnlineOfflineRatio": {
+   "added": "0.5.0"
+  },
   "mod_dungeon_clear.conf|DungeonClear.DungeonQueueFill.Enable": {
    "added": "0.5.0"
   },
@@ -934,6 +937,9 @@
    "added": "0.5.0"
   },
   "playerbots.conf|AiPlayerbot.CoaArrivalCheck": {
+   "added": "0.5.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.NpcStopAside": {
    "added": "0.5.0"
   },
   "playerbots.conf|AiPlayerbot.CoaPathCheck": {

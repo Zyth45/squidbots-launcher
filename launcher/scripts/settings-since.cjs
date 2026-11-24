@@ -37,7 +37,7 @@ for (let i = 1; i < steps.length; i++) {
 }
 // Defaults the core changed while the catalog knew no default for them (no « default » in the older catalogs, so the
 // loop above cannot see the change): the 3.2.2 core, in the launcher 0.5.0 (Pilote, 24/11).
-const CORE_DEFAULTS = { '0.5.0': [['playerbots.conf|AiPlayerbot.UseGroundMountAtMinLevel', '20', '5'], ['playerbots.conf|AiPlayerbot.CoaSelfFoundMaxLevel', '59', '80']] };
+const CORE_DEFAULTS = { '0.5.0': [['playerbots.conf|AiPlayerbot.UseGroundMountAtMinLevel', '20', '5'], ['playerbots.conf|AiPlayerbot.CoaSelfFoundMaxLevel', '59', '80'], ['playerbots.conf|AiPlayerbot.PeriodicOnlineOfflineRatio', '2.0', '1.5']] };
 for (const [version, list] of Object.entries(CORE_DEFAULTS)) {
   if (!steps.some(step => step.version === version)) continue;
   for (const [id, from, to] of list) if (keys[id]?.added !== version && !(keys[id]?.defaults || []).some(([at]) => at === version)) (keys[id] ||= {}).defaults = [...(keys[id]?.defaults || []), [version, from, to]];
