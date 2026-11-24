@@ -2189,6 +2189,60 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaEconomy.EnchantForSelf.PiecesPerStudy",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "type": "int",
+   "default": 2,
+   "when": "restart",
+   "min": 1,
+   "max": 4,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.EnchantForSelf.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Enchanter bots: pieces enchanted per study",
+    "fr": "Bots enchanteurs : pièces enchantées par étude",
+    "ru": "Боты-зачарователи: предметов за одно изучение",
+    "zh": "附魔师机器人：每次研究附魔的装备数"
+   },
+   "help": {
+    "en": "New in 3.2.2. How many pieces an enchanter bot enchants in one study of its own gear (1 to 4).",
+    "fr": "Nouveau en 3.2.2. Le nombre de pièces qu'un bot enchanteur enchante en une étude de son équipement (1 à 4).",
+    "ru": "Новое в 3.2.2. Сколько предметов бот-зачарователь зачаровывает за одно изучение своего снаряжения (от 1 до 4).",
+    "zh": "3.2.2 新增。附魔师机器人一次研究自己装备时附魔的装备数量（1 到 4）。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.EnchantForSelf.Reagents",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "type": "bool",
+   "default": 1,
+   "when": "restart",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.EnchantForSelf.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Enchanter bots keep their reagents and disenchant gear they would sell",
+    "fr": "Les bots enchanteurs gardent leurs composants et désenchantent l'équipement qu'ils vendraient",
+    "ru": "Боты-зачарователи хранят реагенты и распыляют снаряжение, которое продали бы",
+    "zh": "附魔师机器人保留材料，并分解本要出售的装备"
+   },
+   "help": {
+    "en": "New in 3.2.2. An enchanter bot keeps a stack of the reagents of its enchantments instead of selling them, and disenchants a piece it would sell when the dust is worth more.",
+    "fr": "Nouveau en 3.2.2. Un bot enchanteur garde une pile des composants de ses enchantements au lieu de les vendre, et désenchante une pièce qu'il vendrait quand la poussière vaut plus.",
+    "ru": "Новое в 3.2.2. Бот-зачарователь хранит стопку реагентов своих зачарований вместо продажи и распыляет предмет, который продал бы, если пыль стоит дороже.",
+    "zh": "3.2.2 新增。附魔师机器人保留一组自己附魔所需的材料而不出售，并在粉尘更值钱时分解本要出售的装备。"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaEconomy.SelfStudy.Enable",
    "file": "playerbots.conf",
    "group": "lw-crafting",
@@ -2344,6 +2398,32 @@
     "fr": "Les composants ne sont achetés que si la pièce apporte au moins ce pourcentage de plus que celle qu'elle remplace.",
     "ru": "Реагенты покупаются, только если предмет лучше заменяемого хотя бы на этот процент.",
     "zh": "只有当新装备比被替换的装备至少提升这个百分比时才购买材料。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.SelfStudy.RestAreas",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "type": "bool",
+   "default": 1,
+   "when": "restart",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.SelfStudy.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Bots also study their crafts in cities and inns",
+    "fr": "Les bots étudient aussi leurs métiers en ville et dans les auberges",
+    "ru": "Боты изучают ремёсла и в городах, и в тавернах",
+    "zh": "机器人也在城镇和旅店研究制作"
+   },
+   "help": {
+    "en": "New in 3.2.2. The study also happens in towns and inns, not only in capitals.",
+    "fr": "Nouveau en 3.2.2. L'étude a lieu aussi en ville et dans les auberges, pas seulement en capitale.",
+    "ru": "Новое в 3.2.2. Изучение проходит и в городах и тавернах, а не только в столицах.",
+    "zh": "3.2.2 新增。研究也会在城镇和旅店进行，而不只在主城。"
    }
   },
   {
@@ -5392,6 +5472,26 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaEconomy.EnchantForSelf.HourlyCount",
+   "file": "playerbots.conf",
+   "group": "lw-diagnostics",
+   "type": "bool",
+   "default": 1,
+   "when": "restart",
+   "label": {
+    "en": "Hourly count of enchantments",
+    "fr": "Compte des enchantements par heure",
+    "ru": "Ежечасный подсчёт зачарований",
+    "zh": "每小时附魔统计"
+   },
+   "help": {
+    "en": "New in 3.2.2. Once an hour, one line in the playerbots.coa log on what the enchanter bots did (online, tries, enchantments put on, disenchanted, refusals by cause).",
+    "fr": "Nouveau en 3.2.2. Une fois par heure, une ligne dans le journal playerbots.coa sur ce qu'ont fait les bots enchanteurs (en ligne, essais, enchantements posés, désenchantements, refus par cause).",
+    "ru": "Новое в 3.2.2. Раз в час одна строка в журнале playerbots.coa о том, что сделали боты-зачарователи (в сети, попытки, наложенные зачарования, распыления, отказы по причинам).",
+    "zh": "3.2.2 新增。每小时在 playerbots.coa 日志中写一行附魔师机器人的情况（在线、尝试、已附魔、已分解、按原因的拒绝）。"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaEconomy.SelfStudy.Log",
    "file": "playerbots.conf",
    "group": "lw-diagnostics",
@@ -5546,6 +5646,8 @@
     "AiPlayerbot.CoaEconomy.EnchantForSelf.Enable": 1,
     "AiPlayerbot.CoaEconomy.SelfStudy.Enable": 1,
     "AiPlayerbot.CoaEconomy.SelfStudy.BuyReagents": 1,
+    "AiPlayerbot.CoaEconomy.EnchantForSelf.Reagents": 1,
+    "AiPlayerbot.CoaEconomy.SelfStudy.RestAreas": 1,
     "AiPlayerbot.CoaEconomy.BotAuctions.Shop.Enable": 1,
     "AiPlayerbot.CoaEconomy.RemoteBuy.Enable": 1,
     "AiPlayerbot.CoaEconomy.RemoteSell.Enable": 1

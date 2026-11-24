@@ -1,7 +1,7 @@
 {
  "from": "0.3.59",
- "next": "0.4.7",
- "catalog": "64830ea14709b910",
+ "next": "0.4.9",
+ "catalog": "acc1bad207f7943d",
  "keys": {
   "worldserver.conf|CharactersPerRealm": {
    "added": "0.4.0"
@@ -899,6 +899,18 @@
   },
   "playerbots.conf|AiPlayerbot.CoaEconomy.BotAuctions.BuyLog": {
    "added": "0.4.7"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.EnchantForSelf.PiecesPerStudy": {
+   "added": "0.4.9"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.EnchantForSelf.Reagents": {
+   "added": "0.4.9"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.SelfStudy.RestAreas": {
+   "added": "0.4.9"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.EnchantForSelf.HourlyCount": {
+   "added": "0.4.9"
   }
  }
 }
