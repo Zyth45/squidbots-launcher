@@ -3015,16 +3015,16 @@
    "kind": "bool",
    "when": "restart",
    "label": {
-    "en": "Keep the battleground results",
-    "fr": "Garder les résultats des champs de bataille",
-    "ru": "Сохранять результаты полей боя",
-    "zh": "保存战场结果"
+    "en": "Keep the battleground results (30 days)",
+    "fr": "Garder les résultats des champs de bataille (30 jours)",
+    "ru": "Сохранять результаты полей боя (30 дней)",
+    "zh": "保存战场结果（30 天）"
    },
    "help": {
-    "en": "Each battleground is recorded (scores, winners): the PvP page of the dashboard shows them. Off, the PvP page stays empty.",
-    "fr": "Chaque champ de bataille est enregistré (scores, vainqueurs) : la page JcJ du dashboard les affiche. Désactivé, la page JcJ reste vide.",
-    "ru": "Каждое поле боя записывается (счёт, победители): их показывает страница PvP дашборда. Выключено — страница PvP пустая.",
-    "zh": "记录每场战场（比分、胜方）：仪表盘的 PvP 页面会显示。关闭后 PvP 页面为空。"
+    "en": "Each battleground is recorded (scores, winners) for the PvP page of the dashboard; the bots module deletes the games older than 30 days (AiPlayerbot.CoaLive.PvpStatsKeepDays). Turned on once by the 3.2.2 update; your choice is kept afterwards. Off, the PvP page stays empty.",
+    "fr": "Chaque champ de bataille est enregistré (scores, vainqueurs) pour la page JcJ du dashboard ; le module des bots supprime les parties de plus de 30 jours (AiPlayerbot.CoaLive.PvpStatsKeepDays). Activé une fois par la mise à jour 3.2.2 ; votre choix est ensuite respecté. Désactivé, la page JcJ reste vide.",
+    "ru": "Каждое поле боя записывается (счёт, победители) для страницы PvP дашборда; модуль ботов удаляет игры старше 30 дней (AiPlayerbot.CoaLive.PvpStatsKeepDays). Включено один раз обновлением 3.2.2; дальше ваш выбор сохраняется. Выключено — страница PvP пустая.",
+    "zh": "记录每场战场（比分、胜方），供仪表盘的 PvP 页面显示；机器人模块会删除超过 30 天的对局（AiPlayerbot.CoaLive.PvpStatsKeepDays）。3.2.2 更新会将其开启一次；之后保留你的选择。关闭后 PvP 页面为空。"
    }
   },
   {

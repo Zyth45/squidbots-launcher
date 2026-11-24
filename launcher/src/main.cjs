@@ -1435,7 +1435,7 @@ function registerIpc() {
     const coa = (await requireControl().status()).some(service => /world/i.test(service.id) && service.state === 'running');
     await realms.clearOffline(serverPath(), { coa }).catch(() => {});
   };
-  const prepareStart = async () => { await new ServerConfig(serverPath()).removeBoms().catch(() => {}); await eco.wakeStopped(serverPath()).catch(() => {}); await fixManage(serverPath()).catch(() => {}); await applyCards(serverPath()).catch(() => {}); await network.applyNetwork(serverPath()).catch(() => {}); await modules.keepRotationOff(serverPath()); await quietLogs(serverPath()); };
+  const prepareStart = async () => { await new ServerConfig(serverPath()).removeBoms().catch(() => {}); await new ServerConfig(serverPath()).storeStatisticsOnce().catch(() => {}); await eco.wakeStopped(serverPath()).catch(() => {}); await fixManage(serverPath()).catch(() => {}); await applyCards(serverPath()).catch(() => {}); await network.applyNetwork(serverPath()).catch(() => {}); await modules.keepRotationOff(serverPath()); await quietLogs(serverPath()); };
   const startEverything = async () => {
     baseByRealm = false;
     await prepareStart();

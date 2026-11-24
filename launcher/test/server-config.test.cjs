@@ -208,6 +208,36 @@ test('the 2.9.5 switches: shown at their default when an older conf lacks them, 
   assert.equal(botsAfter.match(/^AiPlayerbot\.LootNeedRollLevel = 2\r?$/gm).length, 1);
 });
 
+test('3.2.2: the battleground results kept, once per server; a value set by the player is never undone', async () => {
+  const KEY = /^Battleground\.StoreStatistics\.Enable = (\d)\r?$/m;
+  const template = root => path.join(root, 'Settings', 'worldserver.conf.template');
+  // 0 from the .dist: turned on once, only this line, a copy kept and logged.
+  const root = await copyRepack();
+  const before = await fsp.readFile(template(root), 'utf8');
+  const config = new ServerConfig(root);
+  assert.equal(await config.storeStatisticsOnce(), true);
+  const after = await fsp.readFile(template(root), 'utf8');
+  assert.equal(after, before.replace('Battleground.StoreStatistics.Enable = 0', 'Battleground.StoreStatistics.Enable = 1'));
+  assert.match(await fsp.readFile(path.join(root, 'logs', 'launcher-config.log'), 'utf8'), /StoreStatistics\.Enable 0 -> 1/);
+  assert.ok(!Object.hasOwn((await config.recorded()).reduce((all, item) => ({ ...all, [item.key]: 1 }), {}), 'Battleground.StoreStatistics.Enable'));
+  // The player turns it off again: it stays off.
+  await config.save([{ file: 'worldserver.conf', key: 'Battleground.StoreStatistics.Enable', value: '0' }]);
+  assert.equal(await config.storeStatisticsOnce(), false);
+  assert.equal(KEY.exec(await fsp.readFile(template(root), 'utf8'))[1], '0');
+  // Carried to a new folder with the player's 0 and the marker: not undone there either.
+  const next = await copyRepack();
+  await config.carryTo(next);
+  assert.equal(await new ServerConfig(next).storeStatisticsOnce(), false);
+  assert.equal(KEY.exec(await fsp.readFile(template(next), 'utf8'))[1], '0');
+  // A 0 the player chose through the launcher before this update is kept, and marked.
+  const chosen = await copyRepack();
+  await new ServerConfig(chosen).save([{ file: 'worldserver.conf', key: 'Battleground.StoreStatistics.Enable', value: '1' }]);
+  await new ServerConfig(chosen).save([{ file: 'worldserver.conf', key: 'Battleground.StoreStatistics.Enable', value: '0' }]);
+  assert.equal(await new ServerConfig(chosen).storeStatisticsOnce(), false);
+  assert.equal(KEY.exec(await fsp.readFile(template(chosen), 'utf8'))[1], '0');
+  assert.ok(JSON.parse(await fsp.readFile(path.join(chosen, '.coa-launcher', 'once.json'), 'utf8'))['bg-store-statistics-3.2.2']);
+});
+
 test('a UTF-8 BOM is removed from the .conf files only, bytes after it unchanged, a copy kept and logged', async () => {
   const root = await copyRepack();
   const file = path.join(root, 'Core', 'configs', 'modules', 'bom-test.conf');

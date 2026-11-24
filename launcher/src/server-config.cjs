@@ -27,6 +27,8 @@ const BACKUPS = '.coa-launcher/config-backups';
 const CHANGES = '.coa-launcher/config-changes.json';
 // The values a Living world pack replaced, per target (coa or a realm), to go back to them.
 const PACKS = '.coa-launcher/living-pack-undo.json';
+// The changes the launcher makes once per server (id -> when).
+const ONCE = '.coa-launcher/once.json';
 
 // 20260929-103512-123: sortable, and two saves in the same second never share a folder.
 let lastStamp = '';
@@ -161,6 +163,28 @@ class ServerConfig {
       await fsp.appendFile(log, `${new Date().toISOString()} UTF-8 BOM removed (copy in ${BACKUPS}/${when}): ${fixed.join(', ')}\n`);
     }
     return fixed;
+  }
+
+  // 3.2.2 (user, via the Pilote: the battleground results kept by default, the module deletes those older than
+  // AiPlayerbot.CoaLive.PvpStatsKeepDays): Battleground.StoreStatistics.Enable 0 -> 1, ONCE per server, in the
+  // worldserver.conf the core is made from (the template when there is one; the realms follow it). Never when the
+  // player chose a value through the launcher; after the marker, the player's choice stays whatever it is.
+  async storeStatisticsOnce() {
+    const ID = 'bg-store-statistics-3.2.2', KEY = 'Battleground.StoreStatistics.Enable';
+    const markerFile = this.resolve(ONCE);
+    const marker = (await readJson(markerFile)) || {};
+    if (marker[ID]) return false;
+    const done = async changed => { await atomicJson(markerFile, { ...((await readJson(markerFile)) || {}), [ID]: new Date().toISOString() }); return changed; };
+    const file = (await this.files()).find(item => item.id === 'worldserver.conf');
+    if (!file) return false;
+    if (Object.hasOwn((await readJson(this.resolve(CHANGES))) || {}, `worldserver.conf|${KEY}`)) return done(false);
+    const value = parseValues(await this.read(file.path)).get(KEY)?.value;
+    if (value === undefined || String(value).trim() !== '0') return done(false);
+    const { backup } = await this.save([{ file: 'worldserver.conf', key: KEY, value: '1' }], { record: false });
+    const log = this.resolve('logs/launcher-config.log');
+    await fsp.mkdir(path.dirname(log), { recursive: true });
+    await fsp.appendFile(log, `${new Date().toISOString()} ${KEY} 0 -> 1 in ${file.path}, once (3.2.2; copy in ${BACKUPS}/${backup})\n`);
+    return done(true);
   }
 
   // Every editable .conf, with the file its defaults and documentation come from.
@@ -462,6 +486,9 @@ class ServerConfig {
       try { await other.save([{ ...change, value: change.kind === 'quoted' ? change.value.replace(/^"|"$/g, '') : change.value }]); applied.push(change.key); }
       catch { skipped.push(change.key); }
     }
+    // What was done once here stays done in the new folder (a value the player set back is not undone again).
+    const once = await readJson(this.resolve(ONCE));
+    if (once) await atomicJson(other.resolve(ONCE), { ...((await readJson(other.resolve(ONCE))) || {}), ...once });
     return { applied, skipped };
   }
 
