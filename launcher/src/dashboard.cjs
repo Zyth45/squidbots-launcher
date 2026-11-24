@@ -40,7 +40,11 @@ class Dashboard {
     const port = await this.port(root);
     const running = available && await portOpen(port);
     let version = '';
-    try { version = /^##\s*([\d.]+)/m.exec(fs.readFileSync(path.join(this.paths(root).folder, 'CHANGELOG.md'), 'utf8'))?.[1] || ''; } catch {}
+    // Its VERSION file (2.2.2 and later, what the components update writes), else the first entry of its CHANGELOG: the
+    // 3.2.2 zip's CHANGELOG still starts at 3.1.0 (bench 24/11).
+    try { version = fs.readFileSync(path.join(this.paths(root).folder, 'VERSION'), 'utf8').trim(); } catch {}
+    if (!/^\d+(\.\d+){0,3}$/.test(version)) version = '';
+    if (!version) try { version = /^##\s*([\d.]+)/m.exec(fs.readFileSync(path.join(this.paths(root).folder, 'CHANGELOG.md'), 'utf8'))?.[1] || ''; } catch {}
     return { available, running, managed: !!this.child && this.root === root, port, url: `http://localhost:${port}/`, version };
   }
 
