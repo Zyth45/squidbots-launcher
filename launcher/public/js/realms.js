@@ -190,11 +190,27 @@ function realmPanel(realm, busy, compact = false) {
     const bots = realm.state === 'running' && Number.isFinite(realm.online) ? `${realm.online}/${realm.bots ?? '?'}` : realm.bots;
     const fig = (label, value) => `<span>${esc(label)} <b>${value === null || value === undefined || value === '' ? '—' : esc(String(value))}</b></span>`;
     const line = `<div class="rc-line">${fig(t('realms.players', 'Players'), players)}${fig(t('realms.bots', 'Bots'), bots)}${fig(t('realms.port', 'Port'), realm.worldPort)}</div>`;
-    const more = App.state.realmMore?.[realm.key];
-    const fold = `<button class="rc-more-toggle" data-action="realm-more" data-key="${realm.key}" aria-expanded="${!!more}">${icon('settings')}${esc(t('glance.moreTools', 'Tools and reset'))}${icon('chevron')}</button>${more ? `<div class="rc-more">${tools}${danger}</div>` : ''}`;
-    return `<article class="realm-panel compact realm-${realm.key}${on ? ' on' : ''}${more ? ' more' : ''}">${cHead}${line}${buttons}
+    // Tools and reset always shown (user, 24/11: « tool & reset il faut pas le hide faut que ça soit affiché en permanence »):
+    // one row of small buttons, the erasing ones in danger style, their sentences in the « ? » of the row.
+    const sentences = [
+      on ? t('realms.stopFirst', 'Stop the realm to use the actions that change its bots or its world.') : '',
+      resettable || realm.main ? t('realms.resetLine', 'Reset the world saves the whole realm first (Backups), then starts it again as new.') : '',
+      coaWaits ? t('glance.coaResetWaits', 'Reset the world of Conquest of Azeroth comes once it has been tested on a bench.') : '',
+      realm.main ? '' : t('realms.disableLine', 'Switch off takes it out of the realm list of the game, without deleting anything. Stopped, it stays in the list as Offline.'),
+    ].filter(Boolean);
+    const tool = (action, iconName, label, hint, off, erase) => `<button class="button ${erase ? 'danger-ghost' : 'ghost'}" data-action="${action}" data-key="${realm.key}" ${off ? 'disabled' : ''}${hint ? ` title="${esc(hint)}"` : ''}>${icon(iconName)}${esc(label)}</button>`;
+    const toolRow = `<div class="rc-tools">${[
+      tool(realm.main ? 'open-logs' : 'realm-logs', 'book', t('realms.logs', 'Logs'), '', false),
+      tool('realm-purge', 'refresh', t('glance.recreateShort', 'Recreate the bots'), t('glance.purgeHint', 'Deletes the random bots of this realm only (saved first); they are made again at its next start.'), on || busy),
+      resettable ? tool('realm-restore', 'book', t('realms.restoreShort', 'Restore'), t('realms.restore', 'Restore a backup'), on || busy)
+        // CoA's databases are the server's own: its Restore opens the list of the database backups (user, 24/11).
+        : realm.main ? tool('realm-backups', 'book', t('realms.restoreShort', 'Restore'), t('realms.restoreCoaHint', 'Put back a database backup of the server (Settings, Backups).'), busy) : '',
+      resettable || realm.main ? tool('realm-reset', 'warning', t('realms.resetShort', 'Reset the world'), t('realms.resetHint', 'A completely new run: bots, auction house, mail, guilds, the characters of this realm, achievements and server firsts start again. Saved first.'), on || busy || coaWaits, true) : '',
+      realm.main ? '' : tool('realm-disable', 'close', t('realms.disable', 'Switch off'), '', busy, true),
+    ].join('')}<span class="rc-help" tabindex="0" title="${esc(sentences.join(' '))}">?</span></div>`;
+    return `<article class="realm-panel compact realm-${realm.key}${on ? ' on' : ''}">${cHead}${line}${buttons}
       <section class="realm-group realm-glance-group">${realmGlance(realm, true)}</section>
-      ${realmFacts(realm, true)}${fold}
+      ${realmFacts(realm, true)}${toolRow}
     </article>`;
   }
   return `<article class="realm-panel realm-${realm.key}${on ? ' on' : ''}">${head}
@@ -453,7 +469,6 @@ Object.assign(App.actions, {
     await App.api.copyText(line);
     toast(t('net.copied', 'Copied: {line}', { line }), 'success');
   }, button),
-  'realm-more': button => { const more = App.state.realmMore ||= {}; more[button.dataset.key] = !more[button.dataset.key]; App.refresh('realms'); },
   'realm-others': () => { App.state.realmOthers = !App.state.realmOthers; App.refresh('realms'); },
   'realm-other-open': button => { App.state.realmOther = button.dataset.key; App.refresh('realms'); document.querySelector('.realm-other-open')?.scrollIntoView({ block: 'start', behavior: 'smooth' }); },
   'realm-other-close': () => { App.state.realmOther = ''; App.refresh('realms'); },
@@ -655,6 +670,7 @@ Object.assign(App.actions, {
       success: result => (isDemo(result) ? demoDone() : { title: t('realms.resetDoneTitle', '{name} is new', { name }), body: `<p>${esc(t('realms.worldResetDone', '{name} is new: its bots are made at its next start. The old world is saved in Backups.', { name }))}</p><p class="muted">${esc(t('realms.savedIn', 'Saved copy: {path}', { path: result?.reset?.backup || '' }))}</p>` }),
     });
   }, button),
+  'realm-backups': () => { App.state.srvTab = 'backups'; App.go('server'); loadServerTab(true); },
   'realm-restore': button => guard(async () => {
     const key = button.dataset.key;
     const name = realmListName(key);

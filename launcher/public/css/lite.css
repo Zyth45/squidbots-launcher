@@ -633,10 +633,6 @@ summary.damage-row::-webkit-details-marker { display: none; }
 .glance.c .realm-quick-row { gap: 6px; font-size: 13px; }
 .glance.c .glance-custom { padding: 4px 8px; font-size: 11.5px; }
 .realm-panel.compact .realm-facts.compact .fact-line { gap: 8px; }
-.rc-more-toggle { display: flex; align-items: center; gap: 6px; justify-self: start; padding: 2px 0; font-size: 12.5px; color: var(--muted); background: none; border: 0; cursor: pointer; }
-.rc-more-toggle .icon { width: 14px; height: 14px; }
-.rc-more-toggle[aria-expanded="true"] .icon:last-child { transform: rotate(180deg); }
-.rc-more { display: grid; gap: 10px; }
 .realms-page { gap: 8px; }
 .realms-page .realms-lead.c { margin: 0 0 2px; }
 .rc-name h2 { white-space: normal; overflow: visible; font-size: 18px; }
@@ -644,3 +640,8 @@ summary.damage-row::-webkit-details-marker { display: none; }
 .glance-seg.c .glance-opt.active { background: color-mix(in srgb, var(--realm, var(--accent)) 34%, var(--panel)); box-shadow: inset 0 -3px 0 var(--realm, var(--accent)); }
 .glance-seg.c .glance-opt.active strong { color: #fff; }
 .glance-seg.c .glance-opt.active:disabled { opacity: 1; }
+/* 0.5.0 d : tools and reset always shown, one row of small buttons (user, 24/11). */
+.rc-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; padding-top: 8px; border-top: 1px solid var(--line); }
+.realm-panel.compact .rc-tools .button { min-height: 26px; height: 26px; padding: 0 8px; font-size: 12.5px; }
+.rc-tools .button .icon { display: none; }
+.rc-tools .rc-help { margin-left: auto; }
