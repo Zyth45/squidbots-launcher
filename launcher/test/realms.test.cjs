@@ -635,3 +635,25 @@ test('reset the world of CoA: name typed again, saved, structure kept, database 
   assert.deepEqual(done.preview.players, [{ name: 'Thrall', level: 60 }]);
   assert.deepEqual([realms.sellerOf('AuctionHouseBot.GUIDs = 1234'), realms.sellerOf('AuctionHouseBot.GUIDs = "0"'), realms.sellerOf('')], ['1234', '0', undefined]);
 });
+
+// e2e bench 24/11: a reset of the world makes the realm again (create). Without the migrations already done, the forced
+// one (Auto-gear at level 60 off) ran again over the player's Self-gear 1-59; the start with the server is kept too.
+test('a realm made again by a reset keeps its start with the server and its migrations: the choices of the player stay', async () => {
+  for (const keep of [null, { autostart: false, moved: ['launch-premium-0', 'bgsim-3.2', 'at60-off-3.2.2', 'serverfirst-off-3.2.2', 'classic-pack-3.1', 'classic-pack-3.1.6'] }]) {
+    const root = repack();
+    fs.writeFileSync(path.join(root, 'CoA-Bots', 'coa_common.py'), 'MYSQL_DATA_KNOWN = {"acore_characters_living", "acore_playerbots_living"}\n');
+    const dir = path.join(root, 'Royaumes', 'living');
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(path.join(dir, 'settings.json'), JSON.stringify({ 'playerbots.conf': { 'AiPlayerbot.CoaSelfFound': '1', 'AiPlayerbot.CoaSelfFoundMaxLevel': '59', 'AiPlayerbot.MinRandomBots': '200', 'AiPlayerbot.MaxRandomBots': '200' } }));
+    await realms.create(root, 'living', { name: 'Malfurion', db: fakeMysql().db, keep });
+    await realms.status(root, { live: false }).catch(() => null);
+    const own = JSON.parse(fs.readFileSync(path.join(dir, 'settings.json'), 'utf8'))['playerbots.conf'];
+    const saved = JSON.parse(fs.readFileSync(path.join(dir, 'realm.json'), 'utf8'));
+    if (keep) {
+      assert.equal(own['AiPlayerbot.CoaSelfFoundMaxLevel'], '59', 'Self-gear 1-59 stays');
+      assert.equal(saved.autostart, false);
+      assert.ok(saved.moved.includes('at60-off-3.2.2'));
+    } else assert.equal(own['AiPlayerbot.CoaSelfFoundMaxLevel'], '80', 'a realm made new gets the migration');
+    assert.equal(own['AiPlayerbot.MaxRandomBots'], '200', 'the population stays');
+  }
+});

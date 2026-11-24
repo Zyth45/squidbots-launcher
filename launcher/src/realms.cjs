@@ -548,7 +548,9 @@ async function skipCoaAtStart(root) {
 // MySQL must run. Never touches a database that already exists (a realm removed by hand and created again keeps
 // its characters).
 // db: the MySQL calls (tests give their own, to check what is written where).
-async function create(root, key, { bots = key === 'living' ? LIVING_BOTS : DEFAULT_BOTS, notify = () => {}, name, db = { sql, copyDump } } = {}) {
+// keep: what a reset of the world carries from the old realm.json (the start with the server, switched off, and the
+// migrations already done, so a forced one is never applied again over the player's choice: e2e bench 24/11).
+async function create(root, key, { bots = key === 'living' ? LIVING_BOTS : DEFAULT_BOTS, notify = () => {}, name, db = { sql, copyDump }, keep = null } = {}) {
   const m = mode(key);
   const run = { sql: (_root, query) => db.sql(root, query), copyDump: (_root, args, target) => db.copyDump(root, args, target) };
   const exists = async database => (await run.sql(root, `SHOW DATABASES LIKE '${database}'`)) === database;
@@ -621,6 +623,11 @@ async function create(root, key, { bots = key === 'living' ? LIVING_BOTS : DEFAU
   await listRealm(root, { id, name: realmName, worldPort: p.worldPort }, run.sql);
 
   const saved = { key, id, name: realmName, worldPort: p.worldPort, raPort: p.raPort, autostart: true, created: new Date().toISOString() };
+  if (keep) {
+    saved.autostart = keep.autostart !== false;
+    if (keep.disabled) saved.disabled = keep.disabled;
+    if (Array.isArray(keep.moved)) saved.moved = [...keep.moved];
+  }
   await fsp.writeFile(path.join(dir, 'realm.json'), JSON.stringify(saved, null, 2));
   // A new realm starts with fewer bots than most CoA realms: one more world costs memory.
   const own = await ownSettings(root, key);
@@ -1173,7 +1180,7 @@ async function resetWorld(root, key, { confirmName, io = realIo(), now = new Dat
   await io.sql(root, `DELETE FROM acore_auth.realmcharacters WHERE realmid = ${Number(saved.id)}`);
   for (const rel of RESET_STATE) await fsp.rm(path.join(dirOf(root, key), rel), { recursive: true, force: true });
   // Made again as a new realm, with its name, ports and settings (create keeps the values the player set).
-  await io.create(root, key, { name: saved.name });
+  await io.create(root, key, { name: saved.name, keep: { autostart: saved.autostart, disabled: saved.disabled, moved: saved.moved } });
   // The auction house seller is made again by the module at the next start (AutoCharacter); a fixed guid of the old
   // world in AuctionHouseBot.GUIDs would point at nobody: it goes back to 0 (Pilote, 24/11).
   const sellerReset = await freeSellerGuid(root, key).catch(() => false);
