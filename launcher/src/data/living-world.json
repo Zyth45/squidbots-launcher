@@ -1260,8 +1260,8 @@
    "group": "lw-population",
    "key": "AiPlayerbot.CoaWorld.DungeonSim.GroupsPerFaction",
    "type": "int",
-   "default": 2,
-   "min": 1,
+   "default": 0,
+   "min": 0,
    "max": 10,
    "onlyWhen": {
     "key": "AiPlayerbot.CoaWorld.DungeonSim.Enable",
@@ -1274,6 +1274,12 @@
     "fr": "Groupes de bots en donjon en même temps, par camp",
     "ru": "Групп ботов в подземельях одновременно, на сторону",
     "zh": "每个阵营同时进行副本的机器人队伍数"
+   },
+   "help": {
+    "en": "0 (the default since 3.3): one group per side for every 250 bots online (500 bots = 2, 1,000 = 4, 2,000 = 8). A number: that many groups per side, whatever the bots online. 2 before 3.3.",
+    "fr": "0 (le défaut depuis la 3.3) : un groupe par camp pour 250 bots en ligne (500 bots = 2, 1 000 = 4, 2 000 = 8). Un nombre : autant de groupes par camp, quel que soit le nombre de bots en ligne. 2 avant la 3.3.",
+    "ru": "0 (по умолчанию с 3.3): одна группа на сторону на каждые 250 ботов онлайн (500 ботов = 2, 1000 = 4, 2000 = 8). Число: столько групп на сторону, сколько бы ботов ни было онлайн. До 3.3 — 2.",
+    "zh": "0（3.3 起的默认值）：每 250 个在线机器人每个阵营一队（500 个 = 2 队，1000 个 = 4 队，2000 个 = 8 队）。填数字：每个阵营固定这么多队，与在线机器人数无关。3.3 之前为 2。"
    }
   },
   {

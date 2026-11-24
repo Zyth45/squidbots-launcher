@@ -3080,6 +3080,82 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaWorld.ItemOrigin.Enable",
+   "file": "playerbots.conf",
+   "group": "dashboard",
+   "kind": "bool",
+   "when": "restart",
+   "default": "1",
+   "label": {
+    "en": "Record where each worn piece came from",
+    "fr": "Noter d'où vient chaque pièce portée",
+    "ru": "Записывать происхождение каждой надетой вещи",
+    "zh": "记录每件穿戴装备的来源"
+   },
+   "help": {
+    "en": "New in 3.3. For the armory of the dashboard: loot, quest, vendor, auction, auto-gear or simulated dungeon, for each piece a bot wears. On by default.",
+    "fr": "Nouveau en 3.3. Pour l'armurerie du dashboard : butin, quête, marchand, hôtel des ventes, équipement automatique ou donjon simulé, pour chaque pièce portée par un bot. Activé par défaut.",
+    "ru": "Новое в 3.3. Для оружейной панели: добыча, задание, торговец, аукцион, автоэкипировка или симулированное подземелье — для каждой вещи, которую носит бот. По умолчанию включено.",
+    "zh": "3.3 新增。用于面板的军械库：记录机器人每件装备来自掉落、任务、商人、拍卖行、自动配装还是模拟副本。默认开启。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.ItemOrigin.MinQuality",
+   "file": "playerbots.conf",
+   "group": "dashboard",
+   "kind": "int",
+   "when": "restart",
+   "min": 0,
+   "max": 5,
+   "default": "2",
+   "offWhen": {
+    "key": "AiPlayerbot.CoaWorld.ItemOrigin.Enable",
+    "values": [
+     "0"
+    ]
+   },
+   "label": {
+    "en": "Lowest quality recorded",
+    "fr": "Qualité minimale notée",
+    "ru": "Минимальное записываемое качество",
+    "zh": "记录的最低品质"
+   },
+   "help": {
+    "en": "New in 3.3. 2 = green and better (the default); 3 = blue and better.",
+    "fr": "Nouveau en 3.3. 2 = vert et mieux (le défaut) ; 3 = bleu et mieux.",
+    "ru": "Новое в 3.3. 2 = зелёные и лучше (по умолчанию); 3 = синие и лучше.",
+    "zh": "3.3 新增。2 = 绿色及以上（默认）；3 = 蓝色及以上。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.ItemOrigin.PurgeDays",
+   "file": "playerbots.conf",
+   "group": "dashboard",
+   "kind": "int",
+   "when": "restart",
+   "min": 0,
+   "max": 3650,
+   "default": "90",
+   "offWhen": {
+    "key": "AiPlayerbot.CoaWorld.ItemOrigin.Enable",
+    "values": [
+     "0"
+    ]
+   },
+   "label": {
+    "en": "Days an item origin is kept",
+    "fr": "Jours de conservation de l'origine des objets",
+    "ru": "Сколько дней хранить происхождение вещей",
+    "zh": "物品来源保留天数"
+   },
+   "help": {
+    "en": "New in 3.3. 90 by default; 0 = kept for ever.",
+    "fr": "Nouveau en 3.3. 90 par défaut ; 0 = gardé pour toujours.",
+    "ru": "Новое в 3.3. По умолчанию 90; 0 = хранить всегда.",
+    "zh": "3.3 新增。默认 90；0 = 永久保留。"
+   }
+  },
+  {
    "key": "Ascension.CallboardCache.ReleaseStage",
    "file": "coa.conf",
    "group": "progression",

@@ -1,7 +1,7 @@
 {
  "from": "0.3.59",
  "next": "0.5.0",
- "catalog": "bfc547bb11964be6",
+ "catalog": "3ea09a57db48c764",
  "keys": {
   "worldserver.conf|CharactersPerRealm": {
    "added": "0.4.0"
@@ -226,7 +226,14 @@
    "added": "0.4.0"
   },
   "playerbots.conf|AiPlayerbot.CoaWorld.DungeonSim.GroupsPerFaction": {
-   "added": "0.4.0"
+   "added": "0.4.0",
+   "defaults": [
+    [
+     "0.5.0",
+     "2",
+     "0"
+    ]
+   ]
   },
   "playerbots.conf|AiPlayerbot.CoaWorld.Recovery.Enable": {
    "added": "0.4.0"
@@ -910,6 +917,15 @@
    "added": "0.5.0"
   },
   "playerbots.conf|AiPlayerbot.MinEnchantingBotLevel": {
+   "added": "0.5.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.ItemOrigin.Enable": {
+   "added": "0.5.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.ItemOrigin.MinQuality": {
+   "added": "0.5.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.ItemOrigin.PurgeDays": {
    "added": "0.5.0"
   },
   "playerbots.conf|AiPlayerbot.CoaLive.PvpStatsKeepDays": {
