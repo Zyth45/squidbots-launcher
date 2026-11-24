@@ -87,10 +87,31 @@ function toast(message, kind = 'info') {
   const host = dialogElement?.open ? dialogElement : document.body;
   if (element.parentElement !== host) host.appendChild(element);
   element.className = `toast ${kind}`;
-  element.innerHTML = `${icon(kind === 'error' ? 'warning' : kind === 'success' ? 'check' : 'info')}<span>${esc(message)}</span>`;
-  element.hidden = false;
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { element.hidden = true; }, 6000);
+  if (kind !== 'error') {
+    element.innerHTML = `${icon(kind === 'success' ? 'check' : 'info')}<span>${esc(message)}</span>`;
+    element.hidden = false;
+    toastTimer = setTimeout(() => { element.hidden = true; }, 6000);
+    return;
+  }
+  // An error stays until it is closed, and can be copied (user, 24/11: « pas eu le temps de copier coller le msg »). A
+  // world that stopped gets the log and, when a crash report was just written, the line where it stopped.
+  const world = /world|startup|log|crash/i.test(message);
+  const render = crash => {
+    const text = crash?.line ? `${message}
+${crash.line}` : message;
+    element.innerHTML = `${icon('warning')}<div class="toast-body"><span>${esc(message)}</span>${crash?.line ? `<code class="toast-crash">${esc(crash.line)}</code>` : ''}<div class="toast-actions">${world ? `<button class="button ghost small" data-toast="logs">${esc(t('conf.openLogs', 'Open the logs'))}</button>` : ''}${crash ? `<button class="button ghost small" data-toast="crash">${esc(t('toast.openCrash', 'Open the crash report'))}</button>` : ''}<button class="button ghost small" data-toast="copy">${esc(t('common.copy', 'Copy'))}</button></div></div><button class="icon-button toast-close" data-toast="close" title="${esc(t('common.close', 'Close'))}" aria-label="${esc(t('common.close', 'Close'))}">${icon('close')}</button>`;
+    element.onclick = event => {
+      const what = event.target.closest('[data-toast]')?.dataset.toast;
+      if (what === 'close') element.hidden = true;
+      else if (what === 'copy') App.api.copyText(text).then(() => { const b = element.querySelector('[data-toast="copy"]'); if (b) b.textContent = t('net.copiedShort', 'Copied'); }).catch(() => {});
+      else if (what === 'logs') App.api.openLogs().catch(() => {});
+      else if (what === 'crash') App.api.openCrash().catch(() => {});
+    };
+  };
+  render(null);
+  element.hidden = false;
+  if (world && App.api.lastCrash) App.api.lastCrash().then(crash => { if (crash && !element.hidden) render(crash); }).catch(() => {});
 }
 
 async function guard(action, button) {

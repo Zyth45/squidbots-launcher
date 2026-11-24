@@ -163,6 +163,8 @@ contextBridge.exposeInMainWorld('launcher', Object.freeze({
   coaResetPreview: () => call('repack:resetPreview'),
   coaReset: confirmName => call('repack:resetWorld', confirmName),
   openLogs: () => call('repack:openLogs'),
+  lastCrash: () => call('repack:lastCrash'),
+  openCrash: () => call('repack:openCrash'),
   checkBots: force => call('bots:check', force === true),
   installBots: () => call('bots:install'),
   serverSettings: realm => call('srvconf:overview', realm || ''),

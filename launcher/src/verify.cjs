@@ -194,4 +194,24 @@ const summary = checks => ({
   total: checks.length,
 });
 
-module.exports = { runChecks, summary, databaseUpdates, crashes, archiveCrashes };
+// The newest crash report of the last minutes, with the line that says where it stopped (the assertion's Location and
+// Message, else the exception): shown with a world that stopped at start (user, 24/11: the message gave no clue).
+async function lastCrash(root, minutes = 15) {
+  let newest = null;
+  for (const folder of CRASH_FOLDERS) {
+    const entries = await fsp.readdir(path.join(root, folder), { withFileTypes: true }).catch(() => []);
+    for (const entry of entries) {
+      if (!entry.isFile() || !/\.txt$/i.test(entry.name)) continue;
+      const file = path.join(root, folder, entry.name);
+      const stat = await fsp.stat(file).catch(() => null);
+      if (stat && Date.now() - stat.mtimeMs < minutes * 60 * 1000 && (!newest || stat.mtimeMs > newest.at)) newest = { file, at: stat.mtimeMs };
+    }
+  }
+  if (!newest) return null;
+  const lines = String(await fsp.readFile(newest.file, 'utf8').catch(() => '')).split(/\r?\n/).map(line => line.trim());
+  const pick = lines.find(line => /^# Location:/i.test(line)) || lines.find(line => /ASSERTION|Exception code/i.test(line) && !/^[#>-]+$/.test(line)) || '';
+  const message = lines.find(line => /^# Message:/i.test(line)) || '';
+  return { file: newest.file, at: new Date(newest.at).toISOString(), line: [pick, message].map(part => part.replace(/^#\s*/, '')).filter(Boolean).join(' ').slice(0, 400) };
+}
+
+module.exports = { runChecks, summary, databaseUpdates, crashes, archiveCrashes, lastCrash };

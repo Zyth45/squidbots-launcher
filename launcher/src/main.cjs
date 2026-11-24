@@ -1746,6 +1746,14 @@ function registerIpc() {
     const error = await shell.openPath(path.join(serverPath(), 'Core', 'Logs'));
     if (error) throw new Error(error);
   });
+  handle('repack:lastCrash', () => (serverPath() ? require('./verify.cjs').lastCrash(serverPath()) : null));
+  // Opens the newest crash report found by the launcher itself (no path comes from the page).
+  handle('repack:openCrash', async () => {
+    const crash = serverPath() ? await require('./verify.cjs').lastCrash(serverPath(), 24 * 60) : null;
+    if (!crash) throw new Error('No crash report.');
+    const error = await shell.openPath(crash.file);
+    if (error) throw new Error(error);
+  });
   handle('repack:openFolder', async () => {
     if (!serverPath()) throw new Error('Choose the server folder first.');
     const error = await shell.openPath(serverPath());
@@ -1839,7 +1847,9 @@ function registerIpc() {
     return { ...(await sqlConsole.run(serverPath(), String(query).slice(0, 20000), { allowChanges: allowChanges === true })), backup };
   });
   const verify = require('./verify.cjs');
-  const watch = { world: null, crashes: null, restarts: [], backupDay: '', ecoAt: 0, realms: {}, realmRestarts: {} };
+  const watch = { world: null, crashes: null, restarts: [], backupDay: '', ecoAt: 0, realms: {}, realmRestarts: {}, runningSince: 0, realmSince: {} };
+  // A world that stops within this time of reaching « running » failed at start: it is not started again by itself.
+  const EARLY_STOP_MS = 3 * 60 * 1000;
   // A realm started again after a crash: its world alone (MySQL and the authserver if they are not up), never CoA.
   const restartRealm = async key => { await realmBase(false); await realms.start(serverPath(), key); await requireControl().start('auth'); await realmsOnline(); };
   serverStartOnOpen = async () => {
@@ -1863,6 +1873,10 @@ function registerIpc() {
     const count = (await verify.crashes(root, 2).catch(() => [])).length;
     const crashed = watch.crashes !== null && count > watch.crashes;
     const before = watch.world;
+    // How long the world ran: one that stops in its first minutes failed at start, and starting it again would fail the
+    // same way (user's bench 24/11: a reset left a table empty, the world was started again and again).
+    if (world === 'running' && before !== 'running') watch.runningSince = Date.now();
+    const ranLong = Date.now() - (watch.runningSince || 0) >= EARLY_STOP_MS;
     Object.assign(watch, { world, crashes: count });
     if (before === 'starting' && world === 'running' && !window?.isFocused()) notifyUser('ready');
     // The CoA world ended without the launcher (it was running, no task of the launcher): a crash file, or no clean
@@ -1875,7 +1889,7 @@ function registerIpc() {
     if (coaEnd === 'crash') {
       // At most 3 restarts an hour: a world that crashes at every start is left stopped.
       watch.restarts = watch.restarts.filter(at => Date.now() - at < 3600000);
-      if (quiet && settings.restartWorldOnCrash && world === 'stopped' && watch.restarts.length < 3) { watch.restarts.push(Date.now()); notifyUser('restarted'); startEverything().catch(() => {}); }
+      if (quiet && settings.restartWorldOnCrash && world === 'stopped' && ranLong && watch.restarts.length < 3) { watch.restarts.push(Date.now()); notifyUser('restarted'); startEverything().catch(() => {}); }
       else notifyUser('crash');
     }
     // The realm worlds: one that was running and ended without the launcher stopping it is a crash, handled like the
@@ -1884,13 +1898,14 @@ function registerIpc() {
     for (const realm of realmList || []) {
       const was = watch.realms[realm.key];
       watch.realms[realm.key] = realm.state;
+      if (realm.state === 'running' && was !== 'running') watch.realmSince[realm.key] = Date.now();
       if (was !== 'running' || realm.state !== 'stopped' || realms.stoppedOnPurpose(realm.key)) continue;
       // A GM's .server shutdown stays stopped; a .server restart is started again once, not counted.
       const end = await realms.realmEnd(root, realm.key).catch(() => 'crash');
       if (end === 'shutdown') continue;
       if (end === 'restart') { if (quiet) restartRealm(realm.key).catch(() => {}); continue; }
       const restarts = watch.realmRestarts[realm.key] = (watch.realmRestarts[realm.key] || []).filter(at => Date.now() - at < 3600000);
-      if (quiet && settings.restartWorldOnCrash && restarts.length < 3) { restarts.push(Date.now()); notifyUser('restarted'); restartRealm(realm.key).catch(() => {}); }
+      if (quiet && settings.restartWorldOnCrash && Date.now() - (watch.realmSince[realm.key] || 0) >= EARLY_STOP_MS && restarts.length < 3) { restarts.push(Date.now()); notifyUser('restarted'); restartRealm(realm.key).catch(() => {}); }
       else notifyUser('crash');
     }
     // One automatic backup a day while MySQL runs (characters, accounts, bots), the last 7 kept.

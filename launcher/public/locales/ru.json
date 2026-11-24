@@ -252,6 +252,8 @@
   "common.change": "Изменить",
   "common.close": "Закрыть",
   "common.copy": "Копировать",
+  "toast.openCrash": "Открыть отчёт о сбое",
+  "net.copiedShort": "Скопировано",
   "common.later": "Позже",
   "common.refresh": "Обновить",
   "common.remove": "Удалить",

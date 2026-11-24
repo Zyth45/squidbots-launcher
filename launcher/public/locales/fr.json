@@ -252,6 +252,8 @@
   "common.change": "Changer",
   "common.close": "Fermer",
   "common.copy": "Copier",
+  "toast.openCrash": "Ouvrir le rapport de plantage",
+  "net.copiedShort": "Copié",
   "common.later": "Plus tard",
   "common.refresh": "Actualiser",
   "common.remove": "Supprimer",

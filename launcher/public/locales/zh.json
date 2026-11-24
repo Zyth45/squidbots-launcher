@@ -382,6 +382,8 @@
   "common.change": "更改",
   "common.close": "关闭",
   "common.copy": "复制",
+  "toast.openCrash": "打开崩溃报告",
+  "net.copiedShort": "已复制",
   "common.later": "稍后",
   "common.new": "新建",
   "common.refresh": "刷新",

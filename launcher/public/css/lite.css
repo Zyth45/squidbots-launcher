@@ -645,3 +645,9 @@ summary.damage-row::-webkit-details-marker { display: none; }
 .realm-panel.compact .rc-tools .button { min-height: 26px; height: 26px; padding: 0 8px; font-size: 12.5px; }
 .rc-tools .button .icon { display: none; }
 .rc-tools .rc-help { margin-left: auto; }
+/* 0.5.0 d : an error stays until closed, copyable, with the log and the crash line (user, 24/11). */
+.toast.error { align-items: flex-start; max-width: 520px; }
+.toast-body { display: grid; gap: 8px; min-width: 0; user-select: text; }
+.toast-crash { display: block; font-size: 12px; white-space: pre-wrap; word-break: break-word; color: var(--muted); }
+.toast-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.toast-close { flex: none; margin: -4px -6px 0 0; }
