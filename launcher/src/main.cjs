@@ -1945,7 +1945,9 @@ function registerIpc() {
   handle('backup:create', async options => { await ensureMysql(); return serverTools().backup.create({ label: text(options?.label, 40), includeWorld: options?.includeWorld === true }); });
   handle('backup:restore', name => oneServerJob('the restore of a backup', async () => {
     await ensureMysql();
-    const world = config.server.services.find(service => service.id === 'world');
+    // The port of this repack's world (its Settings\repack.json, read by the control), not the default of the launcher's
+    // config: another server on 8085 made the restore refuse (e2e bench 24/11, world on 8095).
+    const world = serverControl()?.services.find(service => /world/i.test(service.id)) || config.server.services.find(service => service.id === 'world');
     await realms.stopAll(serverPath());
     return serverTools().backup.restore(text(name, 80), { worldPort: world?.port });
   }));
