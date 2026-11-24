@@ -84,6 +84,13 @@ const APP_URL = `${SCHEME}://launcher/index.html`;
 const publicRoot = path.resolve(__dirname, '../public');
 const smokeArg = process.argv.find(arg => arg.startsWith('--smoke='));
 const smokeDir = smokeArg ? path.resolve(smokeArg.slice('--smoke='.length)) : '';
+// A preview shown to a player (COA_PREVIEW=1, 0.5.0): every window and confirmation opens, but the tasks that erase or
+// rebuild answer « demo » and touch nothing; their previews show made-up counts.
+const previewMode = process.env.COA_PREVIEW === '1';
+const DEMO_INERT = new Set(['realms:purge', 'repack:purgeBots', 'realms:reset', 'realms:restore', 'repack:resetWorld']);
+const DEMO_PREVIEW = new Set(['realms:resetPreview', 'repack:resetPreview']);
+// Reset the world of the CoA realm: written, not proven by a bench yet (24/11). Runs only with COA_RESET_COA=1.
+const coaResetReady = process.env.COA_RESET_COA === '1';
 
 if (process.env.COA_LAUNCHER_PROFILE) app.setPath('userData', path.resolve(process.env.COA_LAUNCHER_PROFILE));
 app.setName('CoA Launcher Lite');
@@ -405,6 +412,8 @@ function publicConfig() {
   return {
     appName: config.appName,
     edition: config.edition,
+    preview: previewMode,
+    coaResetReady,
     hasFeed: !!config.feedUrl,
     hasMmaps: !!config.server?.mmapsUrl,
     // The repack updater: core, bots and addon come from one signed update; the old bots channel is not offered.
@@ -435,6 +444,8 @@ function handle(channel, action) {
     // Only the launcher page itself may call in.
     if (!window || event.sender !== window.webContents || event.senderFrame !== window.webContents.mainFrame || event.senderFrame.url !== APP_URL) return { ok: false, error: 'Request refused.' };
     const run = LENDS_MYSQL.has(channel) && serverControl() ? () => lendMysql(() => action(...args)) : LEAVES_MYSQL.has(channel) && serverControl() ? () => afterMysql(() => action(...args)) : () => action(...args);
+    if (previewMode && DEMO_INERT.has(channel)) return { ok: true, value: { demo: true } };
+    if (previewMode && DEMO_PREVIEW.has(channel)) return { ok: true, value: { demo: true, players: [{ name: 'Example', level: 60 }, { name: 'Sample', level: 23 }], bots: 1000, guilds: 42, auctions: 1250, mails: 380, achievements: 9600 } };
     try { return { ok: true, value: await run() }; }
     catch (error) { return { ok: false, error: error.message || 'Something went wrong.', code: error.code, folders: error.folders }; }
   });
@@ -1512,7 +1523,7 @@ function registerIpc() {
     const conf = await fs.readFile(path.join(serverPath(), 'CoA-Bots', 'Core', 'configs', 'modules', 'playerbots.conf'), 'utf8').catch(() => '');
     const bots = Number(/^[ \t]*AiPlayerbot\.MaxRandomBots[ \t]*=[ \t]*(\d+)/m.exec(conf)?.[1]);
     const info = world?.state === 'running' ? await live.raCommand(serverPath(), 'server info', 6000).then(live.parseInfo).catch(() => null) : null;
-    return { id: 1, state: world?.state || 'stopped', worldPort: world?.port, bots: Number.isFinite(bots) ? bots : null, players: info?.players ?? null, autostart: await realms.coaAutostart(serverPath()) };
+    return { id: 1, name: (await network.readNetwork(serverPath()).catch(() => null))?.name || '', state: world?.state || 'stopped', worldPort: world?.port, bots: Number.isFinite(bots) ? bots : null, players: info?.players ?? null, autostart: await realms.coaAutostart(serverPath()) };
   };
   const realmsStatus = async () => {
     // Screenshot tours only (--smoke): made-up realms, like COA_SMOKE_LIVE for the home page.
@@ -1658,6 +1669,23 @@ function registerIpc() {
   handle('realms:resetPreview', key => withMysql(() => realms.worldPreview(serverPath(), text(key, 12))));
   handle('realms:reset', async (key, confirmName) => { let done = null; await loggedTask(`reset ${text(key, 12)} (typed « ${text(confirmName, 64)} »)`, () => oneServerJob(`resetting ${realms.MODES[text(key, 12)]?.title || key}`, () => withMysql(async () => { done = await realms.resetWorld(serverPath(), text(key, 12), { confirmName: text(confirmName, 64) }); return done; }))); return { ...(await realmsStatus()), reset: done }; });
   handle('realms:backups', key => realms.realmBackups(serverPath(), text(key, 12)));
+  // Reset the world of the CoA realm (0.5.0): what it erases, then the reset itself (saved first, name typed again).
+  handle('repack:resetPreview', () => withMysql(() => realms.coaPreview(serverPath())));
+  handle('repack:resetWorld', async confirmName => {
+    if (!coaResetReady) throw new Error('Reset the world of Conquest of Azeroth is not available yet: it waits for its test bench. Nothing was erased.');
+    const found = requireControl();
+    if ((await found.status()).some(service => service.id === 'world' && service.state !== 'stopped')) throw new Error('Stop the worldserver first.');
+    const realmName = (await network.readNetwork(serverPath())).name;
+    let done = null;
+    await loggedTask(`reset coa (typed « ${text(confirmName, 64)} »)`, () => oneServerJob('resetting Conquest of Azeroth', () => withMysql(async () => {
+      done = await realms.resetCoa(serverPath(), { confirmName: text(confirmName, 64), realmName, backup: async () => (await serverTools().backup.create({ label: 'coa-reset', reason: 'automatic' })).name });
+      // The auction house seller is made again by the module (AutoCharacter): a fixed guid of the old world goes back to 0.
+      const seller = realms.sellerOf(await modules.moduleConf(serverPath(), 'mod_ahbot.conf'));
+      if (seller && seller !== '0') { await modules.setModuleKeys(serverPath(), 'mod_ahbot.conf', { 'AuctionHouseBot.GUIDs': '0' }, ''); done.sellerReset = true; }
+      return done;
+    })));
+    return { ...(await realmsStatus()), reset: done };
+  });
   handle('realms:restore', async (key, id) => { let done = null; await loggedTask(`restore ${text(key, 12)} from ${text(id, 120)}`, () => oneServerJob(`restoring ${realms.MODES[text(key, 12)]?.title || key}`, () => withMysql(async () => { done = await realms.restoreRealm(serverPath(), text(key, 12), text(id, 120)); return done; }))); return { ...(await realmsStatus()), restored: done }; });
   handle('realms:disable', async (key, off) => { await withMysql(() => realms.setDisabled(serverPath(), text(key, 12), off === true)); return realmsStatus(); });
   handle('realms:openLogs', async key => { const error = await shell.openPath(path.join(serverPath(), 'Royaumes', text(key, 12).replace(/[^a-z]/g, ''), 'Logs')); if (error) throw new Error(error); });

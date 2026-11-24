@@ -586,3 +586,33 @@ test('a realm creation that fails half-way drops the databases it made, never on
   await assert.rejects(realms.create(root, 'living', { db: again.db }), /Unknown database/);
   assert.deepEqual(again.statements.filter(query => /^DROP DATABASE/.test(query)), ['DROP DATABASE IF EXISTS acore_playerbots_living']);
 });
+
+test('reset the world of CoA: name typed again, saved, structure kept, database made again, bot state emptied (to be benched)', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'coa-reset-'));
+  const fsp = fs.promises;
+  const calls = [];
+  const io = (structure = 'CREATE TABLE `characters` (guid int);') => ({
+    sql: async (_root, query) => { calls.push(`sql ${query}`); if (/information_schema/.test(query)) return 'playerbots_random_bots\nplayerbots_coa_trust\nai_playerbot_texts'; if (/SELECT c\.name/.test(query)) return 'Thrall\t60'; if (/SELECT \(SELECT/.test(query)) return '1000\t3\t40\t12\t900'; return ''; },
+    dumpArgs: async (_root, args, file) => { calls.push(`dump ${args.join(' ')}`); await fsp.writeFile(file, args.includes('--no-data') ? structure : 'INSERT INTO updates VALUES (1);'); },
+    loadFrom: async (_root, file) => { calls.push(`load ${path.basename(file)}`); },
+  });
+  const backup = async () => { calls.push('backup'); return 'saved.sql.gz'; };
+  await assert.rejects(realms.resetCoa(root, { confirmName: 'Other', realmName: 'My Realm - CoA', backup, io: io() }), /name typed is not My Realm/);
+  assert.equal(calls.length, 0);
+  // No structure saved: nothing is dropped.
+  await assert.rejects(realms.resetCoa(root, { confirmName: 'my realm', realmName: 'My Realm - CoA', backup, io: io('') }), /could not be saved/);
+  assert.ok(!calls.some(call => /DROP/.test(call)));
+  calls.length = 0;
+  const done = await realms.resetCoa(root, { confirmName: ' my realm ', realmName: 'My Realm - CoA', backup, io: io() });
+  const order = calls.map(call => call.split(' ').slice(0, 2).join(' '));
+  assert.ok(order.indexOf('backup') < order.findIndex(call => call === 'sql DROP'));
+  assert.ok(order.findIndex(call => call === 'sql DROP') < order.indexOf('load acore_characters-structure.sql'));
+  assert.ok(order.indexOf('load acore_characters-structure.sql') < order.indexOf('load acore_characters-updates.sql'));
+  assert.deepEqual(done.emptied, ['playerbots_random_bots', 'playerbots_coa_trust']);
+  assert.ok(calls.includes('sql TRUNCATE TABLE acore_playerbots.playerbots_random_bots'));
+  assert.ok(!calls.some(call => /ai_playerbot_texts/.test(call) && /TRUNCATE/.test(call)));
+  assert.ok(calls.some(call => /realmcharacters SET numchars = 0 WHERE realmid = 1/.test(call)));
+  assert.match(await fsp.readFile(path.join(done.structure, 'acore_characters-updates.sql'), 'utf8'), /^USE `acore_characters`;/);
+  assert.deepEqual(done.preview.players, [{ name: 'Thrall', level: 60 }]);
+  assert.deepEqual([realms.sellerOf('AuctionHouseBot.GUIDs = 1234'), realms.sellerOf('AuctionHouseBot.GUIDs = "0"'), realms.sellerOf('')], ['1234', '0', undefined]);
+});

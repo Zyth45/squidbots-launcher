@@ -160,6 +160,8 @@ contextBridge.exposeInMainWorld('launcher', Object.freeze({
   openServerFolder: () => call('repack:openFolder'),
   purgeBots: options => call('repack:purgeBots', options),
   copyText: value => call('clipboard:write', value),
+  coaResetPreview: () => call('repack:resetPreview'),
+  coaReset: confirmName => call('repack:resetWorld', confirmName),
   openLogs: () => call('repack:openLogs'),
   checkBots: force => call('bots:check', force === true),
   installBots: () => call('bots:install'),

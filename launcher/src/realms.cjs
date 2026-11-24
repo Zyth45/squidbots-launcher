@@ -1104,8 +1104,9 @@ const realIo = () => ({ sql, dumpTo, loadFrom, create });
 // how many bots, guilds, auctions, mails and achievements.
 async function worldPreview(root, key, { io = realIo() } = {}) {
   if (!RESETTABLE.has(key)) throw new Error('Only an extra realm can be reset, not Conquest of Azeroth.');
-  const prefix = mode(key).prefix.toUpperCase();
-  const c = `acore_characters_${key}`;
+  return previewOf(root, `acore_characters_${key}`, mode(key).prefix.toUpperCase(), io);
+}
+async function previewOf(root, c, prefix, io) {
   const rows = (await io.sql(root, `SELECT c.name, c.level FROM ${c}.characters c JOIN acore_auth.account a ON a.id = c.account WHERE a.username NOT LIKE '${prefix}%' AND a.username NOT IN ('AHBOT', 'DCDRIVER') ORDER BY c.level DESC, c.name`))
     .split(/\r?\n/).filter(Boolean).map(line => { const [name, level] = line.split('\t'); return { name, level: Number(level) }; });
   const counts = (await io.sql(root, `SELECT (SELECT COUNT(*) FROM ${c}.characters c JOIN acore_auth.account a ON a.id = c.account WHERE a.username LIKE '${prefix}%'), (SELECT COUNT(*) FROM ${c}.guild), (SELECT COUNT(*) FROM ${c}.auctionhouse), (SELECT COUNT(*) FROM ${c}.mail), (SELECT COUNT(*) FROM ${c}.character_achievement)`))
@@ -1155,13 +1156,28 @@ async function resetWorld(root, key, { confirmName, io = realIo(), now = new Dat
   for (const rel of RESET_STATE) await fsp.rm(path.join(dirOf(root, key), rel), { recursive: true, force: true });
   // Made again as a new realm, with its name, ports and settings (create keeps the values the player set).
   await io.create(root, key, { name: saved.name });
+  // The auction house seller is made again by the module at the next start (AutoCharacter); a fixed guid of the old
+  // world in AuctionHouseBot.GUIDs would point at nobody: it goes back to 0 (Pilote, 24/11).
+  const sellerReset = await freeSellerGuid(root, key).catch(() => false);
   const fresh = await realmFile(root, key);
   if (fresh) {
     fresh.autostart = saved.autostart !== false;
     if (saved.disabled) fresh.disabled = saved.disabled;
     await fsp.writeFile(path.join(dirOf(root, key), 'realm.json'), JSON.stringify(fresh, null, 2));
   }
-  return { backup: backup.dir, preview };
+  return { backup: backup.dir, preview, sellerReset };
+}
+
+// AuctionHouseBot.GUIDs of a realm (its own value, else the CoA bot server's) set back to 0 in the realm's own values.
+const SELLER_KEY = 'AuctionHouseBot.GUIDs';
+const sellerOf = text => (new RegExp(`^[ \t]*${SELLER_KEY.replace(/./g, '\.')}[ \t]*=[ \t]*(.*)$`, 'm').exec(text || '') || [])[1]?.trim().replace(/^"|"$/g, '');
+async function freeSellerGuid(root, key) {
+  const own = await ownSettings(root, key);
+  const base = await fsp.readFile(path.join(BOTS_CONFIGS(root), 'modules', 'mod_ahbot.conf'), 'utf8').catch(() => '');
+  const value = String(own['mod_ahbot.conf']?.[SELLER_KEY] ?? sellerOf(base) ?? '0').trim();
+  if (value === '' || value === '0') return false;
+  await saveSettings(root, key, [{ file: 'mod_ahbot.conf', key: SELLER_KEY, value: '0' }]);
+  return true;
 }
 
 // The saved copies of a realm (newest first), for the Restore button.
@@ -1196,4 +1212,45 @@ async function restoreRealm(root, key, id, { io = realIo(), now = new Date() } =
   return { restored: id, before: before.dir };
 }
 
-module.exports = { RESETTABLE, sameRealmName, worldPreview, backupRealm, resetWorld, realmBackups, restoreRealm, auctionPurgeSql, changedCount, imposedNow, lastWorldExit, endKind, logTail, realmEnd, stoppedOnPurpose, setPinner, livingOwn, clearOffline, setRealmName, ahbotSettingsOf, setAhbotSettingsOf, onlineRunning, shippedTables, syncShippedTables, MODES, queueMarked, memoryFor, neededMb, botsOnline, setDisabled, versionReady, modulesOf, setModule, coaAutostart, setCoaAutostart, skipCoaAtStart, anotherStarting, refreshBotConfigs, status, create, start, stop, stopAll, startMarked, setOptions, settingsOf, saveSettings, purgeBots, writeConfigs, setKey };
+// ---- Reset the world of the CoA realm (0.5.0, user 24/11). Its characters database is the repack's own: no realm folder
+// to make again. The way SquidBot gave (24/11, to be proven by the Builder's bench before the flag is lifted):
+// the whole server saved first; the structure of acore_characters (and its rows of updates) dumped, the database
+// dropped and made again from that structure (the repack runs with Updates.EnableDatabases = 0: the core would not
+// make it again); in acore_playerbots only the state tables tied to character guids emptied (the guids start again
+// from 1); auth kept whole (the bot accounts too), its counts of characters set to 0 and nobody online.
+const COA_CHARACTERS = 'acore_characters';
+const COA_BOT_STATE = ['playerbots_random_bots', 'playerbots_db_store', 'playerbots_guild_tasks', 'playerbots_custom_strategy', 'playerbots_equip_cache', 'playerbots_coa_soul', 'playerbots_coa_trust', 'playerbots_coa_mute', 'playerbots_coa_starter_weapon'];
+async function coaPreview(root, { io = realIo(), prefix = 'RNDBOT' } = {}) { return previewOf(root, COA_CHARACTERS, prefix, io); }
+function dumpArgs(root, args, file) {
+  return new Promise((resolve, reject) => execFile(path.join(root, 'mysql', 'bin', 'mysqldump.exe'), [...mysqlArgs(root), ...args, `--result-file=${file}`],
+    { windowsHide: true, timeout: 3600 * 1000, maxBuffer: 16 << 20 }, (error, stdout, stderr) => error ? reject(new Error(`Saving the structure failed: ${String(stderr || error.message).trim().split(/\r?\n/).pop()}`)) : resolve()));
+}
+// confirmName: the name of the CoA realm in the game's realm list, typed again. backup: () => the full saved copy (the
+// server's own Backups, made by the caller). The world must be stopped (checked by the caller with the repack's tools).
+async function resetCoa(root, { confirmName, realmName, backup, io = { ...realIo(), dumpArgs }, now = new Date(), prefix = 'RNDBOT' } = {}) {
+  const shown = String(realmName || '').split(' - ')[0];
+  if (!sameRealmName(confirmName, realmName) && !sameRealmName(confirmName, shown)) throw new Error(`The name typed is not ${shown}, the name of this realm in the game's realm list: nothing was reset.`);
+  const preview = await previewOf(root, COA_CHARACTERS, prefix, io);
+  const saved = await backup();
+  const dir = path.join(root, 'Backups', `coa-reset-${stampOf(now)}`);
+  await fsp.mkdir(dir, { recursive: true });
+  const structure = path.join(dir, 'acore_characters-structure.sql');
+  const updates = path.join(dir, 'acore_characters-updates.sql');
+  await io.dumpArgs(root, ['--no-data', '--routines', '--triggers', '--databases', COA_CHARACTERS], structure);
+  await io.dumpArgs(root, ['--no-create-info', COA_CHARACTERS, 'updates', 'updates_include'], updates);
+  // Without --databases the dump has no USE: it is put first, so the rows go back into the new database.
+  await fsp.writeFile(updates, `USE \`${COA_CHARACTERS}\`;\n${await fsp.readFile(updates, 'utf8').catch(() => '')}`);
+  // Nothing is dropped unless the structure saved can make the database again.
+  if (!/CREATE TABLE `characters`/.test(await fsp.readFile(structure, 'utf8').catch(() => ''))) throw new Error('The structure of acore_characters could not be saved: nothing was reset.');
+  await fsp.writeFile(path.join(dir, 'backup.json'), JSON.stringify({ kind: 'coa-reset', at: now.toISOString(), saved, preview, files: ['acore_characters-structure.sql', 'acore_characters-updates.sql'] }, null, 2));
+  await io.sql(root, `DROP DATABASE IF EXISTS ${COA_CHARACTERS}`);
+  await io.loadFrom(root, structure);
+  await io.loadFrom(root, updates);
+  const present = new Set(String(await io.sql(root, "SELECT table_name FROM information_schema.tables WHERE table_schema = 'acore_playerbots'")).split(/\r?\n/).map(name => name.trim()).filter(Boolean));
+  const emptied = COA_BOT_STATE.filter(table => present.has(table));
+  for (const table of emptied) await io.sql(root, `TRUNCATE TABLE acore_playerbots.${table}`);
+  await io.sql(root, 'UPDATE acore_auth.realmcharacters SET numchars = 0 WHERE realmid = 1; UPDATE acore_auth.account SET online = 0');
+  return { backup: saved, structure: dir, preview, emptied };
+}
+
+module.exports = { RESETTABLE, coaPreview, resetCoa, COA_BOT_STATE, sellerOf, sameRealmName, worldPreview, backupRealm, resetWorld, realmBackups, restoreRealm, auctionPurgeSql, changedCount, imposedNow, lastWorldExit, endKind, logTail, realmEnd, stoppedOnPurpose, setPinner, livingOwn, clearOffline, setRealmName, ahbotSettingsOf, setAhbotSettingsOf, onlineRunning, shippedTables, syncShippedTables, MODES, queueMarked, memoryFor, neededMb, botsOnline, setDisabled, versionReady, modulesOf, setModule, coaAutostart, setCoaAutostart, skipCoaAtStart, anotherStarting, refreshBotConfigs, status, create, start, stop, stopAll, startMarked, setOptions, settingsOf, saveSettings, purgeBots, writeConfigs, setKey };

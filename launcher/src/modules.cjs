@@ -333,4 +333,4 @@ function runScript(root, command, apply) {
   }));
 }
 
-module.exports = { dungeonStatus, setDungeon, setDungeonDifficulties, enchanterStatus, setEnchanter, setEnchanterTiers, setEnchanterCost, ahbotStatus, ahbotKind, setAhbot, ahbotSettings, setAhbotSettings, ahbotInstantKnown, manastormStatus, setManastorm, mythicPlusStatus, setMythicPlus, rotationStatus, setRotation, keepRotationOff, hasScript, runScript, status, setMultirace, setClientPatch, clientPatch, coreSupports, multiraceBlockers, RACES_CONF, RACES_DBC_COUNT };
+module.exports = { moduleConf, setModuleKeys, dungeonStatus, setDungeon, setDungeonDifficulties, enchanterStatus, setEnchanter, setEnchanterTiers, setEnchanterCost, ahbotStatus, ahbotKind, setAhbot, ahbotSettings, setAhbotSettings, ahbotInstantKnown, manastormStatus, setManastorm, mythicPlusStatus, setMythicPlus, rotationStatus, setRotation, keepRotationOff, hasScript, runScript, status, setMultirace, setClientPatch, clientPatch, coreSupports, multiraceBlockers, RACES_CONF, RACES_DBC_COUNT };

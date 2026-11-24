@@ -566,3 +566,29 @@ summary.damage-row::-webkit-details-marker { display: none; }
 .glance-opt.active:disabled { opacity: 1; cursor: default; }
 .glance-explain small { display: block; margin-top: 4px; font-size: 11.5px; color: var(--muted); }
 .realm-tabs { scroll-margin-top: 120px; }
+/* 0.5.0 b: CoA and Squid World side by side (one column under 1180 px). */
+.realm-duo { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.realm-panel.compact { padding: 18px; gap: 12px; }
+.realm-panel.compact .realm-panel-head h2 { font-size: 22px; }
+.realm-panel.compact .realm-stats dd { font-size: 17px; }
+.realm-panel.compact .realm-main-buttons { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 6px; }
+.realm-panel.compact .glance-seg { grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); }
+.glance-startup { display: grid; gap: 6px; padding-top: 10px; border-top: 1px solid var(--line); }
+.glance-startup .realm-auto { margin: 0; }
+.realm-facts.compact { gap: 6px; }
+.fact-line { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; font-size: 12.5px; color: var(--muted); }
+.fact-line > .icon { width: 15px; height: 15px; color: var(--realm, var(--accent)); flex: none; }
+.fact-line code { font: 600 13px var(--mono, monospace); color: var(--text); }
+.fact-line strong { color: var(--text); }
+.fact-line .link-button { padding: 0; }
+.realm-other-open { display: grid; gap: 8px; margin-top: 16px; scroll-margin-top: 120px; }
+.realm-other-open > .link-button { justify-self: end; }
+@media (max-width: 1180px) { .realm-duo { grid-template-columns: minmax(0, 1fr); } }
+.reset-warning { display: grid; gap: 10px; margin: 0 0 12px; padding: 14px 16px; border-radius: 12px; background: color-mix(in srgb, var(--bad, #e05a4f) 14%, transparent); border: 2px solid color-mix(in srgb, var(--bad, #e05a4f) 70%, transparent); }
+.reset-warning > strong { display: flex; align-items: center; gap: 8px; font-size: 15px; color: var(--text); }
+.reset-warning > strong .icon { width: 20px; height: 20px; color: var(--bad, #e05a4f); }
+.reset-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.reset-columns em { font-style: normal; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--faint); }
+.reset-columns > div:first-child em { color: var(--bad, #e05a4f); }
+.reset-columns ul { margin: 4px 0 0; padding-left: 18px; display: grid; gap: 3px; font-size: 13px; }
+.reset-warning small { color: var(--muted); }

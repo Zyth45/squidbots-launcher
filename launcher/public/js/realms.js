@@ -130,7 +130,9 @@ function realmTabs(list, current, busy) {
 
 // One realm, wide: its head, its figures and main buttons, its switches by theme, its tools, and apart the actions that
 // erase or hide something.
-function realmPanel(realm, busy) {
+// compact (0.5.0, user 24/11: « les deux royaumes côte à côte »): one column, half the page wide, the start options in
+// the glance block and the facts in a few lines.
+function realmPanel(realm, busy, compact = false) {
   if (!realm) return '';
   const info = REALMS_INFO[realm.key];
   const working = busy === realm.key || (App.state.stoppingAll && ['running', 'starting'].includes(realm.state));
@@ -172,7 +174,17 @@ function realmPanel(realm, busy) {
   // 0.5.0: every extra realm can be reset (saved first, name typed again); the CoA realm not (not decided, 24/11).
   const resettable = RESETTABLE_REALMS.includes(realm.key);
   const tools = group(t('realms.tools', 'Tools'), `<div class="realm-tool-buttons"><button class="button ghost" data-action="${realm.main ? 'open-logs' : 'realm-logs'}" data-key="${realm.key}">${icon('book')}${esc(t('realms.logs', 'Logs'))}</button><button class="button ghost" data-action="realm-purge" data-key="${realm.key}" ${on || busy ? 'disabled' : ''} title="${esc(t('glance.purgeHint', 'Deletes the random bots of this realm only (saved first); they are made again at its next start.'))}">${icon('refresh')}${esc(t('glance.recreate', 'Recreate the bots'))}</button>${resettable ? `<button class="button ghost" data-action="realm-restore" data-key="${realm.key}" ${on || busy ? 'disabled' : ''}>${icon('book')}${esc(t('realms.restore', 'Restore a backup'))}</button>` : ''}</div>${stoppedFirst}`);
-  const danger = realm.main ? '' : `<section class="realm-group realm-danger"><h3>${icon('warning')}${esc(t('realms.dangerZone', 'Actions that erase or hide'))}</h3><div class="realm-tool-buttons">${resettable ? `<button class="button danger-ghost" data-action="realm-reset" data-key="${realm.key}" ${on || busy ? 'disabled' : ''} title="${esc(t('realms.resetHint', 'A completely new run: bots, auction house, mail, guilds, the characters of this realm, achievements and server firsts start again. Saved first.'))}">${icon('refresh')}${esc(t('realms.reset', 'Reset the world'))}</button>` : ''}<button class="button danger-ghost" data-action="realm-disable" data-key="${realm.key}" ${busy ? 'disabled' : ''}>${icon('close')}${esc(t('realms.disable', 'Switch off'))}</button></div>${resettable ? `<small class="muted">${esc(t('realms.resetLine', 'Reset the world saves the whole realm first (Backups), then starts it again as new.'))}</small>` : ''}<small class="muted">${esc(t('realms.disableLine', 'Switch off takes it out of the realm list of the game, without deleting anything. Stopped, it stays in the list as Offline.'))}</small></section>`;
+  // The reset of the CoA realm waits for its bench (24/11): shown, greyed, unless the launcher is a preview or the flag is set.
+  const coaWaits = realm.main && !(App.state.config?.coaResetReady || App.state.config?.preview);
+  const danger = `<section class="realm-group realm-danger"><h3>${icon('warning')}${esc(t('realms.dangerZone', 'Actions that erase or hide'))}</h3><div class="realm-tool-buttons">${resettable || realm.main ? `<button class="button danger-ghost" data-action="realm-reset" data-key="${realm.key}" ${on || busy || coaWaits ? 'disabled' : ''} title="${esc(t('realms.resetHint', 'A completely new run: bots, auction house, mail, guilds, the characters of this realm, achievements and server firsts start again. Saved first.'))}">${icon('refresh')}${esc(t('realms.reset', 'Reset the world'))}</button>` : ''}${realm.main ? '' : `<button class="button danger-ghost" data-action="realm-disable" data-key="${realm.key}" ${busy ? 'disabled' : ''}>${icon('close')}${esc(t('realms.disable', 'Switch off'))}</button>`}</div>${resettable || realm.main ? `<small class="muted">${esc(t('realms.resetLine', 'Reset the world saves the whole realm first (Backups), then starts it again as new.'))}</small>` : ''}${coaWaits ? `<small class="muted">${esc(t('glance.coaResetWaits', 'Reset the world of Conquest of Azeroth comes once it has been tested on a bench.'))}</small>` : ''}${realm.main ? '' : `<small class="muted">${esc(t('realms.disableLine', 'Switch off takes it out of the realm list of the game, without deleting anything. Stopped, it stays in the list as Offline.'))}</small>`}</section>`;
+  if (compact) {
+    return `<article class="realm-panel compact realm-${realm.key}${on ? ' on' : ''}">${head}
+      ${stats}${buttons}
+      ${group(t('glance.title', 'At a glance'), `${realmGlance(realm)}<div class="glance-startup">${startup}</div>`, 'realm-glance-group')}
+      ${group(t('glance.factsTitle', 'To join this realm'), realmFacts(realm, true))}
+      ${tools}${danger}
+    </article>`;
+  }
   return `<article class="realm-panel realm-${realm.key}${on ? ' on' : ''}">${head}
     <div class="realm-panel-grid">
       <div class="realm-panel-main">${stats}${buttons}${group(t('glance.title', 'At a glance'), realmGlance(realm), 'realm-glance-group')}${tools}</div>
@@ -317,7 +329,7 @@ function realmGlance(realm) {
 }
 
 // What a player needs to join: the address of the realmlist, the version, the last saved copy.
-function realmFacts(realm) {
+function realmFacts(realm, compact = false) {
   const facts = App.state.realmFacts ||= {};
   if (!facts.loading) {
     facts.loading = true;
@@ -336,6 +348,14 @@ function realmFacts(realm) {
   const at = backups[realm.key];
   const saved = at === undefined ? '…' : at ? new Date(at).toLocaleString() : t('glance.noBackup', 'None yet');
   const version = App.state.realms?.version;
+  if (compact) {
+    const copy = line ? `<button class="link-button" data-action="glance-copy" data-line="${esc(line)}">${icon('copy')}${esc(t('glance.copy', 'Copy'))}</button>` : '';
+    return `<div class="realm-facts compact">
+      <div class="fact-line" title="${esc(where)}">${icon('globe')}<code>${esc(line || '…')}</code>${copy}</div>
+      <div class="fact-line">${icon('map')}<span>${esc(t('glance.inListShort', 'In the realm list:'))} <strong>${esc(realm.name || realmTitle(realm.key))}</strong></span></div>
+      <div class="fact-line">${icon('book')}<span>${version ? `CoA Bots ${esc(version)} · ` : ''}${esc(t('glance.lastBackupShort', 'last saved copy: {when}', { when: saved }))}</span></div>
+    </div>`;
+  }
   const item = (iconName, label, value, extra = '') => `<div class="fact-row">${icon(iconName)}<div><small>${esc(label)}</small><strong>${esc(value)}</strong>${extra}</div></div>`;
   return `<div class="realm-facts">
     ${item('globe', t('glance.addr2', 'Server address (realmlist)'), line || '…', line ? `<button class="link-button" data-action="glance-copy" data-line="${esc(line)}">${icon('copy')}${esc(t('glance.copy', 'Copy'))}</button><small class="muted">${esc(where)}</small>` : '')}
@@ -415,6 +435,8 @@ Object.assign(App.actions, {
     toast(t('net.copied', 'Copied: {line}', { line }), 'success');
   }, button),
   'realm-others': () => { App.state.realmOthers = !App.state.realmOthers; App.refresh('realms'); },
+  'realm-other-open': button => { App.state.realmOther = button.dataset.key; App.refresh('realms'); document.querySelector('.realm-other-open')?.scrollIntoView({ block: 'start', behavior: 'smooth' }); },
+  'realm-other-close': () => { App.state.realmOther = ''; App.refresh('realms'); },
 });
 
 // Eco mode (CoA Bots 2.9.1 and later): the bots far from players mostly sleep while nobody plays on this realm.
@@ -433,17 +455,19 @@ function realmsPage() {
   if (r.error) return `<div class="page classic">${head}${emptyState('warning', t('realms.error', 'The realms cannot be read'), r.error)}</div>`;
   const busy = App.state.realmBusy || '';
   const current = realmViewKey();
-  // The bar: the two main realms, and any other one the player switched on (or is looking at).
-  const bar = realmList().filter(realm => MAIN_REALMS.includes(realm.key) || !['absent', 'disabled'].includes(realm.state) || realm.key === current);
+  // 0.5.0 (user, 24/11): the two main realms side by side, whole, no tab; another realm type opened from the cards
+  // below shows whole under them.
+  const main = MAIN_REALMS.map(key => realmList().find(realm => realm.key === key)).filter(Boolean);
   const others = realmList().filter(realm => !MAIN_REALMS.includes(realm.key));
+  const other = others.find(realm => realm.key === App.state.realmOther);
   const open = App.state.realmOthers;
   return `<div class="page classic realms-page">${head}
     <p class="realms-lead">${esc(t('realms.lead2', 'Your server, ready to play: Conquest of Azeroth is the classic realm, Squid World a fresh world where everything starts at level 1. Pick the realm in the realm list of the game; the game accounts are the same on every realm.'))}</p>
-    ${realmTabs(bar, current, busy)}
-    ${realmPanel(realmList().find(realm => realm.key === current), busy)}
+    <div class="realm-duo">${main.map(realm => realmPanel(realm, busy, true)).join('')}</div>
+    ${other ? `<div class="realm-other-open"><button class="link-button" data-action="realm-other-close">${icon('close')}${esc(t('glance.otherClose', 'Close {name}', { name: realmTitle(other.key) }))}</button>${realmPanel(other, busy)}</div>` : ''}
     <section class="realm-others${open ? ' open' : ''}">
       <button class="button ghost realm-others-toggle" data-action="realm-others" aria-expanded="${!!open}">${icon('layers')}${esc(open ? t('glance.othersHide', 'Hide the other realm types') : t('glance.othersShow', 'See other realm types ({n})', { n: others.length }))}${icon('chevron')}</button>
-      ${open ? `<p class="muted">${esc(t('glance.othersLead', 'Other ways to play, each with its own characters and bots, next to your main realms. Switch one on when you want to try it; nothing of your main realms changes.'))}</p><div class="realm-other-cards">${others.map(realm => realmOtherCard(realm, busy, current)).join('')}</div>` : ''}
+      ${open ? `<p class="muted">${esc(t('glance.othersLead', 'Other ways to play, each with its own characters and bots, next to your main realms. Switch one on when you want to try it; nothing of your main realms changes.'))}</p><div class="realm-other-cards">${others.map(realm => realmOtherCard(realm, busy, App.state.realmOther)).join('')}</div>` : ''}
     </section>
   </div>`;
 }
@@ -461,7 +485,7 @@ function realmOtherCard(realm, busy, current) {
     <header>${realmEmblem(realm.key, 40)}<div><strong>${esc(info.title)}</strong><small>${esc(realmSub(info))}</small></div>${realmStatePill(state, realm)}</header>
     <p>${esc(t(info.textKey, info.text))}</p>
     ${info.experimental ? `<span class="pill warn realm-exp">${esc(t('modules.experimental', 'Experimental'))}</span>` : ''}
-    <button class="button ghost small" data-action="realm-view" data-key="${realm.key}">${esc(action)}${icon('arrow')}</button>
+    <button class="button ghost small" data-action="realm-other-open" data-key="${realm.key}">${esc(action)}${icon('arrow')}</button>
   </article>`;
 }
 
@@ -502,7 +526,19 @@ async function realmAction(key, work, kind = '') {
 // The name of a realm in the game's realm list (realm.json, renamed by the player in its card: « Malfurion »), not the
 // title of its kind (« Squid World »). A reset asks for this name; the main process checks the same one.
 // « Name - Subtitle » shows in the game as the name and a line under it: the part before « - » is asked.
-const realmListName = key => String((App.state.realms?.realms || []).find(realm => realm.key === key)?.name || realmTitle(key)).split(' - ')[0];
+const realmListName = key => String((key === 'coa' ? App.state.realms?.coa : (App.state.realms?.realms || []).find(realm => realm.key === key))?.name || realmTitle(key)).split(' - ')[0];
+// A preview (COA_PREVIEW=1): every window opens, the last step answers « demo » and nothing is erased (user, 24/11).
+const isDemo = result => !!(result?.demo || result?.purged?.demo || result?.reset?.demo || result?.restored?.demo);
+const demoDone = () => ({ title: t('glance.demoTitle', 'Preview: nothing was erased'), body: `<p>${esc(t('glance.demoBody', 'This is a preview of the launcher: the windows are the real ones, but this last step does nothing here.'))}</p>` });
+// The big warning of a reset (user, 24/11: « un gros warning qui rappelle ce que ça delete »).
+function resetWarning(name) {
+  const list = items => `<ul>${items.map(item => `<li>${esc(item)}</li>`).join('')}</ul>`;
+  return `<div class="reset-warning"><strong>${icon('warning')}${esc(t('glance.resetWarnTitle', 'Everything played on {name} is erased', { name }))}</strong>
+    <div class="reset-columns"><div><em>${esc(t('glance.resetErased', 'Erased'))}</em>${list([t('glance.resetE1', 'Every character of this realm: those of the players AND the bots'), t('glance.resetE2', 'Guilds, mail and the auction house'), t('glance.resetE3', 'Achievements and server firsts'), t('glance.resetE4', 'Levels, gear, gold and quests of those characters')])}</div>
+    <div><em>${esc(t('glance.resetKept', 'Kept'))}</em>${list([t('glance.resetK1', 'The game accounts (log in as before)'), t('glance.resetK2', 'Your other realms'), t('glance.resetK3', 'The settings of this realm')])}</div></div>
+    <small>${esc(t('glance.resetSeller', 'The auction house seller and the Dungeon Clear driver are made again by themselves at the next start.'))}</small>
+    <small>${esc(t('glance.resetSaved', 'A full copy is saved first (Backups): it can be put back.'))}</small></div>`;
+}
 // The same comparison as src/realms.cjs sameRealmName: case and outer spaces do not count, accents do.
 const sameRealmName = (a, b) => {
   const clean = value => String(value || '').normalize('NFC').trim().replace(/\s+/g, ' ').toLocaleLowerCase();
@@ -560,6 +596,7 @@ Object.assign(App.actions, {
       errorTitle: t('realms.purgeFailed', 'The bots of {name} were not recreated', { name: realmTitle(key) }),
       work: () => (main ? realmAction(key, async () => ({ purged: await App.api.purgeBots({ backup: true }) })) : realmAction(key, () => App.api.realmsPurge(key, { house, backup: true }))),
       success: result => {
+        if (isDemo(result)) return demoDone();
         const purged = result?.purged || null;
         const where = purged?.backup ? `<p class="muted">${esc(t('realms.savedIn', 'Saved copy: {path}', { path: purged.backup }))}</p>` : '';
         return { title: t('realms.purgeDoneTitle', 'Bots of {name} deleted', { name: realmTitle(key) }), body: `<p>${esc(purged && !main ? t('realms.purged2', 'Done: the bots come back at the next start. {auctions} auction(s) removed, {refunds} bid(s) refunded by mail.', { auctions: purged.auctions || 0, refunds: purged.refunds || 0 }) : t('realms.purged', 'Done: the bots come back at the next start.'))}</p>${where}` };
@@ -572,11 +609,12 @@ Object.assign(App.actions, {
     const key = button.dataset.key;
     // The realm's own name (as in the game's realm list), the one to type and the one the main process checks.
     const name = realmListName(key);
-    const preview = await App.api.realmsResetPreview(key);
+    const main = key === 'coa';
+    const preview = main ? await App.api.coaResetPreview() : await App.api.realmsResetPreview(key);
     const players = preview.players.length
       ? `<ul class="reset-list">${preview.players.slice(0, 12).map(player => `<li>${esc(player.name)} (${esc(t('realms.level', 'level {n}', { n: player.level }))})</li>`).join('')}${preview.players.length > 12 ? `<li>… +${preview.players.length - 12}</li>` : ''}</ul>`
       : `<p class="muted">${esc(t('realms.resetNoPlayers', 'No player character on this realm.'))}</p>`;
-    const first = `${esc(t('realms.resetBody', 'Everything of {name} starts again as a realm just created: its bots, its auction house (seller included), mail, guilds, achievements and server firsts, and the characters of the players on THIS realm. Game accounts, your other realms and the settings of this realm stay. The whole realm is saved first, and can be restored.', { name }))}</p>
+    const first = `${resetWarning(name)}<p>${preview.demo ? `<span class="pill warn">${esc(t('glance.demoPill', 'Preview: made-up figures'))}</span> ` : ''}${esc(t('realms.resetBody', 'Everything of {name} starts again as a realm just created: its bots, its auction house (seller included), mail, guilds, achievements and server firsts, and the characters of the players on THIS realm. Game accounts, your other realms and the settings of this realm stay. The whole realm is saved first, and can be restored.', { name }))}</p>
       <p><strong>${esc(t('realms.resetPlayers', '{n} player character(s) erased:', { n: preview.players.length }))}</strong></p>${players}
       <p class="muted">${esc(t('realms.resetCounts', 'Also erased: {bots} bots, {guilds} guilds, {auctions} auctions, {mails} mails, {achievements} achievements.', preview))}`;
     if (!await confirmDialog({ title: t('realms.resetTitle', 'Reset {name}?', { name }), body: first, confirm: t('common.continue', 'Continue'), danger: true })) return;
@@ -593,8 +631,8 @@ Object.assign(App.actions, {
       holdTitle: t('realms.resetting', 'Resetting the world'),
       holdBody: t('realms.resettingLong', 'Saving {name}, then making it new (a few minutes). Do not close the launcher.', { name }),
       errorTitle: t('realms.resetNotDone', '{name} was not reset', { name }),
-      work: () => realmAction(key, () => App.api.realmsReset(key, typed)),
-      success: result => ({ title: t('realms.resetDoneTitle', '{name} is new', { name }), body: `<p>${esc(t('realms.worldResetDone', '{name} is new: its bots are made at its next start. The old world is saved in Backups.', { name }))}</p><p class="muted">${esc(t('realms.savedIn', 'Saved copy: {path}', { path: result?.reset?.backup || '' }))}</p>` }),
+      work: () => realmAction(key, () => (main ? App.api.coaReset(typed) : App.api.realmsReset(key, typed))),
+      success: result => (isDemo(result) ? demoDone() : { title: t('realms.resetDoneTitle', '{name} is new', { name }), body: `<p>${esc(t('realms.worldResetDone', '{name} is new: its bots are made at its next start. The old world is saved in Backups.', { name }))}</p><p class="muted">${esc(t('realms.savedIn', 'Saved copy: {path}', { path: result?.reset?.backup || '' }))}</p>` }),
     });
   }, button),
   'realm-restore': button => guard(async () => {
@@ -610,7 +648,7 @@ Object.assign(App.actions, {
       holdBody: t('realms.restoringLong', 'Putting back the copy of {when} (a few minutes). Do not close the launcher.', { when }),
       errorTitle: t('realms.restoreNotDone', '{name} was not restored', { name }),
       work: () => realmAction(key, () => App.api.realmsRestore(key, last.id)),
-      success: result => ({ title: t('realms.restoreDoneTitle', '{name} is restored', { name }), body: `<p>${esc(t('realms.restored', '{name} is back as it was on {when}.', { name, when }))}</p><p class="muted">${esc(t('realms.savedBefore', 'The realm as it was just before is saved in: {path}', { path: result?.restored?.before || '' }))}</p>` }),
+      success: result => (isDemo(result) ? demoDone() : { title: t('realms.restoreDoneTitle', '{name} is restored', { name }), body: `<p>${esc(t('realms.restored', '{name} is back as it was on {when}.', { name, when }))}</p><p class="muted">${esc(t('realms.savedBefore', 'The realm as it was just before is saved in: {path}', { path: result?.restored?.before || '' }))}</p>` }),
     });
   }, button),
   'realm-disable': button => guard(async () => {
