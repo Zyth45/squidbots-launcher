@@ -80,7 +80,11 @@
   "AiPlayerbot.CoaEconomy.BotAuctions.Shop.Enable",
   "AiPlayerbot.CoaEconomy.RemoteBuy.Enable",
   "AiPlayerbot.CoaEconomy.RemoteSell.Enable",
-  "AiPlayerbot.CoaLive.CityUnstick.Enable"
+  "AiPlayerbot.CoaLive.CityUnstick.Enable",
+  "AiPlayerbot.CoaLive.City.Squares",
+  "AiPlayerbot.CoaArrivalCheck",
+  "AiPlayerbot.CoaLfgRolePriority",
+  "AiPlayerbot.Coa.HideReplayedAchievements"
  ],
  "groups": [
   {
@@ -4271,6 +4275,182 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaLive.City.Squares",
+   "file": "playerbots.conf",
+   "group": "lw-citylife",
+   "type": "bool",
+   "default": 1,
+   "when": "restart",
+   "label": {
+    "en": "Bots meet on the capitals' squares",
+    "fr": "Les bots se retrouvent sur les places des capitales",
+    "ru": "Боты собираются на площадях столиц",
+    "zh": "机器人在主城广场相聚"
+   },
+   "help": {
+    "en": "New in 3.2.2. Bots on a city visit now and then gather by two or three on the capitals' squares (between the auction house, the bank, the inn and the quest board), facing each other, sitting or talking for a few minutes.",
+    "fr": "Nouveau en 3.2.2. Les bots en visite en ville se retrouvent parfois à deux ou trois sur les places des capitales (entre l'hôtel des ventes, la banque, l'auberge et le tableau des quêtes), face à face, assis ou en train de parler quelques minutes.",
+    "ru": "Новое в 3.2.2. Боты, гуляющие по городу, иногда собираются по двое-трое на площадях столиц (между аукционом, банком, таверной и доской заданий), стоят друг напротив друга, сидят или беседуют несколько минут.",
+    "zh": "3.2.2 新增。在城里闲逛的机器人不时会两三成群地聚在主城广场（拍卖行、银行、旅店和任务板之间），面对面坐着或聊上几分钟。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaLive.City.SquareMaxBots",
+   "file": "playerbots.conf",
+   "group": "lw-citylife",
+   "type": "int",
+   "default": 3,
+   "min": 1,
+   "max": 3,
+   "when": "restart",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaLive.City.Squares",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Bots per square",
+    "fr": "Bots par place",
+    "ru": "Ботов на площади",
+    "zh": "每个广场的机器人数"
+   },
+   "help": {
+    "en": "New in 3.2.2. At most this many bots on one square of a capital (1 to 3). 3 by default.",
+    "fr": "Nouveau en 3.2.2. Au plus ce nombre de bots sur une place de capitale (1 à 3). 3 par défaut.",
+    "ru": "Новое в 3.2.2. Не больше стольких ботов на одной площади столицы (от 1 до 3). По умолчанию 3.",
+    "zh": "3.2.2 新增。一个主城广场上最多的机器人数（1 到 3）。默认 3。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaArrivalCheck",
+   "file": "playerbots.conf",
+   "group": "lw-citylife",
+   "type": "bool",
+   "default": 1,
+   "when": "restart",
+   "label": {
+    "en": "Arrivals on the city's floor",
+    "fr": "Arrivées sur le sol de la ville",
+    "ru": "Прибытие на пол города",
+    "zh": "到达点落在城市地面上"
+   },
+   "help": {
+    "en": "New in 3.2.2. A bot sent to a capital (a banker, an innkeeper, a hub) lands on the floor the city walks on: an arrival on a cut-off patch is moved a few yards onto it, or no longer used. Each change is written in CoaBots.log.",
+    "fr": "Nouveau en 3.2.2. Un bot envoyé dans une capitale (un banquier, un aubergiste, un point de rendez-vous) arrive sur le sol où l'on marche : une arrivée sur un morceau isolé est déplacée de quelques mètres, ou n'est plus utilisée. Chaque changement est écrit dans CoaBots.log.",
+    "ru": "Новое в 3.2.2. Бот, отправленный в столицу (к банкиру, трактирщику, в центр), появляется на полу, по которому ходят в городе: точка на отрезанном участке сдвигается на несколько метров или больше не используется. Каждое изменение записывается в CoaBots.log.",
+    "zh": "3.2.2 新增。被派往主城（银行家、旅店老板、集合点）的机器人会落在城市可行走的地面上：位于孤立区域的到达点会挪动几码，或不再使用。每次改动都会写入 CoaBots.log。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaPathCheck",
+   "file": "playerbots.conf",
+   "group": "lw-diagnostics",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "label": {
+    "en": "Check the capitals' paths at start",
+    "fr": "Vérifier les chemins des capitales au démarrage",
+    "ru": "Проверять пути столиц при запуске",
+    "zh": "启动时检查主城路径"
+   },
+   "help": {
+    "en": "New in 3.2.2. Diagnostic, read only: once after the start, one line in CoaBots.log for each arrival of a capital that the navmesh does not join to an auctioneer, a banker or a flight master. The same at any time: .squidbots pathcheck. Off by default.",
+    "fr": "Nouveau en 3.2.2. Diagnostic, en lecture seule : une fois après le démarrage, une ligne dans CoaBots.log pour chaque arrivée d'une capitale que le navmesh ne relie pas à un commissaire-priseur, un banquier ou un maître de vol. La même chose à tout moment : .squidbots pathcheck. Coupé par défaut.",
+    "ru": "Новое в 3.2.2. Диагностика, только чтение: один раз после запуска — строка в CoaBots.log для каждой точки прибытия столицы, которую навсетка не соединяет с аукционистом, банкиром или распорядителем полётов. То же в любое время: .squidbots pathcheck. По умолчанию выключено.",
+    "zh": "3.2.2 新增。诊断，只读：启动后一次，对于每个导航网格未连到拍卖师、银行家或飞行管理员的主城到达点，在 CoaBots.log 写一行。随时可用：.squidbots pathcheck。默认关闭。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaPathCheck.DelaySeconds",
+   "file": "playerbots.conf",
+   "group": "lw-diagnostics",
+   "type": "int",
+   "default": 300,
+   "min": 0,
+   "max": 3600,
+   "when": "restart",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaPathCheck",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Path check after the start (seconds)",
+    "fr": "Vérification des chemins après le démarrage (secondes)",
+    "ru": "Проверка путей после запуска (секунды)",
+    "zh": "启动后多久检查路径（秒）"
+   },
+   "help": {
+    "en": "New in 3.2.2. The wait before the path check, while the navmesh tiles load. 300 by default.",
+    "fr": "Nouveau en 3.2.2. L'attente avant la vérification des chemins, le temps que les tuiles du navmesh se chargent. 300 par défaut.",
+    "ru": "Новое в 3.2.2. Ожидание перед проверкой путей, пока загружаются тайлы навсетки. По умолчанию 300.",
+    "zh": "3.2.2 新增。检查路径前的等待时间，用于加载导航网格。默认 300。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaLfgRolePriority",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "bool",
+   "default": 1,
+   "when": "restart",
+   "label": {
+    "en": "Missing dungeon finder role first",
+    "fr": "Rôle manquant d'abord dans la recherche de donjon",
+    "ru": "Сначала недостающая роль в поиске подземелий",
+    "zh": "地下城查找器优先补缺失职责"
+   },
+   "help": {
+    "en": "New in 3.2.1. While a queued party of real players misses a tank or a healer, a free bot of that role queues within seconds instead of at its random roll.",
+    "fr": "Nouveau en 3.2.1. Tant qu'un groupe de vrais joueurs en file d'attente manque d'un tank ou d'un soigneur, un bot libre de ce rôle s'inscrit en quelques secondes au lieu d'attendre son tirage au hasard.",
+    "ru": "Новое в 3.2.1. Пока группе настоящих игроков в очереди не хватает танка или лекаря, свободный бот этой роли встаёт в очередь за секунды, а не по случайному броску.",
+    "zh": "3.2.1 新增。当排队的真人队伍缺少坦克或治疗时，该职责的空闲机器人会在几秒内排队，而不是等随机判定。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.Coa.HideReplayedAchievements",
+   "file": "playerbots.conf",
+   "group": "lw-social",
+   "type": "bool",
+   "default": 1,
+   "when": "restart",
+   "label": {
+    "en": "Hide level achievements earned again after a restart",
+    "fr": "Cacher les hauts faits de niveau regagnés après un redémarrage",
+    "ru": "Скрывать достижения уровня, полученные снова после перезапуска",
+    "zh": "隐藏重启后再次获得的等级成就"
+   },
+   "help": {
+    "en": "New in 3.2.1. The server keeps no bot achievement, so after a restart a bot earns them again at its first level-up: a level achievement below the bot's level is then earned without a word. Never a real player or a player's alts.",
+    "fr": "Nouveau en 3.2.1. Le serveur ne garde aucun haut fait de bot : après un redémarrage, un bot les regagne à son premier niveau. Un haut fait de niveau inférieur au niveau du bot est alors gagné sans annonce. Jamais un vrai joueur ni ses alts.",
+    "ru": "Новое в 3.2.1. Сервер не хранит достижения ботов: после перезапуска бот получает их снова при первом повышении уровня. Достижение уровня ниже уровня бота тогда получается молча. Никогда для настоящего игрока и его альтов.",
+    "zh": "3.2.1 新增。服务器不保存机器人成就：重启后机器人在第一次升级时会重新获得。低于其等级的等级成就将静默获得。真人玩家及其小号不受影响。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.Coa.AchievementAnnounceLog",
+   "file": "playerbots.conf",
+   "group": "lw-diagnostics",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "label": {
+    "en": "Log bot achievement announces",
+    "fr": "Journal des annonces de hauts faits des bots",
+    "ru": "Журнал объявлений достижений ботов",
+    "zh": "记录机器人成就公告"
+   },
+   "help": {
+    "en": "New in 3.2.1. Diagnostic: every hour, the random bot achievements shown and muted and why, in CoaBots.log. Off by default.",
+    "fr": "Nouveau en 3.2.1. Diagnostic : chaque heure, les hauts faits des bots aléatoires annoncés et tus, et pourquoi, dans CoaBots.log. Coupé par défaut.",
+    "ru": "Новое в 3.2.1. Диагностика: каждый час — показанные и скрытые достижения случайных ботов и причина, в CoaBots.log. По умолчанию выключено.",
+    "zh": "3.2.1 新增。诊断：每小时在 CoaBots.log 中记录显示和隐藏的随机机器人成就及原因。默认关闭。"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaLive.Sheath.Enable",
    "file": "playerbots.conf",
    "group": "lw-citylife",
@@ -5722,7 +5902,11 @@
     "AiPlayerbot.CoaEconomy.BotAuctions.Shop.Enable": 1,
     "AiPlayerbot.CoaEconomy.RemoteBuy.Enable": 1,
     "AiPlayerbot.CoaEconomy.RemoteSell.Enable": 1,
-    "AiPlayerbot.CoaLive.CityUnstick.Enable": 1
+    "AiPlayerbot.CoaLive.CityUnstick.Enable": 1,
+    "AiPlayerbot.CoaLive.City.Squares": "1",
+    "AiPlayerbot.CoaArrivalCheck": "1",
+    "AiPlayerbot.CoaLfgRolePriority": "1",
+    "AiPlayerbot.Coa.HideReplayedAchievements": "1"
    }
   }
  ]

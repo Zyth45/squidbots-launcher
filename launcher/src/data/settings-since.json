@@ -1,7 +1,7 @@
 {
  "from": "0.3.59",
  "next": "0.5.0",
- "catalog": "0f417d6e641d285e",
+ "catalog": "6fa9f8e37bb0ce7f",
  "keys": {
   "worldserver.conf|CharactersPerRealm": {
    "added": "0.4.0"
@@ -906,6 +906,9 @@
   "mod_dungeon_clear.conf|DungeonClear.DungeonQueueFill.MaxHumansOnline": {
    "added": "0.5.0"
   },
+  "playerbots.conf|AiPlayerbot.MinEnchantingBotLevel": {
+   "added": "0.5.0"
+  },
   "playerbots.conf|AiPlayerbot.CoaLive.PvpStatsKeepDays": {
    "added": "0.5.0"
   },
@@ -924,8 +927,50 @@
   "playerbots.conf|AiPlayerbot.CoaLive.CityUnstick.StillMinutes": {
    "added": "0.5.0"
   },
+  "playerbots.conf|AiPlayerbot.CoaLive.City.Squares": {
+   "added": "0.5.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.City.SquareMaxBots": {
+   "added": "0.5.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaArrivalCheck": {
+   "added": "0.5.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaPathCheck": {
+   "added": "0.5.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaPathCheck.DelaySeconds": {
+   "added": "0.5.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaLfgRolePriority": {
+   "added": "0.5.0"
+  },
+  "playerbots.conf|AiPlayerbot.Coa.HideReplayedAchievements": {
+   "added": "0.5.0"
+  },
+  "playerbots.conf|AiPlayerbot.Coa.AchievementAnnounceLog": {
+   "added": "0.5.0"
+  },
   "playerbots.conf|AiPlayerbot.CoaEconomy.EnchantForSelf.HourlyCount": {
    "added": "0.5.0"
+  },
+  "playerbots.conf|AiPlayerbot.UseGroundMountAtMinLevel": {
+   "defaults": [
+    [
+     "0.5.0",
+     "20",
+     "5"
+    ]
+   ]
+  },
+  "playerbots.conf|AiPlayerbot.CoaSelfFoundMaxLevel": {
+   "defaults": [
+    [
+     "0.5.0",
+     "59",
+     "80"
+    ]
+   ]
   }
  }
 }

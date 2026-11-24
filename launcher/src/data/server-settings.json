@@ -1578,11 +1578,12 @@
     "zh": "自给自足生效至等级"
    },
    "help": {
-    "en": "Highest level self-found applies to: above it, bots are geared as usual for the endgame. 80 by default: self-loot at every level, even at 60. 59: geared as usual at 60 (the \"Auto-gear at level 60\" switch).",
-    "fr": "Plus haut niveau concerné par le self-found : au-dessus, les bots sont équipés comme d'habitude pour la fin de jeu. 80 par défaut : self-loot à tous les niveaux, même au 60. 59 : équipés comme d'habitude au 60 (l'interrupteur « Équipement automatique au niveau 60 »).",
+    "en": "Highest level self-found applies to: above it, bots are geared as usual for the endgame. 80 by default: self-loot at every level, even at 60. 59: geared as usual at 60 (the \"Self-gear 1-59\" choice of the realm card).",
+    "fr": "Plus haut niveau concerné par le self-found : au-dessus, les bots sont équipés comme d'habitude pour la fin de jeu. 80 par défaut : self-loot à tous les niveaux, même au 60. 59 : équipés comme d'habitude au 60 (le choix « Self-gear 1-59 » de la carte du royaume).",
     "ru": "Самый высокий уровень self-found: выше боты экипируются как обычно для эндгейма. По умолчанию 80: self-loot на всех уровнях, даже на 60-м. 59: обычная экипировка на 60-м (переключатель «Автоэкипировка на 60-м уровне»).",
     "zh": "自给自足适用的最高等级：高于此等级，机器人照常配备终局装备。默认 80：所有等级都自给自足，60 级也是。59：60 级时照常配装（“60 级自动配装”开关）。"
-   }
+   },
+   "default": "80"
   },
   {
    "key": "AiPlayerbot.CoaSelfFound.StarterWeapon",
@@ -2407,10 +2408,33 @@
     "zh": "机器人使用坐骑的最低等级"
    },
    "help": {
-    "en": "From this level a bot uses its ground mount: in your group, it mounts up with you and gets off when you do. Lower it (for example to 1) so your low-level alts ride along with you. Default 20.",
-    "fr": "À partir de ce niveau, un bot utilise sa monture terrestre : dans votre groupe, il monte avec vous et descend quand vous descendez. Baissez-le (par exemple à 1) pour que vos alts de bas niveau vous suivent à cheval. Par défaut 20.",
-    "ru": "С этого уровня бот пользуется наземным ездовым животным: в вашей группе он садится верхом вместе с вами и спешивается, когда спешиваетесь вы. Понизьте (например, до 1), чтобы ваши альты низкого уровня ездили с вами. По умолчанию 20.",
-    "zh": "从此等级起，机器人会使用地面坐骑：在你的队伍中，它会和你一起上坐骑，你下坐骑时它也下。调低（例如 1）可让你的低等级小号随你一起骑乘。默认 20。"
+    "en": "From this level a bot uses its ground mount: in your group, it mounts up with you and gets off when you do. Lower it (for example to 1) so your low-level alts ride along with you. Default 5 (20 before 3.2.2).",
+    "fr": "À partir de ce niveau, un bot utilise sa monture terrestre : dans votre groupe, il monte avec vous et descend quand vous descendez. Baissez-le (par exemple à 1) pour que vos alts de bas niveau vous suivent à cheval. Par défaut 5 (20 avant la 3.2.2).",
+    "ru": "С этого уровня бот пользуется наземным ездовым животным: в вашей группе он садится верхом вместе с вами и спешивается, когда спешиваетесь вы. Понизьте (например, до 1), чтобы ваши альты низкого уровня ездили с вами. По умолчанию 5 (до 3.2.2 — 20).",
+    "zh": "从此等级起，机器人会使用地面坐骑：在你的队伍中，它会和你一起上坐骑，你下坐骑时它也下。调低（例如 1）可让你的低等级小号随你一起骑乘。默认 5（3.2.2 之前为 20）。"
+   },
+   "default": "5"
+  },
+  {
+   "key": "AiPlayerbot.MinEnchantingBotLevel",
+   "file": "playerbots.conf",
+   "group": "alts",
+   "kind": "int",
+   "when": "restart",
+   "min": 1,
+   "max": 80,
+   "default": "20",
+   "label": {
+    "en": "Bots enchant their gear from level",
+    "fr": "Les bots enchantent leur équipement dès le niveau",
+    "ru": "Боты зачаровывают снаряжение с уровня",
+    "zh": "机器人附魔装备的最低等级"
+   },
+   "help": {
+    "en": "From this level a bot gets the enchantments and gems of its level when its gear is looked after. Default 20 (60 before 3.2.2). Above the bots' highest level: no enchantment, no gem.",
+    "fr": "À partir de ce niveau, un bot reçoit les enchantements et les gemmes de son niveau quand son équipement est entretenu. Par défaut 20 (60 avant la 3.2.2). Au-dessus du niveau maximum des bots : ni enchantement ni gemme.",
+    "ru": "С этого уровня бот получает чары и камни своего уровня при обслуживании снаряжения. По умолчанию 20 (до 3.2.2 — 60). Выше максимального уровня ботов: ни чар, ни камней.",
+    "zh": "从此等级起，机器人在维护装备时会获得其等级的附魔和宝石。默认 20（3.2.2 之前为 60）。高于机器人最高等级：不附魔也不镶宝石。"
    }
   },
   {
