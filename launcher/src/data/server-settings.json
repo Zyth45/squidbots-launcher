@@ -1578,10 +1578,10 @@
     "zh": "自给自足生效至等级"
    },
    "help": {
-    "en": "Highest level self-found applies to: above it, bots are geared as usual for the endgame. 59 by default (geared at 60). 80: self-loot at every level (the \"Auto-gear at level 60\" switch of Bot gear).",
-    "fr": "Plus haut niveau concerné par le self-found : au-dessus, les bots sont équipés comme d'habitude pour la fin de jeu. 59 par défaut (équipés à 60). 80 : self-loot à tous les niveaux (l'interrupteur « Équipement automatique au niveau 60 » d'Équipement des bots).",
-    "ru": "Самый высокий уровень self-found: выше боты экипируются как обычно для эндгейма. По умолчанию 59 (экипировка на 60). 80: self-loot на всех уровнях (переключатель «Автоэкипировка на 60-м уровне» в «Снаряжении ботов»).",
-    "zh": "自给自足适用的最高等级：高于此等级，机器人照常配备终局装备。默认 59（60 级配装）。 80：所有等级都自给自足（“机器人装备”中的“60 级自动配装”开关）。"
+    "en": "Highest level self-found applies to: above it, bots are geared as usual for the endgame. 80 by default: self-loot at every level, even at 60. 59: geared as usual at 60 (the \"Auto-gear at level 60\" switch).",
+    "fr": "Plus haut niveau concerné par le self-found : au-dessus, les bots sont équipés comme d'habitude pour la fin de jeu. 80 par défaut : self-loot à tous les niveaux, même au 60. 59 : équipés comme d'habitude au 60 (l'interrupteur « Équipement automatique au niveau 60 »).",
+    "ru": "Самый высокий уровень self-found: выше боты экипируются как обычно для эндгейма. По умолчанию 80: self-loot на всех уровнях, даже на 60-м. 59: обычная экипировка на 60-м (переключатель «Автоэкипировка на 60-м уровне»).",
+    "zh": "自给自足适用的最高等级：高于此等级，机器人照常配备终局装备。默认 80：所有等级都自给自足，60 级也是。59：60 级时照常配装（“60 级自动配装”开关）。"
    }
   },
   {
@@ -4360,10 +4360,10 @@
   {
    "id": "self-found-world",
    "title": {
-    "en": "Solo self-found (1-59)",
-    "fr": "Solo self-found (1-59)",
-    "ru": "Solo self-found (1-59)",
-    "zh": "单人自给自足（1-59）"
+    "en": "Solo self-found (1-60)",
+    "fr": "Solo self-found (1-60)",
+    "ru": "Solo self-found (1-60)",
+    "zh": "单人自给自足（1-60）"
    },
    "summary": {
     "en": "Bots level up by playing from level 1: their gear is never generated, they wear what they loot in the world and in dungeons, earn from quests or get from you. 20 % of them clear the dungeons of their level in parties of five (up to 4 parties at once). Even at 60 they keep what they found; \"Auto-gear at level 60\" on the realm card gears them as usual for endgame. Random bots are recreated at level 1 (one-time, after a backup). Bot experience speed ×2. Every value is in the Solo self-found tab.",
