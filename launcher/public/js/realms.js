@@ -173,8 +173,8 @@ function realmPanel(realm, busy) {
   const danger = realm.main ? '' : `<section class="realm-group realm-danger"><h3>${icon('warning')}${esc(t('realms.dangerZone', 'Actions that erase or hide'))}</h3><div class="realm-tool-buttons">${realm.key === 'living' ? `<button class="button danger-ghost" data-action="realm-reset" data-key="${realm.key}" ${on || busy ? 'disabled' : ''} title="${esc(t('realms.resetHint', 'A completely new run: bots, auction house, mail, guilds, the characters of this realm, achievements and server firsts start again. Saved first.'))}">${icon('refresh')}${esc(t('realms.reset', 'Reset the world'))}</button>` : ''}<button class="button danger-ghost" data-action="realm-disable" data-key="${realm.key}" ${busy ? 'disabled' : ''}>${icon('close')}${esc(t('realms.disable', 'Switch off'))}</button></div>${realm.key === 'living' ? `<small class="muted">${esc(t('realms.resetLine', 'Reset the world saves the whole realm first (Backups), then starts it again as new.'))}</small>` : ''}<small class="muted">${esc(t('realms.disableLine', 'Switch off takes it out of the realm list of the game, without deleting anything. Stopped, it stays in the list as Offline.'))}</small></section>`;
   return `<article class="realm-panel realm-${realm.key}${on ? ' on' : ''}">${head}
     <div class="realm-panel-grid">
-      <div class="realm-panel-main">${stats}${buttons}${tools}</div>
-      <div class="realm-panel-side">${group(t('realms.quickTitle', 'Bots of this realm'), realmQuick(realm))}${group(t('realms.startup', 'Starting'), startup)}</div>
+      <div class="realm-panel-main">${stats}${buttons}${group(t('glance.title', 'At a glance'), realmGlance(realm), 'realm-glance-group')}${tools}</div>
+      <div class="realm-panel-side">${group(t('glance.factsTitle', 'To join this realm'), realmFacts(realm))}${group(t('realms.startup', 'Starting'), startup)}</div>
     </div>
     ${danger}
   </article>`;
@@ -187,65 +187,230 @@ function realmViewKey() {
   if (chosen && list.some(realm => realm.key === chosen)) return chosen;
   return (list.find(realm => realm.state === 'running') || list[0])?.key || 'coa';
 }
-Object.assign(App.actions, { 'realm-view': button => { App.state.realmView = button.dataset.key; App.refresh('realms'); } });
+Object.assign(App.actions, { 'realm-view': button => { App.state.realmView = button.dataset.key; App.refresh('realms'); if (button.closest?.('.realm-others')) document.querySelector('.realm-tabs')?.scrollIntoView({ block: 'start', behavior: 'smooth' }); } });
 
-// Two quick switches per realm: Bot chat and Self-loot, the same keys as in Server settings, in this realm's own values.
-// Self-loot changes only what comes next (no bot is made again, nothing is taken off). Applied at the realm's next start.
+// « At a glance » (0.5.0, user 24/11: « facile et compréhensible pour un joueur qui lance son instance »): the three
+// choices a player makes first, on the realm itself, with the same keys as Server settings, in this realm's own values.
+// The card writes only what the player clicks (never a value of its own); anything set another way shows as Custom.
 const SELFLOOT_KEY = 'AiPlayerbot.CoaSelfFound';
-// Auto-gear at 60 (3.2): MAXLEVEL_KEY of server.js, 59 = geared as usual at 60, 80 = self-loot at every level.
+// MAXLEVEL_KEY of server.js: 80 = self-gear at every level (the .dist default since 3.2.2), 59 = auto-gear at 60.
 // Bots catch up with the players (SquidBot 5576aa9f): only on the Squid World realm, where CoaFreshStart is on.
 const CATCHUP_KEY = 'AiPlayerbot.CoaFreshStart.CatchUp.Enable';
-// A realm's Bot chat and Self-loot values ('' = the main realm), read once, then kept until a save.
+const POP_KEYS = ['AiPlayerbot.MinRandomBots', 'AiPlayerbot.MaxRandomBots'];
+const LEVEL_KEYS = { fixed: 'AiPlayerbot.DisableRandomLevels', start: 'AiPlayerbot.RandombotStartingLevel', brackets: 'AiPlayerbot.LevelBrackets.Enabled', dynamic: 'AiPlayerbot.LevelBrackets.Dynamic.UseDynamicDistribution', min: 'AiPlayerbot.RandomBotMinLevel', max: 'AiPlayerbot.RandomBotMaxLevel' };
+const POP_CHOICES = [200, 500, 1000];
+// The values each choice writes: those of the presets « Fresh world » and « Mixed levels » of Server settings.
+const START_CHOICES = {
+  level1: { [LEVEL_KEYS.fixed]: '1', [LEVEL_KEYS.start]: '1', [LEVEL_KEYS.brackets]: '0' },
+  spread: { [LEVEL_KEYS.fixed]: '0', [LEVEL_KEYS.brackets]: '1', [LEVEL_KEYS.dynamic]: '1' },
+};
+// Choice 1 writes only CoaSelfFound 0: the level of self-found is kept for a later return to self-gear.
+const GEAR_CHOICES = {
+  auto: { [SELFLOOT_KEY]: '0' },
+  self: { [SELFLOOT_KEY]: '1', AiPlayerbot_MAX: '80' },
+  self59: { [SELFLOOT_KEY]: '1', AiPlayerbot_MAX: '59' },
+};
+const gearPairs = choice => Object.entries(GEAR_CHOICES[choice]).map(([key, value]) => [key === 'AiPlayerbot_MAX' ? MAXLEVEL_KEY : key, value]);
+
+// A realm's values ('' = the main realm), read once, then kept until a save.
 function quickOf(target) {
   const cache = App.state.realmQuick ||= {};
   if (!(target in cache)) {
     cache[target] = null;
     App.api.serverSettings(target).then(conf => {
-      const value = key => String(conf.settings.find(setting => setting.key === key)?.value ?? '').trim();
-      const has = key => conf.settings.some(setting => setting.key === key);
-      cache[target] = { chat: value(CHAT_KEY), selfloot: value(SELFLOOT_KEY), maxLevel: value(MAXLEVEL_KEY), hasMaxLevel: has(MAXLEVEL_KEY), catchup: value(CATCHUP_KEY), hasChat: has(CHAT_KEY), hasLoot: has(SELFLOOT_KEY), hasCatchup: has(CATCHUP_KEY) };
+      const find = key => conf.settings.find(setting => setting.key === key);
+      const value = key => String(find(key)?.value ?? '').trim();
+      const has = key => !!find(key);
+      cache[target] = {
+        chat: value(CHAT_KEY), selfloot: value(SELFLOOT_KEY), maxLevel: value(MAXLEVEL_KEY), catchup: value(CATCHUP_KEY),
+        hasChat: has(CHAT_KEY), hasLoot: has(SELFLOOT_KEY), hasCatchup: has(CATCHUP_KEY),
+        min: value(POP_KEYS[0]), max: value(POP_KEYS[1]), hasPop: has(POP_KEYS[1]),
+        fixed: value(LEVEL_KEYS.fixed), start: value(LEVEL_KEYS.start), lowest: value(LEVEL_KEYS.min), highest: value(LEVEL_KEYS.max), hasLevels: has(LEVEL_KEYS.fixed),
+      };
       App.refresh('realms'); App.refresh('server');
     }).catch(() => { cache[target] = { error: true }; });
   }
   return cache[target];
 }
-function realmQuick(realm) {
+
+// Which choice the values match ('' when none: Custom).
+function popChoice(q) {
+  const min = Number(q.min), max = Number(q.max);
+  return q.min === q.max && POP_CHOICES.includes(max) ? String(max) : Number.isFinite(max) && q.max !== '' ? (min === max ? 'other' : '') : '';
+}
+const startChoice = q => (q.fixed === '1' ? (q.start === '1' || q.start === '' ? 'level1' : '') : q.fixed === '0' ? 'spread' : '');
+function gearChoice(q, locked) {
+  const self = locked || q.selfloot === '1';
+  if (!self) return q.selfloot === '0' ? 'auto' : '';
+  const level = q.maxLevel === '' ? 80 : Number(q.maxLevel);
+  return level >= 60 ? 'self' : level === 59 ? 'self59' : '';
+}
+
+function realmGlance(realm) {
   const target = realm.main ? '' : realm.key;
   const q = quickOf(target);
-  if (!q || q.error) return '';
+  if (!q) return `<p class="muted">${esc(t('glance.reading', 'Reading the settings of this realm…'))}</p>`;
+  if (q.error) return `<p class="muted">${esc(t('glance.unreadable', 'The settings of this realm cannot be read: use Settings.'))}</p>`;
+  // Squid World is self-gear by design (its levelling is made for it): Auto-gear is not offered there.
   const locked = realm.key === 'living';
-  const row = (action, on, disabled, title, hint) => `<div class="realm-quick-row"><span title="${esc(hint)}">${esc(title)}</span>${moduleSwitch(action, on, disabled).replace('<button', `<button data-key="${esc(target)}"`)}</div>`;
-  const chat = q.hasChat ? row('realm-chat', CHAT_READY && q.chat === '1', !CHAT_READY, t('lw.chat', 'Bot chat'), CHAT_READY ? t('lw.chatText', 'Bots talk in the chat channels, greet and answer. Off: they stay silent, everything else goes on.') : t('lw.chatSoon', 'Coming with the next bots build.')) : '';
-  const loot = q.hasLoot ? row('realm-selfloot', locked || q.selfloot === '1', locked, t('gear.selfloot', 'Self-loot'), locked ? t('realms.selflootLocked', 'Always on for the Squid World realm.') : t('gear.note', 'Your bots keep their level and what they wear today: only what comes next changes. Then Save.')) : '';
-  // Auto-gear at 60 (3.2): off when CoaSelfFoundMaxLevel is 60 or more (80 by its switch on this card).
-  const at60 = !(Number(q.maxLevel) >= 60);
-  const gear60 = q.hasMaxLevel && (locked || q.selfloot === '1') ? row('realm-at60', at60, false, t('gear.at60', 'Auto-gear at level 60'), t('gear.at60Text', 'On: at 60 the bots are geared as usual for the endgame. Off: self-loot at every level, even at 60.')) + `<small class="muted realm-quick-info">${esc(t('gear.at60Info', 'Off (default): bots keep self-looting at 60 too, and wear only what they find. On: at 60 they get a full endgame gear at once. Bots already geared keep their gear.'))}</small>` : '';
-  const help = loot && !locked ? ` ${at60 ? t('realms.selflootHelp', 'Self-loot until level 59; at 60 bots are geared as usual.') : t('realms.selflootHelpAll', 'Self-loot at every level, even at 60.')}` : '';
-  const catchup = locked && q.hasCatchup ? row('realm-catchup', q.catchup === '1', false, t('realms.catchup', 'Bots catch up with players'), t('realms.catchupHint', 'Random bots behind the human players earn more experience.')) : '';
-  return chat || loot || catchup ? `<div class="realm-quick">${chat}${loot}${gear60}${catchup}<small class="muted">${esc(t('realms.quickNext', 'Applied at the next start of this realm.') + help)}</small></div>` : '';
+  const seg = (action, options, current) => `<div class="glance-seg" role="radiogroup">${options.map(option => `<button class="glance-opt${option.value === current ? ' active' : ''}" role="radio" aria-checked="${option.value === current}" data-action="${action}" data-key="${esc(target)}" data-realm="${esc(realm.key)}" data-value="${esc(option.value)}" ${option.disabled ? 'disabled' : ''}${option.hint ? ` title="${esc(option.hint)}"` : ''}><strong>${esc(option.label)}</strong>${option.sub ? `<small>${esc(option.sub)}</small>` : ''}</button>`).join('')}</div>`;
+  const custom = (shown, text) => (shown ? `<p class="glance-custom">${icon('info')}<span>${esc(text)}</span></p>` : '');
+  const row = (iconName, title, explain, control) => `<div class="glance-row"><div class="glance-label">${icon(iconName)}<div><strong>${esc(title)}</strong><small>${esc(explain)}</small></div></div>${control}</div>`;
+  const rows = [];
+  if (q.hasPop) {
+    const current = popChoice(q);
+    const options = [
+      { value: '200', label: '200', sub: t('glance.pop200', 'Light') },
+      { value: '500', label: '500', sub: t('glance.pop500', 'Recommended') },
+      { value: '1000', label: '1000', sub: t('glance.pop1000', 'Big PC, 32 GB') },
+      { value: 'other', label: current === 'other' ? q.max : t('glance.popOther', 'Other…'), sub: current === 'other' ? t('glance.popYours', 'Your number') : t('glance.popPick', 'Pick a number') },
+    ];
+    rows.push(row('bot', t('glance.pop', 'Population'), t('glance.popText', 'How many bots live on this realm. About 16 GB of memory holds 200 comfortably; 1000 needs about 32 GB.'), seg('glance-pop', options, current)
+      + custom(!current, t('glance.popCustom', 'Set another way: between {min} and {max} bots. A choice above replaces it.', { min: q.min || '?', max: q.max || '?' }))));
+  }
+  if (q.hasLevels) {
+    // Squid World (CoaFreshStart) and a self-gear realm (CoaSelfFound: « random bots gain levels only by playing (no
+    // random level, no level brackets) », playerbots.conf.dist): bots start at level 1 whatever the keys of levels say.
+    const fromOne = locked ? 'fresh' : q.selfloot === '1' ? 'self' : '';
+    const current = fromOne ? 'level1' : startChoice(q);
+    const range = `${q.lowest || '1'}-${q.highest || '60'}`;
+    const options = [
+      { value: 'level1', label: t('glance.level1', 'Everyone at level 1'), sub: t('glance.level1Sub', 'A fresh world: bots level up with you') },
+      { value: 'spread', label: t('glance.spread', 'Spread {range}', { range }), sub: t('glance.spreadSub', 'Bots of every level from the start') },
+    ].map(option => (fromOne ? { ...option, disabled: true } : option));
+    const why = fromOne === 'fresh' ? t('glance.startFresh', 'Squid World is a fresh world: every bot starts at level 1 and levels up by playing, at its own pace.')
+      : fromOne === 'self' ? t('glance.startSelf', 'With Self-gear, every new bot starts at a low level and gains levels only by playing. Choose Auto-gear to spread the bots from the start.') : '';
+    rows.push(row('user', t('glance.start', 'Bots start'), t('glance.startText', 'Only bots made from now on start this way: the bots already there keep their level until they are recreated.'), seg('glance-start', options, current)
+      + (why ? `<p class="glance-explain">${esc(why)}</p>` : '')
+      + custom(!current, t('glance.startCustom', 'Set another way (every bot starts at level {level}). A choice above replaces it.', { level: q.start || '?' }))));
+  }
+  if (q.hasLoot) {
+    const current = gearChoice(q, locked);
+    // The words of each choice, checked against playerbots.conf.dist of SquidBot 3.2.2 (24/11): AutoUpgradeEquip and
+    // CoaGearMatchGroup (auto); CoaSelfFound, StarterWeapon, BotAuctions.Shop, RemoteBuy, CraftForSelf (self-gear);
+    // CoaSelfFoundMaxLevel 59 and CoaSelfFoundBotsPercent -1 = 20 % (self-gear 1-59).
+    const texts = {
+      auto: t('glance.gearAutoText', 'The server gives bots gear for their level when they are made and when they level up. Grouped with a player, a bot is geared at that player\'s item level.'),
+      self: t('glance.gearSelfOnlyText', 'No gear is ever made for bots: they wear only what they loot, earn from quests, craft, trade or buy at the auction house. Every piece is earned. (A bot left with no weapon at all gets its class\'s starting weapon, once.)'),
+      self59: t('glance.gearSelf159Text', 'Levels 1 to 59 play exactly as Self-gear only. A bot that reaches level 60 is geared as usual for the endgame, as with Auto-gear. The bots of the dungeon share (20 % by default) stay self-gear at 60.'),
+    };
+    const options = [
+      { value: 'auto', label: t('glance.gearAuto', 'Auto-gear'), sub: t('glance.gearAutoSub2', 'Gear made for their level'), disabled: locked, hint: locked ? t('glance.gearLocked', 'Squid World is always self-gear: its levelling is made for it.') : texts.auto },
+      { value: 'self', label: t('glance.gearSelfOnly', 'Self-gear only'), sub: t('glance.gearSelfOnlySub', 'Every piece is earned'), hint: texts.self },
+      { value: 'self59', label: t('glance.gearSelf159', 'Self-gear 1-59'), sub: t('glance.gearSelf159Sub', 'Then auto-gear at 60'), hint: texts.self59 },
+    ];
+    rows.push(row('shield', t('glance.gear', 'Bot gear'), t('glance.gearText', 'Bots already equipped keep what they wear: only what comes next changes.'), seg('glance-gear', options, current)
+      + (texts[current] ? `<p class="glance-explain">${esc(texts[current])}</p>` : '')
+      + custom(!current, t('glance.gearCustom', 'Set another way (self-found up to level {level}). A choice above replaces it.', { level: q.maxLevel || '?' }))));
+  }
+  const toggle = (action, on, title, hint) => `<div class="realm-quick-row"><span title="${esc(hint)}">${esc(title)}</span>${moduleSwitch(action, on, false).replace('<button', `<button data-key="${esc(target)}"`)}</div>`;
+  const chat = q.hasChat && CHAT_READY ? toggle('realm-chat', q.chat === '1', t('lw.chat', 'Bot chat'), t('lw.chatText', 'Bots talk in the chat channels, greet and answer. Off: they stay silent, everything else goes on.')) : '';
+  const catchup = locked && q.hasCatchup ? toggle('realm-catchup', q.catchup === '1', t('realms.catchup', 'Bots catch up with players'), t('realms.catchupHint', 'Random bots behind the human players earn more experience.')) : '';
+  const switches = chat || catchup ? `<div class="realm-quick glance-switches">${chat}${catchup}</div>` : '';
+  if (!rows.length && !switches) return '';
+  const on = ['running', 'starting'].includes(realm.state);
+  return `<div class="glance">${rows.join('')}${switches}<small class="muted">${esc(on ? t('glance.nextStartOn', 'Saved at once; this realm uses it at its next start (Stop, then Start).') : t('realms.quickNext', 'Applied at the next start of this realm.'))}</small></div>`;
+}
+
+// What a player needs to join: the address of the realmlist, the version, the last saved copy.
+function realmFacts(realm) {
+  const facts = App.state.realmFacts ||= {};
+  if (!facts.loading) {
+    facts.loading = true;
+    App.api.networkInfo().then(info => { facts.net = info; App.refresh('realms'); }).catch(() => { facts.net = { error: true }; });
+  }
+  const backups = facts.backups ||= {};
+  if (!(realm.key in backups)) {
+    backups[realm.key] = undefined;
+    const read = realm.main ? App.api.backups().then(list => list[0]?.createdAt || null) : App.api.realmsBackups(realm.key).then(list => list[0]?.at || null);
+    read.then(at => { backups[realm.key] = at; App.refresh('realms'); }).catch(() => { backups[realm.key] = null; });
+  }
+  const net = facts.net?.network;
+  const address = net ? (net.mode === 'open' ? net.address : '127.0.0.1') : '';
+  const line = address ? `set realmlist ${address}` : '';
+  const where = net ? (net.mode === 'open' ? t('glance.addrOpen2', 'Play sets it in your game; on another PC, put this line in its realmlist.wtf.') : t('glance.addrLocal2', 'This PC only: Play sets it in your game. Server > Network opens the server to the other PCs of your home.')) : '';
+  const at = backups[realm.key];
+  const saved = at === undefined ? '…' : at ? new Date(at).toLocaleString() : t('glance.noBackup', 'None yet');
+  const version = App.state.realms?.version;
+  const item = (iconName, label, value, extra = '') => `<div class="fact-row">${icon(iconName)}<div><small>${esc(label)}</small><strong>${esc(value)}</strong>${extra}</div></div>`;
+  return `<div class="realm-facts">
+    ${item('globe', t('glance.addr2', 'Server address (realmlist)'), line || '…', line ? `<button class="link-button" data-action="glance-copy" data-line="${esc(line)}">${icon('copy')}${esc(t('glance.copy', 'Copy'))}</button><small class="muted">${esc(where)}</small>` : '')}
+    ${item('map', t('glance.inList', 'Then, in the realm list of the game'), realm.name || realmTitle(realm.key))}
+    ${version ? item('bot', t('glance.version', 'Version'), `CoA Bots ${version}`) : ''}
+    ${item('book', t('glance.lastBackup', 'Last saved copy'), saved)}
+  </div>`;
 }
 // Bot chat and the bots' catch-up are read again by a running world (.reload config): applied at once. Self-loot is read
 // at the start of the world only.
 const QUICK_RELOAD = ['AiPlayerbot.CoaLive.Chat.Enable', 'AiPlayerbot.CoaFreshStart.CatchUp.Enable'];
-async function realmQuickSet(target, key, on, values = ['0', '1']) {
-  const value = on ? values[1] : values[0];
-  await App.api.saveServerSettings([{ file: 'playerbots.conf', key, value }], target);
+// pairs: [[key, value]] of playerbots.conf, written together in this realm's own values (only what the player clicked).
+async function realmQuickSave(target, pairs, { quiet = false } = {}) {
+  await App.api.saveServerSettings(pairs.map(([key, value]) => ({ file: 'playerbots.conf', key, value })), target);
   delete App.state.realmQuick?.[target];
   const running = target ? realmList().some(item => item.key === target && item.state === 'running') : worldRunning(App.state.server);
-  if (running && QUICK_RELOAD.includes(key)) {
+  if (running && pairs.every(([key]) => QUICK_RELOAD.includes(key))) {
     await App.api.consoleRun('reload config', target)
       .then(() => toast(t('conf.reloaded', 'Applied at once: the server read its settings again.'), 'success'))
       .catch(() => toast(t('conf.reloadFailed', 'The server did not answer: these settings apply at its next start.'), 'info'));
-  } else if (running) toast(t('realms.quickNextStart', 'Saved: it applies at the next start of this realm.'), 'info');
-  // Server settings of that realm show the new value too.
-  if (App.state.conf && !App.state.conf.error && confRealm() === target) for (const setting of App.state.conf.settings) if (setting.key === key) setting.value = value;
+  } else if (running && !quiet) toast(t('realms.quickNextStart', 'Saved: it applies at the next start of this realm.'), 'info');
+  else if (!quiet) toast(t('glance.saved', 'Saved.'), 'success');
+  // Server settings of that realm show the new values too.
+  if (App.state.conf && !App.state.conf.error && confRealm() === target) for (const setting of App.state.conf.settings) for (const [key, value] of pairs) if (setting.key === key) setting.value = value;
   App.refresh('realms'); App.refresh('server');
 }
+const realmQuickSet = (target, key, on, values = ['0', '1']) => realmQuickSave(target, [[key, on ? values[1] : values[0]]]);
+
+// A number of bots typed by the player (Other…): the bounds of Server settings.
+async function askBotCount(current) {
+  let typed = String(current || '');
+  const onInput = event => { if (event.target?.id === 'glance-count') typed = event.target.value; };
+  document.addEventListener('input', onInput);
+  let ok = false;
+  try {
+    ok = await confirmDialog({ title: t('glance.popAskTitle', 'How many bots on this realm?'), body: `${esc(t('glance.popAskBody', 'From 0 to 5000. About 16 GB of memory holds 200 bots comfortably; 1000 needs about 32 GB.'))}</p><p><input class="text-input" id="glance-count" type="number" min="0" max="5000" step="50" value="${esc(typed)}">`, confirm: t('common.save', 'Save') });
+  } finally { document.removeEventListener('input', onInput); }
+  if (!ok) return null;
+  const count = Number(typed);
+  if (!Number.isInteger(count) || count < 0 || count > 5000) { toast(t('glance.popBad', 'A whole number from 0 to 5000.'), 'error'); return null; }
+  return count;
+}
+
+// After a new start of the bots: those already there keep their level; recreating them is offered, never done alone.
+async function offerRecreate(realm) {
+  const name = realmTitle(realm);
+  const on = realm === 'coa' ? worldRunning(App.state.server) : realmList().some(item => item.key === realm && ['running', 'starting'].includes(item.state));
+  if (on) { await resultDialog({ title: t('glance.recreateLaterTitle', 'Saved: new bots start this way'), body: `<p>${esc(t('glance.recreateLater', 'The bots already on {name} keep their level. To start every bot this way, stop the realm, then use Recreate the bots (Tools).', { name }))}</p>`, kind: 'success' }); return; }
+  if (!await confirmDialog({ title: t('glance.recreateTitle', 'Recreate the bots of {name} now?', { name }), body: esc(t('glance.recreateBody', 'Saved: bots made from now on start this way. The bots already there keep their level: recreate them so that every bot starts this way. Players and their characters are not touched; the bots come back at the next start.')), confirm: t('glance.recreate', 'Recreate the bots'), danger: true })) return;
+  const button = { dataset: { key: realm } };
+  if (realm === 'coa') await App.actions['purge-bots'](button);
+  else await App.actions['realm-purge'](button);
+}
+
 Object.assign(App.actions, {
   'realm-chat': button => guard(() => realmQuickSet(button.dataset.key, CHAT_KEY, button.dataset.on !== '1'), button),
   'realm-catchup': button => guard(() => realmQuickSet(button.dataset.key, CATCHUP_KEY, button.dataset.on !== '1'), button),
-  'realm-selfloot': button => guard(() => realmQuickSet(button.dataset.key, SELFLOOT_KEY, button.dataset.on !== '1'), button),
-  'realm-at60': button => guard(() => realmQuickSet(button.dataset.key, MAXLEVEL_KEY, button.dataset.on !== '1', ['80', '59']), button),
+  'glance-pop': button => guard(async () => {
+    const q = App.state.realmQuick?.[button.dataset.key] || {};
+    const count = button.dataset.value === 'other' ? await askBotCount(q.max) : Number(button.dataset.value);
+    if (count === null) return;
+    await realmQuickSave(button.dataset.key, POP_KEYS.map(key => [key, String(count)]));
+  }, button),
+  'glance-start': button => guard(async () => {
+    const choice = START_CHOICES[button.dataset.value];
+    if (!choice || button.classList.contains('active')) return;
+    await realmQuickSave(button.dataset.key, Object.entries(choice), { quiet: true });
+    await offerRecreate(button.dataset.realm);
+  }, button),
+  'glance-gear': button => guard(async () => {
+    if (!GEAR_CHOICES[button.dataset.value] || button.classList.contains('active')) return;
+    await realmQuickSave(button.dataset.key, gearPairs(button.dataset.value));
+  }, button),
+  'glance-copy': button => guard(async () => {
+    const line = button.dataset.line;
+    await navigator.clipboard.writeText(line);
+    toast(t('net.copied', 'Copied: {line}', { line }), 'success');
+  }, button),
+  'realm-others': () => { App.state.realmOthers = !App.state.realmOthers; App.refresh('realms'); },
 });
 
 // Eco mode (CoA Bots 2.9.1 and later): the bots far from players mostly sleep while nobody plays on this realm.
@@ -262,11 +427,36 @@ function realmsPage() {
   const r = App.state.realms;
   if (!r) return `<div class="page classic">${head}${skeleton(3)}</div>`;
   if (r.error) return `<div class="page classic">${head}${emptyState('warning', t('realms.error', 'The realms cannot be read'), r.error)}</div>`;
+  const busy = App.state.realmBusy || '';
+  const current = realmViewKey();
+  // The bar: the two main realms, and any other one the player switched on (or is looking at).
+  const bar = realmList().filter(realm => MAIN_REALMS.includes(realm.key) || !['absent', 'disabled'].includes(realm.state) || realm.key === current);
+  const others = realmList().filter(realm => !MAIN_REALMS.includes(realm.key));
+  const open = App.state.realmOthers;
   return `<div class="page classic realms-page">${head}
-    <p class="realms-lead">${esc(t('realms.lead', 'One server, several ways to play. Each realm has its own characters, bots and settings; the game accounts are shared: log in once, then pick the realm in the realm list of the game.'))}</p>
-    ${realmTabs(realmList(), realmViewKey(), App.state.realmBusy || '')}
-    ${realmPanel(realmList().find(realm => realm.key === realmViewKey()), App.state.realmBusy || '')}
+    <p class="realms-lead">${esc(t('realms.lead2', 'Your server, ready to play: Conquest of Azeroth is the classic realm, Squid World a fresh world where everything starts at level 1. Pick the realm in the realm list of the game; the game accounts are the same on every realm.'))}</p>
+    ${realmTabs(bar, current, busy)}
+    ${realmPanel(realmList().find(realm => realm.key === current), busy)}
+    <section class="realm-others${open ? ' open' : ''}">
+      <button class="button ghost realm-others-toggle" data-action="realm-others" aria-expanded="${!!open}">${icon('layers')}${esc(open ? t('glance.othersHide', 'Hide the other realm types') : t('glance.othersShow', 'See other realm types ({n})', { n: others.length }))}${icon('chevron')}</button>
+      ${open ? `<p class="muted">${esc(t('glance.othersLead', 'Other ways to play, each with its own characters and bots, next to your main realms. Switch one on when you want to try it; nothing of your main realms changes.'))}</p><div class="realm-other-cards">${others.map(realm => realmOtherCard(realm, busy, current)).join('')}</div>` : ''}
+    </section>
   </div>`;
+}
+
+// The two realms every player starts with (user, 24/11); the others are one click away.
+const MAIN_REALMS = ['coa', 'living'];
+// A small card of another realm type: what it is and its state; Open shows its full panel above.
+function realmOtherCard(realm, busy, current) {
+  const info = REALMS_INFO[realm.key];
+  const state = realmShownState(realm, busy);
+  const action = realm.state === 'absent' ? t('glance.otherDiscover', 'Discover') : t('glance.otherOpen', 'Open');
+  return `<article class="realm-other realm-${realm.key}${realm.key === current ? ' active' : ''}">
+    <header>${realmEmblem(realm.key, 40)}<div><strong>${esc(info.title)}</strong><small>${esc(realmSub(info))}</small></div>${realmStatePill(state, realm)}</header>
+    <p>${esc(t(info.textKey, info.text))}</p>
+    ${info.experimental ? `<span class="pill warn realm-exp">${esc(t('modules.experimental', 'Experimental'))}</span>` : ''}
+    <button class="button ghost small" data-action="realm-view" data-key="${realm.key}">${esc(action)}${icon('arrow')}</button>
+  </article>`;
 }
 
 App.pages.realms = {

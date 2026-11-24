@@ -521,3 +521,46 @@ summary.damage-row::-webkit-details-marker { display: none; }
 .map-step .progress { flex: none; margin: 4px 0 2px; }
 .map-step-how { opacity: .8; }
 .maps-steps .button-row { margin-top: 8px; flex-wrap: wrap; }
+
+/* 0.5.0: the Realms page « at a glance » (population, bots start, bot gear), the facts to join, the other realm types. */
+.realm-glance-group { gap: 12px; }
+.glance { display: grid; gap: 14px; }
+.glance-row { display: grid; gap: 8px; }
+.glance-label { display: flex; align-items: flex-start; gap: 10px; }
+.glance-label > .icon { width: 18px; height: 18px; margin-top: 2px; color: var(--realm, var(--accent)); flex: none; }
+.glance-label strong { display: block; font-size: 14px; color: var(--text); }
+.glance-label small { display: block; font-size: 12px; line-height: 1.4; color: var(--muted); }
+.glance-seg { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 6px; }
+.glance-opt { display: grid; gap: 2px; padding: 9px 11px; border-radius: 10px; text-align: left; color: var(--muted); background: var(--panel); border: 1px solid var(--line); cursor: pointer; transition: border-color .15s, background .15s, color .15s; }
+.glance-opt strong { font-size: 13.5px; color: var(--text); }
+.glance-opt small { font-size: 11.5px; line-height: 1.35; }
+.glance-opt:hover:not(:disabled) { border-color: color-mix(in srgb, var(--realm, var(--accent)) 55%, var(--line)); }
+.glance-opt.active { color: var(--text); border-color: var(--realm, var(--accent)); background: color-mix(in srgb, var(--realm, var(--accent)) 16%, var(--panel)); box-shadow: 0 0 0 1px color-mix(in srgb, var(--realm, var(--accent)) 40%, transparent); }
+.glance-opt.active strong::before { content: "✓ "; color: var(--realm, var(--accent)); }
+.glance-opt:disabled { opacity: .45; cursor: not-allowed; }
+.glance-custom { display: flex; gap: 8px; align-items: flex-start; margin: 0; padding: 7px 10px; border-radius: 8px; font-size: 12px; color: var(--muted); background: color-mix(in srgb, var(--warn, #e0a640) 10%, transparent); border: 1px dashed color-mix(in srgb, var(--warn, #e0a640) 45%, transparent); }
+.glance-custom .icon { width: 14px; height: 14px; flex: none; margin-top: 1px; }
+.glance-switches { display: flex; flex-wrap: wrap; gap: 8px 22px; padding-top: 10px; border-top: 1px solid var(--line); }
+.realm-facts { display: grid; gap: 10px; }
+.fact-row { display: flex; gap: 10px; align-items: flex-start; min-width: 0; }
+.fact-row > .icon { width: 16px; height: 16px; margin-top: 3px; color: var(--realm, var(--accent)); flex: none; }
+.fact-row > div { display: grid; gap: 2px; min-width: 0; }
+.fact-row small { font-size: 11.5px; color: var(--faint); }
+.fact-row strong { font-size: 13.5px; color: var(--text); overflow-wrap: anywhere; }
+.fact-row .link-button { justify-self: start; padding: 2px 0; }
+.realm-others { display: grid; gap: 12px; margin-top: 18px; }
+.realm-others-toggle { justify-self: start; }
+.realm-others-toggle .icon:last-child { transition: transform .15s; }
+.realm-others.open .realm-others-toggle .icon:last-child { transform: rotate(180deg); }
+.realm-others > p { margin: 0; }
+.realm-other-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.realm-other { display: grid; gap: 8px; align-content: start; padding: 14px; border-radius: 12px; background: var(--panel); border: 1px solid color-mix(in srgb, var(--realm) 25%, var(--line)); }
+.realm-other.active { border-color: var(--realm); }
+.realm-other header { display: flex; gap: 10px; align-items: center; }
+.realm-other header > div { display: grid; flex: 1; min-width: 0; }
+.realm-other header small { font-size: 11.5px; color: var(--faint); }
+.realm-other p { margin: 0; font-size: 12.5px; line-height: 1.45; color: var(--muted); }
+.realm-other .button { justify-self: start; }
+.realm-other .realm-exp { justify-self: start; }
+.glance-explain { margin: 0; padding: 8px 11px; border-radius: 8px; font-size: 12.5px; line-height: 1.45; color: var(--text); background: color-mix(in srgb, var(--realm, var(--accent)) 8%, transparent); border-left: 3px solid var(--realm, var(--accent)); }
+.glance-opt.active:disabled { opacity: 1; cursor: default; }
