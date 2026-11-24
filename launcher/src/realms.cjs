@@ -182,6 +182,9 @@ const OLD_CREATION_DEFAULTS = [
   // rule that an edited value stays). Marked in realm.json: a player who turns it on again afterwards is never undone.
   // A realm made later gets it at its first read, so off is its creation default too.
   { id: 'at60-off-3.2.2', key: '*', file: 'playerbots.conf', setting: AT60_OFF[0], force: true, now: AT60_OFF[1] },
+  // 3.2.2: server firsts off on Squid World (a 3.2.1 core can crash on them; Pilote 24/11). Its creation wrote 1: a value
+  // still at 1 goes to 0, once; a 0 stays. Turned on again later by the player, it is never undone.
+  { id: 'serverfirst-off-3.2.2', key: 'living', file: 'playerbots.conf', setting: 'AiPlayerbot.CoaWorld.ServerFirst.Enable', old: ['1'], now: '0' },
 ];
 // The Classic pack of 0.4.2 wrote these at their 0.4.2 defaults, which 3.1 turns on (Pilote, 14/11). A realm's value
 // moves to the 3.1 default only when the pack's own trace proves the pack wrote it (.coa-launcher\living-pack-undo.json:
@@ -635,7 +638,7 @@ async function create(root, key, { bots = key === 'living' ? LIVING_BOTS : DEFAU
 }
 
 // The own values of the new living server (docs/LIVING-WORLDS-3.0.md), written once at its creation; the player changes
-// them later like any realm setting. Solo self-found as it is, the Living pack, the server firsts, and the economy of
+// them later like any realm setting. Solo self-found as it is, the Living pack, and the economy of
 // CoA Economie: an auction house that fills up gradually from the start, never empty, with no epics at first.
 function livingOwn({ ahMerged = true } = {}) {
   const own = {};
@@ -644,9 +647,8 @@ function livingOwn({ ahMerged = true } = {}) {
   for (const [key, value] of Object.entries(CATALOG.recipes.find(recipe => recipe.id === 'self-found-world')?.changes || {})) put(fileOf(key), key, value);
   for (const [key, value] of Object.entries(CATALOG.packs.find(pack => pack.id === 'living')?.changes || {})) if (ahMerged || key !== 'AiPlayerbot.CoaEconomy.AHBot.Enable') put(fileOf(key), key, value);
   const E = 'AiPlayerbot.CoaEconomy.';
-  // A realm that opens like a new official server (Pilote, 11/11): fresh start, launch curve, server firsts, self-loot,
+  // A realm that opens like a new official server (Pilote, 11/11): fresh start, launch curve, self-loot,
   // bot chat on. Written on this new realm only; an existing realm keeps the core's defaults.
-  put('playerbots.conf', 'AiPlayerbot.CoaWorld.ServerFirst.Enable', 1);
   put('playerbots.conf', 'AiPlayerbot.CoaFreshStart.Enable', 1);
   put('playerbots.conf', `${E}LaunchCurve.Enable`, 1);
   put('playerbots.conf', 'AiPlayerbot.CoaSelfFound', 1);

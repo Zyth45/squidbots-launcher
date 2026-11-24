@@ -11,22 +11,26 @@
             "en": [
                 "Conquest of Azeroth and Squid World side by side: set the population, how the bots start and their gear (Auto-gear, Self-gear, Self-gear 1-59) right on each realm; a « ? » tells what each choice does. Auto-start and Eco mode are at the top of each card.",
                 "Recreate the bots on every realm, saved first. Reset the world on Wildcard, Reborn and Free Pick too, with a clear warning of what is erased and what is kept.",
-                "Each realm shows its realmlist line with a Copy button that always works. \"Bots sent to real dungeons (%)\" is now with the Dungeon Clear settings."
+                "Each realm shows its realmlist line with a Copy button that always works. \"Bots sent to real dungeons (%)\" is now with the Dungeon Clear settings.",
+                "Server firsts are off on Squid World for now (an older server could stop on them). Turn them on again in the realm settings if you want them."
             ],
             "fr": [
                 "Conquest of Azeroth et Squid World côte à côte : réglez la population, le départ des bots et leur équipement (Auto-gear, Self-gear, Self-gear 1-59) directement sur chaque royaume ; un « ? » dit ce que fait chaque choix. Démarrage auto et Mode éco sont en haut de chaque carte.",
                 "Recréez les bots sur chaque royaume, sauvegardé d'abord. Remettez à neuf Wildcard, Reborn et Free Pick aussi, avec un avertissement clair de ce qui est effacé et de ce qui est gardé.",
-                "Chaque royaume affiche sa ligne realmlist avec un bouton Copier qui marche toujours. « Bots envoyés en vrai donjon (%) » est désormais avec les réglages de Dungeon Clear."
+                "Chaque royaume affiche sa ligne realmlist avec un bouton Copier qui marche toujours. « Bots envoyés en vrai donjon (%) » est désormais avec les réglages de Dungeon Clear.",
+                "Les « premiers du serveur » sont coupés sur Squid World pour le moment (un serveur plus ancien pouvait s'arrêter dessus). Réactivez-les dans les réglages du royaume si vous les voulez."
             ],
             "ru": [
                 "Conquest of Azeroth и Squid World рядом: население, старт ботов и их снаряжение (автоэкипировка, Self-gear, Self-gear 1-59) настраиваются прямо в каждом мире; «?» объясняет каждый выбор. Автозапуск и эко-режим — вверху каждой карточки.",
                 "Создавайте ботов заново в любом мире, сначала с резервной копией. Сброс мира теперь и для Wildcard, Reborn и Free Pick, с понятным предупреждением о том, что удаляется и что сохраняется.",
-                "Каждый мир показывает строку realmlist с кнопкой «Копировать», которая всегда работает. «Ботов в настоящих подземельях (%)» теперь в настройках Dungeon Clear."
+                "Каждый мир показывает строку realmlist с кнопкой «Копировать», которая всегда работает. «Ботов в настоящих подземельях (%)» теперь в настройках Dungeon Clear.",
+                "«Первые на сервере» пока отключены в Squid World (старый сервер мог на них останавливаться). Включите их снова в настройках мира, если хотите."
             ],
             "zh": [
                 "Conquest of Azeroth 与 Squid World 并排显示：直接在每个国度设置人口、机器人起点和装备（自动配装、自给装备、自给装备 1-59）；“?”说明每个选项的作用。自动启动和节能模式位于每张卡片顶部。",
                 "可在每个国度重新创建机器人，并先行备份。Wildcard、Reborn 和 Free Pick 现在也能重置世界，并清楚提示会删除和保留的内容。",
-                "每个国度都显示其 realmlist 行，复制按钮始终可用。“派往真实副本的机器人（%）”现在位于 Dungeon Clear 设置中。"
+                "每个国度都显示其 realmlist 行，复制按钮始终可用。“派往真实副本的机器人（%）”现在位于 Dungeon Clear 设置中。",
+                "Squid World 暂时关闭“服务器首杀”（较旧的服务器可能因此停止）。如需要，可在国度设置中重新开启。"
             ]
         }
     },

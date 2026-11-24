@@ -31,7 +31,7 @@ test('an old launch premium of a Squid World moves to 0 once; another value, and
     const changed = JSON.parse(fs.readFileSync(path.join(dir, 'settings.json'), 'utf8'));
     assert.equal(changed['playerbots.conf'][KEY], after, `${before} -> ${after}`);
     assert.equal(changed['playerbots.conf']['AiPlayerbot.CoaEconomy.LaunchCurve.LevelMargin'], '5');
-    assert.deepEqual(JSON.parse(fs.readFileSync(path.join(dir, 'realm.json'), 'utf8')).moved, ['launch-premium-0', 'bgsim-3.2', 'at60-off-3.2.2', 'classic-pack-3.1', 'classic-pack-3.1.6']);
+    assert.deepEqual(JSON.parse(fs.readFileSync(path.join(dir, 'realm.json'), 'utf8')).moved, ['launch-premium-0', 'bgsim-3.2', 'at60-off-3.2.2', 'serverfirst-off-3.2.2', 'classic-pack-3.1', 'classic-pack-3.1.6']);
     // The player sets 100 again afterwards: kept.
     changed['playerbots.conf'][KEY] = '100';
     fs.writeFileSync(path.join(dir, 'settings.json'), JSON.stringify(changed));
@@ -152,5 +152,25 @@ test('Auto-gear at level 60 is turned off once on every realm, then the choice o
     fs.writeFileSync(path.join(dir, 'settings.json'), JSON.stringify(values));
     await realms.status(root, { live: false }).catch(() => null);
     assert.equal(own(dir)[AT60], '59');
+  }
+});
+
+// 3.2.2 (Pilote, 24/11): the server firsts written at 1 by the creation of a Squid World go to 0 once; a 0 stays, and a 1
+// set again by the player afterwards stays too.
+test('server firsts go off once on an existing Squid World; the choice of the player afterwards stays', async () => {
+  const SF = 'AiPlayerbot.CoaWorld.ServerFirst.Enable';
+  for (const [before, after] of [['1', '0'], ['0', '0'], [undefined, undefined]]) {
+    const { root, dir } = realm('0');
+    const start = JSON.parse(fs.readFileSync(path.join(dir, 'settings.json'), 'utf8'));
+    if (before !== undefined) start['playerbots.conf'][SF] = before;
+    fs.writeFileSync(path.join(dir, 'settings.json'), JSON.stringify(start));
+    await realms.status(root, { live: false }).catch(() => null);
+    const changed = JSON.parse(fs.readFileSync(path.join(dir, 'settings.json'), 'utf8'))['playerbots.conf'];
+    assert.equal(changed[SF], after, String(before));
+    assert.ok(JSON.parse(fs.readFileSync(path.join(dir, 'realm.json'), 'utf8')).moved.includes('serverfirst-off-3.2.2'));
+    changed[SF] = '1';
+    fs.writeFileSync(path.join(dir, 'settings.json'), JSON.stringify({ 'playerbots.conf': changed }));
+    await realms.status(root, { live: false }).catch(() => null);
+    assert.equal(JSON.parse(fs.readFileSync(path.join(dir, 'settings.json'), 'utf8'))['playerbots.conf'][SF], '1', 'a 1 set afterwards stays');
   }
 });

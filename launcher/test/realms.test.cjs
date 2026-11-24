@@ -340,7 +340,8 @@ test('the new living server: its own databases only, the launch mode imposed, it
   // Its own values: Solo self-found, the Living pack, the server firsts and the launch curve of the economy.
   const own = JSON.parse(fs.readFileSync(path.join(root, 'Royaumes', 'living', 'settings.json'), 'utf8'));
   assert.strictEqual(own['playerbots.conf']['AiPlayerbot.CoaSelfFound'], '1');
-  assert.strictEqual(own['playerbots.conf']['AiPlayerbot.CoaWorld.ServerFirst.Enable'], '1');
+  // Server firsts are no longer written (3.2.2, a 3.2.1 core can crash on them): the realm follows CoA (0).
+  assert.strictEqual(own['playerbots.conf']['AiPlayerbot.CoaWorld.ServerFirst.Enable'], undefined);
   assert.strictEqual(own['playerbots.conf']['AiPlayerbot.CoaLive.Enable'], '1');
   assert.strictEqual(own['playerbots.conf']['AiPlayerbot.CoaEconomy.LaunchCurve.StartStockPercent'], '15');
   assert.strictEqual(own['mod_dungeon_clear.conf']['DungeonClear.SelfFound.MaxGroups'], '4');
@@ -394,10 +395,11 @@ test('the new living server is only offered when the update tool of CoA Bots kno
 
 test('the Living World realm opens like a new server: its own values at creation (Pilote, 11/11)', () => {
   const own = realms.livingOwn()['playerbots.conf'];
-  for (const [key, value] of Object.entries({ 'AiPlayerbot.CoaFreshStart.Enable': '1', 'AiPlayerbot.CoaEconomy.LaunchCurve.Enable': '1', 'AiPlayerbot.CoaWorld.ServerFirst.Enable': '1', 'AiPlayerbot.CoaSelfFound': '1', 'AiPlayerbot.CoaLive.Chat.Enable': '1', 'AiPlayerbot.LootNeedRollLevel': '2', 'AiPlayerbot.CoaWorld.BgSim.Enable': '1' })) assert.strictEqual(own[key], value, key);
+  for (const [key, value] of Object.entries({ 'AiPlayerbot.CoaFreshStart.Enable': '1', 'AiPlayerbot.CoaEconomy.LaunchCurve.Enable': '1', 'AiPlayerbot.CoaSelfFound': '1', 'AiPlayerbot.CoaSelfFoundMaxLevel': '80', 'AiPlayerbot.CoaLive.Chat.Enable': '1', 'AiPlayerbot.LootNeedRollLevel': '2', 'AiPlayerbot.CoaWorld.BgSim.Enable': '1' })) assert.strictEqual(own[key], value, key);
   // The economy of a new Squid World (user's go, 13/11, values of Economie): gold is rare.
   for (const [key, value] of Object.entries({ BotStartGoldPercent: '0', PriceScalePercent: '60', 'LaunchCurve.LaunchPremiumPercent': '0', 'Artisans.LearnRareRecipes.Enable': '1', 'Artisans.MaterialsOnDelivery': '1' })) assert.strictEqual(own[`AiPlayerbot.CoaEconomy.${key}`], value, key);
   assert.strictEqual(own['AiPlayerbot.CoaEconomy.BotLevelGold'].split(',').length, 15);
+  assert.strictEqual(own['AiPlayerbot.CoaWorld.ServerFirst.Enable'], undefined);
   // Guild officers answer players looking for a guild: Squid World at creation only, never through the pack (Pilote, 13/11).
   assert.strictEqual(own['AiPlayerbot.CoaWorld.Guilds.AnswerAsk'], '1');
   assert.ok(!Object.hasOwn(require('../src/catalog.cjs').packs.find(pack => pack.id === 'living').changes, 'AiPlayerbot.CoaWorld.Guilds.AnswerAsk'));
