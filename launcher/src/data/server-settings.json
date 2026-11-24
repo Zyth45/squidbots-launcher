@@ -2188,10 +2188,10 @@
     "zh": "地下城查找器机器人补位"
    },
    "help": {
-    "en": "New in 3.2.2. Bots fill the parties of the Dungeon Finder. Automatic: only while fewer real players than the number below are online (bots not counted). Automatic with 0 below turns the fill off.",
-    "fr": "Nouveau en 3.2.2. Des bots complètent les groupes de la recherche de donjon. Automatique : seulement tant que moins de vrais joueurs que le nombre ci-dessous sont en ligne (bots non comptés). Automatique avec 0 ci-dessous coupe le remplissage.",
-    "ru": "Новое в 3.2.2. Боты дополняют группы поиска подземелий. Автоматически: только пока в сети меньше настоящих игроков, чем число ниже (боты не считаются). Автоматически с 0 ниже — заполнение выключено.",
-    "zh": "3.2.2 新增。机器人为地下城查找器的队伍补位。自动：仅在在线真实玩家少于下方数值时（不计机器人）。自动且下方为 0 时关闭补位。"
+    "en": "New in 3.2.2, off by default. Bots fill the parties of the Dungeon Finder. Automatic: only while fewer real players than the number below are online (bots not counted); with 0 below, the default, the fill is off.",
+    "fr": "Nouveau en 3.2.2, coupé par défaut. Des bots complètent les groupes de la recherche de donjon. Automatique : seulement tant que moins de vrais joueurs que le nombre ci-dessous sont en ligne (bots non comptés) ; avec 0 ci-dessous, le défaut, le remplissage est coupé.",
+    "ru": "Новое в 3.2.2, по умолчанию выключено. Боты дополняют группы поиска подземелий. Автоматически: только пока в сети меньше настоящих игроков, чем число ниже (боты не считаются); при 0 ниже (по умолчанию) заполнение выключено.",
+    "zh": "3.2.2 新增，默认关闭。机器人为地下城查找器的队伍补位。自动：仅在在线真实玩家少于下方数值时（不计机器人）；下方为 0（默认）时不补位。"
    }
   },
   {
@@ -2200,7 +2200,7 @@
    "group": "dungeonclear",
    "kind": "int",
    "when": "restart",
-   "default": "5",
+   "default": "0",
    "min": 0,
    "max": 1000,
    "offWhen": {
@@ -2216,10 +2216,10 @@
     "zh": "在线玩家少于此数时用机器人补位"
    },
    "help": {
-    "en": "New in 3.2.2. Real players only, bots not counted. 0 = never automatic. 5 by default.",
-    "fr": "Nouveau en 3.2.2. Vrais joueurs seulement, bots non comptés. 0 = jamais en automatique. 5 par défaut.",
-    "ru": "Новое в 3.2.2. Только настоящие игроки, боты не считаются. 0 = никогда автоматически. По умолчанию 5.",
-    "zh": "3.2.2 新增。只计真实玩家，不计机器人。0 = 从不自动。默认 5。"
+    "en": "Off by default in 3.2.2. Set to 5 to try it: fills the missing roles while fewer than 5 real players are online (bots not counted). 0 = never automatic.",
+    "fr": "Coupé par défaut en 3.2.2. Mettez 5 pour l'essayer : complète les rôles manquants tant que moins de 5 vrais joueurs sont en ligne (bots non comptés). 0 = jamais en automatique.",
+    "ru": "В 3.2.2 по умолчанию выключено. Поставьте 5, чтобы попробовать: недостающие роли заполняются, пока в сети меньше 5 настоящих игроков (боты не считаются). 0 = никогда автоматически.",
+    "zh": "3.2.2 默认关闭。设为 5 可试用：在线真实玩家少于 5 人时补齐缺少的职责（不计机器人）。0 = 从不自动。"
    }
   },
   {

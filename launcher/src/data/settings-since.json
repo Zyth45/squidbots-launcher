@@ -1,7 +1,7 @@
 {
  "from": "0.3.59",
  "next": "0.5.0",
- "catalog": "6fa9f8e37bb0ce7f",
+ "catalog": "0d72f75e2e606b9c",
  "keys": {
   "worldserver.conf|CharactersPerRealm": {
    "added": "0.4.0"
