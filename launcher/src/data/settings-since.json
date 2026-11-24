@@ -1,7 +1,7 @@
 {
  "from": "0.3.59",
  "next": "0.4.9",
- "catalog": "acc1bad207f7943d",
+ "catalog": "f05e3466e8c284f6",
  "keys": {
   "worldserver.conf|CharactersPerRealm": {
    "added": "0.4.0"
@@ -899,6 +899,12 @@
   },
   "playerbots.conf|AiPlayerbot.CoaEconomy.BotAuctions.BuyLog": {
    "added": "0.4.7"
+  },
+  "mod_dungeon_clear.conf|DungeonClear.DungeonQueueFill.Enable": {
+   "added": "0.4.9"
+  },
+  "mod_dungeon_clear.conf|DungeonClear.DungeonQueueFill.MaxHumansOnline": {
+   "added": "0.4.9"
   },
   "playerbots.conf|AiPlayerbot.CoaEconomy.EnchantForSelf.PiecesPerStudy": {
    "added": "0.4.9"
