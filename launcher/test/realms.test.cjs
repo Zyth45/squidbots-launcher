@@ -299,6 +299,7 @@ function fakeMysql() {
     db: {
       sql: async (_root, query) => {
         statements.push(query);
+        if (/^SELECT COUNT\(\*\) FROM acore_\w+\.active_arena_season/.test(query)) return '1';
         if (/^SELECT id, name FROM acore_auth\.realmlist/.test(query)) return '1\tConquest of Azeroth';
         if (/information_schema\.tables WHERE table_schema = 'acore_characters'/.test(query)) return 'characters\nupdates\nworldstates\nauctionhouse';
         if (/^SELECT COUNT\(\*\) FROM information_schema\.tables WHERE table_schema = 'acore_playerbots' AND table_name IN \('coa_bots_installed'/.test(query)) return '2';
@@ -508,6 +509,7 @@ test('reset the world: an extra realm only (never CoA), its name typed again, sa
   const loaded = [];
   const dbs = new Set(['acore_characters_living', 'acore_playerbots_living']);
   let createFails = false;
+  let arenaRows = '1';
   const io = {
     sql: async (_root, query) => {
       queries.push(query);
@@ -517,6 +519,7 @@ test('reset the world: an extra realm only (never CoA), its name typed again, sa
       if (dropped) dbs.delete(dropped[1]);
       if (/SELECT c\.name, c\.level/.test(query)) return 'Squid World\t12\nSquid Alt\t3';
       if (/SELECT \(SELECT COUNT/.test(query)) return '3234\t21\t2293\t2\t140';
+      if (/^SELECT COUNT\(\*\) FROM acore_\w+\.active_arena_season/.test(query)) return arenaRows;
       return '';
     },
     dumpTo: async (_root, database, file) => fs.writeFileSync(file, `-- ${database}\n`),
@@ -535,6 +538,12 @@ test('reset the world: an extra realm only (never CoA), its name typed again, sa
   // The name must be typed again.
   await assert.rejects(realms.resetWorld(root, 'living', { confirmName: 'Malfu', io }), /The name typed is not Malfurion/);
   assert.ok(!queries.some(query => /DROP/.test(query)), 'nothing dropped without the name');
+  // CoA's characters database without the rows the world needs to start (after a broken reset, user's bench 24/11):
+  // a new world made from it would not start, so nothing is reset.
+  arenaRows = '0';
+  await assert.rejects(realms.resetWorld(root, 'living', { confirmName: 'Malfurion', io }), /active_arena_season/);
+  assert.ok(!queries.some(query => /DROP/.test(query)), 'nothing dropped from an empty source');
+  arenaRows = '1';
   const done = await realms.resetWorld(root, 'living', { confirmName: ' malfurion ', io, now: new Date(2026, 10, 13, 1, 2, 3) });
   // Saved whole first: both databases and the folder, with what was erased.
   assert.strictEqual(path.basename(done.backup), 'living-reset-20261113-010203');
@@ -545,7 +554,7 @@ test('reset the world: an extra realm only (never CoA), its name typed again, sa
   const drops = queries.filter(query => /DROP DATABASE/.test(query));
   assert.deepStrictEqual(drops, ['DROP DATABASE IF EXISTS acore_characters_living', 'DROP DATABASE IF EXISTS acore_playerbots_living']);
   assert.ok(queries.includes('DELETE FROM acore_auth.realmcharacters WHERE realmid = 5'));
-  assert.ok(!queries.some(query => /acore_characters\b(?!_)|acore_playerbots\b(?!_)/.test(query.replace(/acore_characters_living|acore_playerbots_living/g, ''))), 'the CoA databases are never touched');
+  assert.ok(!queries.filter(query => !/^SELECT COUNT\(\*\) FROM acore_characters\.active_arena_season$/.test(query)).some(query => /acore_characters\b(?!_)|acore_playerbots\b(?!_)/.test(query.replace(/acore_characters_living|acore_playerbots_living/g, ''))), 'the CoA databases are never touched (only read: its startup rows)');
   for (const rel of ['.state.json', path.join('Logs', 'bot-status.json'), path.join('Logs', 'squidbot')]) assert.ok(!fs.existsSync(path.join(dir, rel)), rel);
   // Its settings and its choice to start with the server stay.
   assert.ok(fs.existsSync(path.join(dir, 'settings.json')));
@@ -593,9 +602,10 @@ test('reset the world of CoA: name typed again, saved, structure kept, database 
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'coa-reset-'));
   const fsp = fs.promises;
   const calls = [];
+  let seedRows = 'INSERT INTO `updates` VALUES (1);\nINSERT INTO `active_arena_season` VALUES (8,1);\n';
   const io = (structure = 'CREATE TABLE `characters` (guid int);') => ({
-    sql: async (_root, query) => { calls.push(`sql ${query}`); if (/information_schema/.test(query)) return 'playerbots_random_bots\nplayerbots_coa_trust\nai_playerbot_texts'; if (/SELECT c\.name/.test(query)) return 'Thrall\t60'; if (/SELECT \(SELECT/.test(query)) return '1000\t3\t40\t12\t900'; return ''; },
-    dumpArgs: async (_root, args, file) => { calls.push(`dump ${args.join(' ')}`); await fsp.writeFile(file, args.includes('--no-data') ? structure : 'INSERT INTO updates VALUES (1);'); },
+    sql: async (_root, query) => { calls.push(`sql ${query}`); if (/^SELECT COUNT\(\*\) FROM/.test(query)) return '1'; if (/table_schema = 'acore_characters'/.test(query)) return 'characters\nupdates\nupdates_include\nactive_arena_season\nworldstates\nmail_server_template'; if (/information_schema/.test(query)) return 'playerbots_random_bots\nplayerbots_coa_trust\nai_playerbot_texts'; if (/SELECT c\.name/.test(query)) return 'Thrall\t60'; if (/SELECT \(SELECT/.test(query)) return '1000\t3\t40\t12\t900'; return ''; },
+    dumpArgs: async (_root, args, file) => { calls.push(`dump ${args.join(' ')}`); await fsp.writeFile(file, args.includes('--no-data') ? structure : seedRows); },
     loadFrom: async (_root, file) => { calls.push(`load ${path.basename(file)}`); },
   });
   const backup = async () => { calls.push('backup'); return 'saved.sql.gz'; };
@@ -604,17 +614,24 @@ test('reset the world of CoA: name typed again, saved, structure kept, database 
   // No structure saved: nothing is dropped.
   await assert.rejects(realms.resetCoa(root, { confirmName: 'my realm', realmName: 'My Realm - CoA', backup, io: io('') }), /could not be saved/);
   assert.ok(!calls.some(call => /DROP/.test(call)));
+  // The rows the world needs to start not saved (active_arena_season, user's bench 24/11): nothing is dropped either.
+  calls.length = 0;
+  const good = seedRows;
+  seedRows = 'INSERT INTO `updates` VALUES (1);\n';
+  await assert.rejects(realms.resetCoa(root, { confirmName: 'my realm', realmName: 'My Realm - CoA', backup, io: io() }), /active_arena_season/);
+  assert.ok(!calls.some(call => /DROP/.test(call)));
+  seedRows = good;
   calls.length = 0;
   const done = await realms.resetCoa(root, { confirmName: ' my realm ', realmName: 'My Realm - CoA', backup, io: io() });
   const order = calls.map(call => call.split(' ').slice(0, 2).join(' '));
   assert.ok(order.indexOf('backup') < order.findIndex(call => call === 'sql DROP'));
   assert.ok(order.findIndex(call => call === 'sql DROP') < order.indexOf('load acore_characters-structure.sql'));
-  assert.ok(order.indexOf('load acore_characters-structure.sql') < order.indexOf('load acore_characters-updates.sql'));
+  assert.ok(order.indexOf('load acore_characters-structure.sql') < order.indexOf('load acore_characters-seed.sql'));
   assert.deepEqual(done.emptied, ['playerbots_random_bots', 'playerbots_coa_trust']);
   assert.ok(calls.includes('sql TRUNCATE TABLE acore_playerbots.playerbots_random_bots'));
   assert.ok(!calls.some(call => /ai_playerbot_texts/.test(call) && /TRUNCATE/.test(call)));
   assert.ok(calls.some(call => /realmcharacters SET numchars = 0 WHERE realmid = 1/.test(call)));
-  assert.match(await fsp.readFile(path.join(done.structure, 'acore_characters-updates.sql'), 'utf8'), /^USE `acore_characters`;/);
+  assert.match(await fsp.readFile(path.join(done.structure, 'acore_characters-seed.sql'), 'utf8'), /^USE `acore_characters`;/);
   assert.deepEqual(done.preview.players, [{ name: 'Thrall', level: 60 }]);
   assert.deepEqual([realms.sellerOf('AuctionHouseBot.GUIDs = 1234'), realms.sellerOf('AuctionHouseBot.GUIDs = "0"'), realms.sellerOf('')], ['1234', '0', undefined]);
 });

@@ -79,7 +79,9 @@ const REALM_STATE_TABLES = ['playerbots_random_bots', 'playerbots_coa_brain_usag
   'playerbots_guild_tasks', 'playerbots_preferred_mounts', 'coa_world_server_first', 'coa_world_guild_log', 'coa_economy_clock', 'coa_economy_market', 'coa_economy_orders'];
 const SEED_TABLES = ['updates', 'updates_include', 'worldstates', 'active_arena_season', 'playerbots_names', 'playerbots_guild_names',
   'playerbots_arena_team_names', 'coa_build_creator', 'coa_build_creator_enchant', 'coa_build_creator_item_type', 'coa_build_creator_spell',
-  'instance_reset', 'pool_quest_save'];
+  'instance_reset', 'pool_quest_save', 'addons', 'warden_action', 'world_state', 'mail_server_template', 'mail_server_template_conditions', 'mail_server_template_items'];
+// Of those, the rows without which the world does not start (ArenaSeasonMgr asserts on an empty active_arena_season).
+const STARTUP_ROWS = ['active_arena_season'];
 // Wildcard and Reborn start with 500 bots (user, 11/11): only a realm being created; one made before keeps its count.
 const DEFAULT_BOTS = 500;
 // The Squid World realm (user's decision, 11/11): 1000 bots, editable like any realm's count.
@@ -588,6 +590,8 @@ async function create(root, key, { bots = key === 'living' ? LIVING_BOTS : DEFAU
       const present = new Set((await run.sql(root, "SELECT table_name FROM information_schema.tables WHERE table_schema = 'acore_characters'")).split(/\r?\n/));
       const seed = SEED_TABLES.filter(table => present.has(table));
       if (seed.length) await run.copyDump(root, ['--no-create-info', 'acore_characters', ...seed], chars);
+      const empty = await startupRowsMissing(root, chars, { sql: run.sql });
+      if (empty.length) throw new Error(`The characters database of Conquest of Azeroth has no rows in ${empty.join(', ')}: a realm made from it would not start.`);
     });
   }
   if (!(await exists(botsDb))) {
@@ -1145,12 +1149,24 @@ async function backupRealm(root, key, { label = 'reset', io = realIo(), now = ne
 }
 
 // The reset itself: the player retyped the realm's name; saved first, then made new.
+// The rows without which the world stops at start, in a characters database: the tables of STARTUP_ROWS left empty.
+async function startupRowsMissing(root, database, io) {
+  const missing = [];
+  for (const table of STARTUP_ROWS) {
+    const count = Number(String(await io.sql(root, `SELECT COUNT(*) FROM ${database}.${table}`).catch(() => '0')).trim());
+    if (!(count > 0)) missing.push(table);
+  }
+  return missing;
+}
 async function resetWorld(root, key, { confirmName, io = realIo(), now = new Date() } = {}) {
   if (!RESETTABLE.has(key)) throw new Error('Only an extra realm can be reset, not Conquest of Azeroth.');
   const saved = await stoppedRealm(root, key);
   // The realm list shows « Name - Subtitle » as the name and a line under it: either is accepted.
   const shown = String(saved.name || '').split(' - ')[0];
   if (!sameRealmName(confirmName, saved.name) && !sameRealmName(confirmName, shown)) throw new Error(`The name typed is not ${shown}, the name of this realm in the game's realm list: nothing was reset.`);
+  // The new world is made from the rows of CoA's characters database (create): they must be there, or nothing is reset.
+  const source = await startupRowsMissing(root, 'acore_characters', io);
+  if (source.length) throw new Error(`The characters database of Conquest of Azeroth has no rows in ${source.join(', ')}: a new world made from it would not start. Nothing was reset.`);
   const preview = await worldPreview(root, key, { io });
   const backup = await backupRealm(root, key, { label: 'reset', io, now, preview });
   for (const database of realmDbs(key)) await io.sql(root, `DROP DATABASE IF EXISTS ${database}`);
@@ -1161,6 +1177,8 @@ async function resetWorld(root, key, { confirmName, io = realIo(), now = new Dat
   // The auction house seller is made again by the module at the next start (AutoCharacter); a fixed guid of the old
   // world in AuctionHouseBot.GUIDs would point at nobody: it goes back to 0 (Pilote, 24/11).
   const sellerReset = await freeSellerGuid(root, key).catch(() => false);
+  const empty = await startupRowsMissing(root, `acore_characters_${key}`, io);
+  if (empty.length) throw new Error(`The new world has no rows in ${empty.join(', ')} and would not start. Put it back with Restore (${path.basename(backup.dir)}).`);
   const fresh = await realmFile(root, key);
   if (fresh) {
     fresh.autostart = saved.autostart !== false;
@@ -1237,19 +1255,28 @@ async function resetCoa(root, { confirmName, realmName, backup, io = { ...realIo
   const dir = path.join(root, 'Backups', `coa-reset-${stampOf(now)}`);
   await fsp.mkdir(dir, { recursive: true });
   const structure = path.join(dir, 'acore_characters-structure.sql');
-  const updates = path.join(dir, 'acore_characters-updates.sql');
+  const seedFile = path.join(dir, 'acore_characters-seed.sql');
   await io.dumpArgs(root, ['--no-data', '--routines', '--triggers', '--databases', COA_CHARACTERS], structure);
-  await io.dumpArgs(root, ['--no-create-info', COA_CHARACTERS, 'updates', 'updates_include'], updates);
+  // The rows the server needs to start, as a new realm gets them (SEED_TABLES): without active_arena_season the world
+  // stops at start (ArenaSeasonMgr, user's bench 24/11), and the tables an applied update filled are not filled again.
+  const tables = new Set(String(await io.sql(root, `SELECT table_name FROM information_schema.tables WHERE table_schema = '${COA_CHARACTERS}'`)).split(/\r?\n/).map(name => name.trim()).filter(Boolean));
+  const seed = SEED_TABLES.filter(table => tables.has(table));
+  await io.dumpArgs(root, ['--no-create-info', COA_CHARACTERS, ...seed], seedFile);
   // Without --databases the dump has no USE: it is put first, so the rows go back into the new database.
-  await fsp.writeFile(updates, `USE \`${COA_CHARACTERS}\`;\n${await fsp.readFile(updates, 'utf8').catch(() => '')}`);
-  // Nothing is dropped unless the structure saved can make the database again.
+  const seedText = await fsp.readFile(seedFile, 'utf8').catch(() => '');
+  await fsp.writeFile(seedFile, `USE \`${COA_CHARACTERS}\`;\n${seedText}`);
+  // Nothing is dropped unless the structure saved can make the database again, with the rows the world needs to start.
   if (!/CREATE TABLE `characters`/.test(await fsp.readFile(structure, 'utf8').catch(() => ''))) throw new Error('The structure of acore_characters could not be saved: nothing was reset.');
-  await fsp.writeFile(path.join(dir, 'backup.json'), JSON.stringify({ kind: 'coa-reset', at: now.toISOString(), saved, preview, files: ['acore_characters-structure.sql', 'acore_characters-updates.sql'] }, null, 2));
+  const missing = ['updates', ...STARTUP_ROWS].filter(table => tables.has(table) && !new RegExp(`INSERT INTO \`?${table}\`? `).test(seedText));
+  if (missing.length) throw new Error(`The rows the server needs to start could not be saved (${missing.join(', ')}): nothing was reset.`);
+  await fsp.writeFile(path.join(dir, 'backup.json'), JSON.stringify({ kind: 'coa-reset', at: now.toISOString(), saved, preview, seed, files: ['acore_characters-structure.sql', 'acore_characters-seed.sql'] }, null, 2));
   await io.sql(root, `DROP DATABASE IF EXISTS ${COA_CHARACTERS}`);
   await io.loadFrom(root, structure);
-  await io.loadFrom(root, updates);
+  await io.loadFrom(root, seedFile);
   const present = new Set(String(await io.sql(root, "SELECT table_name FROM information_schema.tables WHERE table_schema = 'acore_playerbots'")).split(/\r?\n/).map(name => name.trim()).filter(Boolean));
   const emptied = COA_BOT_STATE.filter(table => present.has(table));
+  const empty = await startupRowsMissing(root, COA_CHARACTERS, io);
+  if (empty.length) throw new Error(`The new characters database has no rows in ${empty.join(', ')} and would not start. Put it back from the backup ${saved} (Server, Database backups, Restore).`);
   for (const table of emptied) await io.sql(root, `TRUNCATE TABLE acore_playerbots.${table}`);
   await io.sql(root, 'UPDATE acore_auth.realmcharacters SET numchars = 0 WHERE realmid = 1; UPDATE acore_auth.account SET online = 0');
   return { backup: saved, structure: dir, preview, emptied };
