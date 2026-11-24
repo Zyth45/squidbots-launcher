@@ -1,5 +1,36 @@
 [
     {
+        "version": "0.5.0",
+        "title": {
+            "en": "A clearer Realms page",
+            "fr": "Une page Royaumes plus claire",
+            "ru": "Более понятная страница миров",
+            "zh": "更清晰的国度页面"
+        },
+        "items": {
+            "en": [
+                "Conquest of Azeroth and Squid World side by side: set the population, how the bots start and their gear (Auto-gear, Self-gear, Self-gear 1-59) right on each realm; a « ? » tells what each choice does. Auto-start and Eco mode are at the top of each card.",
+                "Recreate the bots on every realm, saved first. Reset the world on Wildcard, Reborn and Free Pick too, with a clear warning of what is erased and what is kept.",
+                "Each realm shows its realmlist line with a Copy button that always works. \"Bots sent to real dungeons (%)\" is now with the Dungeon Clear settings."
+            ],
+            "fr": [
+                "Conquest of Azeroth et Squid World côte à côte : réglez la population, le départ des bots et leur équipement (Auto-gear, Self-gear, Self-gear 1-59) directement sur chaque royaume ; un « ? » dit ce que fait chaque choix. Démarrage auto et Mode éco sont en haut de chaque carte.",
+                "Recréez les bots sur chaque royaume, sauvegardé d'abord. Remettez à neuf Wildcard, Reborn et Free Pick aussi, avec un avertissement clair de ce qui est effacé et de ce qui est gardé.",
+                "Chaque royaume affiche sa ligne realmlist avec un bouton Copier qui marche toujours. « Bots envoyés en vrai donjon (%) » est désormais avec les réglages de Dungeon Clear."
+            ],
+            "ru": [
+                "Conquest of Azeroth и Squid World рядом: население, старт ботов и их снаряжение (автоэкипировка, Self-gear, Self-gear 1-59) настраиваются прямо в каждом мире; «?» объясняет каждый выбор. Автозапуск и эко-режим — вверху каждой карточки.",
+                "Создавайте ботов заново в любом мире, сначала с резервной копией. Сброс мира теперь и для Wildcard, Reborn и Free Pick, с понятным предупреждением о том, что удаляется и что сохраняется.",
+                "Каждый мир показывает строку realmlist с кнопкой «Копировать», которая всегда работает. «Ботов в настоящих подземельях (%)» теперь в настройках Dungeon Clear."
+            ],
+            "zh": [
+                "Conquest of Azeroth 与 Squid World 并排显示：直接在每个国度设置人口、机器人起点和装备（自动配装、自给装备、自给装备 1-59）；“?”说明每个选项的作用。自动启动和节能模式位于每张卡片顶部。",
+                "可在每个国度重新创建机器人，并先行备份。Wildcard、Reborn 和 Free Pick 现在也能重置世界，并清楚提示会删除和保留的内容。",
+                "每个国度都显示其 realmlist 行，复制按钮始终可用。“派往真实副本的机器人（%）”现在位于 Dungeon Clear 设置中。"
+            ]
+        }
+    },
+    {
         "version": "0.4.9",
         "title": {
             "en": "Self-loot at level 60 too",
@@ -9,19 +40,19 @@
         },
         "items": {
             "en": [
-                "\"Auto-gear at level 60\" is now off by default, and this update turns it off once on every realm: bots keep self-looting at 60 and wear only what they find. Turn it on again on the realm card if you want them fully geared at 60; the launcher will not change it back. Bots already geared at 60 keep their gear.",
+                "\"Auto-gear at level 60\" is now off by default, and this update turns it off once on every realm: bots keep self-looting at 60 and wear only what they find. Choose \"Self-gear 1-59\" on the realm card if you want them fully geared at 60; the launcher will not change it back. Bots already geared at 60 keep their gear.",
                 "The battleground results are now kept for the PvP page of the dashboard (the bots module deletes them after 30 days): this update turns it on once, unless you had chosen otherwise in the launcher."
             ],
             "fr": [
-                "« Équipement automatique au niveau 60 » est désormais désactivé par défaut, et cette mise à jour le désactive une fois sur chaque royaume : au niveau 60, les bots continuent le self-loot et ne portent que ce qu'ils trouvent. Réactivez-le sur la carte du royaume si vous les voulez entièrement équipés au 60 ; le launcher n'y reviendra plus. Les bots déjà équipés au 60 gardent leur équipement.",
+                "« Équipement automatique au niveau 60 » est désormais désactivé par défaut, et cette mise à jour le désactive une fois sur chaque royaume : au niveau 60, les bots continuent le self-loot et ne portent que ce qu'ils trouvent. Choisissez « Self-gear 1-59 » sur la carte du royaume si vous les voulez entièrement équipés au 60 ; le launcher n'y reviendra plus. Les bots déjà équipés au 60 gardent leur équipement.",
                 "Les résultats des champs de bataille sont désormais gardés pour la page JcJ du dashboard (le module des bots les supprime après 30 jours) : cette mise à jour l'active une fois, sauf si vous aviez choisi autrement dans le launcher."
             ],
             "ru": [
-                "«Автоэкипировка на 60-м уровне» теперь по умолчанию выключена, и это обновление один раз выключает её во всех мирах: на 60-м уровне боты продолжают self-loot и носят только найденное. Включите её снова в карточке мира, если хотите полностью экипированных ботов на 60-м; лаунчер больше не будет её менять. Уже экипированные на 60-м боты сохраняют свою экипировку.",
+                "«Автоэкипировка на 60-м уровне» теперь по умолчанию выключена, и это обновление один раз выключает её во всех мирах: на 60-м уровне боты продолжают self-loot и носят только найденное. Выберите «Self-gear 1-59» в карточке мира, если хотите полностью экипированных ботов на 60-м; лаунчер больше не будет её менять. Уже экипированные на 60-м боты сохраняют свою экипировку.",
                 "Результаты полей боя теперь сохраняются для страницы PvP дашборда (модуль ботов удаляет их через 30 дней): это обновление один раз включает сохранение, если вы не выбрали иное в лаунчере."
             ],
             "zh": [
-                "“60 级自动配装”现在默认关闭，本次更新会在每个世界中将其关闭一次：60 级时机器人继续自给拾取，只穿戴自己找到的装备。如果希望机器人在 60 级时全身配装，可在世界卡片上重新开启；启动器之后不会再改动它。已在 60 级配装的机器人保留其装备。",
+                "“60 级自动配装”现在默认关闭，本次更新会在每个世界中将其关闭一次：60 级时机器人继续自给拾取，只穿戴自己找到的装备。如果希望机器人在 60 级时全身配装，可在世界卡片上选择“自给装备 1-59”；启动器之后不会再改动它。已在 60 级配装的机器人保留其装备。",
                 "战场结果现在会保存，供仪表盘的 PvP 页面使用（机器人模块会在 30 天后删除）：本次更新会将其开启一次，除非你之前在启动器中另有选择。"
             ]
         }
