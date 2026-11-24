@@ -182,7 +182,7 @@ function realmPanel(realm, busy, compact = false) {
     const toggle = (action, checked, label, hint) => `<label class="rc-toggle" title="${esc(hint)}"><input type="checkbox" data-action="${action}" data-key="${realm.key}" ${checked ? 'checked' : ''}><span class="rc-sw" aria-hidden="true"></span><span>${esc(label)}</span></label>`;
     const eco = App.state.realms?.eco;
     const ecoState = eco?.realms?.[realm.key] || {};
-    const toggles = `<div class="rc-toggles">${toggle('realm-auto', realm.main ? realm.autostart !== false : !!realm.autostart, t('glance.autostart', 'Auto-start'), t('glance.autostartHint', 'Starts with the server (the Start button of the home page).'))}${eco?.supported ? toggle('realm-eco', !!ecoState.on, t('glance.eco', 'Eco mode'), t('realms.ecoHint', 'With no player on this realm for 10 minutes, its bots far from players sleep (bots awake: 1 %). Your own value comes back as soon as a player logs in. Your settings are not changed.')) : ''}${ecoState.on && ecoState.asleep ? `<span class="pill realm-asleep">${esc(t('realms.ecoAsleep', 'Bots asleep'))}</span>` : ''}</div>`;
+    const toggles = `<div class="rc-toggles">${toggle('realm-auto', realm.main ? realm.autostart !== false : !!realm.autostart, t('glance.autostart', 'Auto-start'), t('glance.autostartHint', 'Starts with the server (the Start button of the home page).'))}${eco?.supported ? toggle('realm-eco', !!ecoState.on, t('glance.eco', 'Eco mode'), t('glance.ecoHelp', 'With nobody on this realm for 10 minutes, the bots far from players sleep (1 % stay awake). Back to normal as soon as a player logs in.')) : ''}${ecoState.on && ecoState.asleep ? `<span class="pill realm-asleep">${esc(t('realms.ecoAsleep', 'Bots asleep'))}</span>` : ''}</div>`;
     const about = `<span class="rc-help" tabindex="0" title="${esc(t(info.textKey, info.text))}">?</span>`;
     const look = realm.state === 'absent' ? '' : `<button class="icon-button rc-look" data-action="realm-card" data-key="${realm.key}" title="${esc(t('realms.cardLook', 'Look in the realm list'))}" aria-label="${esc(t('realms.cardLook', 'Look in the realm list'))}">${icon('palette')}</button>`;
     const cHead = `<header class="rc-head">${realmEmblem(realm.key, 40)}<div class="rc-name"><h2>${esc(info.title)}${about}</h2><small>${esc(realm.name || realmSub(info))}</small></div><div class="rc-side">${realmStatePill(state, realm)}${look}</div></header>${toggles}${realmNote(realm, working)}`;
@@ -281,7 +281,7 @@ function realmGlance(realm, c = false) {
   if (q.error) return `<p class="muted">${esc(t('glance.unreadable', 'The settings of this realm cannot be read: use Settings.'))}</p>`;
   // Squid World is self-gear by design (its levelling is made for it): Auto-gear is not offered there.
   const locked = realm.key === 'living';
-  const seg = (action, options, current) => `<div class="glance-seg${c ? ' c' : ''}" role="radiogroup">${options.map(option => { const hint = c ? [option.sub, option.hint].filter(Boolean).join(' — ') : option.hint; return `<button class="glance-opt${option.value === current ? ' active' : ''}" role="radio" aria-checked="${option.value === current}" data-action="${action}" data-key="${esc(target)}" data-realm="${esc(realm.key)}" data-value="${esc(option.value)}" ${option.disabled ? 'disabled' : ''}${hint ? ` title="${esc(hint)}"` : ''}><strong>${esc(c && option.short ? option.short : option.label)}</strong>${option.sub && !c ? `<small>${esc(option.sub)}</small>` : ''}</button>`; }).join('')}</div>`;
+  const seg = (action, options, current) => `<div class="glance-seg${c ? ' c' : ''}" role="radiogroup">${options.map(option => { const hint = c ? (option.hint || option.sub) : option.hint; return `<button class="glance-opt${option.value === current ? ' active' : ''}" role="radio" aria-checked="${option.value === current}" data-action="${action}" data-key="${esc(target)}" data-realm="${esc(realm.key)}" data-value="${esc(option.value)}" ${option.disabled ? 'disabled' : ''}${hint ? ` title="${esc(hint)}"` : ''}><strong>${esc(c && option.short ? option.short : option.label)}</strong>${option.sub && !c ? `<small>${esc(option.sub)}</small>` : ''}</button>`; }).join('')}</div>`;
   const custom = (shown, text) => (shown ? `<p class="glance-custom">${icon('info')}<span>${esc(text)}</span></p>` : '');
   const help = text => `<span class="rc-help" tabindex="0" role="img" aria-label="${esc(text)}" title="${esc(text)}">?</span>`;
   const row = (iconName, title, explain, control) => (c
@@ -297,7 +297,7 @@ function realmGlance(realm, c = false) {
       { value: '1000', label: '1000', sub: t('glance.pop1000', 'Big PC, 32 GB') },
       { value: 'other', label: current === 'other' ? q.max : t('glance.popOther', 'Other…'), short: current === 'other' ? q.max : '…', sub: current === 'other' ? t('glance.popYours', 'Your number') : t('glance.popPick', 'Pick a number') },
     ];
-    rows.push(row('bot', t('glance.pop', 'Population'), t('glance.popText', 'How many bots live on this realm. About 16 GB of memory holds 200 comfortably; 1000 needs about 32 GB.'), seg('glance-pop', options, current)
+    rows.push(row('bot', t('glance.pop', 'Population'), c ? t('glance.popHelp', 'How many bots live on this realm, from its next start. 200 is light; 1000 needs about 32 GB of memory.') : t('glance.popText', 'How many bots live on this realm. About 16 GB of memory holds 200 comfortably; 1000 needs about 32 GB.'), seg('glance-pop', options, current)
       + custom(!current, t('glance.popCustom', 'Set another way: between {min} and {max} bots. A choice above replaces it.', { min: q.min || '?', max: q.max || '?' }))));
   }
   if (q.hasLevels) {
@@ -313,7 +313,7 @@ function realmGlance(realm, c = false) {
     const why = fromOne === 'fresh' ? t('glance.startFresh', 'Squid World is a fresh world: every bot starts at level 1 and levels up by playing, at its own pace.')
       : fromOne === 'self' ? t('glance.startSelf', 'With Self-gear, every new bot starts at a low level and gains levels only by playing. Choose Auto-gear to spread the bots from the start.') : '';
     const startText = t('glance.startText', 'Only bots made from now on start this way: the bots already there keep their level until they are recreated.');
-    rows.push(row('user', t('glance.start', 'Bots start'), c && why ? `${why} ${startText}` : startText, seg('glance-start', options, current)
+    rows.push(row('user', t('glance.start', 'Bots start'), c ? (why || t('glance.startHelp', 'Level 1: every bot starts at level 1 and levels up with you. 1-60: bots of every level from the start. Only new bots follow it: recreate the bots to apply it to all.')) : startText, seg('glance-start', options, current)
       + (why ? (c ? note(fromOne === 'fresh' ? t('glance.startFreshShort', 'Fixed here: every bot starts at level 1.') : t('glance.startSelfShort', 'Fixed by Self-gear: bots start low.')) : `<p class="glance-explain">${esc(why)}</p>`) : '')
       + custom(!current, t('glance.startCustom', 'Set another way (every bot starts at level {level}). A choice above replaces it.', { level: q.start || '?' }))));
   }
@@ -336,11 +336,11 @@ function realmGlance(realm, c = false) {
     ];
     const shorts = { auto: t('glance.gearAutoShort', 'Gear made for their level; in a group, at your item level.'), self: t('glance.gearSelfShort', 'Only what they loot, craft, trade or buy.'), self59: t('glance.gearSelf159Short', 'Self-gear until 59, auto-gear from 60.') };
     const gearText = t('glance.gearText', 'Bots already equipped keep what they wear: only what comes next changes.');
-    rows.push(row('shield', t('glance.gear', 'Bot gear'), c && texts[current] ? `${texts[current]}${current === 'self59' ? ` ${share}` : ''} ${gearText}` : gearText, seg('glance-gear', options, current)
+    rows.push(row('shield', t('glance.gear', 'Bot gear'), c ? t('glance.gearHelp', 'Auto-gear: the server gears bots for their level. Self-gear: bots wear only what they find, craft, trade or buy. Self-gear 1-59: the same, then auto-gear at 60. Bots keep what they already wear.') : gearText, seg('glance-gear', options, current)
       + (c ? (shorts[current] ? note(shorts[current]) : '') : texts[current] ? `<p class="glance-explain">${esc(texts[current])}${current === 'self59' ? `<small>${esc(share)}</small>` : ''}${locked ? `<small>${esc(t('glance.gearLocked', 'Squid World is always self-gear: its levelling is made for it.'))}</small>` : ''}</p>` : '')
       + custom(!current, t('glance.gearCustom', 'Set another way (self-found up to level {level}). A choice above replaces it.', { level: q.maxLevel || '?' }))));
   }
-  const toggle = (action, on, title, hint) => `<div class="realm-quick-row"><span title="${esc(hint)}">${esc(title)}</span>${c ? help(hint) : ''}${moduleSwitch(action, on, false).replace('<button', `<button data-key="${esc(target)}"`)}</div>`;
+  const toggle = (action, on, title, hint) => `<div class="realm-quick-row"><span${c ? '' : ` title="${esc(hint)}"`}>${esc(title)}</span>${c ? help(hint) : ''}${moduleSwitch(action, on, false).replace('<button', `<button data-key="${esc(target)}"`)}</div>`;
   const chat = q.hasChat && CHAT_READY ? toggle('realm-chat', q.chat === '1', t('lw.chat', 'Bot chat'), t('lw.chatText', 'Bots talk in the chat channels, greet and answer. Off: they stay silent, everything else goes on.')) : '';
   const catchup = locked && q.hasCatchup ? toggle('realm-catchup', q.catchup === '1', t('realms.catchup', 'Bots catch up with players'), t('realms.catchupHint', 'Random bots behind the human players earn more experience.')) : '';
   const switches = chat || catchup ? `<div class="realm-quick glance-switches">${chat}${catchup}</div>` : '';
