@@ -178,11 +178,23 @@ function realmPanel(realm, busy, compact = false) {
   const coaWaits = realm.main && !(App.state.config?.coaResetReady || App.state.config?.preview);
   const danger = `<section class="realm-group realm-danger"><h3>${icon('warning')}${esc(t('realms.dangerZone', 'Actions that erase or hide'))}</h3><div class="realm-tool-buttons">${resettable || realm.main ? `<button class="button danger-ghost" data-action="realm-reset" data-key="${realm.key}" ${on || busy || coaWaits ? 'disabled' : ''} title="${esc(t('realms.resetHint', 'A completely new run: bots, auction house, mail, guilds, the characters of this realm, achievements and server firsts start again. Saved first.'))}">${icon('refresh')}${esc(t('realms.reset', 'Reset the world'))}</button>` : ''}${realm.main ? '' : `<button class="button danger-ghost" data-action="realm-disable" data-key="${realm.key}" ${busy ? 'disabled' : ''}>${icon('close')}${esc(t('realms.disable', 'Switch off'))}</button>`}</div>${resettable || realm.main ? `<small class="muted">${esc(t('realms.resetLine', 'Reset the world saves the whole realm first (Backups), then starts it again as new.'))}</small>` : ''}${coaWaits ? `<small class="muted">${esc(t('glance.coaResetWaits', 'Reset the world of Conquest of Azeroth comes once it has been tested on a bench.'))}</small>` : ''}${realm.main ? '' : `<small class="muted">${esc(t('realms.disableLine', 'Switch off takes it out of the realm list of the game, without deleting anything. Stopped, it stays in the list as Offline.'))}</small>`}</section>`;
   if (compact) {
-    return `<article class="realm-panel compact realm-${realm.key}${on ? ' on' : ''}">${head}
-      ${stats}${buttons}
-      ${group(t('glance.title', 'At a glance'), `${realmGlance(realm)}<div class="glance-startup">${startup}</div>`, 'realm-glance-group')}
-      ${group(t('glance.factsTitle', 'To join this realm'), realmFacts(realm, true))}
-      ${tools}${danger}
+    // The start with the server and the eco mode at the top, as switches (user, 24/11: « tout en haut visible on off »).
+    const toggle = (action, checked, label, hint) => `<label class="rc-toggle" title="${esc(hint)}"><input type="checkbox" data-action="${action}" data-key="${realm.key}" ${checked ? 'checked' : ''}><span class="rc-sw" aria-hidden="true"></span><span>${esc(label)}</span></label>`;
+    const eco = App.state.realms?.eco;
+    const ecoState = eco?.realms?.[realm.key] || {};
+    const toggles = `<div class="rc-toggles">${toggle('realm-auto', realm.main ? realm.autostart !== false : !!realm.autostart, t('glance.autostart', 'Auto-start'), t('glance.autostartHint', 'Starts with the server (the Start button of the home page).'))}${eco?.supported ? toggle('realm-eco', !!ecoState.on, t('glance.eco', 'Eco mode'), t('realms.ecoHint', 'With no player on this realm for 10 minutes, its bots far from players sleep (bots awake: 1 %). Your own value comes back as soon as a player logs in. Your settings are not changed.')) : ''}${ecoState.on && ecoState.asleep ? `<span class="pill realm-asleep">${esc(t('realms.ecoAsleep', 'Bots asleep'))}</span>` : ''}</div>`;
+    const about = `<span class="rc-help" tabindex="0" title="${esc(t(info.textKey, info.text))}">?</span>`;
+    const look = realm.state === 'absent' ? '' : `<button class="icon-button rc-look" data-action="realm-card" data-key="${realm.key}" title="${esc(t('realms.cardLook', 'Look in the realm list'))}" aria-label="${esc(t('realms.cardLook', 'Look in the realm list'))}">${icon('palette')}</button>`;
+    const cHead = `<header class="rc-head">${realmEmblem(realm.key, 40)}<div class="rc-name"><h2>${esc(info.title)}${about}</h2><small>${esc(realm.name || realmSub(info))}</small></div><div class="rc-side">${realmStatePill(state, realm)}${look}</div></header>${toggles}${realmNote(realm, working)}`;
+    const players = realm.state === 'running' ? realm.players : null;
+    const bots = realm.state === 'running' && Number.isFinite(realm.online) ? `${realm.online}/${realm.bots ?? '?'}` : realm.bots;
+    const fig = (label, value) => `<span>${esc(label)} <b>${value === null || value === undefined || value === '' ? '—' : esc(String(value))}</b></span>`;
+    const line = `<div class="rc-line">${fig(t('realms.players', 'Players'), players)}${fig(t('realms.bots', 'Bots'), bots)}${fig(t('realms.port', 'Port'), realm.worldPort)}</div>`;
+    const more = App.state.realmMore?.[realm.key];
+    const fold = `<button class="rc-more-toggle" data-action="realm-more" data-key="${realm.key}" aria-expanded="${!!more}">${icon('settings')}${esc(t('glance.moreTools', 'Tools and reset'))}${icon('chevron')}</button>${more ? `<div class="rc-more">${tools}${danger}</div>` : ''}`;
+    return `<article class="realm-panel compact realm-${realm.key}${on ? ' on' : ''}${more ? ' more' : ''}">${cHead}${line}${buttons}
+      <section class="realm-group realm-glance-group">${realmGlance(realm, true)}</section>
+      ${realmFacts(realm, true)}${fold}
     </article>`;
   }
   return `<article class="realm-panel realm-${realm.key}${on ? ' on' : ''}">${head}
@@ -260,16 +272,22 @@ function gearChoice(q, locked) {
   return level >= 60 ? 'self' : level === 59 ? 'self59' : '';
 }
 
-function realmGlance(realm) {
+// c (compact, user 24/11: « les deux royaumes côte à côte » at the window's own size): one line of choices per row, no
+// subtitle under a choice, the sentences in the « ? » of the row; one short line for the gear chosen.
+function realmGlance(realm, c = false) {
   const target = realm.main ? '' : realm.key;
   const q = quickOf(target);
   if (!q) return `<p class="muted">${esc(t('glance.reading', 'Reading the settings of this realm…'))}</p>`;
   if (q.error) return `<p class="muted">${esc(t('glance.unreadable', 'The settings of this realm cannot be read: use Settings.'))}</p>`;
   // Squid World is self-gear by design (its levelling is made for it): Auto-gear is not offered there.
   const locked = realm.key === 'living';
-  const seg = (action, options, current) => `<div class="glance-seg" role="radiogroup">${options.map(option => `<button class="glance-opt${option.value === current ? ' active' : ''}" role="radio" aria-checked="${option.value === current}" data-action="${action}" data-key="${esc(target)}" data-realm="${esc(realm.key)}" data-value="${esc(option.value)}" ${option.disabled ? 'disabled' : ''}${option.hint ? ` title="${esc(option.hint)}"` : ''}><strong>${esc(option.label)}</strong>${option.sub ? `<small>${esc(option.sub)}</small>` : ''}</button>`).join('')}</div>`;
+  const seg = (action, options, current) => `<div class="glance-seg${c ? ' c' : ''}" role="radiogroup">${options.map(option => { const hint = c ? [option.sub, option.hint].filter(Boolean).join(' — ') : option.hint; return `<button class="glance-opt${option.value === current ? ' active' : ''}" role="radio" aria-checked="${option.value === current}" data-action="${action}" data-key="${esc(target)}" data-realm="${esc(realm.key)}" data-value="${esc(option.value)}" ${option.disabled ? 'disabled' : ''}${hint ? ` title="${esc(hint)}"` : ''}><strong>${esc(c && option.short ? option.short : option.label)}</strong>${option.sub && !c ? `<small>${esc(option.sub)}</small>` : ''}</button>`; }).join('')}</div>`;
   const custom = (shown, text) => (shown ? `<p class="glance-custom">${icon('info')}<span>${esc(text)}</span></p>` : '');
-  const row = (iconName, title, explain, control) => `<div class="glance-row"><div class="glance-label">${icon(iconName)}<div><strong>${esc(title)}</strong><small>${esc(explain)}</small></div></div>${control}</div>`;
+  const help = text => `<span class="rc-help" tabindex="0" role="img" aria-label="${esc(text)}" title="${esc(text)}">?</span>`;
+  const row = (iconName, title, explain, control) => (c
+    ? `<div class="glance-row c"><div class="glance-label c">${icon(iconName)}<strong>${esc(title)}</strong>${help(explain)}</div>${control}</div>`
+    : `<div class="glance-row"><div class="glance-label">${icon(iconName)}<div><strong>${esc(title)}</strong><small>${esc(explain)}</small></div></div>${control}</div>`);
+  const note = text => `<p class="glance-note">${esc(text)}</p>`;
   const rows = [];
   if (q.hasPop) {
     const current = popChoice(q);
@@ -277,7 +295,7 @@ function realmGlance(realm) {
       { value: '200', label: '200', sub: t('glance.pop200', 'Light') },
       { value: '500', label: '500', sub: t('glance.pop500', 'Recommended') },
       { value: '1000', label: '1000', sub: t('glance.pop1000', 'Big PC, 32 GB') },
-      { value: 'other', label: current === 'other' ? q.max : t('glance.popOther', 'Other…'), sub: current === 'other' ? t('glance.popYours', 'Your number') : t('glance.popPick', 'Pick a number') },
+      { value: 'other', label: current === 'other' ? q.max : t('glance.popOther', 'Other…'), short: current === 'other' ? q.max : '…', sub: current === 'other' ? t('glance.popYours', 'Your number') : t('glance.popPick', 'Pick a number') },
     ];
     rows.push(row('bot', t('glance.pop', 'Population'), t('glance.popText', 'How many bots live on this realm. About 16 GB of memory holds 200 comfortably; 1000 needs about 32 GB.'), seg('glance-pop', options, current)
       + custom(!current, t('glance.popCustom', 'Set another way: between {min} and {max} bots. A choice above replaces it.', { min: q.min || '?', max: q.max || '?' }))));
@@ -289,13 +307,14 @@ function realmGlance(realm) {
     const current = fromOne ? 'level1' : startChoice(q);
     const range = `${q.lowest || '1'}-${q.highest || '60'}`;
     const options = [
-      { value: 'level1', label: t('glance.level1', 'Everyone at level 1'), sub: t('glance.level1Sub', 'A fresh world: bots level up with you') },
-      { value: 'spread', label: t('glance.spread', 'Spread {range}', { range }), sub: t('glance.spreadSub', 'Bots of every level from the start') },
+      { value: 'level1', label: t('glance.level1', 'Everyone at level 1'), short: t('glance.level1Short', 'Level 1'), sub: t('glance.level1Sub', 'A fresh world: bots level up with you') },
+      { value: 'spread', label: t('glance.spread', 'Spread {range}', { range }), short: range, sub: t('glance.spreadSub', 'Bots of every level from the start') },
     ].map(option => (fromOne ? { ...option, disabled: true } : option));
     const why = fromOne === 'fresh' ? t('glance.startFresh', 'Squid World is a fresh world: every bot starts at level 1 and levels up by playing, at its own pace.')
       : fromOne === 'self' ? t('glance.startSelf', 'With Self-gear, every new bot starts at a low level and gains levels only by playing. Choose Auto-gear to spread the bots from the start.') : '';
-    rows.push(row('user', t('glance.start', 'Bots start'), t('glance.startText', 'Only bots made from now on start this way: the bots already there keep their level until they are recreated.'), seg('glance-start', options, current)
-      + (why ? `<p class="glance-explain">${esc(why)}</p>` : '')
+    const startText = t('glance.startText', 'Only bots made from now on start this way: the bots already there keep their level until they are recreated.');
+    rows.push(row('user', t('glance.start', 'Bots start'), c && why ? `${why} ${startText}` : startText, seg('glance-start', options, current)
+      + (why ? (c ? note(fromOne === 'fresh' ? t('glance.startFreshShort', 'Fixed here: every bot starts at level 1.') : t('glance.startSelfShort', 'Fixed by Self-gear: bots start low.')) : `<p class="glance-explain">${esc(why)}</p>`) : '')
       + custom(!current, t('glance.startCustom', 'Set another way (every bot starts at level {level}). A choice above replaces it.', { level: q.start || '?' }))));
   }
   if (q.hasLoot) {
@@ -312,20 +331,23 @@ function realmGlance(realm) {
     const share = t('glance.gearShare', 'The bots sent to dungeons (20 % by default) stay self-gear at 60 too.');
     const options = [
       { value: 'auto', label: t('glance.gearAuto', 'Auto-gear'), sub: t('glance.gearAutoSub2', 'Gear made for their level'), disabled: locked, hint: locked ? t('glance.gearLocked', 'Squid World is always self-gear: its levelling is made for it.') : texts.auto },
-      { value: 'self', label: t('glance.gearSelfOnly', 'Self-gear only'), sub: t('glance.gearSelfOnlySub', 'Every piece is earned'), hint: texts.self },
+      { value: 'self', label: t('glance.gearSelfOnly', 'Self-gear only'), short: t('glance.gearSelfShortLabel', 'Self-gear'), sub: t('glance.gearSelfOnlySub', 'Every piece is earned'), hint: texts.self },
       { value: 'self59', label: t('glance.gearSelf159', 'Self-gear 1-59'), sub: t('glance.gearSelf159Sub', 'Then auto-gear at 60'), hint: `${texts.self59} ${share}` },
     ];
-    rows.push(row('shield', t('glance.gear', 'Bot gear'), t('glance.gearText', 'Bots already equipped keep what they wear: only what comes next changes.'), seg('glance-gear', options, current)
-      + (texts[current] ? `<p class="glance-explain">${esc(texts[current])}${current === 'self59' ? `<small>${esc(share)}</small>` : ''}${locked ? `<small>${esc(t('glance.gearLocked', 'Squid World is always self-gear: its levelling is made for it.'))}</small>` : ''}</p>` : '')
+    const shorts = { auto: t('glance.gearAutoShort', 'Gear made for their level; in a group, at your item level.'), self: t('glance.gearSelfShort', 'Only what they loot, craft, trade or buy.'), self59: t('glance.gearSelf159Short', 'Self-gear until 59, auto-gear from 60.') };
+    const gearText = t('glance.gearText', 'Bots already equipped keep what they wear: only what comes next changes.');
+    rows.push(row('shield', t('glance.gear', 'Bot gear'), c && texts[current] ? `${texts[current]}${current === 'self59' ? ` ${share}` : ''} ${gearText}` : gearText, seg('glance-gear', options, current)
+      + (c ? (shorts[current] ? note(shorts[current]) : '') : texts[current] ? `<p class="glance-explain">${esc(texts[current])}${current === 'self59' ? `<small>${esc(share)}</small>` : ''}${locked ? `<small>${esc(t('glance.gearLocked', 'Squid World is always self-gear: its levelling is made for it.'))}</small>` : ''}</p>` : '')
       + custom(!current, t('glance.gearCustom', 'Set another way (self-found up to level {level}). A choice above replaces it.', { level: q.maxLevel || '?' }))));
   }
-  const toggle = (action, on, title, hint) => `<div class="realm-quick-row"><span title="${esc(hint)}">${esc(title)}</span>${moduleSwitch(action, on, false).replace('<button', `<button data-key="${esc(target)}"`)}</div>`;
+  const toggle = (action, on, title, hint) => `<div class="realm-quick-row"><span title="${esc(hint)}">${esc(title)}</span>${c ? help(hint) : ''}${moduleSwitch(action, on, false).replace('<button', `<button data-key="${esc(target)}"`)}</div>`;
   const chat = q.hasChat && CHAT_READY ? toggle('realm-chat', q.chat === '1', t('lw.chat', 'Bot chat'), t('lw.chatText', 'Bots talk in the chat channels, greet and answer. Off: they stay silent, everything else goes on.')) : '';
   const catchup = locked && q.hasCatchup ? toggle('realm-catchup', q.catchup === '1', t('realms.catchup', 'Bots catch up with players'), t('realms.catchupHint', 'Random bots behind the human players earn more experience.')) : '';
   const switches = chat || catchup ? `<div class="realm-quick glance-switches">${chat}${catchup}</div>` : '';
   if (!rows.length && !switches) return '';
   const on = ['running', 'starting'].includes(realm.state);
-  return `<div class="glance">${rows.join('')}${switches}<small class="muted">${esc(on ? t('glance.nextStartOn', 'Saved at once; this realm uses it at its next start (Stop, then Start).') : t('realms.quickNext', 'Applied at the next start of this realm.'))}</small></div>`;
+  const next = on ? t('glance.nextStartOn', 'Saved at once; this realm uses it at its next start (Stop, then Start).') : t('realms.quickNext', 'Applied at the next start of this realm.');
+  return `<div class="glance${c ? ' c' : ''}">${rows.join('')}${switches}${c && !on ? '' : `<small class="muted">${esc(next)}</small>`}</div>`;
 }
 
 // What a player needs to join: the address of the realmlist, the version, the last saved copy.
@@ -350,11 +372,8 @@ function realmFacts(realm, compact = false) {
   const version = App.state.realms?.version;
   if (compact) {
     const copy = line ? `<button class="link-button" data-action="glance-copy" data-line="${esc(line)}">${icon('copy')}${esc(t('glance.copy', 'Copy'))}</button>` : '';
-    return `<div class="realm-facts compact">
-      <div class="fact-line" title="${esc(where)}">${icon('globe')}<code>${esc(line || '…')}</code>${copy}</div>
-      <div class="fact-line">${icon('map')}<span>${esc(t('glance.inListShort', 'In the realm list:'))} <strong>${esc(realm.name || realmTitle(realm.key))}</strong></span></div>
-      <div class="fact-line">${icon('book')}<span>${version ? `CoA Bots ${esc(version)} · ` : ''}${esc(t('glance.lastBackupShort', 'last saved copy: {when}', { when: saved }))}</span></div>
-    </div>`;
+    const details = [where, `${t('glance.inListShort', 'In the realm list:')} ${realm.name || realmTitle(realm.key)}`, version ? `CoA Bots ${version}` : '', t('glance.lastBackupShort', 'last saved copy: {when}', { when: saved })].filter(Boolean).join(' · ');
+    return `<div class="realm-facts compact"><div class="fact-line">${icon('globe')}<code>${esc(line || '…')}</code>${copy}<span class="rc-help" tabindex="0" title="${esc(details)}">?</span></div></div>`;
   }
   const item = (iconName, label, value, extra = '') => `<div class="fact-row">${icon(iconName)}<div><small>${esc(label)}</small><strong>${esc(value)}</strong>${extra}</div></div>`;
   return `<div class="realm-facts">
@@ -434,6 +453,7 @@ Object.assign(App.actions, {
     await App.api.copyText(line);
     toast(t('net.copied', 'Copied: {line}', { line }), 'success');
   }, button),
+  'realm-more': button => { const more = App.state.realmMore ||= {}; more[button.dataset.key] = !more[button.dataset.key]; App.refresh('realms'); },
   'realm-others': () => { App.state.realmOthers = !App.state.realmOthers; App.refresh('realms'); },
   'realm-other-open': button => { App.state.realmOther = button.dataset.key; App.refresh('realms'); document.querySelector('.realm-other-open')?.scrollIntoView({ block: 'start', behavior: 'smooth' }); },
   'realm-other-close': () => { App.state.realmOther = ''; App.refresh('realms'); },
@@ -462,7 +482,7 @@ function realmsPage() {
   const other = others.find(realm => realm.key === App.state.realmOther);
   const open = App.state.realmOthers;
   return `<div class="page classic realms-page">${head}
-    <p class="realms-lead">${esc(t('realms.lead2', 'Your server, ready to play: Conquest of Azeroth is the classic realm, Squid World a fresh world where everything starts at level 1. Pick the realm in the realm list of the game; the game accounts are the same on every realm.'))}</p>
+    <p class="realms-lead c" title="${esc(t('realms.lead2', 'Your server, ready to play: Conquest of Azeroth is the classic realm, Squid World a fresh world where everything starts at level 1. Pick the realm in the realm list of the game; the game accounts are the same on every realm.'))}">${esc(t('realms.lead3', 'Two realms ready to play; your game accounts work on both.'))}</p>
     <div class="realm-duo">${main.map(realm => realmPanel(realm, busy, true)).join('')}</div>
     ${other ? `<div class="realm-other-open"><button class="link-button" data-action="realm-other-close">${icon('close')}${esc(t('glance.otherClose', 'Close {name}', { name: realmTitle(other.key) }))}</button>${realmPanel(other, busy)}</div>` : ''}
     <section class="realm-others${open ? ' open' : ''}">
