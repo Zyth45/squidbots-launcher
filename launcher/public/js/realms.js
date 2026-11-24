@@ -292,15 +292,17 @@ function realmGlance(realm) {
     const texts = {
       auto: t('glance.gearAutoText', 'The server gives bots gear for their level when they are made and when they level up. Grouped with a player, a bot is geared at that player\'s item level.'),
       self: t('glance.gearSelfOnlyText', 'No gear is ever made for bots: they wear only what they loot, earn from quests, craft, trade or buy at the auction house. Every piece is earned. (A bot left with no weapon at all gets its class\'s starting weapon, once.)'),
-      self59: t('glance.gearSelf159Text', 'Levels 1 to 59 play exactly as Self-gear only. A bot that reaches level 60 is geared as usual for the endgame, as with Auto-gear. The bots of the dungeon share (20 % by default) stay self-gear at 60.'),
+      self59: t('glance.gearSelf159Text3', 'Levels 1 to 59 play exactly as Self-gear only. A bot that reaches level 60 gets its endgame gear at once, as with Auto-gear. Bots already at 60 keep their gear until they group with a player.'),
     };
+    // The detail kept apart from the simple sentence (Pilote, 24/11): CoaSelfFoundBotsPercent -1 = 20 on a self-found realm.
+    const share = t('glance.gearShare', 'The bots sent to dungeons (20 % by default) stay self-gear at 60 too.');
     const options = [
       { value: 'auto', label: t('glance.gearAuto', 'Auto-gear'), sub: t('glance.gearAutoSub2', 'Gear made for their level'), disabled: locked, hint: locked ? t('glance.gearLocked', 'Squid World is always self-gear: its levelling is made for it.') : texts.auto },
       { value: 'self', label: t('glance.gearSelfOnly', 'Self-gear only'), sub: t('glance.gearSelfOnlySub', 'Every piece is earned'), hint: texts.self },
-      { value: 'self59', label: t('glance.gearSelf159', 'Self-gear 1-59'), sub: t('glance.gearSelf159Sub', 'Then auto-gear at 60'), hint: texts.self59 },
+      { value: 'self59', label: t('glance.gearSelf159', 'Self-gear 1-59'), sub: t('glance.gearSelf159Sub', 'Then auto-gear at 60'), hint: `${texts.self59} ${share}` },
     ];
     rows.push(row('shield', t('glance.gear', 'Bot gear'), t('glance.gearText', 'Bots already equipped keep what they wear: only what comes next changes.'), seg('glance-gear', options, current)
-      + (texts[current] ? `<p class="glance-explain">${esc(texts[current])}</p>` : '')
+      + (texts[current] ? `<p class="glance-explain">${esc(texts[current])}${current === 'self59' ? `<small>${esc(share)}</small>` : ''}${locked ? `<small>${esc(t('glance.gearLocked', 'Squid World is always self-gear: its levelling is made for it.'))}</small>` : ''}</p>` : '')
       + custom(!current, t('glance.gearCustom', 'Set another way (self-found up to level {level}). A choice above replaces it.', { level: q.maxLevel || '?' }))));
   }
   const toggle = (action, on, title, hint) => `<div class="realm-quick-row"><span title="${esc(hint)}">${esc(title)}</span>${moduleSwitch(action, on, false).replace('<button', `<button data-key="${esc(target)}"`)}</div>`;
