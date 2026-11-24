@@ -79,7 +79,8 @@
   "AiPlayerbot.CoaWhy.Enable",
   "AiPlayerbot.CoaEconomy.BotAuctions.Shop.Enable",
   "AiPlayerbot.CoaEconomy.RemoteBuy.Enable",
-  "AiPlayerbot.CoaEconomy.RemoteSell.Enable"
+  "AiPlayerbot.CoaEconomy.RemoteSell.Enable",
+  "AiPlayerbot.CoaLive.CityUnstick.Enable"
  ],
  "groups": [
   {
@@ -1855,6 +1856,28 @@
     "fr": "Un mot quand ils partent",
     "ru": "Сообщение, когда они уходят",
     "zh": "出发时说一句"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaLive.PvpStatsKeepDays",
+   "file": "playerbots.conf",
+   "group": "lw-pvp",
+   "type": "int",
+   "default": 30,
+   "min": 0,
+   "max": 3650,
+   "when": "restart",
+   "label": {
+    "en": "Days of battleground stats kept",
+    "fr": "Jours de statistiques de champs de bataille gardés",
+    "ru": "Дней хранения статистики полей боя",
+    "zh": "战场统计保留天数"
+   },
+   "help": {
+    "en": "New in 3.2.2. Once a day, the battlegrounds older than this many days are deleted with their players' lines. 0 = never deleted. Used when \"Keep the battleground results\" is on (Dashboard live view).",
+    "fr": "Nouveau en 3.2.2. Une fois par jour, les champs de bataille plus anciens que ce nombre de jours sont supprimés avec les lignes de leurs joueurs. 0 = jamais supprimés. Sert quand « Garder les résultats des champs de bataille » est activé (Vue en direct du dashboard).",
+    "ru": "Новое в 3.2.2. Раз в день поля боя старше этого числа дней удаляются вместе со строками их игроков. 0 = никогда не удалять. Действует, когда включено «Сохранять результаты полей боя» (Живой вид панели).",
+    "zh": "3.2.2 新增。每天一次，删除超过此天数的战场及其玩家记录。0 = 永不删除。在开启“保存战场结果”（仪表盘实时视图）时生效。"
    }
   },
   {
@@ -4200,6 +4223,54 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaLive.CityUnstick.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-citylife",
+   "type": "bool",
+   "default": 1,
+   "when": "restart",
+   "label": {
+    "en": "Free bots stuck in city floors",
+    "fr": "Libérer les bots coincés dans le sol des villes",
+    "ru": "Освобождать ботов, застрявших в полу городов",
+    "zh": "解救卡在城市地面中的机器人"
+   },
+   "help": {
+    "en": "New in 3.2.2. A random bot of a capital that stands inside the floor, or stands still for long on a walk that leads nowhere, is put back on the city's nearest checked arrival. Never in a fight, a battleground or a group with a player.",
+    "fr": "Nouveau en 3.2.2. Un bot aléatoire d'une capitale qui se tient dans le sol, ou reste longtemps immobile sur un trajet qui ne mène nulle part, est remis au point d'arrivée vérifié le plus proche de la ville. Jamais en combat, en champ de bataille ni dans un groupe avec un joueur.",
+    "ru": "Новое в 3.2.2. Случайный бот столицы, стоящий внутри пола или долго неподвижный на пути в никуда, переносится на ближайшую проверенную точку прибытия города. Никогда в бою, на поле боя или в группе с игроком.",
+    "zh": "3.2.2 新增。主城中的随机机器人若卡在地面里，或在无法到达的路线上长时间不动，会被放回城市最近的已校验到达点。战斗中、战场中或与玩家组队时不会处理。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaLive.CityUnstick.StillMinutes",
+   "file": "playerbots.conf",
+   "group": "lw-citylife",
+   "type": "int",
+   "default": 25,
+   "min": 5,
+   "max": 1440,
+   "when": "restart",
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaLive.CityUnstick.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Minutes still before a city bot is freed",
+    "fr": "Minutes d'immobilité avant qu'un bot de ville soit libéré",
+    "ru": "Минут неподвижности до освобождения городского бота",
+    "zh": "城市机器人静止多少分钟后被解救"
+   },
+   "help": {
+    "en": "New in 3.2.2. At least 5 minutes. 25 by default.",
+    "fr": "Nouveau en 3.2.2. Au moins 5 minutes. 25 par défaut.",
+    "ru": "Новое в 3.2.2. Не менее 5 минут. По умолчанию 25.",
+    "zh": "3.2.2 新增。至少 5 分钟。默认 25。"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaLive.Sheath.Enable",
    "file": "playerbots.conf",
    "group": "lw-citylife",
@@ -5650,7 +5721,8 @@
     "AiPlayerbot.CoaEconomy.SelfStudy.RestAreas": 1,
     "AiPlayerbot.CoaEconomy.BotAuctions.Shop.Enable": 1,
     "AiPlayerbot.CoaEconomy.RemoteBuy.Enable": 1,
-    "AiPlayerbot.CoaEconomy.RemoteSell.Enable": 1
+    "AiPlayerbot.CoaEconomy.RemoteSell.Enable": 1,
+    "AiPlayerbot.CoaLive.CityUnstick.Enable": 1
    }
   }
  ]
