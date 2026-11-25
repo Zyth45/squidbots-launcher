@@ -74,3 +74,26 @@ test('an addon for a newer CoA Bots waits: shown, never installed on an older se
   assert.equal(components.blocker(root, offer), 'bots');
   assert.equal(components.blocker(root, { ...offer, minBots: '' }), '');
 });
+
+test('the dashboard 3.3.0 (minBots 3.3) is offered to a 3.3 server only, never an error on an older or unknown one', () => {
+  const offer = components.clean('dashboard', { name: 'dashboard', version: '3.3.0', url: 'https://x.test/d.zip', sha256: 'a'.repeat(64), size: 10, minBots: '3.3' });
+  const serverWith = bots => {
+    const root = tmp();
+    write(root, { 'CoA-Bots/Tools/Dashboard/VERSION': '3.2.2\n', ...(bots === null ? {} : { 'CoA-Bots/release.json': bots }) });
+    return root;
+  };
+  for (const version of ['3.3', '3.3.0', '3.3.1', '3.4']) {
+    const item = components.status(serverWith(JSON.stringify({ version })), { dashboard: offer }).find(c => c.name === 'dashboard');
+    assert.deepEqual([version, item.available, item.waiting], [version, true, null]);
+  }
+  for (const [label, bots] of [['3.2.1', JSON.stringify({ version: '3.2.1' })], ['3.2', JSON.stringify({ version: '3.2' })], ['3.2.2', JSON.stringify({ version: '3.2.2' })], ['no version', '{}'], ['broken', 'not json'], ['no release.json', null]]) {
+    const root = serverWith(bots);
+    const item = components.status(root, { dashboard: offer }).find(c => c.name === 'dashboard');
+    assert.equal(item.available, false, label);
+    assert.equal(item.waiting?.minBots, '3.3', label);
+    assert.equal(components.blocker(root, offer), 'bots', label);
+  }
+  // No server at all: nothing offered, nothing thrown.
+  assert.equal(components.blocker(path.join(tmp(), 'absent'), offer), 'bots');
+  assert.equal(components.status(path.join(tmp(), 'absent'), { dashboard: offer }).find(c => c.name === 'dashboard').available, false);
+});
