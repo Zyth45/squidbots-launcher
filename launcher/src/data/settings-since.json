@@ -1,7 +1,7 @@
 {
  "from": "0.3.59",
  "next": "0.5.0",
- "catalog": "3ea09a57db48c764",
+ "catalog": "273cf78ae488aab0",
  "keys": {
   "worldserver.conf|CharactersPerRealm": {
    "added": "0.4.0"
@@ -926,6 +926,9 @@
    "added": "0.5.0"
   },
   "playerbots.conf|AiPlayerbot.CoaWorld.ItemOrigin.PurgeDays": {
+   "added": "0.5.0"
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.LevelupTeleportGuard": {
    "added": "0.5.0"
   },
   "playerbots.conf|AiPlayerbot.CoaLive.PvpStatsKeepDays": {

@@ -85,7 +85,8 @@
   "AiPlayerbot.CoaArrivalCheck",
   "AiPlayerbot.CoaLfgRolePriority",
   "AiPlayerbot.Coa.HideReplayedAchievements",
-  "AiPlayerbot.CoaLive.NpcStopAside"
+  "AiPlayerbot.CoaLive.NpcStopAside",
+  "AiPlayerbot.CoaLive.LevelupTeleportGuard"
  ],
  "groups": [
   {
@@ -1633,6 +1634,26 @@
     "fr": "Niveaux au-dessus du bot qu'une zone peut avoir",
     "ru": "На сколько уровней зона может быть выше бота",
     "zh": "区域可高于机器人的等级数"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaLive.LevelupTeleportGuard",
+   "file": "playerbots.conf",
+   "group": "lw-travellers",
+   "type": "bool",
+   "default": 1,
+   "when": "reload",
+   "label": {
+    "en": "Level-up teleports kept away from players",
+    "fr": "Téléportations de montée de niveau loin des joueurs",
+    "ru": "Телепорт при повышении уровня — подальше от игроков",
+    "zh": "升级传送远离玩家"
+   },
+   "help": {
+    "en": "New in 3.3. At its level up, a bot under level 6 is no longer teleported (it is already at its starting area), and from level 6 it never arrives within 150 yards of a real player. The other random teleports are unchanged.",
+    "fr": "Nouveau en 3.3. À sa montée de niveau, un bot sous le niveau 6 n'est plus téléporté (il est déjà dans sa zone de départ), et à partir du niveau 6 il n'arrive jamais à moins de 150 mètres d'un joueur réel. Les autres téléportations aléatoires ne changent pas.",
+    "ru": "Новое в 3.3. При повышении уровня бот ниже 6-го уровня больше не телепортируется (он уже в стартовой зоне), а с 6-го уровня никогда не появляется ближе 150 ярдов к живому игроку. Остальные случайные телепорты не меняются.",
+    "zh": "3.3 新增。升级时，6 级以下的机器人不再被传送（它已在出生区域），6 级起不会传送到距真人玩家 150 码以内的位置。其他随机传送不变。"
    }
   },
   {
@@ -5934,7 +5955,8 @@
     "AiPlayerbot.CoaArrivalCheck": "1",
     "AiPlayerbot.CoaLfgRolePriority": "1",
     "AiPlayerbot.Coa.HideReplayedAchievements": "1",
-    "AiPlayerbot.CoaLive.NpcStopAside": "1"
+    "AiPlayerbot.CoaLive.NpcStopAside": "1",
+    "AiPlayerbot.CoaLive.LevelupTeleportGuard": "1"
    }
   }
  ]
