@@ -1,7 +1,7 @@
 {
  "from": "0.3.59",
  "next": "0.5.1",
- "catalog": "5f8ce008d9ee9d80",
+ "catalog": "30ff9262f6eca4c2",
  "keys": {
   "worldserver.conf|CharactersPerRealm": {
    "added": "0.4.0"
@@ -1010,6 +1010,30 @@
    "added": "0.5.1"
   },
   "playerbots.conf|AiPlayerbot.CoaEconomy.EnchantOrders.MinFeePerLevel": {
+   "added": "0.5.1"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.Formulas.LearnHeld": {
+   "added": "0.5.1"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.Formulas.RareDraw.Enable": {
+   "added": "0.5.1"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.Formulas.RareDraw.Percent": {
+   "added": "0.5.1"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.Formulas.RareDraw.MinSkill": {
+   "added": "0.5.1"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.Formulas.Buy.Enable": {
+   "added": "0.5.1"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.Formulas.Buy.MaxGoldPercent": {
+   "added": "0.5.1"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.Formulas.Buy.MaxCopperPerLevel": {
+   "added": "0.5.1"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.Formulas.Buy.PlayerDelayHours": {
    "added": "0.5.1"
   },
   "playerbots.conf|AiPlayerbot.CoaLive.LootNeedRecipe": {

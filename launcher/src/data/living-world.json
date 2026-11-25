@@ -76,6 +76,9 @@
   "AiPlayerbot.CoaEconomy.CraftForSelf.Enable",
   "AiPlayerbot.CoaEconomy.EnchantForSelf.Enable",
   "AiPlayerbot.CoaEconomy.EnchantOrders.Enable",
+  "AiPlayerbot.CoaEconomy.Formulas.LearnHeld",
+  "AiPlayerbot.CoaEconomy.Formulas.RareDraw.Enable",
+  "AiPlayerbot.CoaEconomy.Formulas.Buy.Enable",
   "AiPlayerbot.CoaEconomy.SelfStudy.Enable",
   "AiPlayerbot.CoaWhy.Enable",
   "AiPlayerbot.CoaEconomy.BotAuctions.Shop.Enable",
@@ -2533,6 +2536,206 @@
     "fr": "Nouveau en 3.3.1. 50 par défaut.",
     "ru": "Новое в 3.3.1. По умолчанию 50.",
     "zh": "3.3.1 新增。默认 50。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.Formulas.LearnHeld",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "when": "restart",
+   "type": "bool",
+   "default": 1,
+   "label": {
+    "en": "Bots learn the recipes in their bags",
+    "fr": "Les bots apprennent les recettes de leurs sacs",
+    "ru": "Боты изучают рецепты из своих сумок",
+    "zh": "机器人学习背包中的配方"
+   },
+   "help": {
+    "en": "New in 3.3.1. At each study, a bot learns every recipe in its bags it may learn (one it does not know, of a profession it has, at its rank, level and reputation), and the recipe is used up, as for a player.",
+    "fr": "Nouveau en 3.3.1. À chaque étude, un bot apprend chaque recette de ses sacs qu'il peut apprendre (une qu'il ne connaît pas, d'un métier qu'il a, à son rang, son niveau et sa réputation), et la recette est consommée, comme pour un joueur.",
+    "ru": "Новое в 3.3.1. При каждом изучении бот учит каждый рецепт из своих сумок, который может выучить (неизвестный ему, его профессии, по его рангу, уровню и репутации), и рецепт расходуется, как у игрока.",
+    "zh": "3.3.1 新增。每次研究时，机器人会学习背包中所有可学习的配方（未掌握、属于其专业、符合其等级、角色等级和声望），配方会像玩家一样被消耗。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.Formulas.RareDraw.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "when": "restart",
+   "type": "bool",
+   "default": 1,
+   "label": {
+    "en": "Enchanters learn a rare formula now and then (once a day, chance)",
+    "fr": "Les enchanteurs apprennent parfois une formule rare (une fois par jour, au hasard)",
+    "ru": "Зачарователи иногда учат редкую формулу (раз в день, случайно)",
+    "zh": "附魔师偶尔学会稀有配方（每天一次，随机）"
+   },
+   "help": {
+    "en": "New in 3.3.1. Once a day, an enchanter bot may learn one formula the world really gives (dropped by a creature or a chest, or sold by a vendor) that it could learn from the item and does not know yet: the \"super enchanters\".",
+    "fr": "Nouveau en 3.3.1. Une fois par jour, un bot enchanteur peut apprendre une formule que le monde donne vraiment (lâchée par une créature ou un coffre, ou vendue par un marchand), qu'il pourrait apprendre depuis l'objet et qu'il ne connaît pas encore : les « super enchanteurs ».",
+    "ru": "Новое в 3.3.1. Раз в день бот-зачарователь может выучить формулу, которую мир действительно даёт (с существа, из сундука или у торговца), которую он мог бы выучить с предмета и ещё не знает: «суперзачарователи».",
+    "zh": "3.3.1 新增。附魔师机器人每天可能学会一个世界中真实存在的配方（由生物或宝箱掉落，或由商人出售），它能从物品学习且尚未掌握：“超级附魔师”。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.Formulas.RareDraw.Percent",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "when": "restart",
+   "type": "int",
+   "default": 25,
+   "min": 0,
+   "max": 100,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.Formulas.RareDraw.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Daily chance of a rare formula (%)",
+    "fr": "Chance par jour d'une formule rare (%)",
+    "ru": "Ежедневный шанс редкой формулы (%)",
+    "zh": "每日获得稀有配方的几率（%）"
+   },
+   "help": {
+    "en": "New in 3.3.1. 25 % by default.",
+    "fr": "Nouveau en 3.3.1. 25 % par défaut.",
+    "ru": "Новое в 3.3.1. По умолчанию 25 %.",
+    "zh": "3.3.1 新增。默认 25%。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.Formulas.RareDraw.MinSkill",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "when": "restart",
+   "type": "int",
+   "default": 225,
+   "min": 1,
+   "max": 450,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.Formulas.RareDraw.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Lowest Enchanting skill for the rare formula",
+    "fr": "Compétence minimale en Enchantement pour la formule rare",
+    "ru": "Минимальный навык Наложения чар для редкой формулы",
+    "zh": "获得稀有配方的最低附魔技能"
+   },
+   "help": {
+    "en": "New in 3.3.1. 225 by default.",
+    "fr": "Nouveau en 3.3.1. 225 par défaut.",
+    "ru": "Новое в 3.3.1. По умолчанию 225.",
+    "zh": "3.3.1 新增。默认 225。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.Formulas.Buy.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "when": "restart",
+   "type": "bool",
+   "default": 1,
+   "label": {
+    "en": "Enchanters buy formulas at vendors and the auction house",
+    "fr": "Les enchanteurs achètent des formules aux marchands et à l'hôtel des ventes",
+    "ru": "Зачарователи покупают формулы у торговцев и на аукционе",
+    "zh": "附魔师在商人和拍卖行购买配方"
+   },
+   "help": {
+    "en": "New in 3.3.1. An enchanter bot buys a formula it may learn and does not know, then learns it at once: at a vendor it stops at (with the reputation the formula asks) or at the auction house (the cheapest). One per stop.",
+    "fr": "Nouveau en 3.3.1. Un bot enchanteur achète une formule qu'il peut apprendre et ne connaît pas, puis l'apprend aussitôt : chez un marchand où il s'arrête (avec la réputation demandée par la formule) ou à l'hôtel des ventes (la moins chère). Une par arrêt.",
+    "ru": "Новое в 3.3.1. Бот-зачарователь покупает формулу, которую может выучить и не знает, и сразу её учит: у торговца, у которого останавливается (с нужной репутацией), или на аукционе (самую дешёвую). Одну за остановку.",
+    "zh": "3.3.1 新增。附魔师机器人会购买可学习且未掌握的配方并立即学习：在它停留的商人处（需达到配方要求的声望）或在拍卖行（最便宜的）。每次停留一个。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.Formulas.Buy.MaxGoldPercent",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "when": "restart",
+   "type": "int",
+   "default": 25,
+   "min": 0,
+   "max": 100,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.Formulas.Buy.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Most of its gold one formula may cost (%)",
+    "fr": "Part maximale de son or qu'une formule peut coûter (%)",
+    "ru": "Максимальная доля золота бота на одну формулу (%)",
+    "zh": "一个配方最多花费其金币的百分比"
+   },
+   "help": {
+    "en": "New in 3.3.1. 25 % by default; 0 = no purchase.",
+    "fr": "Nouveau en 3.3.1. 25 % par défaut ; 0 = aucun achat.",
+    "ru": "Новое в 3.3.1. По умолчанию 25 %; 0 = без покупок.",
+    "zh": "3.3.1 新增。默认 25%；0 = 不购买。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.Formulas.Buy.MaxCopperPerLevel",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "when": "restart",
+   "type": "int",
+   "default": 10000,
+   "min": 0,
+   "max": 1000000,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.Formulas.Buy.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Most one formula may cost, in copper per level",
+    "fr": "Coût maximal d'une formule, en cuivre par niveau",
+    "ru": "Максимальная цена формулы, в меди за уровень",
+    "zh": "一个配方的最高花费（每级铜币）"
+   },
+   "help": {
+    "en": "New in 3.3.1. 10000 by default (1 gold per level); 0 = no purchase.",
+    "fr": "Nouveau en 3.3.1. 10000 par défaut (1 pièce d'or par niveau) ; 0 = aucun achat.",
+    "ru": "Новое в 3.3.1. По умолчанию 10000 (1 золотой за уровень); 0 = без покупок.",
+    "zh": "3.3.1 新增。默认 10000（每级 1 金）；0 = 不购买。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.Formulas.Buy.PlayerDelayHours",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "when": "restart",
+   "type": "int",
+   "default": 24,
+   "min": 0,
+   "max": 168,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.Formulas.Buy.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Hours a player's formula listing waits before a bot may buy it",
+    "fr": "Heures d'attente d'une formule mise en vente par un joueur avant qu'un bot puisse l'acheter",
+    "ru": "Сколько часов формула, выставленная игроком, ждёт, прежде чем бот сможет её купить",
+    "zh": "玩家挂售的配方需等待多少小时机器人才能购买"
+   },
+   "help": {
+    "en": "New in 3.3.1. So players get it first. 24 by default.",
+    "fr": "Nouveau en 3.3.1. Pour que les joueurs l'aient d'abord. 24 par défaut.",
+    "ru": "Новое в 3.3.1. Чтобы игроки успели первыми. По умолчанию 24.",
+    "zh": "3.3.1 新增。让玩家优先购买。默认 24。"
    }
   },
   {
@@ -6225,6 +6428,9 @@
     "AiPlayerbot.CoaEconomy.SelfStudy.BuyReagents": 1,
     "AiPlayerbot.CoaEconomy.EnchantForSelf.Reagents": 1,
     "AiPlayerbot.CoaEconomy.EnchantOrders.Enable": 1,
+    "AiPlayerbot.CoaEconomy.Formulas.LearnHeld": 1,
+    "AiPlayerbot.CoaEconomy.Formulas.RareDraw.Enable": 1,
+    "AiPlayerbot.CoaEconomy.Formulas.Buy.Enable": 1,
     "AiPlayerbot.CoaEconomy.SelfStudy.RestAreas": 1,
     "AiPlayerbot.CoaEconomy.BotAuctions.Shop.Enable": 1,
     "AiPlayerbot.CoaEconomy.RemoteBuy.Enable": 1,
