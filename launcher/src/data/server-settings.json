@@ -3156,6 +3156,26 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaWorld.ItemEvent.Enable",
+   "file": "playerbots.conf",
+   "group": "dashboard",
+   "kind": "bool",
+   "when": "restart",
+   "default": "1",
+   "label": {
+    "en": "Gear history",
+    "fr": "Historique de l'équipement",
+    "ru": "История снаряжения",
+    "zh": "装备历史"
+   },
+   "help": {
+    "en": "New in 3.3.1. Keeps the last 20 gear events of each character (piece worn, enchantment put on) for the dashboard's character sheet. On by default.",
+    "fr": "Nouveau en 3.3.1. Garde les 20 derniers événements d'équipement de chaque personnage (pièce portée, enchantement posé) pour la fiche de personnage du dashboard. Activé par défaut.",
+    "ru": "Новое в 3.3.1. Хранит последние 20 событий снаряжения каждого персонажа (надетая вещь, наложенное зачарование) для листа персонажа на панели. По умолчанию включено.",
+    "zh": "3.3.1 新增。保存每个角色最近 20 条装备事件（穿上的装备、附上的附魔），用于面板的角色页。默认开启。"
+   }
+  },
+  {
    "key": "Ascension.CallboardCache.ReleaseStage",
    "file": "coa.conf",
    "group": "progression",

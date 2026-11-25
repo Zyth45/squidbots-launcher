@@ -8,9 +8,10 @@ const { sanitize } = require('../src/settings.cjs');
 // What's new of the settings (3.2): the table shipped with the launcher, the previous version kept at its update.
 test('the « since » table matches the catalog shipped (run scripts/settings-since.cjs after a manifest change)', () => {
   assert.equal(TABLE.catalog, since.signature(require('../src/data/server-settings.json'), require('../src/data/living-world.json')));
-  // The 3.2 keys of the module came with 0.4.7, the 3.2.2 enchanting keys are new in the next launcher, the 3.1.6 combat defaults changed in 0.4.5.
+  // The 3.2 keys of the module came with 0.4.7, the 3.2.2 enchanting keys came with 0.5.0, the 3.3.1 gear history is new in the next launcher, the 3.1.6 combat defaults changed in 0.4.5.
   assert.equal(TABLE.keys['playerbots.conf|AiPlayerbot.CoaSelfFound.Rolls'].added, '0.4.7');
-  assert.equal(TABLE.keys['playerbots.conf|AiPlayerbot.CoaEconomy.EnchantForSelf.PiecesPerStudy'].added, TABLE.next);
+  assert.equal(TABLE.keys['playerbots.conf|AiPlayerbot.CoaEconomy.EnchantForSelf.PiecesPerStudy'].added, '0.5.0');
+  assert.equal(TABLE.keys['playerbots.conf|AiPlayerbot.CoaWorld.ItemEvent.Enable'].added, TABLE.next);
   assert.deepEqual(TABLE.keys['playerbots.conf|AiPlayerbot.CoaCombat.LootNeedMinUpgradePct']?.defaults?.at(-1)?.slice(1), ['0', '10']);
 });
 
