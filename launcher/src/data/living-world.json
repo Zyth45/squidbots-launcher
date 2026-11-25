@@ -4764,6 +4764,28 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaLive.StrandedMinutes",
+   "file": "playerbots.conf",
+   "group": "lw-citylife",
+   "type": "int",
+   "default": 10,
+   "when": "reload",
+   "min": 0,
+   "max": 1440,
+   "label": {
+    "en": "Free stranded bots after (minutes)",
+    "fr": "Libérer les bots bloqués après (minutes)",
+    "ru": "Освобождать застрявших ботов через (минут)",
+    "zh": "解救滞留机器人的等待时间（分钟）"
+   },
+   "help": {
+    "en": "New in 3.3.1. A random bot that has not moved for this long with nothing to wait for (a group of bots its player left, its own life stuck idle) leaves its group, gets off its mount and goes back to its own life. Never a bot grouped with a real player. 10 by default; 0 = off.",
+    "fr": "Nouveau en 3.3.1. Un bot aléatoire qui n'a pas bougé depuis ce temps sans rien à attendre (un groupe de bots que son joueur a quitté, sa propre vie bloquée à l'arrêt) quitte son groupe, descend de sa monture et reprend sa propre vie. Jamais un bot groupé avec un vrai joueur. 10 par défaut ; 0 = désactivé.",
+    "ru": "Новое в 3.3.1. Случайный бот, который не двигался столько времени и ничего не ждёт (группа ботов, которую покинул его игрок, или его собственная жизнь застыла), покидает группу, слезает с маунта и возвращается к своей жизни. Никогда — бот в группе с настоящим игроком. По умолчанию 10; 0 = выключено.",
+    "zh": "3.3.1 新增。随机机器人在这段时间内未移动且无事可等（其玩家已离开的机器人队伍，或自身生活卡在空闲）时，会离开队伍、下坐骑并回到自己的生活。与真实玩家组队的机器人除外。默认 10；0 = 关闭。"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaLive.City.Squares",
    "file": "playerbots.conf",
    "group": "lw-citylife",
