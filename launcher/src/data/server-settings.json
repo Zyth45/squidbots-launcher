@@ -3204,6 +3204,82 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaEconomy.Events.Enable",
+   "file": "playerbots.conf",
+   "group": "dashboard",
+   "kind": "bool",
+   "when": "restart",
+   "default": "1",
+   "label": {
+    "en": "Write formulas learned and enchantment orders for the dashboard",
+    "fr": "Écrire les formules apprises et les commandes d'enchantement pour le dashboard",
+    "ru": "Записывать выученные формулы и заказы зачарований для панели",
+    "zh": "为面板记录学会的配方和附魔订单"
+   },
+   "help": {
+    "en": "New in 3.3.1. The server writes in the characters database the formulas a character learned beyond the trainers (from its bags, drawn, bought) and the enchantment orders an enchanter bot served, once a minute, off the world thread. On by default.",
+    "fr": "Nouveau en 3.3.1. Le serveur écrit dans la base des personnages les formules qu'un personnage a apprises hors des maîtres (depuis ses sacs, tirées, achetées) et les commandes d'enchantement servies par un bot enchanteur, une fois par minute, hors du fil du monde. Activé par défaut.",
+    "ru": "Новое в 3.3.1. Сервер записывает в базу персонажей формулы, выученные персонажем не у наставников (из сумок, выпавшие, купленные), и заказы зачарований, выполненные ботом-зачарователем, раз в минуту, вне потока мира. По умолчанию включено.",
+    "zh": "3.3.1 新增。服务器每分钟在角色数据库中记录角色在训练师之外学会的配方（来自背包、抽取、购买）以及附魔师机器人完成的附魔订单，不占用世界线程。默认开启。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.Events.PurgeDays",
+   "file": "playerbots.conf",
+   "group": "dashboard",
+   "kind": "int",
+   "when": "reload",
+   "min": 0,
+   "max": 3650,
+   "default": "90",
+   "offWhen": {
+    "key": "AiPlayerbot.CoaEconomy.Events.Enable",
+    "values": [
+     "0"
+    ]
+   },
+   "label": {
+    "en": "Days an enchantment order row is kept",
+    "fr": "Jours de conservation d'une commande d'enchantement",
+    "ru": "Сколько дней хранить запись о заказе зачарования",
+    "zh": "附魔订单记录保留天数"
+   },
+   "help": {
+    "en": "New in 3.3.1. 90 by default; 0 = kept for ever.",
+    "fr": "Nouveau en 3.3.1. 90 par défaut ; 0 = gardé pour toujours.",
+    "ru": "Новое в 3.3.1. По умолчанию 90; 0 = хранить всегда.",
+    "zh": "3.3.1 新增。默认 90；0 = 永久保留。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.Events.FormulasPerCharacter",
+   "file": "playerbots.conf",
+   "group": "dashboard",
+   "kind": "int",
+   "when": "reload",
+   "min": 1,
+   "max": 10000,
+   "default": "300",
+   "offWhen": {
+    "key": "AiPlayerbot.CoaEconomy.Events.Enable",
+    "values": [
+     "0"
+    ]
+   },
+   "label": {
+    "en": "Formula rows kept per character",
+    "fr": "Formules gardées par personnage",
+    "ru": "Сколько записей о формулах хранить на персонажа",
+    "zh": "每个角色保留的配方记录数"
+   },
+   "help": {
+    "en": "New in 3.3.1. Each character keeps its last ones. 300 by default.",
+    "fr": "Nouveau en 3.3.1. Chaque personnage garde les dernières. 300 par défaut.",
+    "ru": "Новое в 3.3.1. Каждый персонаж хранит последние. По умолчанию 300.",
+    "zh": "3.3.1 新增。每个角色保留最近的记录。默认 300。"
+   }
+  },
+  {
    "key": "Ascension.CallboardCache.ReleaseStage",
    "file": "coa.conf",
    "group": "progression",

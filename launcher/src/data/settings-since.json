@@ -1,7 +1,7 @@
 {
  "from": "0.3.59",
  "next": "0.5.1",
- "catalog": "30ff9262f6eca4c2",
+ "catalog": "5349116049efe85f",
  "keys": {
   "worldserver.conf|CharactersPerRealm": {
    "added": "0.4.0"
@@ -983,6 +983,15 @@
    "added": "0.5.1"
   },
   "playerbots.conf|AiPlayerbot.CoaWorld.ItemEvent.Keep": {
+   "added": "0.5.1"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.Events.Enable": {
+   "added": "0.5.1"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.Events.PurgeDays": {
+   "added": "0.5.1"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.Events.FormulasPerCharacter": {
    "added": "0.5.1"
   },
   "playerbots.conf|AiPlayerbot.CoaLive.FarMaps.Allow": {
