@@ -432,16 +432,23 @@ function modulesView() {
 }
 
 // Dawnrise Island (3.3.1): extra content in the CoA world, off by default. The switch needs MySQL on and the world server off.
+// It is a component of its own, downloaded at the first « On »: offline, a server that never had it cannot switch it on.
 function dawnriseCard(d, running) {
   const on = !!(d?.available && d.enabled);
+  const usable = !!(d?.available || d?.download);
+  const mb = size => Math.max(1, Math.round((size || 0) / 1048576));
+  const note = text => `<p class="module-note">${icon('info')}${esc(text)}</p>`;
   const client = on && d.client !== 'yes' && d.clientFiles ? `<div class="button-row module-actions"><button class="button ghost small" data-action="dawnrise-client">${icon('download')}${esc(t('modules.dawnriseClient', 'Install its files in my game'))}</button></div>` : '';
-  return `<section class="panel module-card ${d?.available ? '' : 'soon'}">${moduleArt('manastorm')}<header><h2>${icon('map')}${esc(t('modules.dawnrise', 'Dawnrise Island'))}</h2>${moduleSwitch('modules-dawnrise', on, running || !d?.available)}</header>
+  const update = on && d.download ? `<div class="button-row module-actions"><button class="button small" data-action="dawnrise-update" ${running ? 'disabled' : ''}>${icon('download')}${esc(t('modules.dawnriseUpdate', 'Update the island to {version}', { version: d.download.version }))}</button></div>` : '';
+  const state = d?.available ? '' : d?.download ? note(t('modules.dawnriseDownload', 'Downloaded when you switch it on: {mb} MB.', { mb: mb(d.download.size) }))
+    : note(d?.size ? t('modules.dawnriseOfflineSize', 'The island is downloaded when you switch it on ({mb} MB): connect to the Internet first.', { mb: mb(d.size) }) : t('modules.dawnriseOffline', 'The island is downloaded when you switch it on: connect to the Internet first.'));
+  return `<section class="panel module-card ${usable ? '' : 'soon'}">${moduleArt('manastorm')}<header><h2>${icon('map')}${esc(t('modules.dawnrise', 'Dawnrise Island'))}</h2>${moduleSwitch('modules-dawnrise', on, running || !usable)}</header>
       <p class="muted">${esc(t('modules.dawnriseText', 'A new island and the Azzar Faire with its mini-games, reached by portal tents in Stormwind and Orgrimmar. Off by default. Every player needs its two game files.'))}</p>
-      ${d?.available ? '' : `<p class="module-note">${icon('info')}${esc(t('modules.dawnriseSoon', 'Comes with CoA Bots 3.3.1.'))}</p>`}
-      ${d?.available && running ? `<p class="module-note">${icon('info')}${esc(t('modules.dawnriseStop', 'Stop the world server to switch it (MySQL stays on): a backup is made first.'))}</p>` : ''}
-      ${client}
-      <p class="module-note">${icon('info')}${esc(t('modules.newModule', 'New module, not tried with the bots yet: feedback is welcome.'))}</p>
-      <p class="module-credit"><span>${esc(t('modules.dawnriseCredit', 'Content by Duskmere (The Venture Co), shared with permission'))}</span></p>
+      ${state}
+      ${usable && running ? note(t('modules.dawnriseStop', 'Stop the world server to switch it (MySQL stays on): a backup is made first.')) : ''}
+      ${update}${client}
+      ${note(t('modules.newModule', 'New module, not tried with the bots yet: feedback is welcome.'))}
+      <p class="module-credit"><span>${esc(t('modules.createdBy', 'Created by {author}', { author: 'Nightlund' }))}</span></p>
     </section>`;
 }
 
@@ -978,6 +985,14 @@ Object.assign(App.actions, {
     if (!await confirmDialog({ title: on ? t('modules.dawnriseOnTitle', 'Add Dawnrise Island to the world?') : t('modules.dawnriseOffTitle', 'Remove Dawnrise Island?'), body: esc(on ? t('modules.dawnriseOnBody', 'A backup of the databases is made, then the island is added to the world. It opens at the next start of the server.') : t('modules.dawnriseOffBody', 'A backup of the databases is made, every character left on the island goes back to its hearthstone, then the island is removed. Nothing else in the world changes.')), confirm: on ? t('modules.dawnriseOn', 'Add the island') : t('modules.dawnriseOff', 'Remove the island') })) return;
     const release = holdDialog(t('modules.dawnrise', 'Dawnrise Island'), t('modules.dawnriseWorking', 'Backup, then the databases: a few minutes. Keep the launcher open.'));
     try { App.state.modules = await App.api.modulesDawnrise(on); } finally { release(); }
+    toast(t('modules.restartNeeded', 'Saved: it applies at the next start of the server.'), 'success');
+    App.render();
+  }, button),
+  'dawnrise-update': button => guard(async () => {
+    const next = App.state.modules?.dawnrise?.download;
+    if (!next || !await confirmDialog({ title: t('modules.dawnriseUpdateTitle', 'Update Dawnrise Island to {version}?', { version: next.version }), body: esc(t('modules.dawnriseUpdateBody', 'A backup of the databases is made, the island of the current version is removed, then the new one is added. If it fails, the current one is put back.')), confirm: t('modules.dawnriseUpdate', 'Update the island to {version}', { version: next.version }) })) return;
+    const release = holdDialog(t('modules.dawnrise', 'Dawnrise Island'), t('modules.dawnriseWorking', 'Backup, then the databases: a few minutes. Keep the launcher open.'));
+    try { App.state.modules = await App.api.modulesDawnrise(true); } finally { release(); }
     toast(t('modules.restartNeeded', 'Saved: it applies at the next start of the server.'), 'success');
     App.render();
   }, button),

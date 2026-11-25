@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Prepares a component published on its own (release "components" of squidbots-updates): nothing is sent.
-//   node tools/publish-component.mjs <addon|dashboard> <zip> <out folder> --key <private.pem> [--notes file.md]
+//   node tools/publish-component.mjs <addon|dashboard|dawnrise> <zip> <out folder> --key <private.pem> [--notes file.md]
 //     [--url-base http://127.0.0.1:8777] [--repo Zyth45/squidbots-updates] [--min-launcher 0.3.27] [--min-bots 2.6]
 //   --min-bots: the CoA Bots version the server needs (an addon talks to the bots module of its version).
 // Writes <out>/<name>-<version>.zip, <name>.json and <name>.json.sig. The version is read inside the zip (the
@@ -13,8 +13,8 @@ import { parseArgs, loadPrivateKey, writeSigned } from './lib.mjs';
 
 const args = parseArgs(process.argv.slice(2));
 const [name, source, out] = args._;
-if (!['addon', 'dashboard'].includes(name) || !source || !out || !args.key) {
-  console.log('Usage: node tools/publish-component.mjs <addon|dashboard> <zip> <out folder> --key <private.pem> [--notes file.md] [--url-base url] [--min-launcher x.y.z] [--min-bots x.y]');
+if (!['addon', 'dashboard', 'dawnrise'].includes(name) || !source || !out || !args.key) {
+  console.log('Usage: node tools/publish-component.mjs <addon|dashboard|dawnrise> <zip> <out folder> --key <private.pem> [--notes file.md] [--url-base url] [--min-launcher x.y.z] [--min-bots x.y]');
   process.exit(1);
 }
 const repo = args.repo || 'Zyth45/squidbots-updates';
@@ -27,7 +27,10 @@ if (name === 'addon') {
   if (listing.some(entry => entry.split('/')[0] !== 'SquidBotsLite')) throw new Error('The addon zip must hold only the SquidBotsLite folder at its top.');
   version = /^##\s*Version:\s*(.+)$/m.exec(read('SquidBotsLite/SquidBotsLite.toc'))?.[1].trim();
 } else {
-  if (!listing.includes('VERSION')) throw new Error('The dashboard zip must have its files (and VERSION) at its top.');
+  if (!listing.includes('VERSION')) throw new Error(`The ${name} zip must have its files (and VERSION) at its top.`);
+  // Dawnrise: the files the launcher runs (src/dawnrise.cjs), all at the top of the zip.
+  const needed = ['sql/world/dawnrise-install.sql', 'sql/world/dawnrise-uninstall.sql', 'sql/characters/dawnrise-evacuate.sql', 'client/patch-ZZZT.MPQ', 'client/patch-ZZZW.MPQ'];
+  if (name === 'dawnrise' && (needed.some(file => !listing.includes(file)) || !listing.some(entry => /^lua_scripts\/dawnrise\/.+\.lua$/.test(entry)))) throw new Error('The dawnrise zip misses one of its files (sql, lua_scripts/dawnrise, client).');
   version = read('VERSION').trim();
 }
 if (!/^\d+(\.\d+){0,3}$/.test(version || '')) throw new Error(`Version "${version}" is not a final version (a beta is never published here).`);

@@ -12,6 +12,8 @@ const { compareVersions } = require('./repack-update.cjs');
 
 const tar = path.join(process.env.SystemRoot || 'C:\\Windows', 'System32', 'tar.exe');
 const NAMES = ['addon', 'dashboard'];
+// Components downloaded only on a click of their own, never offered as an update here (Dawnrise: the island, 3.3.1).
+const ON_DEMAND = ['dawnrise'];
 const ADDON_DIR = ['CoA-Bots', 'Client', 'Interface', 'AddOns', 'SquidBotsLite'];
 const DASHBOARD_DIR = ['CoA-Bots', 'Tools', 'Dashboard'];
 const VERSION = /^\d+(\.\d+){0,3}$/;
@@ -94,4 +96,4 @@ async function install(root, offer, { cacheDir, backupDir, fetchImpl }) {
   } finally { await fs.rm(stage, { recursive: true, force: true }); }
 }
 
-module.exports = { NAMES, clean, installed, status, install, blocker, botsVersion };
+module.exports = { NAMES, ON_DEMAND, clean, installed, status, install, blocker, botsVersion };

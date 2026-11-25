@@ -964,7 +964,7 @@ function registerIpc() {
   handle('components:refresh', () => refreshComponents());
   handle('components:install', async name => {
     const id = text(name, 20);
-    const offer = componentLists[id];
+    const offer = components.NAMES.includes(id) ? componentLists[id] : null;
     if (!serverPath() || !offer) throw new Error('No new version of this component.');
     if (componentsBusy) throw new Error('A component is already being installed.');
     if (offer.minLauncher && repackUpdate.compareVersions(app.getVersion(), offer.minLauncher) < 0) throw new Error(`This needs launcher ${offer.minLauncher} or newer: update the launcher first (Settings > About).`);
@@ -1219,7 +1219,7 @@ function registerIpc() {
     const found = serverControl();
     return found ? (await found.status()).some(service => /world/i.test(service.id) && ['running', 'starting', 'stopping'].includes(service.state)) : false;
   };
-  const modulesStatus = async () => ({ ...(await modules.status(serverPath(), { squidbots: settings.modules?.squidbots !== false, client: settings.installPaths.addon || '' })), dawnrise: await dawnrise.status(serverPath(), { client: settings.installPaths.addon || '' }), worldRunning: await worldRunning(),
+  const modulesStatus = async () => ({ ...(await modules.status(serverPath(), { squidbots: settings.modules?.squidbots !== false, client: settings.installPaths.addon || '' })), dawnrise: await dawnrise.status(serverPath(), { client: settings.installPaths.addon || '', ...(await dawnriseOffer()) }), worldRunning: await worldRunning(),
     // Screenshot tours only (--smoke): a module of a later CoA Bots shown as installed.
     ...(smokeDir && process.env.COA_SMOKE_DUNGEON ? { dungeonclear: { available: true, enabled: true, difficulties: ['normal', 'heroic', 'mythic'], difficultyKnown: true } } : {}),
     ...(smokeDir && process.env.COA_SMOKE_ENCHANTER ? { enchanter: { available: true, enabled: false, tiers: ['60'], costs: { 60: 1, 70: 5, 80: 10 } } } : {}) });
@@ -1296,11 +1296,23 @@ function registerIpc() {
     const reloaded = running ? await live.raCommand(serverPath(), 'reload config', 30000).then(() => true, () => false) : false;
     return { ...(await modulesStatus()), reloaded };
   });
+  // The Dawnrise component's signed list: the one read at the last refresh, else the last one seen (offline: its size
+  // is shown, nothing is downloaded from it).
+  const dawnriseOffer = async () => {
+    if (componentLists.dawnrise) return { offer: componentLists.dawnrise, offline: false };
+    try { return { offer: components.clean('dawnrise', JSON.parse(await fs.readFile(path.join(app.getPath('userData'), 'dawnrise-offer.json'), 'utf8'))), offline: true }; } catch { return { offer: null, offline: true }; }
+  };
   // Dawnrise (3.3.1): SQL on the databases, so MySQL runs and the world server is stopped.
   handle('modules:dawnrise', async on => {
     if (!serverPath()) throw new Error('Choose the server folder first.');
     if (await worldRunning()) throw new Error('Stop the world server first: Dawnrise is read when it starts (MySQL stays on).');
-    const result = on === true ? await dawnrise.enable(serverPath(), serverTools().backup) : await dawnrise.disable(serverPath(), serverTools().backup);
+    const { offer, offline } = await dawnriseOffer();
+    if (on === true && offer && !offline && components.blocker(serverPath(), offer)) throw new Error(`Dawnrise needs CoA Bots ${offer.minBots} or newer on the server: update the server first.`);
+    if (on === true && offer?.minLauncher && repackUpdate.compareVersions(app.getVersion(), offer.minLauncher) < 0) throw new Error(`Dawnrise needs launcher ${offer.minLauncher} or newer: update the launcher first (Settings > About).`);
+    const game = { client: settings.installPaths.addon || '', gameRunning: await addonSync.gameRunning().catch(() => false) };
+    const result = on === true
+      ? await dawnrise.enable(serverPath(), serverTools().backup, { offer: offline ? null : offer, cacheDir: path.join(app.getPath('userData'), 'updates'), fetchImpl: netFetch, ...game })
+      : await dawnrise.disable(serverPath(), serverTools().backup, game);
     return { ...(await modulesStatus()), result };
   });
   handle('modules:dawnriseClient', async () => {
@@ -2434,13 +2446,15 @@ async function refreshComponents() {
   const base = config.server?.componentsUrl;
   if (!base) return componentsState();
   const next = {};
-  for (const name of components.NAMES) {
+  for (const name of [...components.NAMES, ...components.ON_DEMAND]) {
     try {
       const { data } = await fetchSigned(new URL(`${name}.json`, base.endsWith('/') ? base : `${base}/`), { key: config.keys.server, fetchImpl: netFetch, signal: AbortSignal.timeout(20000), maxBytes: 64 * 1024, redirect: 'follow' });
       next[name] = components.clean(name, data);
     } catch {}
   }
   componentLists = next;
+  // The last Dawnrise list seen, for its size when offline (never to download from).
+  if (next.dawnrise) await fs.writeFile(path.join(app.getPath('userData'), 'dawnrise-offer.json'), JSON.stringify(next.dawnrise)).catch(() => {});
   const state = componentsState();
   send('components:state', state);
   return state;
