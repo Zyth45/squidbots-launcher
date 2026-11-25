@@ -1,7 +1,7 @@
 {
  "from": "0.3.59",
  "next": "0.5.1",
- "catalog": "a34d25a9100a5580",
+ "catalog": "2f4b0e81167bdc9c",
  "keys": {
   "worldserver.conf|CharactersPerRealm": {
    "added": "0.4.0"
@@ -986,6 +986,33 @@
    "added": "0.5.1"
   },
   "playerbots.conf|AiPlayerbot.CoaLive.FarMaps.Allow": {
+   "added": "0.5.1"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.EnchantOrders.Enable": {
+   "added": "0.5.1"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.EnchantOrders.MinLevel": {
+   "added": "0.5.1"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.EnchantOrders.IntervalHours": {
+   "added": "0.5.1"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.EnchantOrders.HighLevel": {
+   "added": "0.5.1"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.EnchantOrders.MaxGoldPercent": {
+   "added": "0.5.1"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.EnchantOrders.MaxCopperPerLevel": {
+   "added": "0.5.1"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.EnchantOrders.FeePercent": {
+   "added": "0.5.1"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.EnchantOrders.MinFeePerLevel": {
+   "added": "0.5.1"
+  },
+  "playerbots.conf|AiPlayerbot.CoaEconomy.EnchantOrders.Log": {
    "added": "0.5.1"
   },
   "playerbots.conf|AiPlayerbot.UseGroundMountAtMinLevel": {

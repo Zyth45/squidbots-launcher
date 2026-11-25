@@ -75,6 +75,7 @@
   "AiPlayerbot.CoaSelfFound.Rolls",
   "AiPlayerbot.CoaEconomy.CraftForSelf.Enable",
   "AiPlayerbot.CoaEconomy.EnchantForSelf.Enable",
+  "AiPlayerbot.CoaEconomy.EnchantOrders.Enable",
   "AiPlayerbot.CoaEconomy.SelfStudy.Enable",
   "AiPlayerbot.CoaWhy.Enable",
   "AiPlayerbot.CoaEconomy.BotAuctions.Shop.Enable",
@@ -2315,6 +2316,222 @@
     "fr": "Nouveau en 3.3. Un bot enchanteur garde une pile des composants de ses enchantements au lieu de les vendre, et désenchante une pièce qu'il vendrait quand la poussière vaut plus.",
     "ru": "Новое в 3.3. Бот-зачарователь хранит стопку реагентов своих зачарований вместо продажи и распыляет предмет, который продал бы, если пыль стоит дороже.",
     "zh": "3.3 新增。附魔师机器人保留一组自己附魔所需的材料而不出售，并在粉尘更值钱时分解本要出售的装备。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.EnchantOrders.Enable",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "type": "bool",
+   "default": 1,
+   "when": "restart",
+   "label": {
+    "en": "Bots without Enchanting pay an enchanter bot to enchant their best piece",
+    "fr": "Les bots sans Enchantement paient un bot enchanteur pour enchanter leur meilleure pièce",
+    "ru": "Боты без Наложения чар платят боту-зачарователю за зачарование лучшего предмета",
+    "zh": "没有附魔专业的机器人付钱请附魔师机器人为其最好的装备附魔"
+   },
+   "help": {
+    "en": "New in 3.3.1. A bot resting in a city or an inn now and then has an enchanter bot online of its faction enchant its best piece with no permanent enchantment. It pays in real gold the reagents plus the enchanter's fee, given to that enchanter. A piece already enchanted is never touched.",
+    "fr": "Nouveau en 3.3.1. Un bot qui se repose en ville ou dans une auberge fait de temps en temps enchanter, par un bot enchanteur en ligne de sa faction, sa meilleure pièce sans enchantement permanent. Il paie en vrai or les composants et le prix de l'enchanteur, versés à cet enchanteur. Une pièce déjà enchantée n'est jamais touchée.",
+    "ru": "Новое в 3.3.1. Бот, отдыхающий в городе или таверне, время от времени просит бота-зачарователя своей фракции в сети зачаровать его лучший предмет без постоянного зачарования. Он платит настоящим золотом за реагенты и плату зачарователю, которая достаётся этому зачарователю. Уже зачарованный предмет не трогается.",
+    "zh": "3.3.1 新增。在城市或旅店休息的机器人会不时请同阵营在线的附魔师机器人为其最好的、没有永久附魔的装备附魔。它用真金支付材料费和附魔师的手工费，交给该附魔师。已附魔的装备绝不改动。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.EnchantOrders.MinLevel",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "type": "int",
+   "default": 20,
+   "when": "restart",
+   "min": 1,
+   "max": 80,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.EnchantOrders.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Lowest level for enchantment orders",
+    "fr": "Niveau minimum des commandes d'enchantement",
+    "ru": "Минимальный уровень для заказов зачарований",
+    "zh": "附魔订单的最低等级"
+   },
+   "help": {
+    "en": "New in 3.3.1. 20 by default.",
+    "fr": "Nouveau en 3.3.1. 20 par défaut.",
+    "ru": "Новое в 3.3.1. По умолчанию 20.",
+    "zh": "3.3.1 新增。默认 20。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.EnchantOrders.IntervalHours",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "type": "int",
+   "default": 8,
+   "when": "restart",
+   "min": 1,
+   "max": 168,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.EnchantOrders.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Hours between two orders of a bot (half from HighLevel)",
+    "fr": "Heures entre deux commandes d'un bot (moitié à partir du niveau haut)",
+    "ru": "Часов между двумя заказами бота (вдвое меньше с высокого уровня)",
+    "zh": "机器人两次订单间隔小时数（从高等级起减半）"
+   },
+   "help": {
+    "en": "New in 3.3.1. One piece per order. 8 by default.",
+    "fr": "Nouveau en 3.3.1. Une pièce par commande. 8 par défaut.",
+    "ru": "Новое в 3.3.1. Один предмет за заказ. По умолчанию 8.",
+    "zh": "3.3.1 新增。每次订单一件装备。默认 8。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.EnchantOrders.HighLevel",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "type": "int",
+   "default": 60,
+   "when": "restart",
+   "min": 1,
+   "max": 80,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.EnchantOrders.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Level from which bots order twice as often",
+    "fr": "Niveau à partir duquel les bots commandent deux fois plus souvent",
+    "ru": "Уровень, с которого боты заказывают вдвое чаще",
+    "zh": "机器人订单频率翻倍的起始等级"
+   },
+   "help": {
+    "en": "New in 3.3.1. Below it, a green piece close to the bot's level can be enchanted too. 60 by default.",
+    "fr": "Nouveau en 3.3.1. En dessous, une pièce verte proche du niveau du bot peut aussi être enchantée. 60 par défaut.",
+    "ru": "Новое в 3.3.1. Ниже него может быть зачарован и зелёный предмет, близкий к уровню бота. По умолчанию 60.",
+    "zh": "3.3.1 新增。低于此等级时，接近机器人等级的绿色装备也可附魔。默认 60。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.EnchantOrders.MaxGoldPercent",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "type": "int",
+   "default": 25,
+   "when": "restart",
+   "min": 0,
+   "max": 100,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.EnchantOrders.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Most of its gold one order may cost (%)",
+    "fr": "Part maximale de son or qu'une commande peut coûter (%)",
+    "ru": "Максимальная доля золота бота на один заказ (%)",
+    "zh": "一次订单最多花费其金币的百分比"
+   },
+   "help": {
+    "en": "New in 3.3.1. 25 % by default.",
+    "fr": "Nouveau en 3.3.1. 25 % par défaut.",
+    "ru": "Новое в 3.3.1. По умолчанию 25 %.",
+    "zh": "3.3.1 新增。默认 25%。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.EnchantOrders.MaxCopperPerLevel",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "type": "int",
+   "default": 10000,
+   "when": "restart",
+   "min": 0,
+   "max": 1000000,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.EnchantOrders.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Most one order may cost, in copper per level",
+    "fr": "Coût maximal d'une commande, en cuivre par niveau",
+    "ru": "Максимальная цена заказа, в меди за уровень",
+    "zh": "一次订单的最高花费（每级铜币）"
+   },
+   "help": {
+    "en": "New in 3.3.1. 10000 by default (1 gold per level).",
+    "fr": "Nouveau en 3.3.1. 10000 par défaut (1 pièce d'or par niveau).",
+    "ru": "Новое в 3.3.1. По умолчанию 10000 (1 золотой за уровень).",
+    "zh": "3.3.1 新增。默认 10000（每级 1 金）。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.EnchantOrders.FeePercent",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "type": "int",
+   "default": 20,
+   "when": "restart",
+   "min": 0,
+   "max": 100,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.EnchantOrders.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Enchanter's fee, % of the reagents' price",
+    "fr": "Prix de l'enchanteur, en % du prix des composants",
+    "ru": "Плата зачарователю, % от цены реагентов",
+    "zh": "附魔师手工费（材料价格的百分比）"
+   },
+   "help": {
+    "en": "New in 3.3.1. The reagents are paid at their price (a vendor's, else the market's). 20 % by default.",
+    "fr": "Nouveau en 3.3.1. Les composants sont payés à leur prix (celui d'un marchand, sinon celui du marché). 20 % par défaut.",
+    "ru": "Новое в 3.3.1. Реагенты оплачиваются по их цене (торговца, иначе рынка). По умолчанию 20 %.",
+    "zh": "3.3.1 新增。材料按其价格支付（商人价，否则市场价）。默认 20%。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaEconomy.EnchantOrders.MinFeePerLevel",
+   "file": "playerbots.conf",
+   "group": "lw-crafting",
+   "type": "int",
+   "default": 50,
+   "when": "restart",
+   "min": 0,
+   "max": 100000,
+   "idleWhen": {
+    "key": "AiPlayerbot.CoaEconomy.EnchantOrders.Enable",
+    "values": [
+     0
+    ]
+   },
+   "label": {
+    "en": "Lowest fee, in copper per level",
+    "fr": "Prix minimum de l'enchanteur, en cuivre par niveau",
+    "ru": "Минимальная плата, в меди за уровень",
+    "zh": "最低手工费（每级铜币）"
+   },
+   "help": {
+    "en": "New in 3.3.1. 50 by default.",
+    "fr": "Nouveau en 3.3.1. 50 par défaut.",
+    "ru": "Новое в 3.3.1. По умолчанию 50.",
+    "zh": "3.3.1 新增。默认 50。"
    }
   },
   {
@@ -5811,6 +6028,26 @@
    }
   },
   {
+   "key": "AiPlayerbot.CoaEconomy.EnchantOrders.Log",
+   "file": "playerbots.conf",
+   "group": "lw-diagnostics",
+   "type": "bool",
+   "default": 0,
+   "when": "restart",
+   "label": {
+    "en": "Log each enchantment order (playerbots.coa)",
+    "fr": "Journal de chaque commande d'enchantement (playerbots.coa)",
+    "ru": "Записывать каждый заказ зачарования (playerbots.coa)",
+    "zh": "记录每个附魔订单（playerbots.coa）"
+   },
+   "help": {
+    "en": "New in 3.3.1. Diagnostic: each enchantment order, in the playerbots.coa log. The hourly count of orders comes with Hourly count of enchantments.",
+    "fr": "Nouveau en 3.3.1. Diagnostic : chaque commande d'enchantement, dans le journal playerbots.coa. Le compte horaire des commandes vient avec le compte des enchantements par heure.",
+    "ru": "Новое в 3.3.1. Диагностика: каждый заказ зачарования в журнале playerbots.coa. Ежечасный подсчёт заказов входит в ежечасный подсчёт зачарований.",
+    "zh": "3.3.1 新增。诊断：每个附魔订单写入 playerbots.coa 日志。订单的每小时统计包含在每小时附魔统计中。"
+   }
+  },
+  {
    "key": "AiPlayerbot.CoaEconomy.SelfStudy.Log",
    "file": "playerbots.conf",
    "group": "lw-diagnostics",
@@ -5966,6 +6203,7 @@
     "AiPlayerbot.CoaEconomy.SelfStudy.Enable": 1,
     "AiPlayerbot.CoaEconomy.SelfStudy.BuyReagents": 1,
     "AiPlayerbot.CoaEconomy.EnchantForSelf.Reagents": 1,
+    "AiPlayerbot.CoaEconomy.EnchantOrders.Enable": 1,
     "AiPlayerbot.CoaEconomy.SelfStudy.RestAreas": 1,
     "AiPlayerbot.CoaEconomy.BotAuctions.Shop.Enable": 1,
     "AiPlayerbot.CoaEconomy.RemoteBuy.Enable": 1,
