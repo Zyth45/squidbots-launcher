@@ -2444,10 +2444,10 @@
     "zh": "一次订单最多花费其金币的百分比"
    },
    "help": {
-    "en": "New in 3.3.1. 25 % by default.",
-    "fr": "Nouveau en 3.3.1. 25 % par défaut.",
-    "ru": "Новое в 3.3.1. По умолчанию 25 %.",
-    "zh": "3.3.1 新增。默认 25%。"
+    "en": "New in 3.3.1. 25 % by default; 0 = no order can be paid.",
+    "fr": "Nouveau en 3.3.1. 25 % par défaut ; 0 = aucune commande ne peut être payée.",
+    "ru": "Новое в 3.3.1. По умолчанию 25 %; 0 = ни один заказ не может быть оплачен.",
+    "zh": "3.3.1 新增。默认 25%；0 = 无法支付任何订单。"
    }
   },
   {
@@ -2472,10 +2472,10 @@
     "zh": "一次订单的最高花费（每级铜币）"
    },
    "help": {
-    "en": "New in 3.3.1. 10000 by default (1 gold per level).",
-    "fr": "Nouveau en 3.3.1. 10000 par défaut (1 pièce d'or par niveau).",
-    "ru": "Новое в 3.3.1. По умолчанию 10000 (1 золотой за уровень).",
-    "zh": "3.3.1 新增。默认 10000（每级 1 金）。"
+    "en": "New in 3.3.1. 10000 by default (1 gold per level); 0 = no order can be paid.",
+    "fr": "Nouveau en 3.3.1. 10000 par défaut (1 pièce d'or par niveau) ; 0 = aucune commande ne peut être payée.",
+    "ru": "Новое в 3.3.1. По умолчанию 10000 (1 золотой за уровень); 0 = ни один заказ не может быть оплачен.",
+    "zh": "3.3.1 新增。默认 10000（每级 1 金）；0 = 无法支付任何订单。"
    }
   },
   {
