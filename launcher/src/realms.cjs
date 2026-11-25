@@ -358,7 +358,7 @@ function refreshBotConfigs(root) {
 async function writeConfigs(root, key, saved) {
   const dir = dirOf(root, key);
   const target = path.join(dir, 'configs');
-  await fsp.rm(target, { recursive: true, force: true });
+  await fsp.rm(target, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
   await fsp.cp(BOTS_CONFIGS(root), target, { recursive: true });
   const edits = new Map();
   const add = (fileId, keys) => edits.set(fileId, { ...edits.get(fileId), ...keys });
@@ -1178,7 +1178,7 @@ async function resetWorld(root, key, { confirmName, io = realIo(), now = new Dat
   const backup = await backupRealm(root, key, { label: 'reset', io, now, preview });
   for (const database of realmDbs(key)) await io.sql(root, `DROP DATABASE IF EXISTS ${database}`);
   await io.sql(root, `DELETE FROM acore_auth.realmcharacters WHERE realmid = ${Number(saved.id)}`);
-  for (const rel of RESET_STATE) await fsp.rm(path.join(dirOf(root, key), rel), { recursive: true, force: true });
+  for (const rel of RESET_STATE) await fsp.rm(path.join(dirOf(root, key), rel), { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
   // Made again as a new realm, with its name, ports and settings (create keeps the values the player set).
   await io.create(root, key, { name: saved.name, keep: { autostart: saved.autostart, disabled: saved.disabled, moved: saved.moved } });
   // The auction house seller is made again by the module at the next start (AutoCharacter); a fixed guid of the old
@@ -1233,7 +1233,7 @@ async function restoreRealm(root, key, id, { io = realIo(), now = new Date() } =
   for (const database of realmDbs(key)) await io.loadFrom(root, path.join(dir, `${database}.sql`));
   const folder = path.join(dir, 'Royaumes', key);
   if (fs.existsSync(folder)) {
-    for (const rel of RESET_STATE) await fsp.rm(path.join(dirOf(root, key), rel), { recursive: true, force: true });
+    for (const rel of RESET_STATE) await fsp.rm(path.join(dirOf(root, key), rel), { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
     await fsp.cp(folder, dirOf(root, key), { recursive: true, force: true });
   }
   return { restored: id, before: before.dir };
