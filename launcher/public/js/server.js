@@ -426,8 +426,23 @@ function modulesView() {
       <p class="module-note">${icon('info')}${esc(t('modules.newModule', 'New module, not tried with the bots yet: feedback is welcome.'))}</p>
       ${moduleCredit('core', 'Conquest of Azeroth (core)')}
     </section>
+    ${dawnriseCard(m.dawnrise, m.worldRunning)}
   </div>
   <p class="modules-foot">${esc(t('modules.foot', 'SquidBots Server is open source.'))} <button class="link-button" data-action="source-link" data-id="launcher">${icon('external')}${esc(t('modules.source', 'Source code'))}</button></p>`;
+}
+
+// Dawnrise Island (3.3.1): extra content in the CoA world, off by default. The switch needs MySQL on and the world server off.
+function dawnriseCard(d, running) {
+  const on = !!(d?.available && d.enabled);
+  const client = on && d.client !== 'yes' && d.clientFiles ? `<div class="button-row module-actions"><button class="button ghost small" data-action="dawnrise-client">${icon('download')}${esc(t('modules.dawnriseClient', 'Install its files in my game'))}</button></div>` : '';
+  return `<section class="panel module-card ${d?.available ? '' : 'soon'}">${moduleArt('manastorm')}<header><h2>${icon('map')}${esc(t('modules.dawnrise', 'Dawnrise Island'))}</h2>${moduleSwitch('modules-dawnrise', on, running || !d?.available)}</header>
+      <p class="muted">${esc(t('modules.dawnriseText', 'A new island and the Azzar Faire with its mini-games, reached by portal tents in Stormwind and Orgrimmar. Off by default. Every player needs its two game files.'))}</p>
+      ${d?.available ? '' : `<p class="module-note">${icon('info')}${esc(t('modules.dawnriseSoon', 'Comes with CoA Bots 3.3.1.'))}</p>`}
+      ${d?.available && running ? `<p class="module-note">${icon('info')}${esc(t('modules.dawnriseStop', 'Stop the world server to switch it (MySQL stays on): a backup is made first.'))}</p>` : ''}
+      ${client}
+      <p class="module-note">${icon('info')}${esc(t('modules.newModule', 'New module, not tried with the bots yet: feedback is welcome.'))}</p>
+      <p class="module-credit"><span>${esc(t('modules.dawnriseCredit', 'Content by Duskmere (The Venture Co), shared with permission'))}</span></p>
+    </section>`;
 }
 
 // What the PC can carry: a world ≈ 4.5 GB plus 7 MB a bot (measured), Windows and the game ≈ 4 GB more.
@@ -956,6 +971,19 @@ Object.assign(App.actions, {
     const result = await App.api.modulesMythicPlus(button.dataset.on !== '1');
     App.state.modules = result;
     toast(result.reloaded ? t('conf.reloaded', 'Applied at once: the server read its settings again.') : t('modules.restartNeeded', 'Saved: it applies at the next start of the server.'), 'success');
+    App.render();
+  }, button),
+  'modules-dawnrise': button => guard(async () => {
+    const on = button.dataset.on !== '1';
+    if (!await confirmDialog({ title: on ? t('modules.dawnriseOnTitle', 'Add Dawnrise Island to the world?') : t('modules.dawnriseOffTitle', 'Remove Dawnrise Island?'), body: esc(on ? t('modules.dawnriseOnBody', 'A backup of the databases is made, then the island is added to the world. It opens at the next start of the server.') : t('modules.dawnriseOffBody', 'A backup of the databases is made, every character left on the island goes back to its hearthstone, then the island is removed. Nothing else in the world changes.')), confirm: on ? t('modules.dawnriseOn', 'Add the island') : t('modules.dawnriseOff', 'Remove the island') })) return;
+    const release = holdDialog(t('modules.dawnrise', 'Dawnrise Island'), t('modules.dawnriseWorking', 'Backup, then the databases: a few minutes. Keep the launcher open.'));
+    try { App.state.modules = await App.api.modulesDawnrise(on); } finally { release(); }
+    toast(t('modules.restartNeeded', 'Saved: it applies at the next start of the server.'), 'success');
+    App.render();
+  }, button),
+  'dawnrise-client': button => guard(async () => {
+    App.state.modules = await App.api.modulesDawnriseClient();
+    toast(t('modules.dawnriseClientDone', 'Done: the two files of Dawnrise are in your game.'), 'success');
     App.render();
   }, button),
   'modules-rotation': button => guard(async () => {

@@ -92,6 +92,8 @@ contextBridge.exposeInMainWorld('launcher', Object.freeze({
   modulesMythicPlus: on => call('modules:mythicplus', on === true),
   modulesRotation: on => call('modules:rotation', on === true),
   modulesManastormClient: () => call('modules:manastormClient'),
+  modulesDawnrise: on => call('modules:dawnrise', on === true),
+  modulesDawnriseClient: () => call('modules:dawnriseClient'),
   modulesMultirace: options => call('modules:multirace', options),
   modulesCustomCharacters: () => call('modules:customCharacters'),
   modulesMultiracePlan: on => call('modules:multiracePlan', on),

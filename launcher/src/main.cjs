@@ -39,6 +39,7 @@ const botAchievements = require('./bot-achievements.cjs');
 const tweaks = require('./repack-tweaks.cjs');
 const live = require('./live.cjs');
 const modules = require('./modules.cjs');
+const dawnrise = require('./dawnrise.cjs');
 const realms = require('./realms.cjs');
 const { createNuma } = require('./numa.cjs');
 const eco = require('./eco.cjs');
@@ -1218,7 +1219,7 @@ function registerIpc() {
     const found = serverControl();
     return found ? (await found.status()).some(service => /world/i.test(service.id) && ['running', 'starting', 'stopping'].includes(service.state)) : false;
   };
-  const modulesStatus = async () => ({ ...(await modules.status(serverPath(), { squidbots: settings.modules?.squidbots !== false, client: settings.installPaths.addon || '' })), worldRunning: await worldRunning(),
+  const modulesStatus = async () => ({ ...(await modules.status(serverPath(), { squidbots: settings.modules?.squidbots !== false, client: settings.installPaths.addon || '' })), dawnrise: await dawnrise.status(serverPath(), { client: settings.installPaths.addon || '' }), worldRunning: await worldRunning(),
     // Screenshot tours only (--smoke): a module of a later CoA Bots shown as installed.
     ...(smokeDir && process.env.COA_SMOKE_DUNGEON ? { dungeonclear: { available: true, enabled: true, difficulties: ['normal', 'heroic', 'mythic'], difficultyKnown: true } } : {}),
     ...(smokeDir && process.env.COA_SMOKE_ENCHANTER ? { enchanter: { available: true, enabled: false, tiers: ['60'], costs: { 60: 1, 70: 5, 80: 10 } } } : {}) });
@@ -1294,6 +1295,18 @@ function registerIpc() {
     const running = await worldRunning();
     const reloaded = running ? await live.raCommand(serverPath(), 'reload config', 30000).then(() => true, () => false) : false;
     return { ...(await modulesStatus()), reloaded };
+  });
+  // Dawnrise (3.3.1): SQL on the databases, so MySQL runs and the world server is stopped.
+  handle('modules:dawnrise', async on => {
+    if (!serverPath()) throw new Error('Choose the server folder first.');
+    if (await worldRunning()) throw new Error('Stop the world server first: Dawnrise is read when it starts (MySQL stays on).');
+    const result = on === true ? await dawnrise.enable(serverPath(), serverTools().backup) : await dawnrise.disable(serverPath(), serverTools().backup);
+    return { ...(await modulesStatus()), result };
+  });
+  handle('modules:dawnriseClient', async () => {
+    if (await addonSync.gameRunning()) throw new Error('Close the game first.');
+    await dawnrise.installClient(serverPath(), settings.installPaths.addon || '');
+    return modulesStatus();
   });
   handle('modules:manastorm', async on => {
     if (!serverPath()) throw new Error('Choose the server folder first.');
