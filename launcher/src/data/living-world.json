@@ -4779,10 +4779,10 @@
     "zh": "解救滞留机器人的等待时间（分钟）"
    },
    "help": {
-    "en": "New in 3.3.1. A random bot that has not moved for this long with nothing to wait for (a group of bots its player left, its own life stuck idle) leaves its group, gets off its mount and goes back to its own life. Never a bot grouped with a real player. 10 by default; 0 = off.",
-    "fr": "Nouveau en 3.3.1. Un bot aléatoire qui n'a pas bougé depuis ce temps sans rien à attendre (un groupe de bots que son joueur a quitté, sa propre vie bloquée à l'arrêt) quitte son groupe, descend de sa monture et reprend sa propre vie. Jamais un bot groupé avec un vrai joueur. 10 par défaut ; 0 = désactivé.",
-    "ru": "Новое в 3.3.1. Случайный бот, который не двигался столько времени и ничего не ждёт (группа ботов, которую покинул его игрок, или его собственная жизнь застыла), покидает группу, слезает с маунта и возвращается к своей жизни. Никогда — бот в группе с настоящим игроком. По умолчанию 10; 0 = выключено.",
-    "zh": "3.3.1 新增。随机机器人在这段时间内未移动且无事可等（其玩家已离开的机器人队伍，或自身生活卡在空闲）时，会离开队伍、下坐骑并回到自己的生活。与真实玩家组队的机器人除外。默认 10；0 = 关闭。"
+    "en": "New in 3.3.1. A random bot that has not moved for this long with nothing to wait for: in a group of bots its player left, it leaves the group and goes back to its own life; on its own, it just picks its next goal. Bots sitting, resting, fishing, crafting or in a capital are left alone. Never a bot grouped with a real player. 10 by default; 0 = off.",
+    "fr": "Nouveau en 3.3.1. Un bot aléatoire qui n'a pas bougé depuis ce temps sans rien à attendre : dans un groupe de bots que son joueur a quitté, il quitte le groupe et reprend sa propre vie ; seul, il choisit simplement son prochain objectif. Les bots assis, au repos, en train de pêcher, de fabriquer ou dans une capitale sont laissés tranquilles. Jamais un bot groupé avec un vrai joueur. 10 par défaut ; 0 = désactivé.",
+    "ru": "Новое в 3.3.1. Случайный бот, который не двигался столько времени и ничего не ждёт: в группе ботов, которую покинул его игрок, он покидает группу и возвращается к своей жизни; один — просто выбирает следующую цель. Сидящих, отдыхающих, рыбачащих, занятых ремеслом ботов и ботов в столице не трогают. Никогда — бот в группе с настоящим игроком. По умолчанию 10; 0 = выключено.",
+    "zh": "3.3.1 新增。随机机器人在这段时间内未移动且无事可等时：若在其玩家已离开的机器人队伍中，它会离开队伍并回到自己的生活；若独自一人，它只会选择下一个目标。坐着、休息、钓鱼、制作物品或身处主城的机器人不受影响。与真实玩家组队的机器人除外。默认 10；0 = 关闭。"
    }
   },
   {
