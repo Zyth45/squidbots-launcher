@@ -1,7 +1,7 @@
 {
  "from": "0.3.59",
  "next": "0.5.1",
- "catalog": "2f4b0e81167bdc9c",
+ "catalog": "5f8ce008d9ee9d80",
  "keys": {
   "worldserver.conf|CharactersPerRealm": {
    "added": "0.4.0"
@@ -1010,6 +1010,9 @@
    "added": "0.5.1"
   },
   "playerbots.conf|AiPlayerbot.CoaEconomy.EnchantOrders.MinFeePerLevel": {
+   "added": "0.5.1"
+  },
+  "playerbots.conf|AiPlayerbot.CoaLive.LootNeedRecipe": {
    "added": "0.5.1"
   },
   "playerbots.conf|AiPlayerbot.CoaEconomy.EnchantOrders.Log": {

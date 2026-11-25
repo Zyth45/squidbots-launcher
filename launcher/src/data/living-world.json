@@ -87,7 +87,8 @@
   "AiPlayerbot.CoaLfgRolePriority",
   "AiPlayerbot.Coa.HideReplayedAchievements",
   "AiPlayerbot.CoaLive.NpcStopAside",
-  "AiPlayerbot.CoaLive.LevelupTeleportGuard"
+  "AiPlayerbot.CoaLive.LevelupTeleportGuard",
+  "AiPlayerbot.CoaLive.LootNeedRecipe"
  ],
  "groups": [
   {
@@ -2878,6 +2879,26 @@
     "fr": "Les bots ne jouent Besoin que sur les objets épiques ou mieux ; le reste est joué en Cupidité.",
     "ru": "Боты бросают «Нужно» только на эпические и лучшие предметы; на всё остальное — «Не откажусь».",
     "zh": "机器人仅对史诗及以上物品掷需求；其余物品掷贪婪。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaLive.LootNeedRecipe",
+   "file": "playerbots.conf",
+   "group": "lw-loot",
+   "type": "bool",
+   "default": 1,
+   "when": "reload",
+   "label": {
+    "en": "Bots roll Need on recipes they can learn",
+    "fr": "Les bots prennent Besoin sur les recettes qu'ils peuvent apprendre",
+    "ru": "Боты бросают «Нужно» на рецепты, которые могут выучить",
+    "zh": "机器人对可学习的配方掷需求"
+   },
+   "help": {
+    "en": "New in 3.3.1. In a group roll, a bot rolls Need on a recipe of any profession it can learn and does not know yet, and learns it in town. A real player's Need always wins.",
+    "fr": "Nouveau en 3.3.1. Dans un tirage de groupe, un bot prend Besoin sur une recette de n'importe quel métier qu'il peut apprendre et ne connaît pas encore, et l'apprend en ville. Le Besoin d'un vrai joueur gagne toujours.",
+    "ru": "Новое в 3.3.1. При розыгрыше в группе бот бросает «Нужно» на рецепт любой профессии, который он может выучить и ещё не знает, и учит его в городе. «Нужно» настоящего игрока всегда побеждает.",
+    "zh": "3.3.1 新增。在队伍掷骰中，机器人会对任何专业中它能学习且尚未掌握的配方掷需求，并在城镇中学习。真实玩家的需求总是优先。"
    }
   },
   {
@@ -6214,7 +6235,8 @@
     "AiPlayerbot.CoaLfgRolePriority": "1",
     "AiPlayerbot.Coa.HideReplayedAchievements": "1",
     "AiPlayerbot.CoaLive.NpcStopAside": "1",
-    "AiPlayerbot.CoaLive.LevelupTeleportGuard": "1"
+    "AiPlayerbot.CoaLive.LevelupTeleportGuard": "1",
+    "AiPlayerbot.CoaLive.LootNeedRecipe": 1
    }
   }
  ]
