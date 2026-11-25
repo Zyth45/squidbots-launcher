@@ -3231,7 +3231,7 @@
    "when": "reload",
    "min": 0,
    "max": 3650,
-   "default": "90",
+   "default": "30",
    "offWhen": {
     "key": "AiPlayerbot.CoaEconomy.Events.Enable",
     "values": [
@@ -3245,10 +3245,10 @@
     "zh": "附魔订单记录保留天数"
    },
    "help": {
-    "en": "New in 3.3.1. 90 by default; 0 = kept for ever.",
-    "fr": "Nouveau en 3.3.1. 90 par défaut ; 0 = gardé pour toujours.",
-    "ru": "Новое в 3.3.1. По умолчанию 90; 0 = хранить всегда.",
-    "zh": "3.3.1 新增。默认 90；0 = 永久保留。"
+    "en": "New in 3.3.1. 30 by default; 0 = kept for ever. The enchanters' totals are never purged by age.",
+    "fr": "Nouveau en 3.3.1. 30 par défaut ; 0 = gardé pour toujours. Les totaux des enchanteurs ne sont jamais purgés selon leur âge.",
+    "ru": "Новое в 3.3.1. По умолчанию 30; 0 = хранить всегда. Итоги зачарователей никогда не удаляются по возрасту.",
+    "zh": "3.3.1 新增。默认 30；0 = 永久保留。附魔师的汇总数据从不按时间清除。"
    }
   },
   {
