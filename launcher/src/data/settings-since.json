@@ -1,7 +1,7 @@
 {
  "from": "0.3.59",
  "next": "0.5.1",
- "catalog": "e56ce82ebce09ccf",
+ "catalog": "a34d25a9100a5580",
  "keys": {
   "worldserver.conf|CharactersPerRealm": {
    "added": "0.4.0"
@@ -980,6 +980,9 @@
    "added": "0.5.0"
   },
   "playerbots.conf|AiPlayerbot.CoaWorld.ItemEvent.Enable": {
+   "added": "0.5.1"
+  },
+  "playerbots.conf|AiPlayerbot.CoaWorld.ItemEvent.Keep": {
    "added": "0.5.1"
   },
   "playerbots.conf|AiPlayerbot.CoaLive.FarMaps.Allow": {

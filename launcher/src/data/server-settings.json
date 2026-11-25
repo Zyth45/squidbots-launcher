@@ -3169,10 +3169,38 @@
     "zh": "装备历史"
    },
    "help": {
-    "en": "New in 3.3.1. Keeps the last 20 gear events of each character (piece worn, enchantment put on) for the dashboard's character sheet. On by default.",
-    "fr": "Nouveau en 3.3.1. Garde les 20 derniers événements d'équipement de chaque personnage (pièce portée, enchantement posé) pour la fiche de personnage du dashboard. Activé par défaut.",
-    "ru": "Новое в 3.3.1. Хранит последние 20 событий снаряжения каждого персонажа (надетая вещь, наложенное зачарование) для листа персонажа на панели. По умолчанию включено.",
-    "zh": "3.3.1 新增。保存每个角色最近 20 条装备事件（穿上的装备、附上的附魔），用于面板的角色页。默认开启。"
+    "en": "New in 3.3.1. Keeps the last gear events of each character (piece worn, enchantment put on) for the dashboard's character sheet. On by default.",
+    "fr": "Nouveau en 3.3.1. Garde les derniers événements d'équipement de chaque personnage (pièce portée, enchantement posé) pour la fiche de personnage du dashboard. Activé par défaut.",
+    "ru": "Новое в 3.3.1. Хранит последние события снаряжения каждого персонажа (надетая вещь, наложенное зачарование) для листа персонажа на панели. По умолчанию включено.",
+    "zh": "3.3.1 新增。保存每个角色最近的装备事件（穿上的装备、附上的附魔），用于面板的角色页。默认开启。"
+   }
+  },
+  {
+   "key": "AiPlayerbot.CoaWorld.ItemEvent.Keep",
+   "file": "playerbots.conf",
+   "group": "dashboard",
+   "kind": "int",
+   "when": "restart",
+   "min": 10,
+   "max": 200,
+   "default": "20",
+   "offWhen": {
+    "key": "AiPlayerbot.CoaWorld.ItemEvent.Enable",
+    "values": [
+     "0"
+    ]
+   },
+   "label": {
+    "en": "Gear history length",
+    "fr": "Longueur de l'historique de l'équipement",
+    "ru": "Длина истории снаряжения",
+    "zh": "装备历史长度"
+   },
+   "help": {
+    "en": "New in 3.3.1. Gear events kept per character (the dashboard shows the last 10); older ones are deleted every hour. 20 by default.",
+    "fr": "Nouveau en 3.3.1. Événements d'équipement gardés par personnage (le dashboard montre les 10 derniers) ; les plus anciens sont supprimés toutes les heures. 20 par défaut.",
+    "ru": "Новое в 3.3.1. Сколько событий снаряжения хранить на персонажа (панель показывает последние 10); более старые удаляются каждый час. По умолчанию 20.",
+    "zh": "3.3.1 新增。每个角色保留的装备事件数（面板显示最近 10 条）；更早的每小时删除一次。默认 20。"
    }
   },
   {
