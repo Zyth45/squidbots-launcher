@@ -34,7 +34,32 @@ if (fs.existsSync(dir) && fs.readdirSync(dir).length) fail(`${dir} is not empty:
 const sha512 = crypto.createHash('sha512').update(fs.readFileSync(setup)).digest('base64');
 
 // 1. Silent install (NSIS: /D= last, unquoted).
-const installed = spawnSync(path.resolve(setup), ['/S', `/D=${dir}`], { stdio: 'inherit' });
+// The NSIS installer uninstalls the version registered for this user (HKCU Uninstall\{guid}), whatever its folder:
+// it closes that launcher and deletes its folder (26/11: the Builder's install was closed by a proof). On a player's
+// PC that is the update of their one install; here other installs are someone else's. So the SquidBots entries are
+// set aside during the install and put back after it: the proof touches only its own folder.
+const reg = (...a) => spawnSync('reg.exe', a, { encoding: 'utf8', windowsHide: true });
+const UNINSTALL = 'HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall';
+const registered = () => {
+  const out = reg('query', UNINSTALL, '/s', '/f', 'SquidBots', '/d').stdout || '';
+  return [...new Set([...out.matchAll(/^HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\([^\r\n\\]+)\s*$/gm)].map(m => m[1]))];
+};
+const aside = fs.mkdtempSync(path.join(process.env.TEMP || dir, 'prove-reg-'));
+const keysOf = guid => [`${UNINSTALL}\\${guid}`, `HKCU\\Software\\${guid}`];
+const before = registered();
+const saved = [];
+for (const guid of before) for (const key of keysOf(guid)) {
+  const file = path.join(aside, `${saved.length}.reg`);
+  if (reg('export', key, file, '/y').status === 0) { saved.push(file); reg('delete', key, '/f'); }
+}
+const putBack = () => {
+  for (const guid of registered()) for (const key of keysOf(guid)) reg('delete', key, '/f');
+  for (const file of saved) reg('import', file);
+};
+let installed;
+try { installed = spawnSync(path.resolve(setup), ['/S', `/D=${dir}`], { stdio: 'inherit' }); }
+finally { putBack(); }
+if (before.length) console.log(`registry: ${before.length} SquidBots install(s) set aside during the install, put back`);
 if (installed.status !== 0) fail(`the installer exited with ${installed.status}.`);
 const exe = fs.readdirSync(dir).find(name => name.endsWith('.exe') && !/^uninstall/i.test(name));
 const archive = path.join(dir, 'resources', 'app.asar');
