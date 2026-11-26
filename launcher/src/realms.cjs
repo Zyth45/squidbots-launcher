@@ -856,6 +856,17 @@ function launch(root, key, why, env) {
 
 // A realm whose world process is there but not yet open: it may be applying its database updates (the core's SQL
 // updater writes a temporary file with a fixed name, so two worlds must never start at the same time).
+// The extra realms whose world runs, starts or stops (its port open or its process alive): anything that touches the
+// shared world database or every characters database (Dawnrise on/off) waits for all of them.
+async function worldsRunning(root) {
+  const up = [];
+  for (const key of Object.keys(MODES)) {
+    const saved = await realmFile(root, key);
+    if (saved && ((await processOf(root, key)) || (saved.worldPort && await portOpen(saved.worldPort)))) up.push(saved.name || key);
+  }
+  return up;
+}
+
 async function anotherStarting(root, except) {
   for (const key of Object.keys(MODES)) {
     if (key === except) continue;
@@ -1297,4 +1308,4 @@ async function resetCoa(root, { confirmName, realmName, backup, io = { ...realIo
   return { backup: saved, structure: dir, preview, emptied };
 }
 
-module.exports = { RESETTABLE, coaPreview, resetCoa, COA_BOT_STATE, sellerOf, sameRealmName, worldPreview, backupRealm, resetWorld, realmBackups, restoreRealm, auctionPurgeSql, changedCount, imposedNow, lastWorldExit, endKind, logTail, realmEnd, stoppedOnPurpose, setPinner, livingOwn, clearOffline, setRealmName, ahbotSettingsOf, setAhbotSettingsOf, onlineRunning, shippedTables, syncShippedTables, MODES, queueMarked, memoryFor, neededMb, botsOnline, setDisabled, versionReady, modulesOf, setModule, coaAutostart, setCoaAutostart, skipCoaAtStart, anotherStarting, refreshBotConfigs, status, create, start, stop, stopAll, startMarked, setOptions, settingsOf, saveSettings, purgeBots, writeConfigs, setKey };
+module.exports = { RESETTABLE, coaPreview, resetCoa, COA_BOT_STATE, sellerOf, sameRealmName, worldPreview, backupRealm, resetWorld, realmBackups, restoreRealm, auctionPurgeSql, changedCount, imposedNow, lastWorldExit, endKind, logTail, realmEnd, stoppedOnPurpose, setPinner, livingOwn, clearOffline, setRealmName, ahbotSettingsOf, setAhbotSettingsOf, onlineRunning, shippedTables, syncShippedTables, MODES, queueMarked, memoryFor, neededMb, botsOnline, setDisabled, versionReady, modulesOf, setModule, coaAutostart, setCoaAutostart, skipCoaAtStart, anotherStarting, worldsRunning, refreshBotConfigs, status, create, start, stop, stopAll, startMarked, setOptions, settingsOf, saveSettings, purgeBots, writeConfigs, setKey };

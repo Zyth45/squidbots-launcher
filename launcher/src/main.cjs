@@ -1306,6 +1306,9 @@ function registerIpc() {
   handle('modules:dawnrise', async on => {
     if (!serverPath()) throw new Error('Choose the server folder first.');
     if (await worldRunning()) throw new Error('Stop the world server first: Dawnrise is read when it starts (MySQL stays on).');
+    // The island is in the world database every realm shares, and switching it off moves characters in each realm.
+    const realmsUp = await realms.worldsRunning(serverPath());
+    if (realmsUp.length) throw new Error(`Stop every realm first (${realmsUp.join(', ')}): Dawnrise changes the world database they share (MySQL stays on).`);
     const { offer, offline } = await dawnriseOffer();
     if (on === true && offer && !offline && components.blocker(serverPath(), offer)) throw new Error(`Dawnrise needs CoA Bots ${offer.minBots} or newer on the server: update the server first.`);
     if (on === true && offer?.minLauncher && repackUpdate.compareVersions(app.getVersion(), offer.minLauncher) < 0) throw new Error(`Dawnrise needs launcher ${offer.minLauncher} or newer: update the launcher first (Settings > About).`);

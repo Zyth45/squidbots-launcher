@@ -677,3 +677,12 @@ test('a realm made again by a reset keeps its start with the server and its migr
     assert.equal(own['AiPlayerbot.MaxRandomBots'], '200', 'the population stays');
   }
 });
+
+test('worldsRunning: a realm whose world process is alive counts (Dawnrise waits for every realm), a stopped one not', async () => {
+  const root = repack();
+  assert.deepStrictEqual(await realms.worldsRunning(root), []);
+  const dir = realmFolder(root, 'reborn', { name: 'Bronzebeard', worldPort: 1 });
+  assert.deepStrictEqual(await realms.worldsRunning(root), []);
+  fs.writeFileSync(path.join(dir, '.state.json'), JSON.stringify({ pid: process.pid }));
+  assert.deepStrictEqual(await realms.worldsRunning(root), ['Bronzebeard']);
+});
