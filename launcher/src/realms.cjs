@@ -372,6 +372,14 @@ async function writeConfigs(root, key, saved) {
   // worldserver runs there), it stays right when the server is moved to another drive or folder.
   add('worldserver.conf', { CharacterDatabaseInfo: `"${prefix};acore_characters_${key}"`, LogsDir: '"Logs"' });
   add('playerbots.conf', { PlayerbotsDatabaseInfo: `"${prefix};acore_playerbots_${key}"` });
+  // ALE.ScriptPath is relative to the worldserver's folder: CoA-Bots\Core for CoA, Royaumes\<key> for a realm, which has
+  // no lua_scripts (Dawnrise's Lua, put in CoA-Bots\Core\lua_scripts, ran on CoA only). CoA's value, made absolute.
+  const ale = path.join(target, relOf('mod_ale.conf'));
+  const aleText = await fsp.readFile(ale, 'utf8').catch(() => null) ?? await fsp.readFile(`${ale}.dist`, 'utf8').catch(() => null);
+  if (aleText !== null) {
+    const scripts = confValue(aleText, 'ALE.ScriptPath') || 'lua_scripts';
+    add('mod_ale.conf', { 'ALE.ScriptPath': `"${path.resolve(path.join(root, 'CoA-Bots', 'Core'), scripts).replace(/\\/g, '/')}"` });
+  }
   // CoA in its eco time: the realm copies the player's value of CoA, not the eco one.
   const coaEco = await eco.activeRecord(root, 'coa');
   if (coaEco) { const file = path.join(target, 'modules', 'playerbots.conf'); const text = await fsp.readFile(file, 'utf8').catch(() => null); if (text !== null) await fsp.writeFile(file, eco.restoreText(text, coaEco.original)); }

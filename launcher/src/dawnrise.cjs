@@ -1,5 +1,5 @@
 'use strict';
-// Dawnrise Island / Azzar Faire (content by Duskmere, The Venture Co, shared with permission; 3.3.1): extra content in
+// Dawnrise Island / Azzar Faire (created by Nightlund, shared with permission; 3.3.1): extra content in
 // the CoA world (maps 909 and 960, portal tents in Stormwind and Orgrimmar, the Faire mini-games), switched on and off
 // from Modules, off by default. It is a component of its own (release "components", signed dawnrise.json, minBots
 // 3.3.1), downloaded only when the player switches the island on, kept in CoA-Bots/Modules/dawnrise:
@@ -20,6 +20,9 @@ const { compareVersions } = require('./repack-update.cjs');
 const MODULE_DIR = 'CoA-Bots/Modules/dawnrise';
 const FILES = { install: 'sql/world/dawnrise-install.sql', uninstall: 'sql/world/dawnrise-uninstall.sql', evacuate: 'sql/characters/dawnrise-evacuate.sql', lua: 'lua_scripts/dawnrise' };
 const LUA_TARGET = 'CoA-Bots/Core/lua_scripts/dawnrise';
+// The repack's own mmaps of 909/960 that the island's replace (it ships both maps): kept here while the island is on,
+// put back when it is switched off, with the files it added removed (added.json).
+const MMAPS_KEEP = 'CoA-Bots/Modules/dawnrise-mmaps-repack';
 const ALE_CONF = 'CoA-Bots/Core/configs/modules/mod_ale.conf';
 const CLIENT_MPQS = ['patch-ZZZT.MPQ', 'patch-ZZZW.MPQ'];
 // A quest the install adds (its range is Dawnrise's own): tells whether the world database has the island.
@@ -147,9 +150,38 @@ async function disableClient(client) {
   return clientState(client);
 }
 
+// Before the island's mmaps go into Data/mmaps: each repack file it replaces is kept once (a newer island while on
+// never keeps the old island's file as the repack's), each file it adds is listed.
+async function keepRepackMmaps(root, dir) {
+  const from = path.join(dir, 'maps', 'mmaps');
+  if (!exists(from)) return;
+  const keep = path.join(root, MMAPS_KEEP);
+  const list = path.join(keep, 'added.json');
+  let added = [];
+  try { added = JSON.parse(await fsp.readFile(list, 'utf8')); } catch { /* none yet */ }
+  await fsp.mkdir(keep, { recursive: true });
+  for (const name of await fsp.readdir(from)) {
+    const data = path.join(root, 'Data', 'mmaps', name);
+    if (added.includes(name) || exists(path.join(keep, name))) continue;
+    if (exists(data)) await fsp.copyFile(data, path.join(keep, name));
+    else added.push(name);
+  }
+  await fsp.writeFile(list, JSON.stringify(added));
+}
+async function restoreRepackMmaps(root) {
+  const keep = path.join(root, MMAPS_KEEP);
+  if (!exists(keep)) return;
+  let added = [];
+  try { added = JSON.parse(await fsp.readFile(path.join(keep, 'added.json'), 'utf8')); } catch { /* none */ }
+  for (const name of added) await fsp.rm(path.join(root, 'Data', 'mmaps', path.basename(name)), { force: true });
+  for (const name of await fsp.readdir(keep)) if (name !== 'added.json') await fsp.copyFile(path.join(keep, name), path.join(root, 'Data', 'mmaps', name));
+  await fsp.rm(keep, { recursive: true, force: true });
+}
+
 async function applyOn(root, backup, dir) {
   await runFile(backup, path.join(dir, FILES.install), 'acore_world');
   if (!(await worldHasIsland(backup))) throw new Error('The island is not in the world database after its install.');
+  await keepRepackMmaps(root, dir);
   const maps = (await copyTree(path.join(dir, 'maps', 'vmaps'), path.join(root, 'Data', 'vmaps'), false)) + (await copyTree(path.join(dir, 'maps', 'mmaps'), path.join(root, 'Data', 'mmaps'), true));
   await fsp.rm(path.join(root, LUA_TARGET), { recursive: true, force: true });
   await copyTree(path.join(dir, FILES.lua), path.join(root, LUA_TARGET), true);
@@ -206,9 +238,10 @@ async function disable(root, backup, { client = '', gameRunning = false } = {}) 
   if (await worldHasIsland(backup)) throw new Error(`The island is still in the world database after its uninstall. Backup: ${safety.name}.`);
   // Only our own copy goes: the component's folder in CoA-Bots/Modules keeps the scripts (switching back on works offline).
   await fsp.rm(path.join(root, LUA_TARGET), { recursive: true, force: true });
+  await restoreRepackMmaps(root);
   if (!luaFiles(path.join(root, 'CoA-Bots', 'Core', 'lua_scripts')).length) await setAle(root, false);
   const game = !client ? 'unknown' : gameRunning ? 'running' : await disableClient(client).catch(() => 'failed');
   return { backup: safety.name, evacuated: characters, game };
 }
 
-module.exports = { status, enable, disable, installClient, disableClient, clientState, fetchComponent, runFile, MODULE_DIR, LUA_TARGET, ALE_CONF, CLIENT_MPQS, MARK_QUEST };
+module.exports = { status, enable, disable, installClient, disableClient, clientState, fetchComponent, runFile, MODULE_DIR, LUA_TARGET, MMAPS_KEEP, ALE_CONF, CLIENT_MPQS, MARK_QUEST };

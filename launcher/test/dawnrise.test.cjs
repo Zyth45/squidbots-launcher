@@ -29,6 +29,7 @@ const componentFiles = (v, install = `INSERT island ${v};`) => ({
   'maps/vmaps/909.vmtree': 'theirs',
   'maps/vmaps/Azzar.vmo': 'new',
   'maps/mmaps/9093150.mmtile': 'better',
+  'maps/mmaps/9603030.mmtile': 'added',
   'client/patch-ZZZT.MPQ': `t${v}`,
   'client/patch-ZZZW.MPQ': `w${v}`,
 });
@@ -111,6 +112,9 @@ test('Dawnrise: downloaded at the first « On », then off and on again offline 
   s = await dawnrise.status(root, { client });
   assert.deepEqual([s.available, s.enabled, s.lua, s.ale], [true, false, false, false]);
   assert.ok(fs.existsSync(path.join(root, M, 'lua_scripts/dawnrise/azzar-duck-hunt.lua')), 'the component keeps its own scripts');
+  assert.equal(fs.readFileSync(path.join(root, 'Data/mmaps/9093150.mmtile'), 'utf8'), 'ours', 'the repack mmaps are back');
+  assert.ok(!fs.existsSync(path.join(root, 'Data/mmaps/9603030.mmtile')), 'the mmaps the island added are gone');
+  assert.ok(!fs.existsSync(path.join(root, dawnrise.MMAPS_KEEP)));
 
   // Offline (no list): on again from the local copy, the game files back.
   const again = await dawnrise.enable(root, backup, { client });
@@ -152,6 +156,7 @@ test('Dawnrise: a newer version while the island is on runs the OLD uninstall, t
     result = await dawnrise.enable(root, backup, { offer: v2.offer, cacheDir: tmp(), fetchImpl: fetch });
   } finally { v2.server.close(); }
   assert.deepEqual([result.version, result.updated], ['1.1', true]);
+  assert.equal(fs.readFileSync(path.join(root, dawnrise.MMAPS_KEEP, '9093150.mmtile'), 'utf8'), 'ours', 'a newer island never keeps the old one as the repack file');
   assert.deepEqual(backup.runs().map(body), ['INSERT island 1.0;', 'DELETE island 1.0;', 'INSERT island 1.1;']);
   assert.ok(!fs.existsSync(path.join(root, `${M}.old`)), 'the old copy goes once the new one is in');
   assert.equal(fs.readFileSync(path.join(root, dawnrise.LUA_TARGET, 'azzar-duck-hunt.lua'), 'utf8'), '-- duck 1.1');

@@ -49,6 +49,26 @@ test('without any realm, the server calls change nothing', async () => {
   assert.strictEqual(snapshot(root), before);
 });
 
+test('a realm reads the Lua scripts of CoA (ALE.ScriptPath made absolute), only when CoA has ALE', async () => {
+  const root = repack();
+  const dir = realmFolder(root, 'living');
+  const saved = JSON.parse(fs.readFileSync(path.join(dir, 'realm.json'), 'utf8'));
+  await realms.writeConfigs(root, 'living', saved);
+  assert.ok(!fs.existsSync(path.join(dir, 'configs', 'modules', 'mod_ale.conf')));
+  const ale = path.join(root, 'CoA-Bots', 'Core', 'configs', 'modules', 'mod_ale.conf');
+  fs.writeFileSync(`${ale}.dist`, 'ALE.Enabled = 0\nALE.ScriptPath = "lua_scripts"\n');
+  await realms.writeConfigs(root, 'living', saved);
+  const copy = path.join(dir, 'configs', 'modules', 'mod_ale.conf');
+  const core = path.join(root, 'CoA-Bots', 'Core').replace(/\\/g, '/');
+  assert.strictEqual(value(copy, 'ALE.ScriptPath'), `"${core}/lua_scripts"`);
+  assert.strictEqual(value(copy, 'ALE.Enabled'), '0');
+  fs.writeFileSync(ale, 'ALE.Enabled = 1\nALE.ScriptPath = "scripts/lua"\n');
+  await realms.writeConfigs(root, 'living', saved);
+  assert.strictEqual(value(copy, 'ALE.ScriptPath'), `"${core}/scripts/lua"`);
+  assert.strictEqual(value(copy, 'ALE.Enabled'), '1');
+  assert.strictEqual(fs.readFileSync(ale, 'utf8'), 'ALE.Enabled = 1\nALE.ScriptPath = "scripts/lua"\n');
+});
+
 test('a realm is offered only when the installed update tool knows its databases', async () => {
   const old = repack({ knowsRealms: false });
   assert.ok((await realms.status(old, { live: false })).realms.every(realm => realm.ready === false));
