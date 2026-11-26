@@ -112,3 +112,9 @@ test('stop all: no realm starts while it runs (the queue of "Start all", a resta
   assert.strictEqual(realms.halted(), false);
   assert.ok(realms.stoppedOnPurpose('wildcard'), 'not taken for a crash');
 });
+
+test('main.cjs: the module-level stop code never calls requireControl (it lives in the handlers\' scope)', () => {
+  const main = fs.readFileSync(path.join(__dirname, '..', 'src', 'main.cjs'), 'utf8').split('\n');
+  const top = main.filter(line => /^\S/.test(line) && !/^\s*\/\//.test(line));
+  assert.deepStrictEqual(top.filter(line => /requireControl\(/.test(line)), [], 'bench 26/11: ReferenceError in stopEverything');
+});

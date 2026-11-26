@@ -457,7 +457,8 @@ async function assertWorldsDown() {
   if (left.length) throw Object.assign(new Error(`Still running: ${left.join(', ')}. MySQL stays on; press Stop again in a moment.`), { code: 'REALM_SAVING', launcherCode: 'realm' });
 }
 // Stop all: the realms first, then the CoA world, MySQL and the authserver, only once no other world of this repack lives.
-const stopEverything = () => realms.stopServer(serverPath(), { worldsLeft, stopBase: () => requireControl().stopAll() });
+// Module level: requireControl() lives inside the handlers' scope (bench 26/11: ReferenceError at the last step).
+const stopEverything = () => realms.stopServer(serverPath(), { worldsLeft, stopBase: () => { const found = serverControl(); if (!found) throw new Error('Choose the server folder first.'); return found.stopAll(); } });
 const lendMysql = mysqlLender({ status: mysqlState, start: async id => { await serverControl()?.start(id); }, stopAll: async () => { await serverControl()?.stopAll(); }, realmRunning: anyRealmRunning });
 // The same, for an operation that starts MySQL by itself (the assembler, the repack's scripts).
 const afterMysql = mysqlLender({ status: mysqlState, start: async () => {}, stopAll: async () => { await serverControl()?.stopAll(); }, realmRunning: anyRealmRunning });
