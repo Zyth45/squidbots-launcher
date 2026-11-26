@@ -1,5 +1,36 @@
 [
     {
+        "version": "0.5.1",
+        "title": {
+            "en": "Ready for CoA Bots 3.3.1",
+            "fr": "Prêt pour CoA Bots 3.3.1",
+            "ru": "Готово к CoA Bots 3.3.1",
+            "zh": "为 CoA Bots 3.3.1 准备就绪"
+        },
+        "items": {
+            "en": [
+                "Dawnrise Island and the Azzar Faire (created by Nightlund): a new module, off by default. Switch it on from Modules; it is downloaded only then, and works on every realm.",
+                "Enchanter bots: enchantment orders for other bots, formulas learned from their bags, drawn now and then or bought at vendors and the auction house. Each has its settings in Living World.",
+                "New bot settings: Need on recipes, stranded bots freed after a while, a longer gear history, and what the dashboard records."
+            ],
+            "fr": [
+                "L'île de Dawnrise et la Foire d'Azzar (créées par Nightlund) : un nouveau module, désactivé par défaut. Activez-le depuis Modules ; il n'est téléchargé qu'à ce moment, et fonctionne sur chaque royaume.",
+                "Bots enchanteurs : commandes d'enchantement pour les autres bots, formules apprises depuis leurs sacs, tirées de temps en temps ou achetées aux marchands et à l'hôtel des ventes. Chacun a ses réglages dans Monde vivant.",
+                "Nouveaux réglages des bots : Besoin sur les recettes, bots bloqués libérés après un moment, un historique d'équipement plus long, et ce que le dashboard enregistre."
+            ],
+            "ru": [
+                "Остров Dawnrise и Ярмарка Аззара (автор — Nightlund): новый модуль, выключен по умолчанию. Включите его в разделе «Модули»; он скачивается только тогда и работает во всех мирах.",
+                "Боты-зачарователи: заказы зачарований для других ботов, формулы из сумок, иногда выпадающие или купленные у торговцев и на аукционе. У каждого свои настройки в «Живом мире».",
+                "Новые настройки ботов: «Нужно» на рецепты, освобождение застрявших ботов, более длинная история экипировки и то, что записывает панель."
+            ],
+            "zh": [
+                "Dawnrise 岛与 Azzar 游乐会（由 Nightlund 制作）：新模块，默认关闭。在“模块”中开启；只在此时下载，并适用于所有国度。",
+                "附魔师机器人：为其他机器人完成附魔订单，从背包学习配方，偶尔获得或在商人和拍卖行购买配方。各自的设置位于“鲜活世界”。",
+                "新的机器人设置：配方需求掷骰、滞留机器人一段时间后解救、更长的装备历史，以及面板记录的内容。"
+            ]
+        }
+    },
+    {
         "version": "0.5.0",
         "title": {
             "en": "A clearer Realms page",
