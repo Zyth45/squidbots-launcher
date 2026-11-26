@@ -357,7 +357,9 @@ function realmGlance(realm, c = false) {
       + custom(!current, t('glance.gearCustom', 'Set another way (self-found up to level {level}). A choice above replaces it.', { level: q.maxLevel || '?' }))));
   }
   const toggle = (action, on, title, hint) => `<div class="realm-quick-row"><span${c ? '' : ` title="${esc(hint)}"`}>${esc(title)}</span>${c ? help(hint) : ''}${moduleSwitch(action, on, false).replace('<button', `<button data-key="${esc(target)}"`)}</div>`;
-  const chat = q.hasChat && CHAT_READY ? toggle('realm-chat', q.chat === '1', t('lw.chat', 'Bot chat'), t('lw.chatText', 'Bots talk in the chat channels, greet and answer. Off: they stay silent, everything else goes on.')) : '';
+  // SquidChat (the bot chat, CoaLive.Chat.Enable): its switch lives here since its module card left (user, 26/11), with its settings.
+  const chat = q.hasChat && CHAT_READY ? toggle('realm-chat', q.chat === '1', 'SquidChat', t('lw.chatText', 'Bots talk in the chat channels, greet and answer. Off: they stay silent, everything else goes on.'))
+    + `<div class="realm-quick-row"><button class="link-button" data-action="squidchat-settings" data-key="${esc(target)}">${icon('settings')}${esc(t('modules.squidchatSettings', 'Chat settings'))}</button></div>` : '';
   const catchup = locked && q.hasCatchup ? toggle('realm-catchup', q.catchup === '1', t('realms.catchup', 'Bots catch up with players'), t('realms.catchupHint', 'Random bots behind the human players earn more experience.')) : '';
   const switches = chat || catchup ? `<div class="realm-quick glance-switches">${chat}${catchup}</div>` : '';
   if (!rows.length && !switches) return '';

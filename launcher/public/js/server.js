@@ -326,23 +326,10 @@ function moduleSwitch(action, on, disabled) {
   return `<button class="switch ${on ? 'on' : ''}" data-action="${action}" data-on="${on ? '1' : '0'}" ${disabled ? 'disabled' : ''} role="switch" aria-checked="${on}"><span></span></button>`;
 }
 
-// SquidChat: the bot chat of SquidBots 3.0 (CoA Live lines, night bank). Its switch is "Bot chat" of the main realm
-// (CoaLive.Chat.Enable), the same as on the realm card and in Server settings > Living world. The AI answers come later.
-function squidchatCard() {
-  const q = quickOf('');
-  const ready = q && !q.error && q.hasChat;
-  const on = ready && q.chat === '1';
-  return `<section class="panel module-card">${moduleArt('squidchat')}<header><h2>${icon('chat')}SquidChat</h2>${moduleSwitch('squidchat-switch', on, !ready)}</header>
-      <p class="muted">${esc(t('modules.squidchatText', 'Your server will never be quiet again: bots chat, cheer the good loot, laugh at the wipes and have an opinion on everything. Even on Jealous.'))}</p>
-      <ul class="module-facts"><li class="ok">${icon('check')}<span>${esc(t('modules.iatalkBank', 'A bank of lines written in advance.'))}</span></li></ul>
-      <div class="module-extra soon"><span class="soon-tag">${esc(t('conf.soon', 'Coming soon'))}</span><span>${esc(t('modules.iatalkAi', 'Optional AI for the answers: Ollama on this PC or on your network, or an online service with your own key and a daily cap.'))}</span></div>
-      <div class="button-row module-actions"><button class="button ghost small" data-action="squidchat-settings">${icon('settings')}${esc(t('modules.squidchatSettings', 'Chat settings'))}</button><small class="muted">${esc(t('modules.squidchatRealm', 'Conquest of Azeroth realm; each other realm has its own switch on its card.'))}</small></div>
-      <p class="module-credit">${esc(t('modules.by', 'By {author}', { author: 'SquidBots (Zyth45)' }))}</p>
-    </section>`;
-}
+// SquidChat: its switch and its settings are on the realm cards (Realms); its module card left (user, 26/11).
 Object.assign(App.actions, {
   'squidchat-switch': button => guard(() => realmQuickSet('', CHAT_KEY, button.dataset.on !== '1'), button),
-  'squidchat-settings': () => { App.state.confRealm = 'coa'; App.state.pending = {}; App.state.conf = null; App.state.srvTab = 'settings'; App.state.confGroup = 'lw-social'; App.go('server'); loadConf(); },
+  'squidchat-settings': button => { App.state.confRealm = button?.dataset?.key || 'coa'; App.state.pending = {}; App.state.conf = null; App.state.srvTab = 'settings'; App.state.confGroup = 'lw-social'; App.go('server'); loadConf(); },
 });
 
 // The Enchanter NPC: working once the server has its module (CoA Bots 2.8.4), a "coming soon" preview before.
@@ -383,16 +370,26 @@ function modulesView() {
   // Where to get the patched client (link of the signed feed).
   const getClient = App.state.feed?.clientRaces && r.client.state !== 'yes' ? `<button class="button ghost small" data-action="feed-open" data-kind="clientRaces">${icon('download')}${esc(t('modules.getClient', 'Get the patched client'))}</button>` : '';
   return `${modulesRealmHead('coa')}<div class="grid-2 modules">
+    ${/* Order of the user (26/11): SquidBots, Dawnrise, Manastorm; then Dungeon Clear, SquidBots-AH, Enchanter, Rotation. SquidChat is on the realm cards. */""}
     <section class="panel module-card">${moduleArt('squidbots')}<header><h2>${icon('bot')}SquidBots</h2>${moduleSwitch('modules-squidbots', m.squidbots.enabled, m.worldRunning || !m.squidbots.installed)}</header>
       <p class="muted">${esc(t('modules.squidbotsText', 'The random bots and the group AI. Off, the server starts without them (your own characters are not changed).'))}</p>
       ${m.squidbots.installed ? '' : `<p class="small">${esc(t('modules.squidbotsMissing', 'CoA Bots is not installed in this server.'))}</p>`}${stopFirst}
       ${moduleCredit('squidbots', 'SquidBots (Zyth45)')}
     </section>
-    ${App.state.config.hasMultirace ? `<section class="panel module-card"><header><h2>${icon('user')}Multirace</h2>${moduleSwitch('modules-multirace', r.enabled, m.worldRunning || (!r.enabled && (!r.core || r.dbc < r.dbcNeeded)))}</header>
-      <p class="muted">${esc(t('modules.multiraceText', 'More playable races. Every player then needs the patched game client: a game without it crashes when it meets a character or a bot of an added race.'))}</p>
-      <ul class="module-facts">${facts.map(([ok, text]) => `<li class="${ok ? 'ok' : 'bad'}">${icon(ok ? 'check' : 'warning')}<span>${esc(text)}</span></li>`).join('')}<li class="${r.client.state === 'yes' ? 'ok' : 'warn'}">${icon(r.client.state === 'yes' ? 'check' : 'info')}<span>${esc(client)}</span></li></ul>${clientAction || getClient ? `<div class="button-row module-actions">${clientAction}${getClient}</div>` : ''}
-      <p class="small">${esc(r.enabled ? (r.bots ? t('modules.multiraceOnBots', 'On, bots included.') : t('modules.multiraceOn', 'On, players only.')) : t('modules.multiraceOff', 'Off.'))}</p>${stopFirst}
-      ${moduleCredit('multirace', 'Ilusixn')}
+    ${dawnriseCard(m.dawnrise, m.worldRunning)}
+    <section class="panel module-card ${m.manastorm?.available ? '' : 'soon'}">${moduleArt('manastorm')}<header><h2>${icon('play')}Manastorm Endless</h2>${moduleSwitch('modules-manastorm', !!m.manastorm?.enabled, m.worldRunning || !m.manastorm?.available)}</header>
+      <p class="muted">${esc(t('modules.manastormText', 'Endless runs of Manastorm rooms, with its native window in game. Every player needs the updated client files of Manastorm.'))}</p>
+      ${m.manastorm?.available ? '' : ''}${m.manastorm?.available ? stopFirst : ''}
+      ${m.manastorm?.available && App.state.feed?.manastormClient ? `<div class="button-row module-actions"><button class="button ghost small" data-action="manastorm-files">${icon('download')}${esc(t('modules.manastormFiles', 'Client files'))}</button></div>` : ''}
+      <p class="module-note">${icon('info')}${esc(t('modules.newModule', 'New module, not tried with the bots yet: feedback is welcome.'))}</p>
+      ${moduleCredit('core', 'Conquest of Azeroth (core)')}
+    </section>
+    ${m.dungeonclear?.available ? `<section class="panel module-card">${moduleArt('dungeonclear')}<header><h2>${icon('shield')}Dungeon Clear</h2>${moduleSwitch('modules-dungeon', m.dungeonclear.enabled, m.worldRunning)}</header>
+      <p class="muted">${esc(t('modules.dungeonText', 'The bots of your group clear the dungeon on their own: start it from the SquidBots Lite addon, they pull, fight and loot room after room.'))}</p>
+      <div class="module-extra"><span class="pill warn">${esc(t('modules.experimental', 'Experimental'))}</span><span>${esc(t('modules.raidWithBots', 'Raids too: start it the same way in a raid with your bots. Boss health counts a bot as 0.3 of a player (Settings > Creature difficulty).'))}</span></div>
+      <div class="module-extra soon"><span class="soon-tag">${esc(t('conf.soon', 'Coming soon'))}</span><span>${esc(t('modules.raidBotsAlone', 'Raids of bots alone, like the self-found dungeon parties.'))}</span></div>
+      ${stopFirst}
+      <p class="module-credit long"><span>${esc(t('modules.dungeonCredit', 'SquidBots version (AGPL) · original module by Jared Wright'))}</span><span class="credit-links"><button class="link-button" data-action="source-link" data-id="dungeonclear">${icon('external')}${esc(t('modules.source', 'Source code'))}</button><button class="link-button" data-action="source-link" data-id="dungeonclearOriginal">${icon('external')}${esc(t('modules.enchanterOriginal', 'Original module'))}</button></span></p>
     </section>` : ''}
     ${m.ahbot.kind === 'squidbots' ? `<section class="panel module-card ${m.ahbot.available ? '' : 'soon'}">${moduleArt('ahbot')}<header><h2>${icon('coin')}${esc(m.ahbot.kind === 'squidbots' ? 'SquidBots-AH' : t('modules.ahbot', 'Auction house'))}</h2>${moduleSwitch('modules-ahbot', m.ahbot.enabled, m.worldRunning || !m.ahbot.available)}</header>
       ${m.ahbot.kind === 'squidbots' ? `<p class="muted">${esc(t('modules.ahbotSquid', 'The auction house bot is now part of SquidBots: Gavelgrin keeps the auction house busy and buys what players sell, with our recommended settings. It replaces the old auction house module (mod-ah-bot-plus), which left CoA Bots in 3.0. Its finer options are in Server settings > Living world > Economy and auction house.'))}</p>` : ''}
@@ -401,14 +398,6 @@ function modulesView() {
       ${m.ahbot.available ? `<div class="button-row module-actions"><button class="button ghost small" data-action="ahbot-settings">${icon('settings')}${esc(t('ah.settings', 'Settings'))}</button><button class="button ghost small" data-action="modules-ahbot-empty" ${m.worldRunning ? '' : `disabled title="${esc(t('modules.ahbotEmptyStopped', 'Start the server to empty the auction house.'))}"`}>${icon('trash')}${esc(t('modules.ahbotEmpty', 'Empty the auction house'))}</button>${m.worldRunning ? '' : `<small class="muted">${esc(t('modules.ahbotEmptyStopped', 'Start the server to empty the auction house.'))}</small>`}</div>` : ''}
       ${moduleCredit('squidbots', 'SquidBots (Zyth45), from mod-ah-bot-plus by Nathan Handley')}
     </section>` : ''}
-    ${m.dungeonclear?.available ? `<section class="panel module-card">${moduleArt('dungeonclear')}<header><h2>${icon('shield')}Dungeon Clear</h2>${moduleSwitch('modules-dungeon', m.dungeonclear.enabled, m.worldRunning)}</header>
-      <p class="muted">${esc(t('modules.dungeonText', 'The bots of your group clear the dungeon on their own: start it from the SquidBots Lite addon, they pull, fight and loot room after room.'))}</p>
-      <div class="module-extra"><span class="pill warn">${esc(t('modules.experimental', 'Experimental'))}</span><span>${esc(t('modules.raidWithBots', 'Raids too: start it the same way in a raid with your bots. Boss health counts a bot as 0.3 of a player (Settings > Creature difficulty).'))}</span></div>
-      <div class="module-extra soon"><span class="soon-tag">${esc(t('conf.soon', 'Coming soon'))}</span><span>${esc(t('modules.raidBotsAlone', 'Raids of bots alone, like the self-found dungeon parties.'))}</span></div>
-      ${stopFirst}
-      <p class="module-credit long"><span>${esc(t('modules.dungeonCredit', 'SquidBots version (AGPL) · original module by Jared Wright'))}</span><span class="credit-links"><button class="link-button" data-action="source-link" data-id="dungeonclear">${icon('external')}${esc(t('modules.source', 'Source code'))}</button><button class="link-button" data-action="source-link" data-id="dungeonclearOriginal">${icon('external')}${esc(t('modules.enchanterOriginal', 'Original module'))}</button></span></p>
-    </section>` : ''}
-    ${squidchatCard()}
     ${enchanterCard(m.enchanter, m.worldRunning, stopFirst)}
     ${(App.state.realms?.realms || []).some(realm => realm.key === 'reborn' && !['absent', 'disabled'].includes(realm.state)) ? `<section class="panel module-card soon coming">${moduleArt('enchanter')}<header><h2>${icon('star')}${esc(t('modules.enchanterWcr', 'Enchanter NPC: Warcraft Reborn'))}</h2><span class="pill info">${esc(t('modules.comingSoon', 'Coming soon'))}</span></header>
       <p class="muted">${esc(t('modules.enchanterWcrText', 'The Enchanter NPC on the Warcraft Reborn realm too, with the enchantments of that realm.'))}</p>
@@ -419,34 +408,94 @@ function modulesView() {
       <p class="module-note">${icon('info')}${esc(t('modules.newModule', 'New module, not tried with the bots yet: feedback is welcome.'))}</p>
       ${moduleCredit('core', 'Conquest of Azeroth (core)')}
     </section>
-    <section class="panel module-card ${m.manastorm?.available ? '' : 'soon'}">${moduleArt('manastorm')}<header><h2>${icon('play')}Manastorm Endless</h2>${moduleSwitch('modules-manastorm', !!m.manastorm?.enabled, m.worldRunning || !m.manastorm?.available)}</header>
-      <p class="muted">${esc(t('modules.manastormText', 'Endless runs of Manastorm rooms, with its native window in game. Every player needs the updated client files of Manastorm.'))}</p>
-      ${m.manastorm?.available ? '' : ''}${m.manastorm?.available ? stopFirst : ''}
-      ${m.manastorm?.available && App.state.feed?.manastormClient ? `<div class="button-row module-actions"><button class="button ghost small" data-action="manastorm-files">${icon('download')}${esc(t('modules.manastormFiles', 'Client files'))}</button></div>` : ''}
-      <p class="module-note">${icon('info')}${esc(t('modules.newModule', 'New module, not tried with the bots yet: feedback is welcome.'))}</p>
-      ${moduleCredit('core', 'Conquest of Azeroth (core)')}
-    </section>
-    ${dawnriseCard(m.dawnrise, m.worldRunning)}
+    ${App.state.config.hasMultirace ? `<section class="panel module-card"><header><h2>${icon('user')}Multirace</h2>${moduleSwitch('modules-multirace', r.enabled, m.worldRunning || (!r.enabled && (!r.core || r.dbc < r.dbcNeeded)))}</header>
+      <p class="muted">${esc(t('modules.multiraceText', 'More playable races. Every player then needs the patched game client: a game without it crashes when it meets a character or a bot of an added race.'))}</p>
+      <ul class="module-facts">${facts.map(([ok, text]) => `<li class="${ok ? 'ok' : 'bad'}">${icon(ok ? 'check' : 'warning')}<span>${esc(text)}</span></li>`).join('')}<li class="${r.client.state === 'yes' ? 'ok' : 'warn'}">${icon(r.client.state === 'yes' ? 'check' : 'info')}<span>${esc(client)}</span></li></ul>${clientAction || getClient ? `<div class="button-row module-actions">${clientAction}${getClient}</div>` : ''}
+      <p class="small">${esc(r.enabled ? (r.bots ? t('modules.multiraceOnBots', 'On, bots included.') : t('modules.multiraceOn', 'On, players only.')) : t('modules.multiraceOff', 'Off.'))}</p>${stopFirst}
+      ${moduleCredit('multirace', 'Ilusixn')}
+    </section>` : ''}
   </div>
   <p class="modules-foot">${esc(t('modules.foot', 'SquidBots Server is open source.'))} <button class="link-button" data-action="source-link" data-id="launcher">${icon('external')}${esc(t('modules.source', 'Source code'))}</button></p>`;
 }
 
 // Dawnrise Island (3.3.1): extra content in the CoA world, off by default. The switch needs MySQL on and the world server off.
 // It is a component of its own, downloaded at the first « On »: offline, a server that never had it cannot switch it on.
+// The two game files every player needs, and where they are on this server (for the other PCs that connect).
+const dawnriseOtherPcs = d => t('modules.dawnriseOtherPcs', 'Every other PC that plays on this server needs the same two files ({files}) in the Data folder of its game. They are on this server in {folder}.', { files: (d?.clientNames || ['patch-ZZZT.MPQ', 'patch-ZZZW.MPQ']).join(', '), folder: d?.clientSource || 'CoA-Bots\\Modules\\dawnrise\\client' });
+// Switching the island: a running world or realm is stopped first (asked), started again after; MySQL is lent by the
+// launcher. Then the two game files: put in the game known to the launcher, or asked for, or left for when it is closed.
+async function dawnriseSwitch(on) {
+  const run = () => {
+    const release = holdDialog(t('modules.dawnrise', 'Dawnrise Island'), t('modules.dawnriseWorking', 'Backup, then the databases: a few minutes. Keep the launcher open.'));
+    return App.api.modulesDawnrise(on).finally(release);
+  };
+  let restart = false;
+  let state;
+  try { state = await run(); }
+  catch (error) {
+    if (!/Stop the world server first|Stop every realm first/.test(String(error?.message))) throw error;
+    if (!await confirmDialog({ title: t('modules.dawnriseStopTitle', 'Stop the server for a few minutes?'), body: esc(t('modules.dawnriseStopBody', 'The island changes the world database every realm shares: the server and its realms are stopped, the island is switched, then they start again.')), confirm: t('modules.dawnriseStopGo', 'Stop, switch, start again') })) return;
+    const release = holdDialog(t('modules.dawnrise', 'Dawnrise Island'), t('server.stoppingAll', 'Stopping the server…'));
+    try { App.state.server = await App.api.stopService('all'); } finally { release(); }
+    restart = true;
+    state = await run();
+  }
+  App.state.modules = state;
+  const d = state?.dawnrise || {};
+  const game = state?.result?.game;
+  if (restart) {
+    const release = holdDialog(t('modules.dawnrise', 'Dawnrise Island'), t('server.startingAll', 'Starting the server…'));
+    try { App.state.server = await App.api.startService('all'); } catch (error) { toast(translateError(error.message), 'error'); } finally { release(); }
+  }
+  App.render();
+  if (!on) { toast(t('modules.dawnriseRemoved', 'Dawnrise Island removed. Its two game files are switched off in your game.'), 'success'); return; }
+  const next = restart ? '' : ` ${t('modules.restartNeeded', 'Saved: it applies at the next start of the server.')}`;
+  const others = `<p class="small muted">${esc(dawnriseOtherPcs(d))}</p>`;
+  if (game === 'yes' || d.client === 'yes') return resultDialog({ title: t('modules.dawnriseOnDone', 'Dawnrise Island is on'), body: `${esc(t('modules.dawnriseOnFiles', 'The island is in the world and its two files are in your game.') + next)}${others}` });
+  if (game === 'running') return resultDialog({ title: t('modules.dawnriseOnDone', 'Dawnrise Island is on'), body: `${esc(t('modules.dawnriseOnGameOpen', 'Your game is open: close it, then click « Install the game files » on the Dawnrise card.') + next)}${others}` });
+  // Game folder not known yet: asked now (it is remembered).
+  if (await confirmDialog({ title: t('modules.dawnriseOnDone', 'Dawnrise Island is on'), body: `${esc(t('modules.dawnriseOnPick', 'Choose your game folder: the launcher puts the two files of the island in it.') + next)}${others}`, confirm: t('modules.dawnrisePick', 'Choose the game folder'), cancel: t('modules.later', 'Later') })) {
+    App.state.modules = await App.api.modulesDawnriseClient();
+    App.render();
+    if (App.state.modules?.dawnrise?.client === 'yes') toast(t('modules.dawnriseClientDone', 'Done: the two files of Dawnrise are in your game.'), 'success');
+  }
+}
+// Once, after an update that brings it: « Turn on Dawnrise Island (by Nightlund)? » Yes or Later, never asked again.
+let dawnriseAsking = false;
+async function maybeProposeDawnrise() {
+  if (dawnriseAsking || App.state.config?.edition !== 'server') return;
+  dawnriseAsking = true;
+  try {
+    const proposal = await App.api.modulesDawnriseProposal().catch(() => null);
+    if (!proposal?.propose) return;
+    // Another window (What is new, an update) first.
+    for (let i = 0; i < 600 && $('#dialog')?.open; i++) await new Promise(resolve => setTimeout(resolve, 1000));
+    if ($('#dialog')?.open) return;
+    await App.api.modulesDawnriseAsked().catch(() => {});
+    const mb = Math.max(1, Math.round((proposal.size || 0) / 1048576));
+    const body = `${esc(t('modules.dawnriseProposeBody', 'Your server can now have Dawnrise Island: a new island and the Azzar Faire with its mini-games, reached by portal tents in Stormwind and Orgrimmar. A backup is made first; the island can be removed later from Modules.'))}${proposal.size ? `<br><small class="muted">${esc(t('modules.dawnriseDownload', 'Downloaded when you switch it on: {mb} MB.', { mb }))}</small>` : ''}`;
+    if (!await confirmDialog({ title: t('modules.dawnrisePropose', 'Turn on Dawnrise Island (by Nightlund)?'), body, confirm: t('modules.dawnriseYes', 'Yes, turn it on'), cancel: t('modules.later', 'Later') })) return;
+    await guard(() => dawnriseSwitch(true));
+  } finally { dawnriseAsking = false; }
+}
+
 function dawnriseCard(d, running) {
   const on = !!(d?.available && d.enabled);
   const usable = !!(d?.available || d?.download);
   const mb = size => Math.max(1, Math.round((size || 0) / 1048576));
   const note = text => `<p class="module-note">${icon('info')}${esc(text)}</p>`;
-  const client = on && d.client !== 'yes' && d.clientFiles ? `<div class="button-row module-actions"><button class="button ghost small" data-action="dawnrise-client">${icon('download')}${esc(t('modules.dawnriseClient', 'Install its files in my game'))}</button></div>` : '';
+  // On, files missing in this PC's game: a visible state and the button, until they are there.
+  const missing = { running: t('modules.dawnriseFilesOpen', 'The two game files of the island are not in your game yet: close the game, then install them.'), unknown: t('modules.dawnriseFilesUnknown', 'The two game files of the island are not in a game yet: choose your game folder.'), disabled: t('modules.dawnriseFilesMissing', 'The two game files of the island are not in your game yet.') }[d?.client] || t('modules.dawnriseFilesMissing', 'The two game files of the island are not in your game yet.');
+  const client = on && d.client !== 'yes' && d.clientFiles ? `<p class="module-note warn">${icon('warning')}${esc(missing)}</p><div class="button-row module-actions"><button class="button small" data-action="dawnrise-client">${icon('download')}${esc(t('modules.dawnriseClientInstall', 'Install the game files'))}</button></div>` : '';
+  const others = on ? `<p class="small muted">${esc(dawnriseOtherPcs(d))}</p>` : '';
   const update = on && d.download ? `<div class="button-row module-actions"><button class="button small" data-action="dawnrise-update" ${running ? 'disabled' : ''}>${icon('download')}${esc(t('modules.dawnriseUpdate', 'Update the island to {version}', { version: d.download.version }))}</button></div>` : '';
   const state = d?.available ? '' : d?.download ? note(t('modules.dawnriseDownload', 'Downloaded when you switch it on: {mb} MB.', { mb: mb(d.download.size) }))
     : note(d?.size ? t('modules.dawnriseOfflineSize', 'The island is downloaded when you switch it on ({mb} MB): connect to the Internet first.', { mb: mb(d.size) }) : t('modules.dawnriseOffline', 'The island is downloaded when you switch it on: connect to the Internet first.'));
-  return `<section class="panel module-card ${usable ? '' : 'soon'}">${moduleArt('manastorm')}<header><h2>${icon('map')}${esc(t('modules.dawnrise', 'Dawnrise Island'))}</h2>${moduleSwitch('modules-dawnrise', on, running || !usable)}</header>
+  return `<section class="panel module-card ${usable ? '' : 'soon'}">${moduleArt('manastorm')}<header><h2>${icon('map')}${esc(t('modules.dawnrise', 'Dawnrise Island'))}</h2>${moduleSwitch('modules-dawnrise', on, !usable)}</header>
       <p class="muted">${esc(t('modules.dawnriseText', 'A new island and the Azzar Faire with its mini-games, reached by portal tents in Stormwind and Orgrimmar. Off by default. Every player needs its two game files.'))}</p>
       ${state}
-      ${usable && running ? note(t('modules.dawnriseStop', 'Stop the world server to switch it (MySQL stays on): a backup is made first.')) : ''}
-      ${update}${client}
+      ${usable && running ? note(t('modules.dawnriseStopAsk', 'Switching it stops the server and its realms for a few minutes (asked first), then starts them again: a backup is made first.')) : ''}
+      ${update}${client}${others}
       ${note(t('modules.newModule', 'New module, not tried with the bots yet: feedback is welcome.'))}
       <p class="module-credit"><span>${esc(t('modules.createdBy', 'Created by {author}', { author: 'Nightlund' }))}</span></p>
     </section>`;
@@ -983,10 +1032,7 @@ Object.assign(App.actions, {
   'modules-dawnrise': button => guard(async () => {
     const on = button.dataset.on !== '1';
     if (!await confirmDialog({ title: on ? t('modules.dawnriseOnTitle', 'Add Dawnrise Island to the world?') : t('modules.dawnriseOffTitle', 'Remove Dawnrise Island?'), body: esc(on ? t('modules.dawnriseOnBody', 'A backup of the databases is made, then the island is added to the world. It opens at the next start of the server.') : t('modules.dawnriseOffBody', 'A backup of the databases is made, every character left on the island goes back to its hearthstone, then the island is removed. Nothing else in the world changes.')), confirm: on ? t('modules.dawnriseOn', 'Add the island') : t('modules.dawnriseOff', 'Remove the island') })) return;
-    const release = holdDialog(t('modules.dawnrise', 'Dawnrise Island'), t('modules.dawnriseWorking', 'Backup, then the databases: a few minutes. Keep the launcher open.'));
-    try { App.state.modules = await App.api.modulesDawnrise(on); } finally { release(); }
-    toast(t('modules.restartNeeded', 'Saved: it applies at the next start of the server.'), 'success');
-    App.render();
+    await dawnriseSwitch(on);
   }, button),
   'dawnrise-update': button => guard(async () => {
     const next = App.state.modules?.dawnrise?.download;
@@ -998,7 +1044,7 @@ Object.assign(App.actions, {
   }, button),
   'dawnrise-client': button => guard(async () => {
     App.state.modules = await App.api.modulesDawnriseClient();
-    toast(t('modules.dawnriseClientDone', 'Done: the two files of Dawnrise are in your game.'), 'success');
+    if (App.state.modules?.dawnrise?.client === 'yes') toast(t('modules.dawnriseClientDone', 'Done: the two files of Dawnrise are in your game.'), 'success');
     App.render();
   }, button),
   'modules-rotation': button => guard(async () => {

@@ -186,3 +186,24 @@ test('Dawnrise off keeps ALE on when other Lua scripts are left', async () => {
   assert.equal((await dawnrise.status(root)).ale, true);
   assert.ok(fs.existsSync(path.join(root, 'CoA-Bots/Core/lua_scripts/other/mine.lua')));
 });
+
+test('game files: a patch of the game with the same name is kept, put back when the island goes off; ours are seen as ours', async () => {
+  const root = tmp();
+  const client = tmp();
+  write(root, { [`${dawnrise.MODULE_DIR}/client/patch-ZZZT.MPQ`]: 'island T', [`${dawnrise.MODULE_DIR}/client/patch-ZZZW.MPQ`]: 'island W' });
+  write(client, { 'Data/patch-ZZZT.MPQ': 'another patch of the game', 'Wow.exe': '' });
+  const st = async () => (await dawnrise.status(root, { client })).client;
+  assert.strictEqual(await st(), 'no', 'a file of another size is not ours');
+  assert.strictEqual(await dawnrise.installClient(root, client), 'yes');
+  assert.strictEqual(fs.readFileSync(path.join(client, 'Data', 'patch-ZZZT.MPQ'), 'utf8'), 'island T');
+  assert.strictEqual(fs.readFileSync(path.join(client, 'Data', 'patch-ZZZT.MPQ.before-dawnrise'), 'utf8'), 'another patch of the game');
+  // A second install never keeps our own file as the game's.
+  await dawnrise.installClient(root, client);
+  assert.strictEqual(fs.readFileSync(path.join(client, 'Data', 'patch-ZZZT.MPQ.before-dawnrise'), 'utf8'), 'another patch of the game');
+  await dawnrise.disableClient(client);
+  assert.strictEqual(fs.readFileSync(path.join(client, 'Data', 'patch-ZZZT.MPQ'), 'utf8'), 'another patch of the game', 'the game file is back');
+  assert.ok(!fs.existsSync(path.join(client, 'Data', 'patch-ZZZT.MPQ.before-dawnrise')));
+  assert.strictEqual(fs.readFileSync(path.join(client, 'Data', 'patch-ZZZW.MPQ.disabled'), 'utf8'), 'island W');
+  assert.strictEqual(await st(), 'disabled');
+  await assert.rejects(dawnrise.installClient(root, ''), /Choose your game folder first/);
+});

@@ -309,6 +309,8 @@ async function runUpdate(call) {
   showUpdate();
   // Done: the result stays in its window, over the home page (where the new versions show).
   if (App.state.update.state?.last?.error) App.render(); else App.go('home');
+  // An update that brings Dawnrise Island: offered once, after its result window is closed.
+  if (!App.state.update.state?.last?.error) App.api.componentsRefresh().then(state => { App.state.components = state; }).catch(() => {}).finally(() => maybeProposeDawnrise());
 }
 
 Object.assign(App.actions, {

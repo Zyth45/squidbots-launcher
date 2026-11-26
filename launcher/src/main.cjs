@@ -1349,11 +1349,26 @@ function registerIpc() {
       : await dawnrise.disable(serverPath(), serverTools().backup, game);
     return { ...(await modulesStatus()), result };
   });
+  // The two game files of the island, in the game folder known to the launcher; asked once when none is known.
   handle('modules:dawnriseClient', async () => {
     if (await addonSync.gameRunning()) throw new Error('Close the game first.');
-    await dawnrise.installClient(serverPath(), settings.installPaths.addon || '');
+    const known = settings.installPaths.addon;
+    const client = known && addonSync.isClient(known) ? known : await pickClient();
+    if (!client) return modulesStatus();
+    await dawnrise.installClient(serverPath(), client);
     return modulesStatus();
   });
+  // Once, after an update that brings it (CoA Bots new enough, the island offered and off): « Turn on Dawnrise Island? ».
+  // Never asked twice: the answer (Yes or Later) is kept in the profile.
+  handle('modules:dawnriseProposal', async () => {
+    if (!serverPath() || settings.dawnriseAsked) return { propose: false };
+    const offer = componentLists.dawnrise;
+    if (!offer || components.blocker(serverPath(), offer)) return { propose: false };
+    if (offer.minLauncher && repackUpdate.compareVersions(app.getVersion(), offer.minLauncher) < 0) return { propose: false };
+    const state = await dawnrise.status(serverPath(), { offer });
+    return { propose: !state.enabled && !!(state.available || state.download), size: state.download?.size || 0 };
+  });
+  handle('modules:dawnriseAsked', async () => { await persist({ ...settings, dawnriseAsked: true }); return true; });
   handle('modules:manastorm', async on => {
     if (!serverPath()) throw new Error('Choose the server folder first.');
     if (await worldRunning()) throw new Error('Stop the server first: Manastorm is read when it starts.');

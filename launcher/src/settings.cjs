@@ -10,7 +10,7 @@ const THEMES = new Set(['classic', 'abyss']);
 const CHANNELS = new Set(['stable', 'test']);
 const defaults = Object.freeze({
   language: 'fr', theme: 'abyss', channel: 'stable', startPage: 'play', realmlist: '', minimizeOnLaunch: true, reduceMotion: false,
-  autoCheckAddons: true, betaUpdates: false, hideCloseNotice: false, trayOnClose: false, notifications: true, startWithWindows: false, startServerOnOpen: false, restartWorldOnCrash: false, dailyBackup: true, advancedSettings: false, numaNode: 'auto', lastSeenVersion: '', previousVersion: '', previousFor: '', installPaths: {}, components: {}, instances: [], modules: { squidbots: true },
+  autoCheckAddons: true, betaUpdates: false, hideCloseNotice: false, trayOnClose: false, notifications: true, startWithWindows: false, startServerOnOpen: false, restartWorldOnCrash: false, dailyBackup: true, advancedSettings: false, numaNode: 'auto', dawnriseAsked: false, lastSeenVersion: '', previousVersion: '', previousFor: '', installPaths: {}, components: {}, instances: [], modules: { squidbots: true },
 });
 
 function sanitize(value) {
@@ -30,6 +30,8 @@ function sanitize(value) {
   if (typeof value.lastSeenVersion === 'string' && /^\d+\.\d+\.\d+$/.test(value.lastSeenVersion)) out.lastSeenVersion = value.lastSeenVersion;
   // The launcher version seen before this one, and the version it was kept for (What's new of the settings, 3.2).
   for (const key of ['previousVersion', 'previousFor']) if (typeof value[key] === 'string' && /^\d+\.\d+\.\d+$/.test(value[key])) out[key] = value[key];
+  // « Turn on Dawnrise Island? » already asked (Yes or Later): never asked again.
+  if (value.dawnriseAsked === true) out.dawnriseAsked = true;
   if (value.modules && typeof value.modules.squidbots === 'boolean') out.modules.squidbots = value.modules.squidbots;
   if (Array.isArray(value.instances)) out.instances = [...new Set(value.instances.filter(folder => typeof folder === 'string' && path.isAbsolute(folder)).map(folder => path.normalize(folder)))].slice(0, 12);
   if (value.components && typeof value.components === 'object') {

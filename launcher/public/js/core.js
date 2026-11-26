@@ -157,9 +157,9 @@ function holdDialog(title, body) {
   return () => { element.removeEventListener('cancel', block); element.close(); };
 }
 
-function confirmDialog({ title, body, confirm, danger = false }) {
+function confirmDialog({ title, body, confirm, danger = false, cancel = '' }) {
   return new Promise(resolve => {
-    if (!dialog.open(`${dialog.header(title)}<div class="dialog-content"><p>${body}</p></div><footer class="dialog-foot"><button class="button ghost" data-choice="no">${esc(t('common.cancel', 'Cancel'))}</button><button class="button ${danger ? 'danger' : 'primary'}" data-choice="yes">${esc(confirm)}</button></footer>`, 'small')) return resolve(false);
+    if (!dialog.open(`${dialog.header(title)}<div class="dialog-content"><p>${body}</p></div><footer class="dialog-foot"><button class="button ghost" data-choice="no">${esc(cancel || t('common.cancel', 'Cancel'))}</button><button class="button ${danger ? 'danger' : 'primary'}" data-choice="yes">${esc(confirm)}</button></footer>`, 'small')) return resolve(false);
     const element = $('#dialog');
     const done = value => { element.removeEventListener('click', onClick); element.removeEventListener('close', onClose); dialog.close(); resolve(value); };
     const onClick = event => { const choice = event.target.closest('[data-choice]')?.dataset.choice; if (choice) done(choice === 'yes'); };

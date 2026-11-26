@@ -40,9 +40,12 @@ const luaFiles = dir => { try { return fs.readdirSync(dir, { recursive: true }).
 const complete = dir => Object.values(FILES).every(rel => exists(path.join(dir, rel)));
 const versionOf = dir => { try { return fs.readFileSync(path.join(dir, 'VERSION'), 'utf8').trim(); } catch { return ''; } };
 
-function clientState(client) {
+// root given: a file of the game with the same name but another size is not ours (a patch it had before).
+function clientState(client, root = '') {
   if (!client || !exists(path.join(client, 'Data'))) return 'unknown';
-  const present = CLIENT_MPQS.filter(name => exists(path.join(client, 'Data', name))).length;
+  const size = file => { try { return fs.statSync(file).size; } catch { return -1; } };
+  const ours = name => { if (!root) return true; const own = size(path.join(root, MODULE_DIR, 'client', name)); return own < 0 || own === size(path.join(client, 'Data', name)); };
+  const present = CLIENT_MPQS.filter(name => exists(path.join(client, 'Data', name)) && ours(name)).length;
   if (present === CLIENT_MPQS.length) return 'yes';
   if (present) return 'partial';
   return CLIENT_MPQS.some(name => exists(path.join(client, 'Data', `${name}.disabled`))) ? 'disabled' : 'no';
@@ -59,7 +62,7 @@ async function status(root, { client = '', offer = null, offline = false } = {})
   const newer = !!(offer && !offline && (!available || compareVersions(offer.version, version || '0') > 0));
   return {
     available, version, enabled: available && lua && aleOn, lua, ale: ale === null ? null : aleOn,
-    client: clientState(client), clientFiles: available && CLIENT_MPQS.every(name => exists(path.join(dir, 'client', name))),
+    client: clientState(client, root), clientPath: client || '', clientSource: path.join(root, MODULE_DIR, 'client'), clientNames: CLIENT_MPQS, clientFiles: available && CLIENT_MPQS.every(name => exists(path.join(dir, 'client', name))),
     // What a click on « On » would download (none when the local copy is the newest), and whether it can.
     download: newer ? { version: offer.version, size: offer.size } : null,
     offline: !available && !(offer && !offline), size: offer?.size || 0,
@@ -129,23 +132,40 @@ async function fetchComponent(offer, { cacheDir, fetchImpl, signal = AbortSignal
 }
 
 // The game's two patch files, copied into its Data (game closed): at each new version of the island.
+// A file of the game with the same name that is not ours (another patch): kept once as .before-dawnrise, put back
+// when the island goes off.
+const KEPT = '.before-dawnrise';
+const sameFile = async (a, b) => {
+  try {
+    const [x, y] = await Promise.all([fsp.stat(a), fsp.stat(b)]);
+    if (x.size !== y.size) return false;
+    const hash = async file => require('node:crypto').createHash('sha256').update(await fsp.readFile(file)).digest('hex');
+    return (await hash(a)) === (await hash(b));
+  } catch { return false; }
+};
 async function installClient(root, client) {
   if (!client || !exists(path.join(client, 'Data'))) throw new Error('Choose your game folder first.');
   for (const name of CLIENT_MPQS) {
-    await fsp.rm(path.join(client, 'Data', `${name}.disabled`), { force: true });
-    await fsp.copyFile(path.join(root, MODULE_DIR, 'client', name), path.join(client, 'Data', name));
+    const ours = path.join(root, MODULE_DIR, 'client', name);
+    const file = path.join(client, 'Data', name);
+    if (exists(file) && !exists(`${file}${KEPT}`) && !(await sameFile(file, ours))) await fsp.copyFile(file, `${file}${KEPT}`);
+    await fsp.rm(`${file}.disabled`, { force: true });
+    await fsp.copyFile(ours, file);
   }
-  return clientState(client);
+  return clientState(client, root);
 }
 // Island off: the two files renamed to .disabled (nothing deleted; they replace whole files of the CoA game, which
-// they would otherwise hide after an update of the game). Back at the next « On ».
+// they would otherwise hide after an update of the game). Back at the next « On ». A file of the game they had
+// replaced comes back.
 async function disableClient(client) {
   if (clientState(client) === 'unknown') return 'unknown';
   for (const name of CLIENT_MPQS) {
     const file = path.join(client, 'Data', name);
-    if (!exists(file)) continue;
-    await fsp.rm(`${file}.disabled`, { force: true });
-    await fsp.rename(file, `${file}.disabled`);
+    if (exists(file)) {
+      await fsp.rm(`${file}.disabled`, { force: true });
+      await fsp.rename(file, `${file}.disabled`);
+    }
+    if (exists(`${file}${KEPT}`)) await fsp.rename(`${file}${KEPT}`, file);
   }
   return clientState(client);
 }

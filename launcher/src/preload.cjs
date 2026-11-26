@@ -94,6 +94,8 @@ contextBridge.exposeInMainWorld('launcher', Object.freeze({
   modulesManastormClient: () => call('modules:manastormClient'),
   modulesDawnrise: on => call('modules:dawnrise', on === true),
   modulesDawnriseClient: () => call('modules:dawnriseClient'),
+  modulesDawnriseProposal: () => call('modules:dawnriseProposal'),
+  modulesDawnriseAsked: () => call('modules:dawnriseAsked'),
   modulesMultirace: options => call('modules:multirace', options),
   modulesCustomCharacters: () => call('modules:customCharacters'),
   modulesMultiracePlan: on => call('modules:multiracePlan', on),
