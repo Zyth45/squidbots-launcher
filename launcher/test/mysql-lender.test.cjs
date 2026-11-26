@@ -50,3 +50,19 @@ test('two realms switched on together: MySQL stops once, after the last one', as
   await first;
   assert.deepStrictEqual(both.calls.filter(call => call === 'stopAll'), ['stopAll']);
 });
+
+test('Dawnrise on with everything stopped (laptop 26/11): MySQL is lent for its backup, then stopped again', async () => {
+  const main = require('node:fs').readFileSync(require('node:path').join(__dirname, '..', 'src', 'main.cjs'), 'utf8');
+  const lends = /const LENDS_MYSQL = new Set\(\[([^\]]*)\]\)/.exec(main)?.[1] || '';
+  for (const channel of ['modules:dawnrise', 'modules:customCharacters', 'backup:create', 'sql:run']) assert.ok(lends.includes(`'${channel}'`), `${channel} lends MySQL`);
+  // The handler's backup refuses without MySQL, as ServerBackup.create does.
+  const stopped = server();
+  const backupThenSql = async () => { if (!stopped.on.has('mysql')) throw new Error('Start MySQL first: backups are made from the running database.'); return 'island on'; };
+  assert.strictEqual(await stopped.lender(backupThenSql), 'island on');
+  assert.deepStrictEqual(stopped.calls, ['start mysql', 'stopAll'], 'started for it, left as it was found');
+  // MySQL already on (the player started it): it stays on.
+  const running = server(['mysql']);
+  await running.lender(async () => 'island on');
+  assert.ok(running.on.has('mysql'));
+  assert.ok(!running.calls.includes('stopAll'));
+});

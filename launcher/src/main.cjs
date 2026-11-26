@@ -462,7 +462,9 @@ const stopEverything = () => realms.stopServer(serverPath(), { worldsLeft, stopB
 const lendMysql = mysqlLender({ status: mysqlState, start: async id => { await serverControl()?.start(id); }, stopAll: async () => { await serverControl()?.stopAll(); }, realmRunning: anyRealmRunning });
 // The same, for an operation that starts MySQL by itself (the assembler, the repack's scripts).
 const afterMysql = mysqlLender({ status: mysqlState, start: async () => {}, stopAll: async () => { await serverControl()?.stopAll(); }, realmRunning: anyRealmRunning });
-const LENDS_MYSQL = new Set(['chars:list', 'chars:export', 'chars:import', 'sql:run', 'backup:create', 'backup:restore', 'bots:install']);
+// Dawnrise (on/off) and the count before Multirace off also need the database: a player who stopped everything to switch
+// Dawnrise had « Start MySQL first » (laptop 26/11), MySQL is now started for them and stopped again after.
+const LENDS_MYSQL = new Set(['chars:list', 'chars:export', 'chars:import', 'sql:run', 'backup:create', 'backup:restore', 'bots:install', 'modules:dawnrise', 'modules:customCharacters']);
 const LEAVES_MYSQL = new Set(['network:save']);
 
 function handle(channel, action) {
