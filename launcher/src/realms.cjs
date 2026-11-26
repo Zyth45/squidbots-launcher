@@ -379,6 +379,13 @@ async function writeConfigs(root, key, saved) {
   if (aleText !== null) {
     const scripts = confValue(aleText, 'ALE.ScriptPath') || 'lua_scripts';
     add('mod_ale.conf', { 'ALE.ScriptPath': `"${path.resolve(path.join(root, 'CoA-Bots', 'Core'), scripts).replace(/\\/g, '/')}"` });
+    // Dawnrise on (ALE on, its Lua there): ALE's info lines (« Executed N Lua scripts », logger ALE at level 4) reach
+    // the realm's console log and Logs\ALE.log. Written in worldserver.conf, read by the core before the module files
+    // (bench 26/11: the line was nowhere); never over a logger the player set (CoA's file or this realm's settings).
+    const dawnLua = (() => { try { return fs.readdirSync(path.join(root, 'CoA-Bots', 'Core', 'lua_scripts', 'dawnrise'), { recursive: true }).some(name => /\.lua$/i.test(String(name))); } catch { return false; } })();
+    if (confValue(aleText, 'ALE.Enabled') === '1' && dawnLua && confValue(ws, 'Logger.ALE') === undefined && edits.get('worldserver.conf')?.['Logger.ALE'] === undefined) {
+      add('worldserver.conf', { ...(confValue(ws, 'Appender.ALELog') === undefined ? { 'Appender.ALELog': '2,4,0,ALE.log,w' } : {}), 'Logger.ALE': '4,Console ALELog' });
+    }
   }
   // CoA in its eco time: the realm copies the player's value of CoA, not the eco one.
   const coaEco = await eco.activeRecord(root, 'coa');
@@ -782,6 +789,7 @@ async function start(root, key, { timeout = 1200 } = {}) {
   const saved = await realmFile(root, key);
   if (!saved) throw new Error('Create the realm first.');
   if (saved.disabled) throw new Error('This realm is switched off: switch it on first.');
+  if (halted()) throw new Error('The server is stopping: start this realm once it has stopped.');
   if (await portOpen(saved.worldPort)) return;
   if (await processOf(root, key)) throw new Error(`${saved.name} is still starting or stopping.`);
   if (await portOpen(saved.raPort)) throw new Error(`Port ${saved.raPort} is already used by another program.`);
@@ -922,33 +930,89 @@ async function stop(root, key) {
   stoppedAt.set(key, Date.now());
   try { await stopWorld(root, key, saved, pid); } finally { stopping.delete(key); stoppedAt.set(key, Date.now()); }
 }
+// The waits of a stop (changed by the tests only): a world still loading, a world saving, the shutdown asked again.
+const timing = { load: 10 * 60 * 1000, save: 300 * 1000, resend: 15 * 1000, poll: 1000 };
+const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 async function stopWorld(root, key, saved, pid) {
-  // A world whose port never opened, not being started now (left by a start given up, or by an older launcher): no
-  // player can be in it. Stopped at once when its logs have not moved for 20 minutes (stuck), so nothing of this repack
-  // runs unknown to its scripts (code 13); one still writing them may be applying its SQL updates: never killed then.
-  if (pid && !starting.has(key) && !(await portOpen(saved.worldPort))) {
-    if (Date.now() - logsChanged(root, key) < STUCK_AFTER) throw Object.assign(new Error(`${saved.name} is still starting (updates of its database): try again in a few minutes.`), { code: 'REALM_SAVING' });
-    await new Promise(resolve => execFile('taskkill.exe', ['/PID', String(pid), '/T', '/F'], { windowsHide: true }, () => resolve()));
-    await fsp.rm(path.join(dirOf(root, key), '.state.json'), { force: true });
-    return;
+  // Still loading (its port not open yet): its console cannot take the shutdown (bench 26/11: the order was lost and
+  // the stop waited 300 s for nothing). Waited for until its port opens, 10 minutes at most: it may be applying its
+  // database updates, never killed then. One whose logs have not moved for 20 minutes is stuck before any player
+  // could join: ended, so nothing of this repack runs unknown to its scripts (code 13).
+  const loadEnd = Date.now() + timing.load;
+  while (pid && pidAlive(pid) && !(await portOpen(saved.worldPort))) {
+    if (Date.now() - logsChanged(root, key) >= STUCK_AFTER) {
+      await new Promise(resolve => execFile('taskkill.exe', ['/PID', String(pid), '/T', '/F'], { windowsHide: true }, () => resolve()));
+      await fsp.rm(path.join(dirOf(root, key), '.state.json'), { force: true });
+      return;
+    }
+    if (Date.now() >= loadEnd) throw Object.assign(new Error(`${saved.name} is still loading (updates of its database): it was left running, and MySQL with it. Press Stop again in a few minutes.`), { code: 'REALM_SAVING' });
+    await pause(timing.poll);
   }
-  // The repack's RA account (Settings/repack.json) is an account of the shared auth database: valid on every realm.
-  await live.raCommand(root, 'server shutdown 1s 0', 20000, saved.raPort).catch(() => {});
   // A world is never killed: one still saving its players would lose them. MySQL stays up for it (the callers stop).
+  // The shutdown goes through the remote console (the repack's RA account, valid on every realm), asked again while
+  // the port stays open: an order sent while the console was busy is not lost.
   const up = async () => (pid ? pidAlive(pid) : await portOpen(saved.worldPort));
-  const deadline = Date.now() + STOP_WAIT;
-  while (Date.now() < deadline && await up()) await new Promise(resolve => setTimeout(resolve, 1000));
+  const deadline = Date.now() + timing.save;
+  let asked = 0;
+  while (Date.now() < deadline && await up()) {
+    if (Date.now() - asked >= timing.resend && await portOpen(saved.worldPort)) {
+      asked = Date.now();
+      await live.raCommand(root, 'server shutdown 1s 0', 20000, saved.raPort).catch(() => {});
+      continue;
+    }
+    await pause(timing.poll);
+  }
   if (await up()) throw Object.assign(new Error(`${saved.name} is still saving: it was left running, and MySQL with it. Press Stop again in a few minutes.`), { code: 'REALM_SAVING' });
   await fsp.rm(path.join(dirOf(root, key), '.state.json'), { force: true });
 }
-const STOP_WAIT = 300 * 1000;
+// The world processes of the realms, by pid (main.cjs tells them from the CoA world and from unknown ones).
+async function realmPids(root) {
+  const pids = [];
+  for (const key of Object.keys(MODES)) { const pid = await processOf(root, key); if (pid) pids.push(pid); }
+  return pids;
+}
+// "Stop all" running: no realm starts meanwhile (the queue of "Start all", a restart after a crash, a click).
+let halting = 0;
+const halted = () => halting > 0;
+const aliveKeys = async root => {
+  const keys = [];
+  for (const key of Object.keys(MODES)) {
+    const saved = await realmFile(root, key);
+    if (saved && ((await processOf(root, key)) || (saved.worldPort && await portOpen(saved.worldPort)))) keys.push(key);
+  }
+  return keys;
+};
 
-// Every realm is asked to stop; one still running after the wait fails the whole stop, so nothing stops MySQL under it.
+// Every realm is asked to stop; one still running after the wait fails the whole stop, so nothing stops MySQL under
+// it. A realm started while the stop began (its start already past its checks) is stopped in a second round.
 async function stopAll(root) {
   if (!root || !fs.existsSync(path.join(root, 'Royaumes'))) return;
-  const results = await Promise.allSettled(Object.keys(MODES).map(key => stop(root, key)));
-  const failed = results.filter(result => result.status === 'rejected').map(result => result.reason);
-  if (failed.length) throw Object.assign(new Error(failed.map(error => error.message).join(' ')), { code: 'REALM_SAVING' });
+  halting++;
+  try {
+    queue.waiting = [];
+    for (const key of Object.keys(MODES)) stoppedAt.set(key, Date.now());
+    let failed = [];
+    for (let round = 0; round < 2; round++) {
+      const keys = round ? await aliveKeys(root) : Object.keys(MODES);
+      if (!keys.length) break;
+      const results = await Promise.allSettled(keys.map(key => stop(root, key)));
+      failed = results.filter(result => result.status === 'rejected').map(result => result.reason);
+      if (failed.length) break;
+    }
+    if (failed.length) throw Object.assign(new Error(failed.map(error => error.message).join(' ')), { code: 'REALM_SAVING' });
+    const left = await aliveKeys(root);
+    if (left.length) throw Object.assign(new Error(`Still running: ${(await Promise.all(left.map(async key => (await realmFile(root, key))?.name || key))).join(', ')}. MySQL stays on; press Stop again in a moment.`), { code: 'REALM_SAVING' });
+  } finally { halting--; }
+}
+
+// Stop all: the realms, then the base (the CoA world, MySQL, the authserver) only once no other world of the repack lives
+// (worldsLeft: main.cjs, which also counts the worldserver.exe of the folder no realm knows). Bench 26/11: MySQL
+// stopped under a realm still running ended in ABORT [2003].
+async function stopServer(root, { worldsLeft, stopBase }) {
+  await stopAll(root);
+  const left = await worldsLeft();
+  if (left.length) throw Object.assign(new Error(`Still running: ${left.join(', ')}. MySQL stays on; press Stop again in a moment.`), { code: 'REALM_SAVING', launcherCode: 'realm' });
+  await stopBase();
 }
 
 // ---------------------------------------------------------------- queue, memory, bots in game
@@ -1003,6 +1067,7 @@ async function startMarked(root, { freeMb = () => os.freemem() / 1048576 } = {})
   queue.waiting = await markedRealms(root);
   try {
     for (const key of [...queue.waiting]) {
+      if (halted()) break;
       queue.current = key;
       queue.waiting = queue.waiting.filter(item => item !== key);
       const realm = (await status(root, { live: false })).realms.find(item => item.key === key);
@@ -1308,4 +1373,4 @@ async function resetCoa(root, { confirmName, realmName, backup, io = { ...realIo
   return { backup: saved, structure: dir, preview, emptied };
 }
 
-module.exports = { RESETTABLE, coaPreview, resetCoa, COA_BOT_STATE, sellerOf, sameRealmName, worldPreview, backupRealm, resetWorld, realmBackups, restoreRealm, auctionPurgeSql, changedCount, imposedNow, lastWorldExit, endKind, logTail, realmEnd, stoppedOnPurpose, setPinner, livingOwn, clearOffline, setRealmName, ahbotSettingsOf, setAhbotSettingsOf, onlineRunning, shippedTables, syncShippedTables, MODES, queueMarked, memoryFor, neededMb, botsOnline, setDisabled, versionReady, modulesOf, setModule, coaAutostart, setCoaAutostart, skipCoaAtStart, anotherStarting, worldsRunning, refreshBotConfigs, status, create, start, stop, stopAll, startMarked, setOptions, settingsOf, saveSettings, purgeBots, writeConfigs, setKey };
+module.exports = { RESETTABLE, coaPreview, resetCoa, COA_BOT_STATE, sellerOf, sameRealmName, worldPreview, backupRealm, resetWorld, realmBackups, restoreRealm, auctionPurgeSql, changedCount, imposedNow, lastWorldExit, endKind, logTail, realmEnd, stoppedOnPurpose, setPinner, livingOwn, clearOffline, setRealmName, ahbotSettingsOf, setAhbotSettingsOf, onlineRunning, shippedTables, syncShippedTables, MODES, queueMarked, memoryFor, neededMb, botsOnline, setDisabled, versionReady, modulesOf, setModule, coaAutostart, setCoaAutostart, skipCoaAtStart, anotherStarting, worldsRunning, realmPids, halted, stopTiming: timing, refreshBotConfigs, status, create, start, stop, stopAll, stopServer, startMarked, setOptions, settingsOf, saveSettings, purgeBots, writeConfigs, setKey };

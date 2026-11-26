@@ -433,7 +433,31 @@ function publicConfig() {
 // « 1 service of 3 running » that the player did not start. Left as it was when it already ran, or when a world,
 // the authserver or a realm runs.
 const mysqlState = async () => (serverControl() ? await serverControl().status().catch(() => []) : []);
-const anyRealmRunning = async () => (serverPath() ? (await realms.status(serverPath(), { live: false })).realms.some(realm => ['running', 'starting'].includes(realm.state)) : false);
+const anyRealmRunning = async () => (serverPath() ? (await realms.status(serverPath(), { live: false })).realms.some(realm => ['running', 'starting', 'stopping'].includes(realm.state)) : false);
+// The worldservers of this repack alive besides the CoA world: its realms (by name), and any other worldserver.exe of
+// the folder that no realm knows. MySQL is never stopped while one lives (bench 26/11: a realm still running when
+// "Stop all" stopped MySQL ended in ABORT [2003]).
+async function worldsLeft() {
+  const root = serverPath();
+  const c = serverControl();
+  if (!root) return [];
+  const names = await realms.worldsRunning(root).catch(() => []);
+  if (!c || process.platform !== 'win32') return names;
+  const own = new Set(await realms.realmPids(root).catch(() => []));
+  const world = c.services.find(service => /world/i.test(service.id));
+  const record = world ? JSON.parse(await fs.readFile(path.join(root, '.state', `${world.id}.json`), 'utf8').catch(() => '{}')) : {};
+  const coaPid = record?.pid && await c.processAlive(world.id) ? Number(record.pid) : 0;
+  const others = (await c.processesInside(['worldserver.exe']).catch(() => [])).filter(item => item.pid !== coaPid && !own.has(item.pid));
+  // The CoA world running without its record (a supervisor that started it again): the one it is.
+  if (!coaPid && world && await portOpen(world.port)) others.shift();
+  return [...names, ...others.map(item => `worldserver.exe (pid ${item.pid})`)];
+}
+async function assertWorldsDown() {
+  const left = await worldsLeft();
+  if (left.length) throw Object.assign(new Error(`Still running: ${left.join(', ')}. MySQL stays on; press Stop again in a moment.`), { code: 'REALM_SAVING', launcherCode: 'realm' });
+}
+// Stop all: the realms first, then the CoA world, MySQL and the authserver, only once no other world of this repack lives.
+const stopEverything = () => realms.stopServer(serverPath(), { worldsLeft, stopBase: () => requireControl().stopAll() });
 const lendMysql = mysqlLender({ status: mysqlState, start: async id => { await serverControl()?.start(id); }, stopAll: async () => { await serverControl()?.stopAll(); }, realmRunning: anyRealmRunning });
 // The same, for an operation that starts MySQL by itself (the assembler, the repack's scripts).
 const afterMysql = mysqlLender({ status: mysqlState, start: async () => {}, stopAll: async () => { await serverControl()?.stopAll(); }, realmRunning: anyRealmRunning });
@@ -911,7 +935,7 @@ function registerIpc() {
   handle('assemble:refreshData', async ({ stop = false, mmaps = true } = {}) => {
     const running = async () => (await requireControl().status()).some(service => /world/i.test(service.id) && service.state !== 'stopped' && service.state !== 'foreign')
       || (await realms.status(serverPath(), { live: false })).realms.some(realm => ['running', 'starting'].includes(realm.state));
-    if (stop && await running()) { await realms.stopAll(serverPath()); await requireControl().stopAll(); }
+    if (stop && await running()) await stopEverything();
     if (await running()) throw new Error('Stop the server first: its game data are replaced.');
     try {
       const done = await assembleServer(['dbc', 'maps', 'vmaps']);
@@ -1037,6 +1061,7 @@ function registerIpc() {
       // The extra realms use the same worldserver and MySQL: stopped before the update, started again after it.
       // A realm still saving stops the update before anything is changed (MySQL must stay up for it).
       await realms.stopAll(serverPath()).catch(error => { throw Object.assign(new Error(error.message), { launcherCode: 'realm' }); });
+      await assertWorldsDown();
       // The older update backups go first (user's rule, 20/11): the newest stays for Undo, so two remain after this one.
       const freed = await updateBackups.removeOlder(folder).catch(() => []);
       if (freed.length) send('update:event', { event: 'info', text: `${freed.length} older update backup(s) deleted (${Math.round(freed.reduce((sum, item) => sum + item.bytes, 0) / 1073741824 * 10) / 10} GB): ${freed.map(item => item.name).join(', ')}` });
@@ -1119,6 +1144,9 @@ function registerIpc() {
     try {
       update.phase = mode === 'finish' ? 'apply' : 'undo';
       send('update:event', { event: 'phase', phase: update.phase });
+      // The update tool stops MySQL: the realms (same MySQL) are stopped first, and nothing goes on while one lives.
+      await realms.stopAll(folder);
+      await assertWorldsDown();
       update.last = mode === 'finish' || mode === 'undo-cut'
         ? await runUpdateTool(folder, packageFolder, 'apply', ['--on-cut', mode === 'finish' ? 'finish' : 'undo', '--no-addon'])
         : await runUpdateTool(folder, packageFolder, 'rollback', []);
@@ -1381,7 +1409,7 @@ function registerIpc() {
     await live.forceStopWorld(serverPath());
     // The rest (relay, login, database) is then stopped the normal way.
     const found = serverControl();
-    if (found) await found.stopAll().catch(() => {});
+    if (found && !(await worldsLeft()).length) await found.stopAll().catch(() => {});
     return serverInfo();
   });
   let liveRealms = { at: 0, root: '', list: [] };
@@ -1493,7 +1521,7 @@ function registerIpc() {
   };
   // Stop all, then start all again (the realms marked to start with the server too).
   handle('repack:restartAll', async () => {
-    await oneServerJob('the restart of the server', async () => { baseByRealm = false; await realms.stopAll(serverPath()); await requireControl().stopAll(); });
+    await oneServerJob('the restart of the server', async () => { baseByRealm = false; await stopEverything(); });
     await startEverything();
     return serverInfo();
   });
@@ -1542,7 +1570,7 @@ function registerIpc() {
     while (Date.now() < deadline && await portOpen(service.port)) await new Promise(resolve => setTimeout(resolve, 1000));
     if (id === 'mysql') await requireControl().stopMysqlLeft();
   };
-  handle('repack:stop', async id => { if (id === 'all') { baseByRealm = false; await realms.stopAll(serverPath()); await requireControl().stopAll(); } else await stopOne(text(id, 30)); return serverInfo(); });
+  handle('repack:stop', async id => { if (id === 'all') { baseByRealm = false; await stopEverything(); } else await stopOne(text(id, 30)); return serverInfo(); });
   handle('repack:tail', id => requireControl().tail(text(id, 30)));
   // ---- extra realms (Wildcard, Warcraft Reborn, Free Pick) beside the CoA realm: same MySQL, authserver and bot worldserver
   // The CoA realm (the repack's own world) beside the extra ones, for the Realms page.
@@ -1566,7 +1594,7 @@ function registerIpc() {
     status: () => requireControl().status(),
     start: id => requireControl().start(id),
     stopAll: () => requireControl().stopAll(),
-    realmRunning: async () => (await realms.status(serverPath(), { live: false })).realms.some(realm => ['running', 'starting'].includes(realm.state)),
+    realmRunning: async () => (await realms.status(serverPath(), { live: false })).realms.some(realm => ['running', 'starting', 'stopping'].includes(realm.state)),
   });
   handle('realms:status', realmsStatus);
   // ---- the cards of the realm list in the game (game mode, background, description, expansion)
@@ -1644,8 +1672,8 @@ function registerIpc() {
     if (!baseByRealm) return;
     const c = requireControl();
     const world = (await c.status()).some(service => /world/i.test(service.id) && ['running', 'starting', 'stopping'].includes(service.state));
-    const realmOn = (await realms.status(serverPath(), { live: false })).realms.some(realm => ['running', 'starting'].includes(realm.state));
-    if (world || realmOn) return;
+    const realmOn = (await realms.status(serverPath(), { live: false })).realms.some(realm => ['running', 'starting', 'stopping'].includes(realm.state));
+    if (world || realmOn || (await worldsLeft()).length) return;
     baseByRealm = false;
     await c.stopAll().catch(() => {});
   };
@@ -2035,7 +2063,7 @@ function registerIpc() {
     try { previous = JSON.parse(await fs.readFile(path.join(current, '.coa-launcher', 'previous.json'), 'utf8')); } catch {}
     if (!previous?.path || !inspectRepack(previous.path).repack) throw new Error('The previous version is no longer there.');
     const found = requireControl();
-    if ((await found.status()).some(service => service.state !== 'stopped' && service.state !== 'foreign')) await found.stopAll();
+    if ((await found.status()).some(service => service.state !== 'stopped' && service.state !== 'foreign')) await stopEverything();
     await persist({ ...settings, installPaths: { ...settings.installPaths, server: path.resolve(previous.path) } });
     return serverInfo();
   });
@@ -2059,7 +2087,7 @@ function registerIpc() {
     try {
       upgradeNotify({ step: 'stop' });
       const oldControl = requireControl();
-      if ((await oldControl.status()).some(service => service.state !== 'stopped' && service.state !== 'foreign')) { say('Stopping the current server…'); await oldControl.stopAll(); }
+      if ((await oldControl.status()).some(service => service.state !== 'stopped' && service.state !== 'foreign')) { say('Stopping the current server…'); await stopEverything(); }
 
       upgradeNotify({ step: 'install' });
       say(`Installing the new version in ${target}…`);
@@ -2191,8 +2219,7 @@ function registerIpc() {
 
       upgradeNotify({ step: 'stop' });
       say('Stopping the server…');
-      await realms.stopAll(old);
-      await requireControl().stopAll();
+      await stopEverything();
 
       upgradeNotify({ step: 'install' });
       say(`Downloading and unpacking a fresh server in ${target}…`);

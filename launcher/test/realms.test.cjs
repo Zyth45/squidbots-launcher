@@ -69,6 +69,34 @@ test('a realm reads the Lua scripts of CoA (ALE.ScriptPath made absolute), only 
   assert.strictEqual(fs.readFileSync(ale, 'utf8'), 'ALE.Enabled = 1\nALE.ScriptPath = "scripts/lua"\n');
 });
 
+test('Dawnrise on: the realm logs ALE at info (« Executed N Lua scripts »), never over a logger the player set', async () => {
+  const root = repack();
+  const dir = realmFolder(root, 'living');
+  const saved = JSON.parse(fs.readFileSync(path.join(dir, 'realm.json'), 'utf8'));
+  const ws = path.join(dir, 'configs', 'worldserver.conf');
+  const ale = path.join(root, 'CoA-Bots', 'Core', 'configs', 'modules', 'mod_ale.conf');
+  fs.writeFileSync(ale, 'ALE.Enabled = 1\nALE.ScriptPath = "lua_scripts"\n');
+  await realms.writeConfigs(root, 'living', saved);
+  assert.strictEqual(value(ws, 'Logger.ALE'), undefined, 'ALE on without the Lua of Dawnrise: nothing added');
+  const lua = path.join(root, 'CoA-Bots', 'Core', 'lua_scripts', 'dawnrise');
+  fs.mkdirSync(lua, { recursive: true });
+  fs.writeFileSync(path.join(lua, 'island.lua'), '-- island');
+  await realms.writeConfigs(root, 'living', saved);
+  assert.strictEqual(value(ws, 'Logger.ALE'), '4,Console ALELog');
+  assert.strictEqual(value(ws, 'Appender.ALELog'), '2,4,0,ALE.log,w');
+  // The player's own logger in CoA's worldserver.conf stays as it is.
+  const coa = path.join(root, 'CoA-Bots', 'Core', 'configs', 'worldserver.conf');
+  fs.appendFileSync(coa, 'Logger.ALE=5,Console\n');
+  await realms.writeConfigs(root, 'living', saved);
+  assert.strictEqual(value(ws, 'Logger.ALE'), '5,Console');
+  assert.strictEqual(value(ws, 'Appender.ALELog'), undefined);
+  // Dawnrise off (ALE off): nothing added.
+  fs.writeFileSync(coa, fs.readFileSync(coa, 'utf8').replace('Logger.ALE=5,Console\n', ''));
+  fs.writeFileSync(ale, 'ALE.Enabled = 0\nALE.ScriptPath = "lua_scripts"\n');
+  await realms.writeConfigs(root, 'living', saved);
+  assert.strictEqual(value(ws, 'Logger.ALE'), undefined);
+});
+
 test('a realm is offered only when the installed update tool knows its databases', async () => {
   const old = repack({ knowsRealms: false });
   assert.ok((await realms.status(old, { live: false })).realms.every(realm => realm.ready === false));
